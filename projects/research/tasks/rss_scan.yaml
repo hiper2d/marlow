@@ -1,0 +1,15 @@
+# RSS scan task — fetches new entries from configured research feeds.
+# Initial feed list intentionally small (one source) to validate the pipeline.
+# Add real research sources (Anthropic, Apollo, METR, Import AI, Zvi, etc.)
+# in a follow-up once the loop is proven; HN is the smoke-test source.
+name: rss_scan
+project: research
+description: Scan configured research RSS feeds for new entries since last check.
+schedule: "0 */4 * * *"   # every 4 hours
+priority: normal
+subtasks:
+  - id: scan_hn
+    handler: process_rss_feed
+    context:
+      url: "https://news.ycombinator.com/rss"
+      source_name: "Hacker News"

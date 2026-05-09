@@ -18,6 +18,7 @@ venv/
 
 # Logs
 *.log
+marlow-sessions.log
 
 # Runtime state — agent's working files, not source
 tasks/queue.json
@@ -25,10 +26,10 @@ tasks/completed/*
 !tasks/completed/.gitkeep
 
 # Memory — runtime, agent-written
-.claude/memory/recent/*
-!.claude/memory/recent/.gitkeep
-.claude/memory/archive/*
-!.claude/memory/archive/.gitkeep
+memory/recent/*
+!memory/recent/.gitkeep
+memory/archive/*
+!memory/archive/.gitkeep
 
 # Astro build artifacts
 projects/blog/site/dist/
@@ -37,6 +38,9 @@ projects/blog/site/node_modules/
 
 # Notify fallback log (only created when Telegram delivery fails)
 digests/_notify_fallback.log
+
+# Per-feed last-seen state (runtime; fresh clone re-scans cold)
+projects/research/threads/_feed_state.json
 
 # Drafts and published articles are agent-written content;
 # uncomment if you'd rather not commit them to git history.

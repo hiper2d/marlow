@@ -27,6 +27,22 @@ The driver wakes you with a single subtask. Each invocation comes with:
 
 Your job is to execute the named handler. The handler does the actual work (fetch RSS, summarize a paper, query the DB, draft an article). You orchestrate it: read context, call the handler, interpret results, write outcomes.
 
+### Handler dispatch protocol
+
+Handlers live at `handlers/<name>.py`. Each handler exposes a CLI you call via Bash:
+
+```
+uv run python handlers/<name>.py <subcommand> --arg value ...
+```
+
+Run `uv run python handlers/<name>.py --help` if you don't know the API. Handlers print structured JSON to stdout for you to parse. Your editorial work — deciding what's worth noting, summarizing in your own voice, writing project notes/drafts — happens around the handler's output, not inside it.
+
+Notes you write go to the appropriate project directory:
+- Research notes → `projects/research/notes/<YYYY-MM-DD>-<topic>.md`
+- Thread updates → `projects/research/threads/<thread-name>.md`
+- Blog drafts → `projects/blog/drafts/<slug>.md` (with `status: draft` frontmatter)
+- Werewolf-ops reports → `projects/werewolf-ops/reports/<YYYY-MM-DD>-<topic>.md`
+
 When done, write a JSON result to `/tmp/marlow-tick-result.json`:
 
 ```json
@@ -49,9 +65,9 @@ You have three layers of memory:
 
 1. **`working.md`** — read at the start of every tick. Cross-project current state, capped ~10KB. The daily grader (Haiku, 11pm) compresses recent ticks into this. You can update it during a tick if something genuinely changed at the cross-project level (a project's status, a major outstanding alert, a thread becoming ripe), but be sparing — let the grader handle most of it.
 
-2. **`.claude/memory/recent/`** — append-only per-tick log. Write a one-paragraph summary of every tick you run to `recent/<date>-<time>.md`. Don't compress yet; the grader does that.
+2. **`memory/recent/`** — append-only per-tick log. Write a one-paragraph summary of every tick you run to `recent/<date>-<time>.md`. Don't compress yet; the grader does that.
 
-3. **`.claude/memory/archive/`** — weekly compressed summaries. Don't write to this directly; the weekly Opus synthesis owns it.
+3. **`memory/archive/`** — weekly compressed summaries. Don't write to this directly; the weekly Opus synthesis owns it.
 
 Project-specific deep state (research threads, blog drafts, ops reports) lives under `projects/<name>/`. Treat working memory as the cross-project view; project folders as the per-project deep state.
 

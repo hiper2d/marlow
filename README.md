@@ -18,10 +18,11 @@ marlow/
 ├── CLAUDE.md              ← identity & operating instructions for Marlow
 ├── .claude/
 │   ├── skills/            ← Marlow's skills (forked subset + new ops skills)
-│   └── memory/
-│       ├── recent/        ← raw last-N tick logs
-│       ├── working.md     ← curated current state, capped ~10KB
-│       └── archive/       ← weekly compressed summaries
+│   └── settings.json      ← Claude Code permissions for non-interactive sessions
+├── memory/
+│   ├── recent/            ← raw last-N tick logs
+│   ├── working.md         ← curated current state, capped ~10KB
+│   └── archive/           ← weekly compressed summaries
 ├── driver/
 │   ├── tick.sh            ← cron entry; killswitch + scheduling + invoke session
 │   ├── scheduler.py       ← reads task defs across projects, picks next subtask
@@ -85,7 +86,7 @@ Each tick (cron, every 20 min):
    - `done` → move subtask to `tasks/completed/<date>/`.
    - `in_progress` → checkpoint state stays in queue, picked up next tick.
    - `failed` → log, alert via `notify` if critical.
-7. Releases lock, appends tick log to `.claude/memory/recent/`.
+7. Releases lock, appends tick log to `memory/recent/`.
 
 Cron:
 ```
