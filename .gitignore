@@ -35,6 +35,9 @@ projects/blog/site/dist/
 projects/blog/site/.astro/
 projects/blog/site/node_modules/
 
+# Notify fallback log (only created when Telegram delivery fails)
+digests/_notify_fallback.log
+
 # Drafts and published articles are agent-written content;
 # uncomment if you'd rather not commit them to git history.
 # projects/blog/drafts/*.md
