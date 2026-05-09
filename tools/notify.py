@@ -77,15 +77,20 @@ def send_telegram(message: str) -> tuple[bool, str]:
 
 
 def append_to_digest(message: str) -> Path:
-    """Append a timestamped entry to today's digest file. Returns the file path."""
+    """Append a timestamped entry to today's digest file. Returns the file path.
+
+    Format is plain-text-friendly so the assembled digest reads well in
+    Telegram without markdown rendering. URL auto-linking still works as
+    long as URLs include their https:// prefix.
+    """
     DIGEST_DIR.mkdir(parents=True, exist_ok=True)
     today = _now().strftime("%Y-%m-%d")
     path = DIGEST_DIR / f"{today}.md"
     if not path.exists():
-        path.write_text(f"# Marlow daily digest — {today}\n\n")
+        path.write_text(f"Marlow daily digest — {today}\n\n")
     timestamp = _now().strftime("%H:%M UTC")
     with open(path, "a") as f:
-        f.write(f"## {timestamp}\n\n{message}\n\n")
+        f.write(f"━━━ {timestamp} ━━━\n\n{message}\n\n")
     return path
 
 

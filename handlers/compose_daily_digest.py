@@ -76,8 +76,8 @@ def assemble(date: str) -> tuple[str, int]:
     body = path.read_text().strip()
     if not body:
         return _quiet_day_message(date), 0
-    # Each entry is delimited by a "## HH:MM UTC" header (notify.py format)
-    entry_count = body.count("\n## ")
+    # Each entry is delimited by an "━━━ HH:MM UTC ━━━" line (notify.py format)
+    entry_count = body.count("━━━ ")
     if entry_count == 0:
         # File exists but no entries — only the date header. Treat as quiet.
         return _quiet_day_message(date), 0
