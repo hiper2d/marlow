@@ -1,0 +1,21 @@
+# daily_digest — assemble and send today's accumulated digest entries.
+#
+# All ticks throughout the day call notify_alex(msg, urgency="digest")
+# for non-urgent flags, which appends to digests/daily/<date>.md. This
+# task fires once at end of day, reads that file, chunks if needed, and
+# sends via Telegram. Quiet days send a short "nothing to flag" so Alex
+# knows the loop is alive.
+#
+# Lives under projects/research/tasks/ for now since research is the only
+# project contributing digest entries; move to a shared location when
+# blog or werewolf-ops also contribute.
+name: daily_digest
+project: research
+description: Assemble today's digest file and send it to Alex via Telegram.
+schedule: "0 23 * * *"   # daily at 23:00 UTC
+priority: high
+must_run_within_hours: 6
+subtasks:
+  - id: send_today
+    handler: compose_daily_digest
+    context: {}
