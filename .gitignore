@@ -18,3 +18,24 @@ venv/
 
 # Logs
 *.log
+
+# Runtime state — agent's working files, not source
+tasks/queue.json
+tasks/completed/*
+!tasks/completed/.gitkeep
+
+# Memory — runtime, agent-written
+.claude/memory/recent/*
+!.claude/memory/recent/.gitkeep
+.claude/memory/archive/*
+!.claude/memory/archive/.gitkeep
+
+# Astro build artifacts
+projects/blog/site/dist/
+projects/blog/site/.astro/
+projects/blog/site/node_modules/
+
+# Drafts and published articles are agent-written content;
+# uncomment if you'd rather not commit them to git history.
+# projects/blog/drafts/*.md
+# projects/blog/published/*.md
