@@ -244,14 +244,27 @@ Forced choice between modes is structural — Marlow can't ping urgently for "I 
 - **Weekly Mon 9am** — Opus, fresh context (no shared memory with Marlow), reads sample of week's raw artifacts cold. Writes structured review: what worked, what drifted, what should change.
 - **Alex spot-checks** — read raw artifacts in `projects/research/notes/`, `projects/blog/drafts/`, `projects/werewolf-ops/reports/` directly. The grader's summary is a layer of contamination; periodically read past it.
 
-## At-a-glance status
+## CLI — the `marlow` command
+
+A single entry point covers setup, control, and inspection. Run from inside the repo with `uv run marlow <command>`, or `uv tool install .` once for a global `marlow` command.
 
 ```
-uv run python driver/status.py        # human-readable dashboard
-uv run python driver/status.py --json  # machine-readable
+marlow status              at-a-glance dashboard
+marlow tick                fire one tick now (manual)
+marlow install             install cron entry (turn loop on)
+marlow uninstall           remove cron entry (turn loop off)
+marlow pause               touch killswitch (loop pauses, doesn't uninstall)
+marlow resume              clear killswitch and pause flags
+marlow logs [-n N] [-f]    show last N lines of ~/marlow.log; -f to follow
+marlow digest preview      print what today's digest would send
+marlow digest send         send today's digest now (manual)
+marlow notify "msg"        send an urgent Telegram message
+marlow notify --digest "msg"   append to today's digest
 ```
 
-Shows killswitch/pause/lock state, current queue, last 5 completed subtasks with results, schedule fire times, recent memory entries, this week's editorial outputs, and today's digest entry count. No web UI for v1 — `tail -f marlow-sessions.log` for live session output, the daily Telegram digest for periodic summary.
+The CLI wraps the underlying scripts; cron itself calls `driver/tick.sh` directly without going through the CLI.
+
+`marlow status` shows killswitch/pause/lock state, current queue, last 5 completed subtasks with results, schedule fire times, recent memory entries, this week's editorial outputs, and today's digest entry count. No web UI for v1 — `marlow logs -f` for live driver output, `tail -f marlow-sessions.log` for in-flight session output, the daily Telegram digest for periodic summary.
 
 ## Setup
 
@@ -260,9 +273,8 @@ Shows killswitch/pause/lock state, current queue, last 5 completed subtasks with
 - Cloudflare Pages project created and connected to the marlow repo (or a dedicated blog repo) for the Astro site. One-time setup via Cloudflare dashboard: link GitHub repo, set build command (`astro build`), set output dir (`dist`).
 - Per-provider credentials added to `.env` as we roll out (see `plans/budget-providers.md`).
 - Werewolf DB read-only credentials in `.env`.
-- Cron entries installed via `crontab -e`.
-- Initial `working.md` seeded with task descriptions.
-- `~/.marlow-stop` exists by default — Alex removes it to start.
+- Cron installed via `marlow install` (or `bash driver/install-cron.sh`).
+- Loop turns on once you run `marlow install`; pause anytime with `marlow pause`.
 
 ## Build sequence
 
