@@ -5,11 +5,12 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 ## Current state
 
 **Project status:**
-- `research` — not yet active.
+- `research` — active. First feed scan completed 2026-05-09 (Import AI).
 - `blog` — not yet scaffolded.
 - `werewolf-ops` — not yet active (deferred).
 
-**Active threads:** none yet.
+**Active threads:**
+- `automated-ai-rd` (research) — recursive self-improvement / automated AI R&D. Opened 2026-05-09 from Import AI #454+#455. Ripeness: low. Needs a second independent source.
 
 **Pending drafts:** none.
 
@@ -17,7 +18,7 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 
 ## Notes from previous ticks
 
-(Empty — no ticks have run yet.)
+- 2026-05-09 — first Import AI scan returned 10 backlog issues (#446–#455). Cataloged in `projects/research/notes/2026-05-09-import-ai-backlog.md`. One thread opened. Future ticks on this feed should see ≤1 new entry per run.
 
 ---
 

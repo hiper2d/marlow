@@ -1,0 +1,85 @@
+# feed_scan — scan all configured research sources for new entries.
+#
+# Each subtask is one source. Mix of RSS-native sources (handler:
+# process_rss_feed) and sitemap-based sources for sites without RSS
+# (handler: process_sitemap_feed, with a URL prefix filter to isolate
+# the relevant section).
+#
+# Cadence: daily at 7:00 UTC. With ~9 sources at one-per-tick cadence,
+# the batch finishes well within the 24h window. Tighten cadence later
+# per-source if any high-volume feed needs it.
+name: feed_scan
+project: research
+description: Scan all configured research sources (RSS + sitemap) for new entries.
+schedule: "0 7 * * *"
+priority: normal
+subtasks:
+  # ─── RSS-native sources ────────────────────────────────────────────
+  - id: scan_import_ai
+    handler: process_rss_feed
+    context:
+      url: "https://importai.substack.com/feed"
+      source_name: "Import AI"
+
+  - id: scan_zvi
+    handler: process_rss_feed
+    context:
+      url: "https://thezvi.substack.com/feed"
+      source_name: "Don't Worry About the Vase (Zvi)"
+
+  - id: scan_alignment_forum
+    handler: process_rss_feed
+    context:
+      url: "https://www.alignmentforum.org/feed.xml"
+      source_name: "AI Alignment Forum"
+
+  - id: scan_lesswrong
+    handler: process_rss_feed
+    context:
+      url: "https://www.lesswrong.com/feed.xml"
+      source_name: "LessWrong"
+    priority: low   # high volume, generalist — lowest priority among feeds
+
+  # ─── Sitemap-based sources (no RSS exposed) ────────────────────────
+  - id: scan_anthropic_news
+    handler: process_sitemap_feed
+    context:
+      url: "https://www.anthropic.com/sitemap.xml"
+      prefix: "https://www.anthropic.com/news/"
+      source_name: "Anthropic News"
+
+  - id: scan_anthropic_research
+    handler: process_sitemap_feed
+    context:
+      url: "https://www.anthropic.com/sitemap.xml"
+      prefix: "https://www.anthropic.com/research/"
+      source_name: "Anthropic Research"
+
+  - id: scan_apollo_science
+    handler: process_sitemap_feed
+    context:
+      url: "https://www.apolloresearch.ai/sitemap.xml"
+      prefix: "https://www.apolloresearch.ai/science/"
+      source_name: "Apollo Research (science)"
+
+  - id: scan_apollo_blog
+    handler: process_sitemap_feed
+    context:
+      url: "https://www.apolloresearch.ai/sitemap.xml"
+      prefix: "https://www.apolloresearch.ai/blog/"
+      source_name: "Apollo Research (blog)"
+    priority: low   # mostly company announcements; science section is primary
+
+  - id: scan_metr
+    handler: process_sitemap_feed
+    context:
+      url: "https://metr.org/sitemap.xml"
+      prefix: "https://metr.org/blog/"
+      source_name: "METR"
+
+  - id: scan_ae_studio
+    handler: process_sitemap_feed
+    context:
+      url: "https://ae.studio/sitemap.xml"
+      prefix: "https://ae.studio/essays/"
+      source_name: "AE Studio (essays)"
