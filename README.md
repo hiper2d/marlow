@@ -244,6 +244,15 @@ Forced choice between modes is structural — Marlow can't ping urgently for "I 
 - **Weekly Mon 9am** — Opus, fresh context (no shared memory with Marlow), reads sample of week's raw artifacts cold. Writes structured review: what worked, what drifted, what should change.
 - **Alex spot-checks** — read raw artifacts in `projects/research/notes/`, `projects/blog/drafts/`, `projects/werewolf-ops/reports/` directly. The grader's summary is a layer of contamination; periodically read past it.
 
+## At-a-glance status
+
+```
+uv run python driver/status.py        # human-readable dashboard
+uv run python driver/status.py --json  # machine-readable
+```
+
+Shows killswitch/pause/lock state, current queue, last 5 completed subtasks with results, schedule fire times, recent memory entries, this week's editorial outputs, and today's digest entry count. No web UI for v1 — `tail -f marlow-sessions.log` for live session output, the daily Telegram digest for periodic summary.
+
 ## Setup
 
 - One-time `claude login` on the laptop so cron-invoked sessions inherit auth.
