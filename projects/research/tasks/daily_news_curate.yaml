@@ -1,0 +1,36 @@
+# daily_news_curate — end-of-day curation of the day's research candidates.
+#
+# During the day, each feed_scan tick has Marlow write candidate notes
+# to projects/research/notes/<date>/candidates/<slug>.md — one per item
+# worth considering. This task fires at 22:00 UTC, one hour before the
+# generic daily_digest task, and produces the curated news report:
+#
+#   1. List today's candidates (handler: curate_news_digest list).
+#   2. Rank them across all sources. Pick top 3-5 (or fewer on quiet days).
+#   3. For each pick, fetch_article to get the actual body.
+#   4. Write a 3-5 sentence review per pick, in Marlow's voice.
+#   5. Close with a `— Marlow` paragraph: 3-6 sentences stepping back
+#      from per-item reviews. What did the day mean? What's the
+#      throughline, the open question, the thing to watch tomorrow?
+#      Reference past picks / ripening threads when it's natural. This
+#      is where the voice develops over time.
+#   6. Compose the final message to digests/news/<date>.md.
+#   7. Send via curate_news_digest send.
+#
+# Picking criteria, in priority order (CLAUDE.md voice rules apply):
+#   - Actual new technical content, evals, or analysis > company news
+#   - Aligned with Alex's interest area: AI safety, alignment, capability
+#     evals, agentic systems, mechanistic interpretability
+#   - One mediocre item from a quiet source can beat a mediocre item from
+#     a noisy one — diversity matters
+#   - If nothing crosses the bar, send fewer or zero picks
+name: daily_news_curate
+project: research
+description: Pick top items from today's candidate notes, fetch bodies, write reviews, send one Telegram digest.
+schedule: "0 22 * * *"
+priority: high
+must_run_within_hours: 6
+subtasks:
+  - id: curate_and_send
+    handler: curate_news_digest
+    context: {}

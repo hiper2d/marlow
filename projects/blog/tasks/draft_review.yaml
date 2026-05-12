@@ -1,0 +1,29 @@
+# draft_review — weekly check on whether any thread is draft-worthy.
+#
+# Fires Sundays at 14:00 UTC. Marlow reviews her active threads, judges
+# ripeness against the bar in CLAUDE.md, and drafts an article for any
+# thread that crosses it. No upper limit on drafts per week, but expect
+# zero-or-one on most weeks. Quiet weeks send no draft and exit clean.
+#
+# In-tick flow:
+#   1. Run `draft_article list-threads` to see what threads exist.
+#   2. For each thread, read the thread file and judge ripeness:
+#      - ≥3 cross-source anchors over the last 1-3 weeks
+#      - A genuine through-line, not just a topic cluster
+#      - You have something to *say*, not just summarize
+#   3. For each ripe thread without a recent draft in projects/blog/drafts/:
+#      - Run `draft_article list-materials --thread <slug>` for the corpus
+#      - Compose a draft (see CLAUDE.md "Drafting articles")
+#      - Write to projects/blog/drafts/<YYYY-MM-DD>-<slug>.md
+#      - Notify Alex (urgency=urgent): "Draft ready: <title>"
+#   4. Update the thread file with "draft pending: <draft path>" line if a draft was created.
+name: draft_review
+project: blog
+description: Review ripening research threads; draft articles for any that cross the bar.
+schedule: "0 14 * * 0"
+priority: normal
+must_run_within_hours: 36
+subtasks:
+  - id: review_and_draft
+    handler: draft_article
+    context: {}

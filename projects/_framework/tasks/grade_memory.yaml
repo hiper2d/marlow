@@ -1,0 +1,36 @@
+# grade_memory — daily memory grader.
+#
+# Reads yesterday's tick logs from memory/recent/, compresses them into a
+# brief append to memory/working.md (cross-project current state), and
+# prunes recent/ files older than the retention window.
+#
+# Fires at 23:30 UTC, after both daily_news_curate (22:00) and daily_digest
+# (23:00) have had a chance to fire, so the grader sees a complete day.
+#
+# Editorial work happens inside Marlow's session. The handler is just
+# orchestration:
+#   - list-recent --since <yesterday>  → JSON of tick logs to grade
+#   - prune-recent --keep-days 3       → delete logs older than 3 days
+#
+# In-tick flow:
+#   1. Run list-recent to get yesterday's tick logs.
+#   2. Read each, identify what changed at the cross-project level:
+#        - Threads opened, advanced, or ripened
+#        - Notable items flagged for tomorrow
+#        - Recurring source/handler issues worth a framework note
+#        - Anything Alex would want to know about the day in one paragraph
+#   3. Append a dated section to memory/working.md under "## Daily rollups".
+#      Keep it short — one paragraph plus a short bullet list, no more.
+#   4. If working.md is getting near its ~10KB cap, also compress the
+#      oldest daily-rollup sections into a single "Earlier" summary line.
+#   5. Run prune-recent to delete tick logs older than 3 days.
+name: grade_memory
+project: _framework
+description: Compress yesterday's tick logs into working.md; prune recent/.
+schedule: "30 23 * * *"
+priority: high
+must_run_within_hours: 12
+subtasks:
+  - id: grade_today
+    handler: grade_memory
+    context: {}
