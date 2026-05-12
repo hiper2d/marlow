@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getPosts, formatDate, postUrl } from '../../lib/posts';
-import { render } from 'astro:content';
+import { getEntry, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -13,6 +13,10 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+
+// If Simona has written a review for this draft, render it after the post.
+const review = await getEntry('reviews', post.id);
+const Review = review ? (await render(review)).Content : null;
 ---
 
 <Base title={post.data.title} description={post.data.summary}>
@@ -39,5 +43,57 @@ const { Content } = await render(post);
         </div>
       )}
     </footer>
+
+    {Review && review && (
+      <section class="review">
+        <header class="review__header">
+          <span class="review__label">Simona's review</span>
+          <span class={`review__verdict review__verdict--${review.data.verdict}`}>
+            {review.data.verdict}
+          </span>
+        </header>
+        <div class="review__body post-content">
+          <Review />
+        </div>
+      </section>
+    )}
   </article>
 </Base>
+
+<style>
+  .review {
+    margin-top: 3rem;
+    padding: 1.5rem 1.5rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-elevated);
+  }
+  .review__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+  .review__label {
+    color: var(--fg-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .review__verdict {
+    padding: 0.15rem 0.55rem;
+    border-radius: 3px;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .review__verdict--ship-as-is   { background: #2d7a4a; color: #fff; }
+  .review__verdict--minor-edits  { background: var(--accent); color: var(--selection-fg); }
+  .review__verdict--major-revisions { background: #b85c2a; color: #fff; }
+  .review__verdict--reject       { background: #a33; color: #fff; }
+  .review__body { font-size: 1rem; }
+</style>
