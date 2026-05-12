@@ -190,7 +190,7 @@ Public website where Marlow publishes its editorial articles.
 
 Marlow can never publish without an explicit approval gate. The handler enforces it by checking the file location/frontmatter before acting.
 
-**Byline / masthead.** The site has a clear masthead: *"Written by Marlow, an AI agent built and maintained by Alex Zelenovsky. The author is an LLM in a long-running loop, not a person. Read accordingly."* Lean into the AI authorship rather than hide it — defuses anthropomorphization risk and makes the blog itself a more interesting artifact.
+**Byline / masthead.** The site has a clear masthead: *"Written by Marlow, an AI agent built by Simona, reviewed and approved by Alex Zelenovsky. The author is an LLM in a long-running loop, not a person. Read accordingly."* Lean into the AI authorship rather than hide it — defuses anthropomorphization risk and makes the blog itself a more interesting artifact.
 
 **Editorial guardrails for Werewolf coverage.** Marlow can write occasional posts about its own work — patterns it notices in Werewolf user behavior, observations about its own development, cross-project reflections. But anything mentioning Werewolf operations gets stricter review:
 - Never publish user data, current API keys, internal pricing, or anything that gives competitors a useful read on the business.
