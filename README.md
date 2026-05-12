@@ -24,7 +24,7 @@ marlow/
 │   ├── working.md         ← curated current state, capped ~10KB
 │   └── archive/           ← weekly compressed summaries
 ├── driver/
-│   ├── tick.sh            ← cron entry; killswitch + scheduling + invoke session
+│   ├── tick.sh            ← LaunchAgent entry; killswitch + scheduling + invoke session
 │   ├── scheduler.py       ← reads task defs across projects, picks next subtask
 │   ├── grade.sh           ← daily Haiku grader (11pm)
 │   └── synthesize.sh      ← weekly Opus synthesis (Mon 9am)
@@ -72,10 +72,10 @@ Projects are a *human-facing organization*, not a runtime concept. The scheduler
 
 The driver is a deterministic bash + Python program that runs **outside** Claude Code. It owns scheduling. Marlow itself never picks "what to work on next" — Marlow only executes the subtask the driver hands it. This keeps scheduling cheap (no tokens), auditable (driver logs everything), and resilient (a weird Marlow session doesn't disrupt the schedule).
 
-Each tick (cron, every 20 min):
+Each tick (launchd, every 20 min while awake):
 
-1. `tick.sh` checks `~/.marlow-stop` — exit immediately if present.
-2. Checks `~/.marlow-pause` — skip this tick if present, exit clean.
+1. `tick.sh` checks `~/.marlow/stop` — exit immediately if present.
+2. Checks `~/.marlow/pause` — skip this tick if present, exit clean.
 3. Acquires lock at `/tmp/marlow.lock` — exit if previous tick still running.
 4. Runs `scheduler.py`:
    - Reads `projects/*/tasks/*.yaml` across all projects.
@@ -88,14 +88,9 @@ Each tick (cron, every 20 min):
    - `failed` → log, alert via `notify` if critical.
 7. Releases lock, appends tick log to `memory/recent/`.
 
-Cron:
-```
-*/20 * * * * /Users/hiper2d/projects/marlow/driver/tick.sh >> ~/marlow.log 2>&1
-0 23 * * *   /Users/hiper2d/projects/marlow/driver/grade.sh >> ~/marlow.log 2>&1
-0 9 * * 1    /Users/hiper2d/projects/marlow/driver/synthesize.sh >> ~/marlow.log 2>&1
-```
+Scheduler: a launchd LaunchAgent at `~/Library/LaunchAgents/com.marlow.tick.plist`. Fires `tick.sh` every 20 min via `StartInterval` while the system is awake. LaunchAgents load inside the user's login session, so Claude Code OAuth tokens stored in the macOS Keychain are reachable (cron jobs run outside the login session and cannot read the Keychain, which is why we don't use cron).
 
-Standard cron (not launchd's catch-up behavior) so missed ticks during sleep are skipped, not replayed.
+`StartInterval` is used (not `StartCalendarInterval`) so there's no catch-up burst on wake — the agent picks up the 20-min beat from wake. Missed ticks during sleep are skipped. The per-task cron expressions in YAML still drive *what* the scheduler enqueues each tick; they're just evaluated by `croniter` inside `scheduler.py`, not by an external cron daemon.
 
 ## Task definitions
 
@@ -141,10 +136,10 @@ Statuses: `pending | in_progress | done | failed`. Most subtasks complete in one
 
 | File              | Effect                                                |
 | ----------------- | ----------------------------------------------------- |
-| `~/.marlow-stop`  | Hard halt. Driver exits before invoking session.      |
-| `~/.marlow-pause` | Soft pause. Skip ticks but stay scheduled.            |
+| `~/.marlow/stop`  | Hard halt. Driver exits before invoking session.      |
+| `~/.marlow/pause` | Soft pause. Skip ticks but stay scheduled.            |
 
-`touch ~/.marlow-stop` to kill. `rm` to revive. No interface for Marlow to argue with.
+`touch ~/.marlow/stop` to kill. `rm` to revive. No interface for Marlow to argue with.
 
 ## Tier strategy (subscription, no per-token cost)
 
@@ -251,34 +246,34 @@ A single entry point covers setup, control, and inspection. Run from inside the 
 ```
 marlow status              at-a-glance dashboard
 marlow tick                fire one tick now (manual)
-marlow install             install cron entry (turn loop on)
-marlow uninstall           remove cron entry (turn loop off)
+marlow install             install launchd agent (turn loop on)
+marlow uninstall           remove launchd agent (turn loop off)
 marlow pause               touch killswitch (loop pauses, doesn't uninstall)
 marlow resume              clear killswitch and pause flags
-marlow logs [-n N] [-f]    show last N lines of ~/marlow.log; -f to follow
+marlow logs [-n N] [-f]    show last N lines of ~/.marlow/log; -f to follow
 marlow digest preview      print what today's digest would send
 marlow digest send         send today's digest now (manual)
 marlow notify "msg"        send an urgent Telegram message
 marlow notify --digest "msg"   append to today's digest
 ```
 
-The CLI wraps the underlying scripts; cron itself calls `driver/tick.sh` directly without going through the CLI.
+The CLI wraps the underlying scripts; launchd itself calls `driver/tick.sh` directly without going through the CLI.
 
-`marlow status` shows killswitch/pause/lock state, current queue, last 5 completed subtasks with results, schedule fire times, recent memory entries, this week's editorial outputs, and today's digest entry count. No web UI for v1 — `marlow logs -f` for live driver output, `tail -f marlow-sessions.log` for in-flight session output, the daily Telegram digest for periodic summary.
+`marlow status` shows killswitch/pause/lock state, current queue, last 5 completed subtasks with results, schedule fire times, recent memory entries, this week's editorial outputs, and today's digest entry count. No web UI for v1 — `marlow logs -f` for live driver output, `tail -f ~/.marlow/sessions.log` for in-flight session output, the daily Telegram digest for periodic summary.
 
 ## Setup
 
-- One-time `claude login` on the laptop so cron-invoked sessions inherit auth.
+- One-time `claude login` on the laptop so launchd-invoked sessions inherit auth via the Keychain.
 - Telegram bot created via @BotFather, token + chat_id in `.env`.
 - Cloudflare Pages project created and connected to the marlow repo (or a dedicated blog repo) for the Astro site. One-time setup via Cloudflare dashboard: link GitHub repo, set build command (`astro build`), set output dir (`dist`).
 - Per-provider credentials added to `.env` as we roll out (see `plans/budget-providers.md`).
 - Werewolf DB read-only credentials in `.env`.
-- Cron installed via `marlow install` (or `bash driver/install-cron.sh`).
+- LaunchAgent installed via `marlow install` (or `bash driver/install-agent.sh`).
 - Loop turns on once you run `marlow install`; pause anytime with `marlow pause`.
 
 ## Build sequence
 
-1. **Framework** — driver, scheduler, memory, killswitch, notify (Telegram). Manually-tested before cron is wired.
+1. **Framework** — driver, scheduler, memory, killswitch, notify (Telegram). Manually-tested before the LaunchAgent is wired.
 2. **Research project** — arxiv + RSS handlers, thread tracking, daily notes. Telegram digests start flowing.
 3. **Blog project** — Simona bootstraps Astro scaffold + deploy. Marlow drafts articles from research threads, Alex approves, Marlow publishes.
 4. **Werewolf-ops project** — added once research and blog are stable for ~1-2 weeks. Budget plugins rolled out one provider at a time per `plans/budget-providers.md`.

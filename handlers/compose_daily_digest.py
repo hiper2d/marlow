@@ -21,7 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -34,7 +34,18 @@ TG_MAX_LEN = 4000  # Telegram caps at 4096; leave headroom for continuation mark
 
 
 def _today() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    """Return the date this digest should cover.
+
+    The task is scheduled at 23:00 UTC. If the agent was asleep at 23:00
+    and the tick fires after UTC rollover, defaulting to `now().date()`
+    sends an empty file for the new day and skips the actual day's
+    accumulated entries. So: within the first 4 hours after UTC midnight,
+    default to yesterday — that's the day the schedule intended.
+    """
+    now = datetime.now(timezone.utc)
+    if now.hour < 4:
+        return (now - timedelta(days=1)).strftime("%Y-%m-%d")
+    return now.strftime("%Y-%m-%d")
 
 
 def _chunk(text: str, max_len: int = TG_MAX_LEN) -> list[str]:

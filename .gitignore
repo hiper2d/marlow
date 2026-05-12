@@ -18,7 +18,6 @@ venv/
 
 # Logs
 *.log
-marlow-sessions.log
 
 # Runtime state — agent's working files, not source
 tasks/queue.json

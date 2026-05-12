@@ -2,8 +2,8 @@
 # Marlow tick driver. Cron entry point. Runs every 20 min.
 #
 # Flow:
-#   1. Killswitch check (~/.marlow-stop)
-#   2. Pause check (~/.marlow-pause)
+#   1. Killswitch check (~/.marlow/stop)
+#   2. Pause check (~/.marlow/pause)
 #   3. Acquire lock (/tmp/marlow.lock)
 #   4. Pick next subtask via scheduler.py
 #   5. Invoke Claude Code session (Marlow) to execute the named handler
@@ -20,9 +20,13 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOCK_FILE="/tmp/marlow.lock"
 SUBTASK_FILE="/tmp/marlow-subtask.json"
 RESULT_FILE="/tmp/marlow-tick-result.json"
-KILLSWITCH="$HOME/.marlow-stop"
-PAUSE="$HOME/.marlow-pause"
+MARLOW_DIR="$HOME/.marlow"
+KILLSWITCH="$MARLOW_DIR/stop"
+PAUSE="$MARLOW_DIR/pause"
+SESSIONS_LOG="$MARLOW_DIR/sessions.log"
 TICK_TIMEOUT_SEC=300
+
+mkdir -p "$MARLOW_DIR"
 
 log() {
     echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"
@@ -89,7 +93,7 @@ rm -f "$RESULT_FILE"
 # 5. Invoke Claude Code (Marlow's session)
 PROMPT="A subtask is queued for you in $SUBTASK_FILE. Read it, execute the named handler per the contract in CLAUDE.md, write any editorial outputs to the appropriate project directory, then write your outcome JSON to $RESULT_FILE before exiting."
 
-if run_with_timeout "$TICK_TIMEOUT_SEC" claude -p "$PROMPT" >> "$REPO_ROOT/marlow-sessions.log" 2>&1; then
+if run_with_timeout "$TICK_TIMEOUT_SEC" claude -p "$PROMPT" >> "$SESSIONS_LOG" 2>&1; then
     log "session exited cleanly"
 else
     rc=$?

@@ -24,9 +24,10 @@ RECENT_DIR = REPO_ROOT / "memory" / "recent"
 WORKING_PATH = REPO_ROOT / "memory" / "working.md"
 DIGEST_DIR = REPO_ROOT / "digests" / "daily"
 FALLBACK_LOG = REPO_ROOT / "digests" / "_notify_fallback.log"
-SESSIONS_LOG = REPO_ROOT / "marlow-sessions.log"
-KILLSWITCH = Path.home() / ".marlow-stop"
-PAUSE_FLAG = Path.home() / ".marlow-pause"
+MARLOW_DIR = Path.home() / ".marlow"
+KILLSWITCH = MARLOW_DIR / "stop"
+PAUSE_FLAG = MARLOW_DIR / "pause"
+SESSIONS_LOG = MARLOW_DIR / "sessions.log"
 LOCK_FILE = Path("/tmp/marlow.lock")
 
 EDITORIAL_GLOBS = [
@@ -291,7 +292,7 @@ def fmt_status_text(s: dict) -> str:
         f"{'has entries (' + str(s['fallback_log_bytes']) + ' bytes)' if s['fallback_log_bytes'] else 'empty'}"
     )
     out.append("")
-    out.append("Live session output:   tail -f marlow-sessions.log")
+    out.append(f"Live session output:   tail -f {SESSIONS_LOG}")
 
     return "\n".join(out)
 

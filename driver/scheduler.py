@@ -106,21 +106,42 @@ def load_task_definitions() -> list[dict]:
 
 
 def is_due(task: dict, last_scheduled: dict[str, str], now: datetime) -> bool:
-    """Has this task's cron schedule fired since we last scheduled it?"""
+    """Has this task's cron schedule fired since we last scheduled it?
+
+    First-sight tasks (no last_scheduled record) explicitly do NOT fire
+    immediately. They're marked at `now` by `schedule_due_tasks` and
+    will fire at the next scheduled time per their cron expression.
+    """
     schedule = task.get("schedule")
     if not schedule:
         return False
     last_iso = last_scheduled.get(task["name"])
     if last_iso is None:
-        # First time we see this task — schedule from one fire ago, so we
-        # don't immediately fire on every newly-added task definition.
-        base = croniter(schedule, now).get_prev(datetime)
-        return False if base.tzinfo is None else now >= base
+        return False
     last = datetime.fromisoformat(last_iso.replace("Z", "+00:00"))
     next_fire = croniter(schedule, last).get_next(datetime)
     if next_fire.tzinfo is None:
         next_fire = next_fire.replace(tzinfo=timezone.utc)
     return now >= next_fire
+
+
+def _dedup_key(handler: str, context: dict) -> tuple:
+    """Key used to detect equivalent subtasks already queued.
+
+    Same handler + same URL + same prefix == duplicate. Other context
+    fields (source_name, etc.) are display-only and don't affect work.
+    """
+    return (handler, context.get("url"), context.get("prefix"))
+
+
+def _is_duplicate(item: QueueItem, queue: list[QueueItem]) -> bool:
+    key = _dedup_key(item.handler, item.context)
+    for existing in queue:
+        if existing.status not in ("pending", "in_progress"):
+            continue
+        if _dedup_key(existing.handler, existing.context) == key:
+            return True
+    return False
 
 
 def decompose(task: dict, now: datetime) -> list[QueueItem]:
@@ -162,7 +183,10 @@ def schedule_due_tasks(
     for task in defs:
         if is_due(task, last_scheduled, now):
             new_items = decompose(task, now)
-            queue.extend(new_items)
+            for item in new_items:
+                if _is_duplicate(item, queue):
+                    continue
+                queue.append(item)
             last_scheduled[task["name"]] = iso(now)
         elif task["name"] not in last_scheduled:
             # Mark first-seen tasks so the next fire window is correct.
