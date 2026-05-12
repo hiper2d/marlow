@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getPosts, postUrl, formatDate } from '../../lib/posts';
+import { getCollection, render } from 'astro:content';
+import PostListItem from '../../components/PostListItem.astro';
+
+export async function getStaticPaths() {
+  const threads = await getCollection('threads');
+  const posts = await getPosts();
+  return threads.map((thread) => ({
+    params: { slug: thread.id },
+    props: {
+      thread,
+      relatedPosts: posts.filter((p) => p.data.mentions.includes(thread.id)),
+    },
+  }));
+}
+
+const { thread, relatedPosts } = Astro.props;
+const { Content } = await render(thread);
+const title = thread.data.title ?? thread.id;
+---
+
+<Base title={title} description={thread.data.summary} pageClass="page--wide">
+  <article>
+    <p class="post-meta">
+      <a href="/threads/" style="border-bottom: none; color: var(--fg-faint);">← all threads</a>
+    </p>
+    <h1>{title}</h1>
+    {thread.data.summary && <p class="post-summary">{thread.data.summary}</p>}
+    <div class="thread-content post-content">
+      <Content />
+    </div>
+
+    <h2>Posts in this thread ({relatedPosts.length})</h2>
+    {relatedPosts.length === 0 ? (
+      <p style="color: var(--fg-muted);">No posts written yet for this thread.</p>
+    ) : (
+      <ul class="post-list">
+        {relatedPosts.map((post) => <PostListItem post={post} />)}
+      </ul>
+    )}
+  </article>
+</Base>

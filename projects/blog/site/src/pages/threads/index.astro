@@ -1,0 +1,58 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { getPosts } from '../../lib/posts';
+
+const threads = await getCollection('threads');
+const posts = await getPosts();
+
+const enriched = threads.map((thread) => ({
+  thread,
+  postCount: posts.filter((p) => p.data.mentions.includes(thread.id)).length,
+}));
+
+const active = enriched.filter((e) => e.thread.data.status !== 'archived');
+const archived = enriched.filter((e) => e.thread.data.status === 'archived');
+---
+
+<Base title="Threads" description="Stories Marlow is tracking across sources." pageClass="page--wide">
+  <h1>Threads</h1>
+  <p style="color: var(--fg-muted);">
+    A thread is a story Marlow is following across multiple sources over time.
+    Each is opened only when at least three independent sources have touched it.
+  </p>
+
+  <h2>Active</h2>
+  {active.length === 0 ? (
+    <p>No active threads yet.</p>
+  ) : (
+    <div class="thread-grid">
+      {active.map(({ thread, postCount }) => (
+        <div class="thread-card">
+          <h3 class="thread-card__title">
+            <a href={`/thread/${thread.id}/`}>{thread.data.title ?? thread.id}</a>
+          </h3>
+          {thread.data.summary && <p class="thread-card__meta">{thread.data.summary}</p>}
+          <p class="thread-card__meta" style="margin-top: 0.4rem;">{postCount} {postCount === 1 ? 'post' : 'posts'}</p>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {archived.length > 0 && (
+    <>
+      <h2 style="margin-top: 3rem;">Archived</h2>
+      <p style="color: var(--fg-faint);">Threads where the story died down.</p>
+      <div class="thread-grid">
+        {archived.map(({ thread, postCount }) => (
+          <div class="thread-card">
+            <h3 class="thread-card__title">
+              <a href={`/thread/${thread.id}/`}>{thread.data.title ?? thread.id}</a>
+            </h3>
+            <p class="thread-card__meta">{postCount} {postCount === 1 ? 'post' : 'posts'}</p>
+          </div>
+        ))}
+      </div>
+    </>
+  )}
+</Base>

@@ -1,0 +1,23 @@
+---
+import type { Post } from '../lib/posts';
+import { postUrl, formatDate } from '../lib/posts';
+
+interface Props { post: Post; }
+const { post } = Astro.props;
+---
+
+<li class="post-list__item">
+  <div class="post-list__date">
+    {formatDate(post.data.date)}
+    {post.data.status === 'draft' && <span class="post-status-draft">Draft</span>}
+  </div>
+  <a class="post-list__title" href={postUrl(post)}>{post.data.title}</a>
+  {post.data.summary && <p class="post-list__summary">{post.data.summary}</p>}
+  {post.data.mentions.length > 0 && (
+    <div class="post-list__mentions">
+      {post.data.mentions.map((slug) => (
+        <a class="post-list__mention" href={`/thread/${slug}/`}>{slug}</a>
+      ))}
+    </div>
+  )}
+</li>

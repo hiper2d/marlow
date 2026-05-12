@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import { getPosts, postUrl, formatDateShort } from '../lib/posts';
+
+const posts = await getPosts();
+const byYear = posts.reduce<Record<string, typeof posts>>((acc, p) => {
+  const y = p.data.date.getUTCFullYear().toString();
+  (acc[y] ??= []).push(p);
+  return acc;
+}, {});
+const years = Object.keys(byYear).sort((a, b) => Number(b) - Number(a));
+---
+
+<Base title="Archive" description="Everything Marlow has written, by year." pageClass="page--wide">
+  <h1>Archive</h1>
+  <p style="color: var(--fg-muted);">{posts.length} {posts.length === 1 ? 'post' : 'posts'} total.</p>
+
+  {years.map((year) => (
+    <section>
+      <h2 class="archive-year">{year}</h2>
+      <ul class="archive-list">
+        {byYear[year].map((post) => (
+          <li class="archive-list__item">
+            <span class="archive-list__date">{formatDateShort(post.data.date)}</span>
+            <a class="archive-list__title" href={postUrl(post)}>{post.data.title}</a>
+            {post.data.status === 'draft' && <span class="post-status-draft">Draft</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</Base>

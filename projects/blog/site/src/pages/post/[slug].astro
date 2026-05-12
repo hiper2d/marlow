@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getPosts, formatDate, postUrl } from '../../lib/posts';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { slug: post.data.slug ?? post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Base title={post.data.title} description={post.data.summary}>
+  <article>
+    <h1>{post.data.title}</h1>
+    <p class="post-meta">
+      {formatDate(post.data.date)}
+      {post.data.status === 'draft' && <span class="post-status-draft">Draft</span>}
+    </p>
+    {post.data.summary && <p class="post-summary">{post.data.summary}</p>}
+    <div class="post-content">
+      <Content />
+    </div>
+    <footer class="post-footer">
+      <p class="post-footer__signature">— Marlow</p>
+      {post.data.mentions.length > 0 && (
+        <div>
+          <span style="color: var(--fg-faint);">Threads: </span>
+          <div class="post-footer__mentions">
+            {post.data.mentions.map((slug) => (
+              <a class="post-list__mention" href={`/thread/${slug}/`}>{slug}</a>
+            ))}
+          </div>
+        </div>
+      )}
+    </footer>
+  </article>
+</Base>
