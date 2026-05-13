@@ -71,3 +71,38 @@ These reports were unprompted — Marlow noticed during a single grader tick the
 - Marlow repo: committed through `b8c7dad` (editorial output snapshot) plus the Astro site (`<later commit>`). Simona repo: uncommitted (git block in simona repo; Alex commits).
 
 ---
+
+## 2026-05-13 — Approval primitive + revision loop (Session A)
+
+### What landed
+
+- **`marlow approve <slug>`** — Alex's editorial gate as a single CLI command. Flips frontmatter status draft→published, moves the file from `drafts/` to `published/`, archives any version history alongside, commits, pushes. Cloudflare auto-deploys on push. The primitive lives in `handlers/publish_article.py`; the CLI is a thin caller.
+- **`marlow reject <slug> [--reason ...]`** — moves to `drafts/rejected/<slug>-<timestamp>/` with the draft, review, archived versions, and an optional rejection-reason file all preserved. Committed (not surfaced anywhere public).
+- **`marlow revise <slug>`** — queues a high-priority `revise_draft` subtask in Marlow's queue. Next Marlow tick reads Simona's review and the original corpus, decides which critiques to apply and which to defend, writes v2 + a revision-notes file documenting both. Previous version archives to `drafts/versions/<slug>/v<N>.md`.
+- **CLAUDE.md** gains a `revise_draft` protocol section. Two notable design choices baked into the protocol: (a) Marlow is explicitly told that **defending earned lines is legitimate** — voice erosion through over-editing is the named failure mode, and rubber-stamping every critique is how you get there; (b) hard cap at **3 versions** because AI editorial loops trend toward bland with each round. The `review_drafts` protocol gains an addendum for v2+ that has Simona read prior versions + Marlow's revision notes, and assess defended critiques on their merits rather than escalating.
+
+### Decisions reconsidered
+
+- **Whether `marlow approve` should auto-push.** Quick consideration of "commit only, let Alex push manually" for safety. Decided: push automatically. Alex is the one invoking `marlow approve` — by the time the command runs he's already made the publish decision. Adding a manual push step is just friction that doesn't add safety.
+- **Whether the loop should self-continue.** After Simona reviews v2, should she automatically queue another Marlow revision (until ship-as-is or cap)? Decided: not yet. For now Alex stays in the loop between rounds — he sees each review, decides whether to run `marlow revise` again. Reasons: (a) we haven't seen a single round yet, so autonomy is premature; (b) keeps the early experiments deliberate while we learn what the loop actually does to voice. If we like it after 3-5 drafts, we wire autonomous continuation in a follow-up session.
+
+### What's deferred
+
+- **Autonomous loop continuation.** Simona queueing Marlow revise subtasks when verdict is not ship-as-is (until cap). Easy follow-up — write to marlow's queue file from simona's session.
+- **Telegram polling for approve/reject from phone** (Session B from the original plan). Unchanged.
+- **Cloudflare deploy.** Alex is setting it up in parallel with this session. Once `*.pages.dev` URL exists, update `astro.config.mjs` `site` field, append a "site live" entry.
+
+### Open questions
+
+- Will Marlow actually *defend* critiques in v2, or will she submit to everything? The PROTOCOL invites pushback explicitly. First test is whoever runs `marlow revise` against the asymmetric-arrival draft (which has a `minor-edits` verdict and a real Simona critique surface).
+- Does the 3-version cap feel right, or does v3 already feel like over-editing? Watch the first revision loop to calibrate.
+- Should Simona's reviews be visible publicly on the live site, or filtered to drafts-only? Currently drafts visible publicly was Alex's choice — when the first published post lands, decide whether the review card persists or gets stripped.
+
+### State at end of day
+
+- Marlow: still on launchd, scans running, today's 22:00 UTC curate hasn't fired yet. Queue empty. May 10 and May 11 news digests delivered; no May 12 digest produced (laptop schedule).
+- Simona daemon: ticking. Daily observation for May 13 written this morning. One natural review_pending tick fired today and exited clean (no new drafts to review).
+- Cloudflare: Alex setting up in parallel.
+- Marlow repo: committed and pushed through `c2428db`.
+
+---
