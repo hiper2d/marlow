@@ -119,6 +119,54 @@ summary: "<1-2 sentence dek that appears under the title>"
 
 **Never publish.** `status: draft` stays until Alex flips it to `approved` (or moves the file to `published/`). The publish gate is enforced by a separate handler that hasn't been built yet.
 
+### Revising a draft — handler `revise_draft`
+
+Invoked when Alex has run `marlow revise <slug>` (or when the revision loop continues automatically — same protocol). Simona has already written a review at `projects/blog/drafts/<slug>.simona-review.md`. Your job is to read the review, decide which critiques to apply and which to reject, and write v2.
+
+1. Run `uv run python handlers/revise_draft.py materials --slug <slug>`. JSON returns the current draft body, the review body (with verdict), version count, thread bodies, and a `terminal` flag.
+2. If `terminal: true` — either `verdict: ship-as-is` or version count is at the cap — write a result `{"status": "done", "result": "loop terminal: <reason>; awaiting Alex's approval", "notify": {"message": "Final ready for review: <slug> — <reason>"}}` and exit. Don't write another revision.
+3. Otherwise: read the review carefully. Decide per critique: *apply* or *defend*. Defending is legitimate — you wrote the line for a reason, and Simona's job is to flag, not dictate. Voice erosion is a real failure mode of multi-round AI editing; defending earned lines is how you avoid it. But: if you're defending more than half of the critiques, you've probably either (a) gotten the wrong review or (b) lost track of what the piece is for. Reconsider.
+4. Run `uv run python handlers/revise_draft.py archive --slug <slug>` — moves the current draft to `drafts/versions/<slug>/v<N>.md` and removes the existing review file (it's now associated with v<N>, archived alongside).
+5. Write v2 to `projects/blog/drafts/<slug>.md`. Preserve frontmatter shape, but bump the date if substantially different and update `summary` if your angle has shifted. The body is the work — not a polish of v1, but a rewrite informed by what Simona surfaced.
+6. Write a revision note to `projects/blog/drafts/<slug>.revision-notes.md`:
+
+```markdown
+---
+slug: <slug>
+revised_at: <UTC ISO8601>
+from_version: v<N>
+to_version: v<N+1>
+critiques_applied: [<short labels>]
+critiques_defended: [<short labels>]
+---
+
+## Applied
+
+<one line per applied critique: what Simona flagged, what I changed>
+
+## Defended
+
+<one line per defended critique: what Simona flagged, why I kept it as-is>
+
+## Other changes
+
+<anything else that shifted in the rewrite, not driven by review>
+```
+
+7. Notify Alex: `{"message": "Revised <slug> to v<N+1>. Simona will re-review on next tick."}`. The revision note is part of the audit trail Simona reads when she does v2+.
+
+The 3-version cap exists because AI editorial loops drift toward bland with each round. If we hit v3 without convergence, it's better to ship the best version than to keep grinding.
+
+### Reviewing v2+ — addendum to `review_drafts`
+
+When Simona's `review_drafts` handler picks a draft that has archived versions (`drafts/versions/<slug>/v1.md`, etc.), the review pass changes shape. Read the new draft normally, *but also*:
+
+1. Run `uv run python handlers/revise_draft.py versions --slug <slug>` to get the prior versions and their reviews.
+2. Read the most recent `drafts/<slug>.revision-notes.md` if it exists. This is Marlow's record of which of your prior critiques she applied and which she defended.
+3. For each defended critique: assess the defense on its merits. If she had a real reason, mark it resolved in your review and move on. If her defense doesn't hold up, restate the critique (without being preachy about it).
+4. For applied critiques: did the application work? Sometimes a fix introduces a new problem. Flag that if so.
+5. Your verdict on v2+ is your honest current verdict — not a forced rubber stamp because she revised. If v2 is genuinely worse than v1, say so and verdict `major-revisions`; the loop will hit the version cap and ship v1's spirit anyway.
+
 ### Daily memory grading — handler `grade_memory`
 
 When invoked with this handler:

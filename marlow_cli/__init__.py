@@ -23,6 +23,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -312,6 +313,63 @@ def cmd_draft(args):
     print(f"next tick within 20min will pick this up; or run `uv run marlow tick` to fire now")
 
 
+def cmd_approve(args):
+    """Approve a draft → publish + push. Alex's gate, never auto-invoked."""
+    _ensure_repo_cwd()
+    sys.path.insert(0, str(REPO_ROOT))
+    from handlers import publish_article  # noqa: E402
+
+    result = publish_article.approve(args.slug)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    sys.exit(0 if result.get("ok") else 1)
+
+
+def cmd_reject(args):
+    """Reject a draft → move to drafts/rejected/."""
+    _ensure_repo_cwd()
+    sys.path.insert(0, str(REPO_ROOT))
+    from handlers import publish_article  # noqa: E402
+
+    result = publish_article.reject(args.slug, args.reason)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    sys.exit(0 if result.get("ok") else 1)
+
+
+def cmd_revise(args):
+    """Queue a revision tick — Marlow re-reads Simona's review and writes v2."""
+    _ensure_repo_cwd()
+    sys.path.insert(0, str(REPO_ROOT))
+    from datetime import datetime, timezone
+    from driver.scheduler import QueueItem, load_queue, save_queue, iso
+
+    slug = args.slug
+    draft = REPO_ROOT / "projects" / "blog" / "drafts" / f"{slug}.md"
+    review = REPO_ROOT / "projects" / "blog" / "drafts" / f"{slug}.simona-review.md"
+    if not draft.exists():
+        print(f"no draft at {draft}", file=sys.stderr)
+        sys.exit(1)
+    if not review.exists():
+        print(f"no review at {review} — Simona hasn't reviewed yet", file=sys.stderr)
+        sys.exit(1)
+
+    now = datetime.now(timezone.utc)
+    queue = load_queue()
+    item = QueueItem(
+        id=f"revise_{slug}_{now.strftime('%Y%m%d_%H%M')}",
+        parent_task="revise_draft_ondemand",
+        project="blog",
+        handler="revise_draft",
+        context={"slug": slug, "on_demand": True},
+        status="pending",
+        priority="high",
+        queued_at=iso(now),
+    )
+    queue.append(item)
+    save_queue(queue)
+    print(f"queued revision: {item.id}")
+    print(f"next tick within 20min will pick this up; or run `uv run marlow tick` to fire now")
+
+
 # ─── main ──────────────────────────────────────────────────────────────────
 
 
@@ -374,6 +432,19 @@ def main():
     p_draft = sub.add_parser("draft", help="Queue an on-demand draft for a thread")
     p_draft.add_argument("thread", help="Thread slug (no .md extension)")
     p_draft.set_defaults(func=cmd_draft)
+
+    p_approve = sub.add_parser("approve", help="Approve a draft → publish + push (Alex's gate)")
+    p_approve.add_argument("slug", help="Draft slug (no .md extension)")
+    p_approve.set_defaults(func=cmd_approve)
+
+    p_reject = sub.add_parser("reject", help="Reject a draft → move to drafts/rejected/")
+    p_reject.add_argument("slug")
+    p_reject.add_argument("--reason", help="Optional one-line rejection note")
+    p_reject.set_defaults(func=cmd_reject)
+
+    p_revise = sub.add_parser("revise", help="Queue a revision tick — Marlow reads review and writes v2")
+    p_revise.add_argument("slug")
+    p_revise.set_defaults(func=cmd_revise)
 
     args = p.parse_args()
     args.func(args)
