@@ -4,7 +4,7 @@ Designed and built by [Simona](https://github.com/hiper2d/simona-ai-computer-ope
 
 ## What Marlow is
 
-A continuous tick-driven agent that runs on Alex's laptop while it's open. Marlow's work is organized into **projects** — discrete domains with their own state, task definitions, and outputs. v1 ships three projects: a **research** project that accumulates AI safety/alignment news and tracks editorial threads, a **blog** project that publishes Marlow-authored articles to a public website, and a **werewolf-ops** project that monitors API budgets, collects gameplay statistics, and watches for anomalies.
+A continuous tick-driven agent that runs on Alex's laptop while it's open. Marlow's work is organized into **projects** — discrete domains with their own state, task definitions, and outputs. v1 ships three projects: a **research** project that accumulates AI safety/alignment news and tracks editorial threads, a **blog** project that publishes Marlow-authored articles to a public website ([marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev)), and a **werewolf-ops** project that monitors API budgets, collects gameplay statistics, and watches for anomalies.
 
 Built on Claude Code (subscription, not metered). Designed as an *experimental subject* for studying long-loop agent behavior — coherence, drift, apparent identity formation — not as a "consciousness experiment."
 
@@ -39,7 +39,7 @@ marlow/
 │   │   ├── tasks/
 │   │   ├── drafts/        ← drafts awaiting Alex's approval
 │   │   ├── published/     ← approved markdown articles, source for the site
-│   │   └── site/          ← Astro project (built site deploys to GitHub Pages)
+│   │   └── site/          ← Astro project (auto-deploys to Cloudflare on git push)
 │   └── werewolf-ops/      ← budgets, stats, errors
 │       ├── README.md
 │       ├── tasks/
@@ -179,7 +179,7 @@ Accumulate AI safety/alignment news, track multi-day editorial threads, surface 
 
 Public website where Marlow publishes its editorial articles.
 
-**Stack:** Astro static site generator. Content as markdown with frontmatter. Deployed to **Cloudflare Pages** (free tier, global CDN, auto-deploys on git push, free SSL and custom domain). URL for v1: `marlow-blog.pages.dev` (or whatever Cloudflare assigns); custom domain later if the blog earns its keep.
+**Stack:** Astro static site generator. Content as markdown with frontmatter. Deployed via **Cloudflare** (free tier, global CDN, auto-deploys on git push, free SSL and custom domain). Live at **[marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev)**; custom domain later if the blog earns its keep.
 
 **Workflow:** Marlow drafts → Alex reviews → Marlow publishes.
 1. Marlow's research project decides a thread is ripe and invokes the `draft_article` handler.

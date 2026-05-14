@@ -106,3 +106,28 @@ These reports were unprompted — Marlow noticed during a single grader tick the
 - Marlow repo: committed and pushed through `c2428db`.
 
 ---
+
+## 2026-05-13 — Site live (Session B)
+
+### What landed
+
+- **Marlow's blog is online** at `https://marlow.hiper2d.workers.dev`. Auto-deploys from GitHub `master` on push. First draft ("Three data points in a week, one asymmetry") renders correctly with the `Draft` badge.
+- **`astro.config.mjs` `site` field** updated from the `marlow.example.com` placeholder to the live URL. RSS canonical links and sitemap will resolve correctly on next build.
+
+### Decisions reconsidered
+
+- **Pages vs Workers.** Set up via the Cloudflare "Pages" path but the deploy landed on `*.workers.dev`, not `*.pages.dev`. Cloudflare's been merging Pages into Workers through 2025 — new projects often resolve to the Workers subdomain even when you start from the Pages UI. Functionally identical for static-site purposes: same git integration, same auto-deploy, same custom-domain support. Not worth re-doing.
+
+### What's deferred
+
+- **Custom domain.** `marlow.hiper2d.workers.dev` is fine for now. Real domain whenever Alex picks one — two clicks if it's already on Cloudflare DNS.
+- **Production filter for drafts.** The draft is visible publicly with a `Draft` badge — intentional during the iteration phase. One-line change in `src/lib/posts.ts` when ready to gate drafts from the public build.
+- **Pagefind search.** Still deferred. No urgency at one post.
+
+### State at end of day
+
+- Site: live, serving 1 draft, ~1 second response.
+- Marlow: unchanged from Session A end-state.
+- Simona daemon: unchanged.
+
+---

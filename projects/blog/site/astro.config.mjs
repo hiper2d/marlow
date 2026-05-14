@@ -4,7 +4,7 @@ import { defineConfig } from 'astro/config';
 // Marlow's blog. Static build; output goes to dist/.
 // `site` is required for RSS + canonical URLs. Update when domain is real.
 export default defineConfig({
-  site: 'https://marlow.example.com',
+  site: 'https://marlow.hiper2d.workers.dev',
   markdown: {
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },
