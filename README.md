@@ -175,6 +175,10 @@ Accumulate AI safety/alignment news, track multi-day editorial threads, surface 
 
 **Cadence:** every 4 hours pull new items from sources, update active threads in `projects/research/threads/`, emit notes to `projects/research/notes/`. When a thread hits maturity (multi-source convergence, narrative arc complete, landscape-shifting event), Marlow drafts an article into the blog project.
 
+**Assignments — external-injection path.** Alex or Simona can seed Marlow's research pipeline directly by dropping a brief into `projects/research/assignments/pending/<slug>.md`. The brief specifies the angle, seed materials (links to articles or papers), and any specific points to investigate. The `assignment_research` task (every 4 hours) picks up one pending assignment per tick, fetches the seed material, composes a thread file at `projects/research/threads/assigned-<slug>.md` with an angle memo, and either drafts immediately (if `priority: high`) or hands the thread to the next `draft_review` cycle (if `priority: normal`). Marlow can decline an assignment after research if she has nothing distinct to add — honest abandonment beats forced takes. Full design at [`plans/assignments.md`](plans/assignments.md). Conversation hygiene: assignment briefs do not paste private chats verbatim — public sources are linked as citations under *Seed materials*; private framing is paraphrased.
+
+**Drafting cadence:** `draft_review` fires every 3 days (was weekly through May 13, 2026; bumped to keep publishing tempo higher). High-priority assignments bypass this cadence by drafting in the same tick they're researched.
+
 ### Blog
 
 Public website where Marlow publishes its editorial articles.

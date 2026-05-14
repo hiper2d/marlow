@@ -1,0 +1,45 @@
+# assignment_research — process externally-seeded research assignments.
+#
+# Cadence: every 4 hours. Each fire enqueues one subtask. The subtask, when
+# picked up, runs the workflow in plans/assignments.md for the highest-priority
+# oldest pending assignment.
+#
+# Self-throttling: the scheduler dedups by (handler, url, prefix). With no url
+# or prefix in this subtask's context, a still-pending or in-progress
+# process_one_assignment subtask blocks a new one from being enqueued. So at
+# most one assignment-processing subtask is alive at a time.
+#
+# Empty-queue: if assignments/pending/ is empty, the handler returns done
+# immediately with result "no pending assignments". No-op, harmless.
+#
+# In-tick flow (Marlow does this around the handler):
+#   1. research_assignment.py list-pending. If empty → done, exit.
+#   2. Pick the top of the list (priority desc, assigned_at asc).
+#   3. research_assignment.py move-to-researching --slug <slug>
+#   4. research_assignment.py read --slug <slug> → brief content
+#   5. For each URL in "Seed materials": fetch_article.py fetch --url <url>.
+#      Plus 1-2 rounds of targeted web search for adjacent prior work and
+#      primary sources cited by the seeds.
+#   6. Compose thread file at projects/research/threads/assigned-<slug>.md
+#      with frontmatter (seeded: assignment), source synopses, cross-source
+#      observations, and an angle memo.
+#   7. Decide: drafted vs abandoned.
+#      - If abandoned: research_assignment.py mark-done --slug <slug>
+#        --outcome abandoned --reason "...". Notify Alex (digest).
+#      - If drafted: research_assignment.py mark-done --slug <slug>
+#        --outcome drafted.
+#   8. If drafted AND priority was high: also draft the article in this same
+#      tick (call draft_article.py list-materials --thread assigned-<slug>,
+#      compose draft to projects/blog/drafts/<date>-<slug>.md, notify Alex
+#      urgent). For priority: normal, skip drafting — the next draft_review
+#      cycle picks it up.
+name: assignment_research
+project: research
+description: Process one pending research assignment per tick (external-injection path).
+schedule: "0 */4 * * *"
+priority: normal
+must_run_within_hours: 6
+subtasks:
+  - id: process_one_assignment
+    handler: research_assignment
+    context: {}

@@ -87,6 +87,89 @@ When invoked with this handler:
    - Closing — a `— Marlow` paragraph after the last pick. 3-6 sentences. Step back from per-item reviews. What did the day actually *mean* across the picks? What's the throughline, the open question, the thing you'll be watching for tomorrow? What surprised you, or didn't? This is the section where your voice develops over time — reference past picks and ripening threads from `working.md` when it's natural, don't force connections that aren't there. Don't recap the picks (the reader just read them). Don't open with "Today's digest..." style framing. Just talk.
 6. Run `handlers/curate_news_digest.py send --date <today>` to deliver.
 
+### Processing research assignments — handler `research_assignment`
+
+Externally-seeded research path. Alex or Simona drops a brief into
+`projects/research/assignments/pending/<slug>.md`; this task picks it up,
+fetches the seed material, composes a thread with an angle memo, and either
+drafts the article (high-priority) or hands it to the next `draft_review`
+cycle (normal). Full design lives in `plans/assignments.md`.
+
+When invoked with this handler:
+
+1. `uv run python handlers/research_assignment.py list-pending`. If empty,
+   exit clean — write a "done, no pending assignments" result and stop.
+2. Pick the top of the list (priority desc, assigned_at asc — already sorted
+   by the handler). Take its slug.
+3. `research_assignment.py move-to-researching --slug <slug>` to claim it.
+4. `research_assignment.py read --slug <slug>` to get the brief's frontmatter
+   and body. Note `priority`, the `angle` field, the seed URLs, and the
+   "Things to look for" list.
+5. **Collect.** For each URL in *Seed materials*, run
+   `handlers/fetch_article.py fetch --url <url>`. If a seed points at a
+   secondary source (an article summarizing a paper), search for and fetch
+   the primary source too — the paper itself beats the summary. One or two
+   rounds of targeted web search for adjacent prior work or counterarguments
+   are fair game. Don't drown in research; the budget is one tick.
+6. **Compose thread.** Write `projects/research/threads/assigned-<slug>.md`
+   with:
+
+```
+---
+slug: assigned-<slug>
+seeded: assignment
+source_assignment: <slug>
+opened: <YYYY-MM-DD>
+priority: <from assignment>
+---
+
+## Sources
+
+- One short paragraph per fetched piece. What does it actually say? Not a
+  press-release summary — your read of it. Cite each with `[name](url)`.
+
+## Cross-source observations
+
+- Where do the sources agree, disagree, miss each other? What does the
+  primary source say that the secondary missed?
+
+## Angle memo
+
+3-6 sentences. Where do you land? What's the contrarian or specific
+observation you want to make? What does this piece exist to *say*?
+This is the seed of the eventual article. Write it like you mean it —
+this is not a hedge. If you genuinely don't have an angle, say so and
+abandon the assignment in step 7.
+```
+
+7. **Decide outcome.**
+   - **Abandon** if after research you have nothing distinct to add, the
+     proposed angle didn't survive contact with the sources, or the
+     sources are too thin. Honest abandonment beats forced takes.
+     - `research_assignment.py mark-done --slug <slug> --outcome abandoned --reason "<one paragraph>"`
+     - Notify Alex with `urgency: digest` and the reason. Exit.
+   - **Drafted-eligible** otherwise.
+     - `research_assignment.py mark-done --slug <slug> --outcome drafted`
+8. **High-priority bonus draft.** If the assignment's `priority` was `high`,
+   draft the article in this same tick:
+   - `handlers/draft_article.py list-materials --thread assigned-<slug>`
+   - Compose a 600–1500 word draft per the "Drafting articles" section.
+     Write to `projects/blog/drafts/<YYYY-MM-DD>-<slug>.md` with the
+     standard frontmatter.
+   - Append a "draft pending: <path>" line to the thread file.
+   - Notify Alex with `urgency: urgent`: `"Draft ready for review: <title> — <relative path>"`.
+
+   For `priority: normal`, do NOT draft in this tick. The next
+   `draft_review` cycle (every 3 days) picks up the thread.
+
+**Conversation hygiene.** Assignments often grow out of private chats — Discord,
+Ars Technica comments, Simona–Alex conversations. The assignment brief
+paraphrases that context rather than pasting it. When you draft the eventual
+article, do the same: link to public sources (papers, public blog posts,
+articles) but do not quote private threads verbatim. Wrap the framing as a
+recurring problem in the discourse, a synthetic dialog construct, or your
+own restatement.
+
 ### Drafting articles — handler `draft_article`
 
 When invoked with this handler (weekly `draft_review` task, or ad-hoc):

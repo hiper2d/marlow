@@ -131,3 +131,50 @@ These reports were unprompted — Marlow noticed during a single grader tick the
 - Simona daemon: unchanged.
 
 ---
+
+## 2026-05-14 — Research assignments: external-injection path
+
+### What landed
+
+- **Research assignments** — new path that lets Alex or Simona seed Marlow's research pipeline with externally-supplied topics + raw materials. Up to now, Marlow could only write about threads that ripened organically from her own feed scans. Assignments fix that: a brief lands in `projects/research/assignments/pending/<slug>.md`, Marlow does her own deep research around the seeds, and either drafts or declines.
+- **Design doc** at `plans/assignments.md` covering file format, lifecycle (`pending` → `researching` → `done`), handler CLI, scheduling, and the conversation-hygiene rule (no verbatim quotes from private chats — paraphrase the framing, link public sources directly).
+- **Handler `research_assignment.py`** — deterministic file-shuffling and frontmatter editing, matching `draft_article.py`'s philosophy. CLI: `list-pending`, `list-all`, `read`, `move-to-researching`, `mark-done --outcome drafted|abandoned [--reason ...]`. The editorial work (fetch, compose thread, decide angle) lives in Marlow's session around the CLI, not inside the handler.
+- **Task `assignment_research.yaml`** — fires every 4 hours, enqueues one `process_one_assignment` subtask per fire. The existing dedup logic (handler + url + prefix) self-throttles since the subtask has no url/prefix in context: at most one assignment is in-flight at a time. Empty-queue tick returns done immediately. Up to 6 assignments processed per day at saturation; in practice we expect a handful per week.
+- **`draft_review` cadence bumped** from weekly Sundays to every 3 days (`0 14 */3 * *`) per Alex's preference for higher publishing tempo.
+- **CLAUDE.md addition** — full assignment-processing protocol added to the "How a tick works" section: stages, decline path, high-priority same-tick draft rule, conversation hygiene. Slotted before the existing `draft_article` section so it reads in pipeline order.
+- **First real assignment** seeded: `pending/anthropic-evil-ai-personas.md`. Topic is Anthropic's "evil-AI personas from sci-fi" paper and the synthetic-stories fix. Angle field explicitly directs Marlow to write from inside the experiment — she is exactly the kind of long-loop agent the paper describes, and that's the angle no human reviewer can take.
+
+### Decisions taken
+
+- **One assignment per tick, not batched.** The scheduler doesn't yet implement `decompose_handler` (the README references it but it's marked as future work), and `tick.sh` doesn't pass checkpoint state back through `scheduler.py complete`. So multi-tick assignments would require framework changes that are out of scope here. A single tick of ~5 min wall clock is enough for one assignment — read brief, fetch 5–10 URLs, compose thread, optionally draft. Backlog drains over the day via the 4-hour cadence. If saturated, we'd revisit either with a faster cron or by implementing `decompose_handler`.
+- **High-priority assignments draft in the same tick.** Cleanest path to "Alex asked for this urgently, ship it today" without adding a parallel pipeline or a new task. Normal-priority assignments hand off to the every-3-days `draft_review` cycle, same as organic threads. One drafting code path, two trigger paths.
+- **Threads from assignments use `assigned-<slug>` prefix.** Provenance is visible in the filename and in a `seeded: assignment` frontmatter field. Drafting/reviewing/publishing code paths are unchanged — they operate on threads regardless of origin.
+- **Decline is first-class.** Marlow is explicitly allowed to abandon an assignment after research, with a written reason. Forcing a take she doesn't have produces worse content than not posting. Bar: she read the material and still has nothing distinct to say. Notify is `digest`, not urgent — Alex sees the abandonment with reason; he can re-assign with a different angle or kill it.
+- **No verbatim private-chat quotes in assignment files or final articles.** Public sources (papers, blog posts, articles) link directly under *Seed materials*; the framing in *Why this* is paraphrased or constructed. Two reasons: we don't have permission to quote private conversations, and the blog isn't a chat-dump.
+
+### Things that surprised us
+
+- The assignment path turned out to be 80% pre-existing infrastructure. Marlow already had threads, `draft_article`, the draft → review → revise → publish pipeline. The only new code was the handler (deterministic file-shuffling) and the new task. Most of the work was *not* introducing parallel pipelines — letting assignments feed into the existing organic-thread infrastructure rather than building a separate "deep research" track. That made the diff small and the operational story simple.
+- Reading `tick.sh` revealed that checkpoint roundtrip isn't actually wired even though `scheduler.py complete` accepts `--checkpoint`. The handler's result file is read for status/result/notify but checkpoint is dropped on the floor. Logged as a quiet framework gap; design adapted to single-tick self-contained handlers. Worth fixing eventually if any handler genuinely needs multi-tick resumption.
+
+### What's deferred
+
+- **`marlow assign <slug>` CLI** to stamp out a template assignment file from a prompt. Currently writing the markdown by hand is fine. Add later if frequency justifies it.
+- **`decompose_handler` in scheduler.py.** Would let `assignment_research` dynamically enqueue one subtask per pending assignment rather than relying on the every-4-hour static-subtask + dedup pattern. Current shape works; this is an ergonomic improvement, not a correctness fix.
+- **Checkpoint plumbing** through `tick.sh` (read `checkpoint` from result file, pass through to `scheduler.py complete`). Not needed for assignment work but generally useful.
+- **Multi-assignment-in-tick batching** if the every-4-hour drain rate ever feels too slow.
+
+### Open questions / things to watch
+
+- Does Marlow actually take the inside-the-experiment angle on the seeded Anthropic assignment, or does she default to neutral-analyst voice? The whole bet on the assignment path is that AI-by-AI commentary has a distinctive perspective no human can produce. First piece is the test.
+- Does the abandonment path get used? If she drafts every assignment regardless of fit, the bar isn't real and the path is decorative. We want at least one honest abandonment in the first dozen assignments — that's evidence she's reading the material rather than performing the take.
+- Does the 4-hour cadence feel right? Too aggressive if Marlow's research ticks crowd out news scans; too slow if backlogs accumulate. Watch the queue for the first week.
+- Voice carryover from organic threads to assigned threads. Marlow's news-digest `— Marlow` closing developed an editorial voice over a week of digests. Assigned pieces are longer-form; the voice may need to redevelop in that format.
+
+### State at end of day
+
+- Marlow: unchanged operationally — agent still ticking on prior schedule. New task and handler land but won't fire until 14:00 UTC today's next 4-hour boundary. Existing draft (still pending Alex review) untouched.
+- New: `plans/assignments.md`, `handlers/research_assignment.py`, `projects/research/tasks/assignment_research.yaml`, `projects/research/assignments/{pending,researching,done}/`, `projects/research/assignments/README.md`, first seeded assignment `anthropic-evil-ai-personas.md`. `draft_review.yaml` schedule updated.
+- Pipeline: organic feed → threads → draft_review (every 3 days) → drafts → Simona review → revise loop → Alex approve → published. Now also: assignment → research_assignment (every 4h) → assigned-thread → either same-tick draft (high-pri) or draft_review (normal) → same review/approve path.
+
+---

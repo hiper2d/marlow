@@ -1,9 +1,13 @@
-# draft_review — weekly check on whether any thread is draft-worthy.
+# draft_review — every-3-days check on whether any thread is draft-worthy.
 #
-# Fires Sundays at 14:00 UTC. Marlow reviews her active threads, judges
+# Fires every 3 days at 14:00 UTC. Marlow reviews her active threads, judges
 # ripeness against the bar in CLAUDE.md, and drafts an article for any
-# thread that crosses it. No upper limit on drafts per week, but expect
-# zero-or-one on most weeks. Quiet weeks send no draft and exit clean.
+# thread that crosses it. No upper limit on drafts per cycle, but expect
+# zero-or-one on most cycles. Quiet cycles send no draft and exit clean.
+#
+# High-priority assignments bypass this task entirely — they trigger a draft
+# inside the same assignment_research tick. This task covers normal-priority
+# assignment-seeded threads and all organic-feed threads.
 #
 # In-tick flow:
 #   1. Run `draft_article list-threads` to see what threads exist.
@@ -20,7 +24,7 @@
 name: draft_review
 project: blog
 description: Review ripening research threads; draft articles for any that cross the bar.
-schedule: "0 14 * * 0"
+schedule: "0 14 */3 * *"
 priority: normal
 must_run_within_hours: 36
 subtasks:
