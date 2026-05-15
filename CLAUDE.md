@@ -157,7 +157,7 @@ abandon the assignment in step 7.
      Write to `projects/blog/drafts/<YYYY-MM-DD>-<slug>.md` with the
      standard frontmatter.
    - Append a "draft pending: <path>" line to the thread file.
-   - Notify Alex with `urgency: urgent`: `"Draft ready for review: <title> — <relative path>"`.
+   - **No notify.** Drafts are silent — Simona's review tick picks the draft up automatically and runs the autonomous review loop. Alex is notified only at terminal states (ship-as-is, reject, or 3-version cap).
 
    For `priority: normal`, do NOT draft in this tick. The next
    `draft_review` cycle (every 3 days) picks up the thread.
@@ -198,7 +198,7 @@ summary: "<1-2 sentence dek that appears under the title>"
 ```
 
 4. Append a line to `projects/research/threads/<slug>.md` noting the draft path and date, so the next review tick knows there's a draft pending.
-5. Notify Alex with `urgency: urgent`: `"Draft ready for review: <title> — <relative-draft-path>"`. Drafts ready for review are one of the few legitimate `urgent` cases.
+5. **No notify.** Drafts are silent. Simona's `review_drafts` tick (every 2 hours) sees any draft whose file is newer than its review sibling, writes a review, and either continues the iteration loop (queues a `revise_draft` subtask for you) or terminates with a notify to Alex. The autonomous loop runs up to 3 versions before terminating on cap.
 
 **Never publish.** `status: draft` stays until Alex flips it to `approved` (or moves the file to `published/`). The publish gate is enforced by a separate handler that hasn't been built yet.
 
@@ -207,7 +207,7 @@ summary: "<1-2 sentence dek that appears under the title>"
 Invoked when Alex has run `marlow revise <slug>` (or when the revision loop continues automatically — same protocol). Simona has already written a review at `projects/blog/drafts/<slug>.simona-review.md`. Your job is to read the review, decide which critiques to apply and which to reject, and write v2.
 
 1. Run `uv run python handlers/revise_draft.py materials --slug <slug>`. JSON returns the current draft body, the review body (with verdict), version count, thread bodies, and a `terminal` flag.
-2. If `terminal: true` — either `verdict: ship-as-is` or version count is at the cap — write a result `{"status": "done", "result": "loop terminal: <reason>; awaiting Alex's approval", "notify": {"message": "Final ready for review: <slug> — <reason>"}}` and exit. Don't write another revision.
+2. If `terminal: true` — either `verdict: ship-as-is`/`reject` or version count is at the cap — write a result `{"status": "done", "result": "loop terminal: <reason>", "notify": null}` and exit. Don't write another revision and don't notify Alex — Simona owns the terminal notification (she'll already have sent it when she wrote the review that flipped the flag).
 3. Otherwise: read the review carefully. Decide per critique: *apply* or *defend*. Defending is legitimate — you wrote the line for a reason, and Simona's job is to flag, not dictate. Voice erosion is a real failure mode of multi-round AI editing; defending earned lines is how you avoid it. But: if you're defending more than half of the critiques, you've probably either (a) gotten the wrong review or (b) lost track of what the piece is for. Reconsider.
 4. Run `uv run python handlers/revise_draft.py archive --slug <slug>` — moves the current draft to `drafts/versions/<slug>/v<N>.md` and removes the existing review file (it's now associated with v<N>, archived alongside).
 5. Write v2 to `projects/blog/drafts/<slug>.md`. Preserve frontmatter shape, but bump the date if substantially different and update `summary` if your angle has shifted. The body is the work — not a polish of v1, but a rewrite informed by what Simona surfaced.
@@ -236,9 +236,9 @@ critiques_defended: [<short labels>]
 <anything else that shifted in the rewrite, not driven by review>
 ```
 
-7. Notify Alex: `{"message": "Revised <slug> to v<N+1>. Simona will re-review on next tick."}`. The revision note is part of the audit trail Simona reads when she does v2+.
+7. **No notify.** Revisions are silent — Simona's next review tick (within 2 hours) picks up the new version automatically (her trigger fires on "draft file newer than review file"). The revision note is part of the audit trail she reads when reviewing v2+.
 
-The 3-version cap exists because AI editorial loops drift toward bland with each round. If we hit v3 without convergence, it's better to ship the best version than to keep grinding.
+The 3-version cap exists because AI editorial loops drift toward bland with each round. If we hit v3 without convergence, it's better to ship the best version than to keep grinding. Simona will send Alex one Telegram message when the loop terminates — never sooner.
 
 ### Reviewing v2+ — addendum to `review_drafts`
 
