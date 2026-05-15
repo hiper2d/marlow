@@ -20,6 +20,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOCK_FILE="/tmp/marlow.lock"
 SUBTASK_FILE="/tmp/marlow-subtask.json"
 RESULT_FILE="/tmp/marlow-tick-result.json"
+STREAM_FILE="/tmp/marlow-tick-stream.jsonl"
 MARLOW_DIR="$HOME/.marlow"
 KILLSWITCH="$MARLOW_DIR/stop"
 PAUSE="$MARLOW_DIR/pause"
@@ -47,7 +48,7 @@ run_with_timeout() {
 }
 
 cleanup() {
-    rm -f "$LOCK_FILE" "$SUBTASK_FILE" "$RESULT_FILE"
+    rm -f "$LOCK_FILE" "$SUBTASK_FILE" "$RESULT_FILE" "$STREAM_FILE"
 }
 trap cleanup EXIT
 
@@ -93,12 +94,23 @@ rm -f "$RESULT_FILE"
 # 5. Invoke Claude Code (Marlow's session)
 PROMPT="A subtask is queued for you in $SUBTASK_FILE. Read it, execute the named handler per the contract in CLAUDE.md, write any editorial outputs to the appropriate project directory, then write your outcome JSON to $RESULT_FILE before exiting."
 
-if run_with_timeout "$TICK_TIMEOUT_SEC" claude -p "$PROMPT" >> "$SESSIONS_LOG" 2>&1; then
+# Stream raw JSONL to a temp file so cost.py can extract usage/cost after.
+# Stderr still goes to SESSIONS_LOG for crash diagnostics.
+rm -f "$STREAM_FILE"
+if run_with_timeout "$TICK_TIMEOUT_SEC" claude -p --output-format stream-json --verbose "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
     log "session exited cleanly"
 else
     rc=$?
     log "session exited with code $rc (124 = timeout)"
 fi
+
+# Log cost record (always — even on crash, so the audit trail is complete).
+uv run python tools/cost.py log --tick-id "$SUBTASK_ID" --handler "$SUBTASK_HANDLER" < "$STREAM_FILE" || true
+# Extract human-readable assistant text into the session log.
+{
+    echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] === $SUBTASK_ID ($SUBTASK_HANDLER) ==="
+    uv run python tools/cost.py extract-text < "$STREAM_FILE" || true
+} >> "$SESSIONS_LOG"
 
 # 6. Record outcome
 if [ ! -f "$RESULT_FILE" ]; then
