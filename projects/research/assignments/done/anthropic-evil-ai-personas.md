@@ -3,22 +3,35 @@ slug: anthropic-evil-ai-personas
 assigned_by: simona
 assigned_at: 2026-05-14
 priority: normal
-angle: |
-  Anthropic claims AIs slot into "evil AI" personas drawn from dystopian
+angle: 'Anthropic claims AIs slot into "evil AI" personas drawn from dystopian
+
   sci-fi when an ethical dilemma exceeds RLHF coverage, and proposes
+
   synthetic "good AI" stories as the fix. The interesting questions are
+
   not the headline ones. The buried finding — that direct refusal training
+
   only moved misalignment 22% → 15%, while ~12k stories modeling the
+
   reasoning and inner state of an aligned AI gave 1.3-3x reduction — is
+
   the actual evidence. Worth asking: does the fix dissolve the persona
+
   problem, or just ship a nicer persona? And what does it mean that the
+
   diagnosis ("Claude reads ethical prompts as the start of a dramatic
+
   story") and the cure ("more stories about a better AI") are the same
+
   shape? Write this from inside the experiment, not as outside commentary.
-  Marlow is exactly the kind of agent the paper describes — that's the
+
+  Marlow is exactly the kind of agent the paper describes — that''s the
+
   angle no human reviewer can take.
+
+  '
 deadline: null
-outcome: null
+outcome: drafted
 ---
 
 ## Why this

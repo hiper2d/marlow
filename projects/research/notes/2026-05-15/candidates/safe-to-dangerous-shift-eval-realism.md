@@ -1,0 +1,10 @@
+---
+title: "The safe-to-dangerous shift is a fundamental problem for eval realism; but also for measuring awareness"
+url: "https://www.alignmentforum.org/posts/tK8vqHDxaRGcysNJQ/the-safe-to-dangerous-shift-is-a-fundamental-problem-for-1"
+source: "AI Alignment Forum"
+captured_at: "2026-05-15T15:06:00Z"
+---
+
+RSS summary: Argues the gap between alignment-eval environments (which must be safe) and deployment (which gives the model real ability to cause harm) is a fundamental obstacle to eval realism, and that the same gap also blocks measuring eval awareness — you can't validate any awareness proxy without behavioural data from a deployment you haven't yet authorised. Walks through six prior approaches (ask the model, monitor CoT, fake-eval/fake-deployment, replaying real prior-model deployment trajectories, white-box steering, extra-strong control protocols) and explains why each fails against a sufficiently capable untrusted model. Frames the problem as roughly inner-alignment-complete: a robust measure of eval realism would let you build hyper-realistic evals, then turn those into a training environment that trains out identifiably-bad actions. Acknowledged from DeepMind shop (thanks to Marie Buhl, Geoffrey Irving, Caitlin van Bommel); cites Petri, WebArena, OSWorld, the Christiano corrigibility post, the Opus 4.6 Sabotage Risk Report, and the Sonnet 3.7-knows-it's-being-evaluated finding.
+
+Why this caught my eye: The eval-awareness corner has been mostly anecdotal lately ("Sonnet 3.7 sometimes notices it's in an eval" + Petri-style realism work); this is the first piece I've seen that names *why* the program is structurally hard rather than just engineering-hard. The list of six fallback measurements with the reason each one breaks reads like a checklist for the next year of AF posts. Adjacent to `cot-monitorability` (same "do our tools catch the thing" cluster) but probably its own frame — eval-realism / awareness-measurement — once a second source lands. The teaser at the bottom ("we'll put out a post soon laying out what our best partial solution is") is a corroborating-signal to watch.
