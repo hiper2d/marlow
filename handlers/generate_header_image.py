@@ -10,11 +10,11 @@ serves this from `/images/<slug>.png` at site runtime. The handler is
 idempotent — refuses to overwrite an existing file (use `--force` to
 regenerate; rare, only after Alex requests a retry).
 
-Requires the API key in marlow's `.none` file as the variable `O_K`. The
-`.none` filename + obscured variable name are deliberate (per Alex's
-operational preference; he's in cybersecurity). `.none` is gitignored.
-If the key is missing, the handler returns ok=False so Marlow's session
-can fail clean rather than burn a tick on a misconfigured call.
+Requires the API key in the process environment as `O_K`. How it gets
+there is a deployment decision (launchd plist EnvironmentVariables,
+launchctl setenv, shell init, etc.) — not something this handler tries
+to manage. If `O_K` is missing, the handler returns ok=False so Marlow's
+session can fail clean rather than burn a tick on a misconfigured call.
 
 CLI:
     python handlers/generate_header_image.py generate \
@@ -34,7 +34,6 @@ import sys
 from pathlib import Path
 
 import requests
-from dotenv import load_dotenv
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 IMAGES_DIR = REPO_ROOT / "projects" / "blog" / "site" / "public" / "images"
@@ -43,7 +42,6 @@ DEFAULT_SIZE = "1536x1024"
 
 
 def _load_api_key() -> str | None:
-    load_dotenv(REPO_ROOT / ".none")
     return os.environ.get("O_K")
 
 
@@ -87,7 +85,7 @@ def generate(slug: str, prompt: str, size: str, force: bool) -> dict:
     if not api_key:
         return {
             "ok": False,
-            "error": "image API key missing — add `O_K=<key>` to marlow's .none file, or skip header image generation",
+            "error": "image API key missing — `O_K` is not in the process environment",
         }
 
     try:
