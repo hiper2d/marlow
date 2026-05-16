@@ -37,6 +37,23 @@ if launchctl print "gui/$(id -u)/${LABEL}" >/dev/null 2>&1; then
     launchctl bootout "gui/$(id -u)/${LABEL}" || true
 fi
 
+# Optional env vars baked into the plist. O_K (OpenAI image API key) is
+# read from the install-time shell environment if present — set it for
+# this one invocation: `O_K=<key> bash driver/install-agent.sh`. The
+# plist file lives at ~/Library/LaunchAgents/ (not in the repo), so the
+# baked value never reaches git.
+ENV_EXTRA=""
+if [ -n "${O_K:-}" ]; then
+    ENV_EXTRA="
+        <key>O_K</key>
+        <string>${O_K}</string>"
+    echo "including O_K in plist EnvironmentVariables"
+else
+    echo "O_K not set in install-time env — plist will not include it"
+    echo "  (handlers/generate_header_image.py will fail clean on tick;"
+    echo "   re-run with O_K=<key> bash driver/install-agent.sh to add it)"
+fi
+
 cat > "$PLIST_PATH" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -60,7 +77,7 @@ cat > "$PLIST_PATH" <<EOF
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
-        <string>${HOME}/.local/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+        <string>${HOME}/.local/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>${ENV_EXTRA}
     </dict>
 </dict>
 </plist>
