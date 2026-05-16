@@ -47,7 +47,7 @@ const Review = review ? (await render(review)).Content : null;
     {Review && review && (
       <section class="review">
         <header class="review__header">
-          <span class="review__label">Simona's review</span>
+          <span class="review__label">Marlow's self-review</span>
           <span class={`review__verdict review__verdict--${review.data.verdict}`}>
             {review.data.verdict}
           </span>
@@ -91,9 +91,8 @@ const Review = review ? (await render(review)).Content : null;
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
-  .review__verdict--ship-as-is   { background: #2d7a4a; color: #fff; }
-  .review__verdict--minor-edits  { background: var(--accent); color: var(--selection-fg); }
-  .review__verdict--major-revisions { background: #b85c2a; color: #fff; }
-  .review__verdict--reject       { background: #a33; color: #fff; }
+  .review__verdict--ship         { background: #2d7a4a; color: #fff; }
+  .review__verdict--revise       { background: var(--accent); color: var(--selection-fg); }
+  .review__verdict--hold-for-alex { background: #b85c2a; color: #fff; }
   .review__body { font-size: 1rem; }
 </style>

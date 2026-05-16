@@ -6,10 +6,19 @@ import { glob } from 'astro/loaders';
 // callers use to filter. In dev mode we show everything; in prod we filter.
 const posts = defineCollection({
   loader: glob({
-    // Exclude *.simona-review.md — those are Simona's review files for
-    // each draft, lived next to the draft for convenience but have their
-    // own frontmatter shape (see reviews collection below).
-    pattern: ['{drafts,published}/*.md', '!{drafts,published}/*.simona-review.md'],
+    // Posts: union of drafts/ and published/. Auxiliary sidecar files
+    // (self-review, legacy simona-review, revision-notes, hold-reason)
+    // live next to drafts with their own frontmatter shape — those load
+    // into the `reviews` collection or get ignored. Excluding them here
+    // keeps the post schema clean and the build green.
+    pattern: [
+      '{drafts,published}/*.md',
+      '!{drafts,published}/*.self-review.md',
+      '!{drafts,published}/*.simona-review.md',
+      '!{drafts,published}/*.revision-notes.md',
+      '!{drafts,published}/*.revision-notes.simona-review.md',
+      '!{drafts,published}/*.hold-reason.md',
+    ],
     base: '../',
     generateId: ({ entry }) => {
       // entry is e.g. "drafts/2026-05-12-foo.md" or "published/foo.md".
@@ -21,7 +30,7 @@ const posts = defineCollection({
     title: z.string(),
     slug: z.string().optional(),
     date: z.coerce.date(),
-    status: z.enum(['draft', 'approved', 'published']),
+    status: z.enum(['draft', 'approved', 'published', 'held']),
     mentions: z.array(z.string()).default([]),
     summary: z.string().optional(),
   }),
@@ -48,24 +57,28 @@ const threads = defineCollection({
     .passthrough(),
 });
 
-// Simona's per-draft reviews — sit next to the draft file with the same
-// slug, suffix `.simona-review.md`. Rendered on the draft's post detail
-// page during the iteration phase so Alex can read both side-by-side.
+// Marlow's per-draft self-reviews — sit next to the draft file with the
+// same slug, suffix `.self-review.md`. Written by `handlers/self_review.py`
+// as the autonomous gate before publish. Rendered on the draft's post
+// detail page during the iteration phase. Legacy `.simona-review.md`
+// files (from the pre-2026-05-16 Simona-driven review loop) are excluded
+// here — they're deleted by `publish_article.publish` on the next publish
+// and aren't part of the new shape.
 const reviews = defineCollection({
   loader: glob({
-    pattern: '{drafts,published}/*.simona-review.md',
+    pattern: '{drafts,published}/*.self-review.md',
     base: '../',
     generateId: ({ entry }) => {
-      // Strip .simona-review.md to derive the matching post id.
-      const name = entry.split('/').pop()!.replace(/\.simona-review\.md$/, '');
+      // Strip .self-review.md to derive the matching post id.
+      const name = entry.split('/').pop()!.replace(/\.self-review\.md$/, '');
       return name;
     },
   }),
   schema: z.object({
-    reviewed_by: z.string(),
+    slug: z.string().optional(),
     reviewed_at: z.coerce.date(),
-    draft: z.string(),
-    verdict: z.enum(['ship-as-is', 'minor-edits', 'major-revisions', 'reject']),
+    verdict: z.enum(['ship', 'revise', 'hold-for-alex']),
+    pauses_triggered: z.array(z.string()).default([]),
   }),
 });
 
