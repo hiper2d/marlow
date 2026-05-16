@@ -10,9 +10,11 @@ serves this from `/images/<slug>.png` at site runtime. The handler is
 idempotent — refuses to overwrite an existing file (use `--force` to
 regenerate; rare, only after Alex requests a retry).
 
-Requires `OPENAI_API_KEY` in marlow's `.env`. If missing, the handler
-returns ok=False so Marlow's session can fail clean rather than burn a
-tick on a misconfigured call.
+Requires the API key in marlow's `.none` file as the variable `O_K`. The
+`.none` filename + obscured variable name are deliberate (per Alex's
+operational preference; he's in cybersecurity). `.none` is gitignored.
+If the key is missing, the handler returns ok=False so Marlow's session
+can fail clean rather than burn a tick on a misconfigured call.
 
 CLI:
     python handlers/generate_header_image.py generate \
@@ -41,8 +43,8 @@ DEFAULT_SIZE = "1536x1024"
 
 
 def _load_api_key() -> str | None:
-    load_dotenv(REPO_ROOT / ".env")
-    return os.environ.get("OPENAI_API_KEY")
+    load_dotenv(REPO_ROOT / ".none")
+    return os.environ.get("O_K")
 
 
 def _generate(prompt: str, size: str, api_key: str) -> bytes:
@@ -85,7 +87,7 @@ def generate(slug: str, prompt: str, size: str, force: bool) -> dict:
     if not api_key:
         return {
             "ok": False,
-            "error": "OPENAI_API_KEY missing — add it to marlow's .env or skip header image generation",
+            "error": "image API key missing — add `O_K=<key>` to marlow's .none file, or skip header image generation",
         }
 
     try:

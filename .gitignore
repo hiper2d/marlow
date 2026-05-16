@@ -15,6 +15,7 @@ venv/
 # Secrets
 .env
 .env.local
+.none
 
 # Logs
 *.log
