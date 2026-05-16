@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import plistlib
 import subprocess
 import sys
 from pathlib import Path
@@ -35,6 +36,38 @@ MARLOW_DIR = Path.home() / ".marlow"
 KILLSWITCH = MARLOW_DIR / "stop"
 PAUSE_FLAG = MARLOW_DIR / "pause"
 LOG_PATH = MARLOW_DIR / "log"
+LAUNCHD_PLIST = Path.home() / "Library" / "LaunchAgents" / "com.marlow.tick.plist"
+
+
+def _import_plist_env() -> None:
+    """Mirror the launchd plist's EnvironmentVariables into os.environ.
+
+    Launchd-fired ticks inherit the plist env directly. Interactive
+    invocations of `marlow tick` / `marlow draft` etc. don't — they
+    inherit the user's shell env. This shim makes both paths behave
+    identically by treating the plist as the single source of truth for
+    Marlow-only env vars (`O_K` for the image API key, primarily).
+
+    Only sets vars that aren't already in os.environ; the shell wins
+    when there's a conflict, so you can still override per-invocation.
+    Silently no-ops on a missing or malformed plist.
+    """
+    if not LAUNCHD_PLIST.exists():
+        return
+    try:
+        with LAUNCHD_PLIST.open("rb") as f:
+            plist = plistlib.load(f)
+    except (plistlib.InvalidFileException, OSError):
+        return
+    env = plist.get("EnvironmentVariables", {})
+    if not isinstance(env, dict):
+        return
+    for k, v in env.items():
+        if isinstance(v, str) and k not in os.environ:
+            os.environ[k] = v
+
+
+_import_plist_env()
 
 THREADS_DIR = REPO_ROOT / "projects" / "research" / "threads"
 NOTES_DIR = REPO_ROOT / "projects" / "research" / "notes"
