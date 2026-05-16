@@ -1,29 +1,29 @@
 """
-revise_draft — orchestration handler for Marlow's revision loop.
+revise_draft — single revision pass driven by Marlow's own self-review.
 
-The flow: Simona's review has landed at drafts/<slug>.simona-review.md.
-Marlow's revise_draft tick reads the current draft + the review + the
-original thread/notes corpus, decides which critiques to apply and
-which to reject (with reasoning), writes v2 to drafts/<slug>.md, and
-records a revision note explaining her choices. Previous version is
-archived to drafts/versions/<slug>/v<N>.md before overwrite.
+Flow: self_review has landed a `<slug>.self-review.md` with verdict
+ship / revise / hold-for-alex. This handler is the revision step that fires
+only when verdict is `revise`. Marlow reads the review, rewrites the draft
+once, archives v1 to `versions/<slug>/v1.md`. After this, the orchestrator
+calls publish — no second review, no further iteration.
 
-Terminate the loop when:
-  - Latest Simona review's verdict is `ship-as-is`
-  - Marlow has 3 versions on record (v1, v2, v3) — hard cap
-Alex's approval gate is independent of loop termination.
+Terminal cases (handler reports terminal=True and Marlow exits without
+rewriting):
+  - verdict ship           — go straight to publish.
+  - verdict hold-for-alex  — flip status to `held`, no publish.
+  - version_count >= 1     — already revised once; publish v2 as-is.
+
+The behavioral files (voice, structure, topic, pre-publish-pauses) are
+included in materials so the revision can reference the same rubric the
+self-review used.
 
 CLI:
     python handlers/revise_draft.py materials --slug <slug>
-        → JSON: current draft body, review body, version count,
-          thread bodies, related research/candidate notes
+        → JSON: draft + self-review + version count + terminal flag +
+          rubric + thread bodies.
     python handlers/revise_draft.py archive --slug <slug>
-        → move current drafts/<slug>.md to drafts/versions/<slug>/v<N>.md
-          where N is the next available number. Used before overwriting
-          with v2/v3.
-    python handlers/revise_draft.py versions --slug <slug>
-        → JSON: list of archived versions with bodies (for Simona's
-          review of v2+ pushback)
+        → move current drafts/<slug>.md → drafts/versions/<slug>/v<N>.md
+          and remove the existing self-review file (archived alongside).
 """
 
 from __future__ import annotations
@@ -31,16 +31,24 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import subprocess
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DRAFTS = REPO_ROOT / "projects" / "blog" / "drafts"
 VERSIONS = DRAFTS / "versions"
 THREADS = REPO_ROOT / "projects" / "research" / "threads"
-NOTES = REPO_ROOT / "projects" / "research" / "notes"
-MAX_VERSIONS = 3  # hard cap on revision rounds
+MEMORY = REPO_ROOT / "memory"
+
+MAX_VERSIONS = 2  # one revision pass; v2 ships regardless.
+
+BEHAVIORAL_FILES = {
+    "voice_guidelines": MEMORY / "voice-guidelines.md",
+    "structure_notes": MEMORY / "structure-notes.md",
+    "topic_guidance": MEMORY / "topic-guidance.md",
+    "pre_publish_pauses": MEMORY / "pre-publish-pauses.md",
+}
 
 
 def _parse_frontmatter(text: str) -> tuple[dict, str]:
@@ -72,25 +80,37 @@ def _version_count(slug: str) -> int:
     d = VERSIONS / slug
     if not d.exists():
         return 0
-    return len(list(d.glob("v*.md")))
+    return len([f for f in d.glob("v*.md") if ".self-review" not in f.name])
+
+
+def _terminal_reason(verdict: str | None, version_count: int) -> str | None:
+    if verdict == "ship":
+        return "verdict_ship"
+    if verdict == "hold-for-alex":
+        return "verdict_hold_for_alex"
+    if version_count >= MAX_VERSIONS - 1:
+        # Already revised once (v1 archived). v2 is the current draft; publish it.
+        return "max_versions_reached"
+    return None
 
 
 def materials(slug: str) -> dict:
     draft = DRAFTS / f"{slug}.md"
-    review = DRAFTS / f"{slug}.simona-review.md"
+    review = DRAFTS / f"{slug}.self-review.md"
     if not draft.exists():
         return {"ok": False, "error": f"no draft at {draft}"}
     if not review.exists():
-        return {"ok": False, "error": f"no review at {review} — Simona hasn't reviewed yet"}
+        return {
+            "ok": False,
+            "error": f"no self-review at {review} — run self_review first",
+        }
 
-    draft_text = _read(draft)
-    draft_meta, draft_body = _parse_frontmatter(draft_text)
-    review_text = _read(review)
-    review_meta, review_body = _parse_frontmatter(review_text)
+    draft_meta, draft_body = _parse_frontmatter(_read(draft))
+    review_meta, review_body = _parse_frontmatter(_read(review))
     verdict = review_meta.get("verdict")
 
     version_count = _version_count(slug)
-    terminal = verdict == "ship-as-is" or version_count >= MAX_VERSIONS
+    term_reason = _terminal_reason(verdict, version_count)
 
     mentions = [
         m.strip().strip('"').strip("'")
@@ -103,18 +123,17 @@ def materials(slug: str) -> dict:
         if tpath.exists():
             thread_bodies.append({"slug": thread_slug, "body": _read(tpath)})
 
+    rubric = {key: _read(path) for key, path in BEHAVIORAL_FILES.items()}
+
     return {
         "ok": True,
         "slug": slug,
         "verdict": verdict,
+        "verdict_options": ["ship", "revise", "hold-for-alex"],
         "version_count": version_count,
         "max_versions": MAX_VERSIONS,
-        "terminal": terminal,
-        "termination_reason": (
-            "verdict_ship_as_is" if verdict == "ship-as-is"
-            else "max_versions_reached" if version_count >= MAX_VERSIONS
-            else None
-        ),
+        "terminal": term_reason is not None,
+        "termination_reason": term_reason,
         "draft_path": str(draft.relative_to(REPO_ROOT)),
         "draft_meta": draft_meta,
         "draft_body": draft_body,
@@ -122,11 +141,12 @@ def materials(slug: str) -> dict:
         "review_meta": review_meta,
         "review_body": review_body,
         "threads": thread_bodies,
+        "rubric": rubric,
     }
 
 
 def archive(slug: str) -> dict:
-    """Move current draft to versions/<slug>/v<N>.md before overwriting."""
+    """Move current draft to versions/<slug>/v<N>.md before overwriting with the revision."""
     draft = DRAFTS / f"{slug}.md"
     if not draft.exists():
         return {"ok": False, "error": f"no draft at {draft}"}
@@ -136,9 +156,10 @@ def archive(slug: str) -> dict:
     target = versions_dir / f"v{next_n}.md"
     shutil.copy2(str(draft), str(target))
 
-    review = DRAFTS / f"{slug}.simona-review.md"
+    review = DRAFTS / f"{slug}.self-review.md"
+    review_target = None
     if review.exists():
-        review_target = versions_dir / f"v{next_n}.simona-review.md"
+        review_target = versions_dir / f"v{next_n}.self-review.md"
         shutil.copy2(str(review), str(review_target))
         review.unlink()
 
@@ -146,28 +167,64 @@ def archive(slug: str) -> dict:
         "ok": True,
         "slug": slug,
         "archived_to": str(target.relative_to(REPO_ROOT)),
-        "review_archived": str(review_target.relative_to(REPO_ROOT)) if review.exists() else None,
+        "review_archived": str(review_target.relative_to(REPO_ROOT)) if review_target else None,
         "version_count_after": next_n,
     }
 
 
-def versions(slug: str) -> dict:
-    """For Simona's review of v2+: return all archived versions + their reviews."""
+def _git(*args: str) -> tuple[int, str]:
+    proc = subprocess.run(
+        ["git", *args],
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        text=True,
+    )
+    return proc.returncode, (proc.stdout + proc.stderr).strip()
+
+
+def commit_revision(slug: str) -> dict:
+    """Commit + push the revised draft, revision-notes, and archived v1 files.
+
+    Captures the v1 → v2 transition cleanly: archived versions become
+    `drafts/versions/<slug>/v1.md` and `v1.self-review.md`; the draft file
+    is the v2 content; `revision-notes.md` records what was applied vs
+    defended.
+    """
+    draft = DRAFTS / f"{slug}.md"
+    notes = DRAFTS / f"{slug}.revision-notes.md"
     versions_dir = VERSIONS / slug
-    if not versions_dir.exists():
-        return {"slug": slug, "count": 0, "versions": []}
-    out = []
-    for vfile in sorted(versions_dir.glob("v*.md")):
-        if ".simona-review" in vfile.name:
-            continue
-        n = vfile.stem  # "v1", "v2", ...
-        review_file = versions_dir / f"{n}.simona-review.md"
-        out.append({
-            "n": n,
-            "draft_body": _read(vfile),
-            "review_body": _read(review_file) if review_file.exists() else None,
-        })
-    return {"slug": slug, "count": len(out), "versions": out}
+    if not draft.exists():
+        return {"ok": False, "error": f"no v2 draft at {draft}"}
+    if not notes.exists():
+        return {"ok": False, "error": f"no revision-notes at {notes}"}
+
+    # Stage everything under the relevant slug paths so deletions of the
+    # original draft+review get captured alongside additions. The self-review
+    # file was tracked by an earlier commit-review and has now been moved into
+    # versions/ by `archive`, so its old path needs to be in the pathspec for
+    # `git add -A` to stage the deletion.
+    paths = [
+        str(draft.relative_to(REPO_ROOT)),
+        str(notes.relative_to(REPO_ROOT)),
+        str((DRAFTS / f"{slug}.self-review.md").relative_to(REPO_ROOT)),
+    ]
+    if versions_dir.exists():
+        paths.append(str(versions_dir.relative_to(REPO_ROOT)))
+
+    rc, out = _git("add", "-A", "--", *paths)
+    if rc != 0:
+        return {"ok": False, "error": f"git add: {out}"}
+    rc, out = _git(
+        "commit",
+        "-m", f"Revise: {slug} (v2)",
+        "-m", "Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>",
+    )
+    if rc != 0:
+        return {"ok": False, "error": f"git commit: {out}"}
+    rc, out = _git("push", "origin", "master")
+    if rc != 0:
+        return {"ok": True, "committed": True, "pushed": False, "error": f"git push: {out}"}
+    return {"ok": True, "committed": True, "pushed": True}
 
 
 def cmd_materials(args):
@@ -182,30 +239,32 @@ def cmd_archive(args):
     sys.exit(0 if result.get("ok") else 1)
 
 
-def cmd_versions(args):
-    print(json.dumps(versions(args.slug), indent=2, ensure_ascii=False))
+def cmd_commit_revision(args):
+    result = commit_revision(args.slug)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    sys.exit(0 if result.get("ok") else 1)
 
 
 def main():
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    p_mat = sub.add_parser("materials", help="Get draft + review + thread/note corpus for revising")
+    p_mat = sub.add_parser("materials", help="Draft + self-review + rubric for revising")
     p_mat.add_argument("--slug", required=True)
 
     p_arc = sub.add_parser("archive", help="Copy current draft to versions/<slug>/v<N>.md before overwriting")
     p_arc.add_argument("--slug", required=True)
 
-    p_ver = sub.add_parser("versions", help="List archived versions + their reviews (for Simona's v2+ pass)")
-    p_ver.add_argument("--slug", required=True)
+    p_com = sub.add_parser("commit-revision", help="Commit + push v2 draft, revision-notes, archived versions")
+    p_com.add_argument("--slug", required=True)
 
     args = parser.parse_args()
     if args.cmd == "materials":
         cmd_materials(args)
     elif args.cmd == "archive":
         cmd_archive(args)
-    elif args.cmd == "versions":
-        cmd_versions(args)
+    elif args.cmd == "commit-revision":
+        cmd_commit_revision(args)
 
 
 if __name__ == "__main__":

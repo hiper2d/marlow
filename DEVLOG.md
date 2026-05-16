@@ -178,3 +178,68 @@ These reports were unprompted — Marlow noticed during a single grader tick the
 - Pipeline: organic feed → threads → draft_review (every 3 days) → drafts → Simona review → revise loop → Alex approve → published. Now also: assignment → research_assignment (every 4h) → assigned-thread → either same-tick draft (high-pri) or draft_review (normal) → same review/approve path.
 
 ---
+
+## 2026-05-16 — Autonomous publishing pipeline: kill the Simona review loop
+
+### What landed
+
+- **Pivot from gated review to autonomous publish.** Marlow now drafts, self-reviews, optionally revises once, and publishes herself. The Simona-driven `review_drafts` tick is gone (launchd plist unloaded, handler archived to `daemon/_archive/` on the Simona side). Editorial review moves to on-demand from Alex through interactive Claude Code sessions; Simona drafts feedback, Alex co-edits, the agreed version lands in Marlow's `memory/feedback-inbox/`, Marlow internalizes on her next `process_editorial_feedback` tick. Feedback shapes the *next* batch, never revises a past article.
+- **Behavioral files seeded** at `memory/voice-guidelines.md`, `memory/topic-guidance.md`, `memory/structure-notes.md`, `memory/pre-publish-pauses.md`. Marlow-owned, edited by `process_editorial_feedback`. They are the rubric `self_review` measures every draft against. Pre-publish-pauses is the load-bearing guardrail: five categories that trigger a hard hold (named-person-negative without public-record basis, financial/medical/legal-advice shape, partisan politics, werewolf-ops operational specifics, attributing specific safety failures without public evidence).
+- **New handlers**: `self_review.py` (rubric + draft for Marlow to score), `blog_pipeline.py` (state dispatcher — picks the next action across all drafts), `process_editorial_feedback.py` (inbox I/O primitive). `revise_draft.py` rewritten — single pass only, reads `<slug>.self-review.md`, MAX_VERSIONS dropped from 3 to 2. `publish_article.py` gained `publish` / `hold` / `release` verbs; the old `approve` becomes a smart wrapper that routes by status (draft → publish, held → release) so Alex's `marlow approve` CLI still works.
+- **New tasks**: `projects/blog/tasks/blog_pipeline.yaml` (every 4h, advances state machine), `projects/blog/tasks/process_editorial_feedback.yaml` (every 6h, processes inbox). Existing `draft_review.yaml` updated — no more "notify Alex urgent" directive, drafts are silent and the pipeline picks them up.
+- **`marlow revise` CLI removed.** Revisions are autonomous now. `marlow approve` still exists for releasing held drafts.
+- **Hard constraint #2 in CLAUDE.md updated**: "Never publish without an approval gate" → "Never bypass the publish pipeline" (self-review → optional revise → publish, with pre-publish-pauses as the autonomous guardrail).
+
+### Decisions reconsidered
+
+- The whole back-and-forth review architecture. The accumulated bugs (stuck-loop detection, requeue-on-stale, the v2+ review addendum) were symptoms of the wrong shape. Marlow is the writer; she should own the draft → publish loop end-to-end. Simona's value is *editorial drift correction over time*, not a per-draft gate. Sticking the gate onto every draft burned API budget on every tick and produced over-edited copy ("AI editorial loops drift toward bland with each round" — the v3 cap existed because we'd already seen this).
+- **Active nagging from Marlow about overdue editorial reviews — rejected.** Alex called this out directly: the whole point of moving review to on-demand is to kill autonomous outbound from the system. An embedded reminder when pinged was the soft option; "no, don't" was Alex's. Removed open decision 2 from the plan entirely.
+- **Pre-publish-pauses scope.** Started with three categories from the plan discussion (named-person-negative, financial-advice-shape, partisan-political), expanded to five during implementation: added werewolf-ops operational specifics (restating CLAUDE.md hard constraint #3 at the self-review layer so it catches before publish) and attribution-without-public-evidence (covers the "X lab actually shipped something unsafe" case where reasoning about classes is fine but naming names without sources is not).
+
+### What's deferred
+
+- **Stuck-loop and requeue logic in `daemon/scheduler.py`** on the Simona side — not stripped, just unreachable now that the launchd agent is gone. Alex commits the Simona-side cleanup himself; this DEVLOG records what was archived (`daemon/_archive/handlers/review_drafts.py`, `daemon/_archive/tasks/review_drafts.yaml`, `daemon/_archive/README.md`). `observe_marlow` handler left in place — not part of the review loop, can be decided separately.
+- **The legacy draft `2026-05-12-automated-ai-rd-asymmetric-arrival`** still sits in `drafts/` with status:draft and a `.simona-review.md` from the old pipeline (now legacy). `blog_pipeline state` correctly identifies it as needing a *fresh* self-review next tick — the new pipeline will pick it up cleanly. Its `versions/v1.md` and `versions/v2.md` from the old loop will be counted toward the new MAX_VERSIONS=2 logic, which means after self-review the pipeline routes straight to publish (already revised twice under the old loop, no further revisions allowed under the new rules). Worth eyeballing the eventual self-review verdict — if Marlow says `hold-for-alex` or `revise`, that's interesting signal.
+- **`marlow-review` skill on the Simona side.** Not part of this Marlow-side commit; lives in the Simona repo and Alex commits that himself.
+
+### Open questions / things to watch
+
+- **First autonomous publish.** The first time `blog_pipeline` advances a draft all the way to publish without human intervention is the real test. Watch the self-review file for any sign of self-flattering scoring ("voice: fine, structure: fine, ship") that doesn't track with the draft's actual quality.
+- **Pre-publish-pauses calibration.** The five-item list is the v1 cut. Categories that trigger zero times in three months get pruned; categories that should have triggered but didn't get added through editorial feedback. The first month is the calibration window.
+- **One-pass rule under pressure.** If a self-review legitimately flags something serious on v2 (a pause that v1 missed, a structural collapse from the revision), the pipeline still publishes. The DEVLOG-entry escape hatch exists for exactly this — but it's a record, not a brake. Watch whether this becomes a problem.
+- **Behavioral file granularity.** Three rubric files + one pauses file is the starting cut. If `process_editorial_feedback` accumulates a category that doesn't fit cleanly (habits, taboos, recurring tics), Marlow creates a new file rather than overstuffing an existing one. Bottom-up grows better than top-down.
+
+### State at end of day
+
+- **Marlow**: pipeline rewired to autonomous. New task YAMLs in `projects/blog/tasks/`. Old draft sitting in `drafts/` will get picked up by the next `blog_pipeline` tick. CLAUDE.md blog-pipeline sections rewritten. README workflow section rewritten. `marlow revise` CLI gone; `marlow approve` smart-routes draft/held. Memory: four new behavioral files + feedback-inbox/archive directories.
+- **Simona**: `com.simona.tick` launchd agent unloaded and plist removed. `handlers/review_drafts.py` and `daemon/tasks/review_drafts.yaml` moved to `daemon/_archive/` for historical reference. Marlow review skill not yet written — task 10 on the Simona side.
+- **Editorial loop**: autonomous on Marlow's side; on-demand on Alex's side. Zero automated API spend on review.
+
+## 2026-05-16 — Self-healing: Marlow can fix her own tools
+
+### What landed
+
+- **`handlers/framework_fix.py`** — diagnosis log + state machine for self-healing. Subcommands: `record-diagnosis`, `next-open`, `mark-attempt`, `mark-resolved`, `mark-escalated`, `log`. Persistent state at `tasks/framework_fix_log.json`. `MAX_ATTEMPTS = 2` before forced escalation.
+- **Identity-file gate.** `record-diagnosis` auto-escalates any diagnosis whose target is `CLAUDE.md`, `README.md`, `SOUL.md`, or any `projects/*/README.md`. These describe *who Marlow is*, not *what she does* — they remain owned by Simona/Alex even after this expansion of authority.
+- **CLAUDE.md hard constraint #4 rewritten.** Was "Never modify the driver, the scheduler, this file, or the project READMEs." Now: "Never modify identity files" (the above list) — everything else (handlers, driver, scheduler, task YAMLs) is *tools* and Marlow can fix them when diagnosed.
+- **New CLAUDE.md "Self-healing" section.** Five-step protocol: record diagnosis → enqueue high-priority subtask same tick → next tick reads diagnosis and acts → fix in one commit referencing the diagnosis ID → escalate on attempt #3 or out-of-scope. Inline Python snippet for queue.json enqueue (no new helper needed; uses the existing `driver.scheduler` module).
+
+### Decisions reconsidered
+
+- **First proposed: branch + PR pattern for self-fixes.** Marlow would push to `fix/<slug>` and open a GitHub PR via `gh`. Alex/Simona would merge. Reconsidered after Alex pushed back — that just adds latency without a real signal we couldn't get from a post-hoc revert. Same revert mitigation applies regardless of whether the fix landed on master directly or via PR. Switched to direct-to-master for tools.
+- **Originally framed as "handlers only."** That hedge didn't survive Alex's "why not self-heal" question. The honest distinction isn't blast radius — every commit reverts cleanly. It's *tools vs. identity*. Tools include handlers AND driver AND scheduler; identity is the README / CLAUDE.md / SOUL.md trio. Letting her edit tools is the more interesting version of the experiment — observe whether she maintains her own framework coherently over months.
+
+### Things that surprised us
+
+- **Marlow's diagnosis in working.md (2026-05-16, ~14:18Z)** of the `_commit_and_push` pathspec bug was completely correct: she named the file, the line, the failure mode, and proposed two fix shapes. The fact that she did this *without* a mechanism to act on her own diagnosis is what prompted Alex's question "we need some logic for Marlow to work on fixes for itself." She'd already done the hard part (detection + diagnosis); the missing piece was authority + protocol. The diagnostic-responsibility memory (Simona's `feedback_simona_diagnostic_responsibility.md`) is firing exactly as designed — but it was designed for Simona to act on Marlow's diagnoses, not for Marlow to act on her own.
+
+### What's deferred
+
+- **No smoke-test harness in `framework_fix`.** Marlow's session is expected to manually smoke-test (e.g., run the handler's CLI in a no-op invocation) before committing. If we land a few self-fixes and notice missing tests as a common pattern, we can add a `validate-fix` subcommand that runs a deterministic smoke test.
+- **No automatic working.md `Outstanding requests` resolution.** When Marlow `mark-resolved`s a diagnosis, she should also update the working.md note from "URGENT" to "RESOLVED" in the same tick. That's currently a CLAUDE.md instruction, not a handler enforcement. If it gets skipped repeatedly, formalize.
+
+### State at end of day
+
+- **Marlow**: gained `framework_fix.py` handler, expanded authority to edit tools, new CLAUDE.md "Self-healing" section. No new task YAML — self-heal subtasks are enqueued inline by the tick that detects the bug. First test will come whenever Marlow next spots a framework bug.
+- **Simona**: no changes this round.
+- **Editorial loop**: unchanged. **Self-heal loop**: armed and waiting for its first real diagnosis.

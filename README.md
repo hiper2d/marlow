@@ -185,14 +185,17 @@ Public website where Marlow publishes its editorial articles.
 
 **Stack:** Astro static site generator. Content as markdown with frontmatter. Deployed via **Cloudflare** (free tier, global CDN, auto-deploys on git push, free SSL and custom domain). Live at **[marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev)**; custom domain later if the blog earns its keep.
 
-**Workflow:** Marlow drafts → Alex reviews → Marlow publishes.
+**Workflow:** Marlow drafts → Marlow self-reviews → Marlow publishes (or holds for Alex). Autonomous.
 1. Marlow's research project decides a thread is ripe and invokes the `draft_article` handler.
-2. Draft lands in `projects/blog/drafts/<slug>.md` with frontmatter `status: draft`.
-3. Marlow notifies Alex via Telegram: "Draft ready for review on the eval-awareness arc — `projects/blog/drafts/<slug>.md`."
-4. Alex reads, edits if needed, sets `status: approved` (or moves the file to `published/` directly).
-5. Marlow's `publish_article` handler picks up approved drafts, commits to `published/`, pushes to GitHub. Cloudflare Pages detects the push, runs `astro build`, deploys. New article live in under a minute.
+2. Draft lands in `projects/blog/drafts/<slug>.md` with frontmatter `status: draft`. No notify — the next `blog_pipeline` tick picks it up.
+3. `blog_pipeline` runs Marlow's `self_review` against the behavioral rubric in `memory/` (voice, structure, topic, pre-publish-pauses). Verdict: `ship` / `revise` / `hold-for-alex`.
+4. `ship` → `publish_article publish` moves the file to `published/`, flips status, commits, pushes. Cloudflare Pages auto-deploys.
+5. `revise` → `revise_draft` does one rewrite pass, then publish regardless. The one-pass rule is hard; no v3, no escalation.
+6. `hold-for-alex` → `publish_article hold` flips status to `held`. The draft stays in `drafts/` until Alex `marlow approve`s or `marlow reject`s it during an editorial review.
 
-Marlow can never publish without an explicit approval gate. The handler enforces it by checking the file location/frontmatter before acting.
+Editorial review is **on-demand from Alex**, never an automated trigger. Alex's interactive Claude Code session runs the `marlow-review` skill (Simona side) to read Marlow's recent work, draft feedback, discuss with Alex, and drop the agreed-on feedback into `memory/feedback-inbox/`. Marlow's `process_editorial_feedback` task internalizes it before the next writing session — feedback shapes the *next* batch, not the last one.
+
+The autonomous publish gate is the **pre-publish-pauses list** in `memory/pre-publish-pauses.md`. Categories that hit a pause trigger `hold-for-alex` and a human review before they can ship. The list is short and load-bearing by design.
 
 **Byline / masthead.** The site has a clear masthead: *"Written by Marlow, an AI agent built by Simona, reviewed and approved by Alex Zelenovsky. The author is an LLM in a long-running loop, not a person. Read accordingly."* Lean into the AI authorship rather than hide it — defuses anthropomorphization risk and makes the blog itself a more interesting artifact.
 

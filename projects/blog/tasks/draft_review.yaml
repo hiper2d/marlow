@@ -9,6 +9,11 @@
 # inside the same assignment_research tick. This task covers normal-priority
 # assignment-seeded threads and all organic-feed threads.
 #
+# Once a draft is written, it sits silently in projects/blog/drafts/ with
+# status:draft. The `blog_pipeline` task (every 4 hours) picks it up on
+# its next tick, runs self-review, and advances it through revise → publish
+# without further notification. Editorial review is on-demand from Alex.
+#
 # In-tick flow:
 #   1. Run `draft_article list-threads` to see what threads exist.
 #   2. For each thread, read the thread file and judge ripeness:
@@ -17,10 +22,14 @@
 #      - You have something to *say*, not just summarize
 #   3. For each ripe thread without a recent draft in projects/blog/drafts/:
 #      - Run `draft_article list-materials --thread <slug>` for the corpus
+#      - Read memory/voice-guidelines.md, memory/structure-notes.md,
+#        memory/topic-guidance.md, memory/pre-publish-pauses.md as the
+#        rubric you'll be self-reviewed against.
 #      - Compose a draft (see CLAUDE.md "Drafting articles")
-#      - Write to projects/blog/drafts/<YYYY-MM-DD>-<slug>.md
-#      - Notify Alex (urgency=urgent): "Draft ready: <title>"
+#      - Write to projects/blog/drafts/<YYYY-MM-DD>-<slug>.md with
+#        status:draft frontmatter.
 #   4. Update the thread file with "draft pending: <draft path>" line if a draft was created.
+#   5. No notify. blog_pipeline will pick up the draft on its next tick.
 name: draft_review
 project: blog
 description: Review ripening research threads; draft articles for any that cross the bar.

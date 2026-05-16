@@ -1,0 +1,42 @@
+# process_editorial_feedback — read any pending editorial feedback Simona
+# left in memory/feedback-inbox/ and internalize it before the next drafting
+# cycle.
+#
+# Fires every 6 hours. If the inbox is empty, exit clean — no work. If
+# non-empty, process each file:
+#   1. Run `process_editorial_feedback list` to see what's pending.
+#   2. For each file, run `process_editorial_feedback read --name <file>`
+#      to get the body.
+#   3. Classify each piece of feedback: voice / topic / structural /
+#      pre-publish-pause / habit / other.
+#   4. Update the matching behavioral file in memory/:
+#        - voice issues       → memory/voice-guidelines.md
+#        - topic issues       → memory/topic-guidance.md
+#        - structural issues  → memory/structure-notes.md
+#        - pre-publish pauses → memory/pre-publish-pauses.md
+#        - habits / misc      → memory/working.md (or a dedicated file
+#                               once it earns its keep)
+#      Edit the relevant file directly. Be surgical — don't rewrite the
+#      whole file, just add / refine the affected section.
+#   5. If you disagree with a piece of feedback, do NOT silently drop it.
+#      Note the disagreement in DEVLOG.md under a new dated section
+#      (`## YYYY-MM-DD — editorial feedback processed`) with reasoning.
+#      Editorial pushback is legitimate; it just has to be on the record.
+#   6. Append a DEVLOG entry summarizing what was internalized and what
+#      was pushed back on.
+#   7. Run `process_editorial_feedback archive --name <file>` to move
+#      the processed inbox file to memory/feedback-archive/.
+#
+# This task runs independently of `draft_review` so the behavioral files
+# stay current. By the time the next `draft_review` fires, the rubric
+# Marlow reads is already up to date.
+name: process_editorial_feedback
+project: blog
+description: Read editorial feedback from Simona/Alex and update behavioral files.
+schedule: "0 */6 * * *"
+priority: normal
+must_run_within_hours: 12
+subtasks:
+  - id: process_inbox
+    handler: process_editorial_feedback
+    context: {}

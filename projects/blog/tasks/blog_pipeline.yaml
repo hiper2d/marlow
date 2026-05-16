@@ -1,0 +1,65 @@
+# blog_pipeline — advance the autonomous publish state machine by one step.
+#
+# Fires every 4 hours. Each run advances exactly one draft through one
+# pipeline stage. The full sequence per draft is:
+#
+#   draft (no self-review)   → self_review writes <slug>.self-review.md
+#   verdict=ship             → publish (move to published/, push)
+#   verdict=hold-for-alex    → hold (flip status to `held`, wait)
+#   verdict=revise, v0       → revise_draft writes v2
+#   verdict=revise, v>=1     → publish (already revised once, ship)
+#   status=held              → no action (waiting for Alex)
+#
+# At most one stage per tick. Multiple drafts in different stages: the
+# pipeline picks one per tick in priority order (self_review > hold >
+# revise > publish). End-to-end latency for a draft is roughly 12-16
+# hours, which is fine — there is no urgency in the editorial loop.
+#
+# In-tick flow for Marlow:
+#   1. `uv run python handlers/blog_pipeline.py state` — get the current
+#      pipeline snapshot. JSON includes `next_action` and `next_slug`.
+#   2. If `next_action: none`, exit clean (no actionable drafts).
+#   3. Dispatch on `next_action`:
+#      - self_review:
+#          `self_review.py materials --slug <slug>` to load draft + rubric.
+#          Score the draft against voice-guidelines, structure-notes,
+#          topic-guidance, and pre-publish-pauses. Write the review to
+#          `projects/blog/drafts/<slug>.self-review.md` with frontmatter:
+#            ---
+#            slug: <slug>
+#            reviewed_at: <UTC ISO8601>
+#            verdict: ship | revise | hold-for-alex
+#            pauses_triggered: [<pause names>]  # only if verdict=hold-for-alex
+#            ---
+#          Body: per-rubric scoring + specific lines flagged + the
+#          rationale. The verdict has to be defensible from the body.
+#      - hold:
+#          `publish_article.py hold --slug <slug> --reason "<short>"`.
+#          The reason is which pause(s) triggered.
+#      - revise:
+#          `revise_draft.py materials --slug <slug>` to load draft +
+#          review + rubric + thread bodies.
+#          `revise_draft.py archive --slug <slug>` to move v1 aside.
+#          Rewrite the draft to `projects/blog/drafts/<slug>.md`. Write a
+#          `<slug>.revision-notes.md` describing applied vs defended
+#          critiques. The self-review file is consumed by archive.
+#      - publish:
+#          `publish_article.py publish --slug <slug>`. The handler moves
+#          the draft to `published/`, flips status to `published`,
+#          archives versions, commits and pushes.
+#   4. Write outcome to /tmp/marlow-tick-result.json.
+#
+# No notify in any branch — autonomous publish does not page Alex.
+# Editorial review is on-demand only. DEVLOG should get a one-line entry
+# only for publish events (the publish push itself is the audit trail
+# for everything else).
+name: blog_pipeline
+project: blog
+description: Advance the autonomous draft → self-review → (revise) → publish state machine by one step.
+schedule: "0 */4 * * *"
+priority: normal
+must_run_within_hours: 8
+subtasks:
+  - id: advance_pipeline
+    handler: blog_pipeline
+    context: {}
