@@ -182,7 +182,7 @@ When invoked with this handler (every-3-days `draft_review` task, or ad-hoc):
    - No existing draft for this thread in `projects/blog/drafts/` from the last 14 days
 3. For each thread that crosses the bar:
    - Run `list-materials --thread <slug>` to get the thread file plus every research/candidate note that mentions the thread
-   - **Read your rubric.** `memory/voice-guidelines.md`, `memory/structure-notes.md`, `memory/topic-guidance.md`, `memory/pre-publish-pauses.md`, `memory/visual-guidelines.md`. These are what you'll self-review against — keep them in mind while drafting.
+   - **Read your rubric.** `memory/voice-guidelines.md`, `memory/structure-notes.md`, `memory/topic-guidance.md`, `memory/pre-publish-pauses.md`, `memory/visual-guidelines.md`, `memory/thread-structure.md`. These are what you'll self-review against — keep them in mind while drafting.
    - Compose a 600–1500 word draft. More polished than internal notes, still direct and specific. Cite sources inline (`[Source name](URL)`). No filler, no "in conclusion" wrapping
    - Write to `projects/blog/drafts/<YYYY-MM-DD>-<slug>.md` with this frontmatter:
 
@@ -208,7 +208,8 @@ header_image: /images/<YYYY-MM-DD>-<slug>.png
 
    Handler writes to `projects/blog/site/public/images/<slug>.png` and is idempotent (won't overwrite). If the API call fails (missing key, network error), keep going with the draft — leave `header_image` out of the frontmatter and DEVLOG a note. A draft without a header is fine; a publish with no image just renders without one.
 
-5. Append a line to `projects/research/threads/<slug>.md` noting the draft path and date.
+5. **Rewrite the thread file as a current synthesis.** For each thread named in the draft's `mentions:` list, rewrite `projects/research/threads/<slug>.md` to reflect the state of the arc *including* the new article you just drafted. See `memory/thread-structure.md` for the standard shape (frontmatter, "What this thread tracks", "Where the arc stands now", "Sources and anchors", "Open questions / what to watch"). Bump `last_synthesized`, increment `posts`, update `status` if the situation has shifted. The thread file is the current view; git history preserves the prior versions.
+
 6. **No notify.** Drafts are silent. The `blog_pipeline` task picks the draft up on its next tick (every 4 hours), runs self-review, and advances it through revise → publish. Editorial review is on-demand from Alex through interactive sessions — never an autonomous trigger from your side.
 
 ### Advancing the blog pipeline — handler `blog_pipeline`

@@ -36,6 +36,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DRAFTS = REPO_ROOT / "projects" / "blog" / "drafts"
 MEMORY = REPO_ROOT / "memory"
+THREADS = REPO_ROOT / "projects" / "research" / "threads"
 
 BEHAVIORAL_FILES = {
     "voice_guidelines": MEMORY / "voice-guidelines.md",
@@ -156,6 +157,21 @@ def commit_review(slug: str) -> dict:
     image_path = REPO_ROOT / "projects" / "blog" / "site" / "public" / "images" / f"{slug}.png"
     if image_path.exists():
         paths.append(str(image_path.relative_to(REPO_ROOT)))
+
+    # Thread files referenced in the draft's mentions — Marlow rewrites
+    # each one during drafting to reflect the new article (see
+    # memory/thread-structure.md). Ship the rewrite with this commit.
+    draft_meta, _ = _parse_frontmatter(_read(draft))
+    mentions = [
+        m.strip().strip('"').strip("'")
+        for m in draft_meta.get("mentions", "").strip("[]").split(",")
+        if m.strip()
+    ]
+    for thread_slug in mentions:
+        thread_path = THREADS / f"{thread_slug}.md"
+        if thread_path.exists():
+            paths.append(str(thread_path.relative_to(REPO_ROOT)))
+
     rc, out = _git("add", "--", *paths)
     if rc != 0:
         return {"ok": False, "error": f"git add: {out}"}
