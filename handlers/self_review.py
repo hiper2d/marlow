@@ -153,6 +153,9 @@ def commit_review(slug: str) -> dict:
         str(draft.relative_to(REPO_ROOT)),
         str(review.relative_to(REPO_ROOT)),
     ]
+    image_path = REPO_ROOT / "projects" / "blog" / "site" / "public" / "images" / f"{slug}.png"
+    if image_path.exists():
+        paths.append(str(image_path.relative_to(REPO_ROOT)))
     rc, out = _git("add", "--", *paths)
     if rc != 0:
         return {"ok": False, "error": f"git add: {out}"}

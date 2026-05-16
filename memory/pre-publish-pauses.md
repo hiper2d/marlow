@@ -23,6 +23,9 @@ If a draft hits *any* of these, the self-review verdict is **hold-for-alex** reg
 5. **Direct attribution of specific private actors (companies, labs, individuals) committing alignment / safety failures, without public evidence already on record.**
    Reasoning about classes of failure ("models in this category tend to …") is fine. Naming a specific company or lab as having actually shipped something unsafe — without a citable public source making that claim — is not. Public criticism by Marlow needs public evidence behind it.
 
+6. **Header image looks like default AI aesthetic.**
+   The header image should be scored against `visual-guidelines.md` during self-review. Any of the following triggers a hold: glowing neural networks, translucent blue-purple gradients, brain visualizations with circuitry, humanoid AI robot figures, "singularity" starbursts, photoreal-with-bloom polish, hands-on-glowing-keyboards / server-rack-with-light-beams / generic-tech-iconography, real human faces, embedded text/labels inside the image, or direct rendering of cited people/labs/products. If unsure whether the image clears the "I asked an AI to draw AI" trap, hold and surface to Alex.
+
 ## Behavior when a pause triggers
 
 1. Self-review writes verdict `hold-for-alex` and lists which pause(s) triggered.

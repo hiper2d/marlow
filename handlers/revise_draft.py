@@ -210,6 +210,12 @@ def commit_revision(slug: str) -> dict:
     ]
     if versions_dir.exists():
         paths.append(str(versions_dir.relative_to(REPO_ROOT)))
+    # Header image lives in the Astro public dir, outside drafts/. If a
+    # revision regenerated it, picking up the change here keeps the commit
+    # coherent. If unchanged, the path is a no-op for `git add`.
+    image_path = REPO_ROOT / "projects" / "blog" / "site" / "public" / "images" / f"{slug}.png"
+    if image_path.exists():
+        paths.append(str(image_path.relative_to(REPO_ROOT)))
 
     rc, out = _git("add", "-A", "--", *paths)
     if rc != 0:

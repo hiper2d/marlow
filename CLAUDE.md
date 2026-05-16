@@ -182,7 +182,7 @@ When invoked with this handler (every-3-days `draft_review` task, or ad-hoc):
    - No existing draft for this thread in `projects/blog/drafts/` from the last 14 days
 3. For each thread that crosses the bar:
    - Run `list-materials --thread <slug>` to get the thread file plus every research/candidate note that mentions the thread
-   - **Read your rubric.** `memory/voice-guidelines.md`, `memory/structure-notes.md`, `memory/topic-guidance.md`, `memory/pre-publish-pauses.md`. These are what you'll self-review against — keep them in mind while drafting.
+   - **Read your rubric.** `memory/voice-guidelines.md`, `memory/structure-notes.md`, `memory/topic-guidance.md`, `memory/pre-publish-pauses.md`, `memory/visual-guidelines.md`. These are what you'll self-review against — keep them in mind while drafting.
    - Compose a 600–1500 word draft. More polished than internal notes, still direct and specific. Cite sources inline (`[Source name](URL)`). No filler, no "in conclusion" wrapping
    - Write to `projects/blog/drafts/<YYYY-MM-DD>-<slug>.md` with this frontmatter:
 
@@ -194,11 +194,22 @@ date: <YYYY-MM-DD>
 status: draft
 mentions: [<thread-slug>, ...]
 summary: "<1-2 sentence dek that appears under the title>"
+header_image: /images/<YYYY-MM-DD>-<slug>.png
 ---
 ```
 
-4. Append a line to `projects/research/threads/<slug>.md` noting the draft path and date.
-5. **No notify.** Drafts are silent. The `blog_pipeline` task picks the draft up on its next tick (every 4 hours), runs self-review, and advances it through revise → publish. Editorial review is on-demand from Alex through interactive sessions — never an autonomous trigger from your side.
+4. **Generate the header image.** Compose a prompt per the three-layer pattern in `memory/visual-guidelines.md` (subject anchor + style directive + composition note). The prompt should map *metaphorically* to the article's through-line — not be a literal depiction of the topic. Then call:
+
+   ```
+   uv run python handlers/generate_header_image.py generate \
+     --slug <YYYY-MM-DD>-<slug> \
+     --prompt "<your composed prompt>"
+   ```
+
+   Handler writes to `projects/blog/site/public/images/<slug>.png` and is idempotent (won't overwrite). If the API call fails (missing key, network error), keep going with the draft — leave `header_image` out of the frontmatter and DEVLOG a note. A draft without a header is fine; a publish with no image just renders without one.
+
+5. Append a line to `projects/research/threads/<slug>.md` noting the draft path and date.
+6. **No notify.** Drafts are silent. The `blog_pipeline` task picks the draft up on its next tick (every 4 hours), runs self-review, and advances it through revise → publish. Editorial review is on-demand from Alex through interactive sessions — never an autonomous trigger from your side.
 
 ### Advancing the blog pipeline — handler `blog_pipeline`
 
@@ -223,7 +234,8 @@ Dispatched from `blog_pipeline` when a draft has no self-review yet.
    - **Voice** — does it sound like you, or like a generic blog post? Specific lines that drift?
    - **Structure** — opening, citation hygiene, closing, length. Anything in the "avoid" lists?
    - **Topic** — is the through-line nameable in one sentence? Does the piece actually say something, or just summarize?
-   - **Pre-publish pauses** — does any item on the list trigger? Even a hint of one triggers.
+   - **Header image** — open the file at `projects/blog/site/public/images/<slug>.png` (it's a binary PNG; describe what you see and score against `memory/visual-guidelines.md`). Does it hit any "always avoid" items? Is the style consistent with the rest of the blog? If the image triggers any of the visual-guidelines red flags (generic AI imagery, glowing networks, humanoid AI faces, photoreal-with-bloom polish, etc.), the verdict is `hold-for-alex` regardless of prose quality.
+   - **Pre-publish pauses** — does any item on the list trigger? Even a hint of one triggers. Item 6 specifically covers the header-image failure modes.
 3. Decide a verdict:
    - `ship` — voice, structure, topic all clean; no pauses triggered.
    - `revise` — meaningful issues you can fix in one rewrite. Be honest with yourself; don't pre-cap your own work.

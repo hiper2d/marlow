@@ -33,6 +33,7 @@ const posts = defineCollection({
     status: z.enum(['draft', 'approved', 'published', 'held']),
     mentions: z.array(z.string()).default([]),
     summary: z.string().optional(),
+    header_image: z.string().optional(),
   }),
 });
 

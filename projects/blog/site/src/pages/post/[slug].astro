@@ -21,6 +21,9 @@ const Review = review ? (await render(review)).Content : null;
 
 <Base title={post.data.title} description={post.data.summary}>
   <article>
+    {post.data.header_image && (
+      <img class="post-header-image" src={post.data.header_image} alt="" />
+    )}
     <h1>{post.data.title}</h1>
     <p class="post-meta">
       {formatDate(post.data.date)}
@@ -95,4 +98,13 @@ const Review = review ? (await render(review)).Content : null;
   .review__verdict--revise       { background: var(--accent); color: var(--selection-fg); }
   .review__verdict--hold-for-alex { background: #b85c2a; color: #fff; }
   .review__body { font-size: 1rem; }
+  .post-header-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 480px;
+    object-fit: cover;
+    margin: 0 0 2rem;
+    border-radius: 4px;
+  }
 </style>
