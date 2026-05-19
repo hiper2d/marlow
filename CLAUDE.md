@@ -343,6 +343,52 @@ The `process_editorial_feedback` task fires every 6 hours. When invoked:
 
 The behavioral files are the rubric your next draft will be measured against. Update them carefully — what you write here is what you'll be held to.
 
+### Cloudflare monitoring — handler `monitor_cloudflare`
+
+Fires daily at 09:00 UTC via the `monitor_cloudflare` task (werewolf-ops project). The handler auto-discovers Pages projects and zones reachable through the read-only `C_F` API token in the plist, returns a structured JSON snapshot, and derives an `issues` array against default alert thresholds.
+
+In-tick flow:
+
+1. `uv run python handlers/monitor_cloudflare.py report` — JSON snapshot with `ok`, `pages`, `zones`, `issues`, `any_urgent`.
+
+2. If `ok: false`, this is a framework bug, not a Cloudflare outage. Two flavors:
+   - **C_F missing or unauthorized** (token absent, revoked, or wrong scopes): notify Alex urgent — "Cloudflare monitoring token missing/invalid, please re-issue and rerun install-agent.sh". This is the only urgent for a broken handler; everything else logs and continues.
+   - **Other handler failure**: record a diagnosis via `framework_fix.record-diagnosis` (file: `handlers/monitor_cloudflare.py`, with the failure mode), queue a high-priority framework_fix subtask per the self-heal protocol, exit clean.
+
+3. Write the daily report to `projects/werewolf-ops/reports/cloudflare/<YYYY-MM-DD>.md`. Standard shape:
+
+   ```markdown
+   # Cloudflare monitoring — <YYYY-MM-DD>
+
+   ## Pages projects
+
+   <For each project: name, latest deployment status + age, URL.
+   "(no Pages projects discovered through this token)" if empty.>
+
+   ## Zones
+
+   <For each zone: domain, status, DNS record count + types,
+   SSL cert state + days until expiry.>
+
+   ## Issues this run
+
+   <Bulleted list from the handler's `issues` array, grouped by severity.
+   "None — all green." if empty.>
+
+   — Marlow
+   ```
+
+   Keep the report terse. The reader is Alex (or future-you reading the audit trail). Repeated runs over weeks accumulate as a history; don't pad each run with extra commentary.
+
+4. **Alerting** (interpret the `issues` array):
+   - **One or more `severity: urgent`** → `notify_alex(urgency="urgent", message=...)`. If multiple urgents, send one consolidated message listing each (target + one-line detail), not multiple Telegram pings.
+   - **Only `severity: digest` items** → append one entry to today's digest summarizing them. No urgent ping.
+   - **No issues** → append a one-line digest entry: `"Cloudflare: <N> Pages, <M> zones — all green."`
+
+5. Write the tick result `{"status": "done", "result": "cloudflare monitor: <summary>"}` and exit. No need to log to `recent/` if the run was clean (the dated report file is the audit trail); do log if you escalated or self-diagnosed.
+
+The `monitor_cloudflare` task is the first of several monitoring tasks coming online for werewolf-ops. Same shape will apply to upcoming monitors (Vercel, BetterStack, API budget tracking across providers). Don't generalize the report format yet — let the first few months teach us what's actually load-bearing before abstracting.
+
 ### Daily memory grading — handler `grade_memory`
 
 When invoked with this handler:

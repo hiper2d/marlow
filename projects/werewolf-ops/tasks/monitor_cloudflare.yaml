@@ -1,0 +1,44 @@
+# monitor_cloudflare — daily health check for Cloudflare-hosted assets.
+#
+# Fires daily at 09:00 UTC. Reports on:
+#   - Pages projects (Marlow blog, if/when it's on Pages)
+#   - Zones (werewolf domain, etc.) — status, DNS records, SSL certs
+#
+# The handler auto-discovers everything reachable through the C_F API
+# token. Token scope is read-only (Cloudflare Pages: Read + Zone: Read +
+# DNS: Read + SSL: Read), baked into the launchd plist via install-agent.sh.
+#
+# Alert behavior (Marlow's session interprets the handler's `issues`
+# array):
+#   - severity: urgent  → notify_alex(urgency="urgent") with the issue
+#                         summary. Reserved for: failed Pages deploys,
+#                         non-active zone status, SSL certs expiring
+#                         within 14 days.
+#   - severity: digest  → append to today's digest. Used for stale
+#                         deploys (>48h since last success) and other
+#                         informational findings.
+#
+# In-tick flow:
+#   1. Run `uv run python handlers/monitor_cloudflare.py report`.
+#   2. Parse the JSON. If `ok: false`, treat as a framework bug — record
+#      a diagnosis via framework_fix (handler is broken, C_F missing or
+#      API call failing). Notify Alex urgent only if it's the auth
+#      failing (C_F invalid / revoked).
+#   3. Write the report to projects/werewolf-ops/reports/cloudflare/<YYYY-MM-DD>.md.
+#      See the format in CLAUDE.md "Cloudflare monitoring" section.
+#   4. If `any_urgent: true`, send one urgent Telegram per issue (or one
+#      consolidated urgent if there are multiple). If only digest-severity
+#      issues, append a single digest entry.
+#   5. If no issues, append a one-line digest entry: "Cloudflare: <N> Pages,
+#      <M> zones — all green."
+#   6. Write the tick result and exit.
+name: monitor_cloudflare
+project: werewolf-ops
+description: Daily Cloudflare health check — Pages deploys + zone status + SSL.
+schedule: "0 9 * * *"
+priority: normal
+must_run_within_hours: 12
+subtasks:
+  - id: check_cloudflare
+    handler: monitor_cloudflare
+    context: {}
