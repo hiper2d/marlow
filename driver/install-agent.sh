@@ -37,51 +37,68 @@ if launchctl print "gui/$(id -u)/${LABEL}" >/dev/null 2>&1; then
     launchctl bootout "gui/$(id -u)/${LABEL}" || true
 fi
 
-# Optional env vars baked into the plist. O_K (OpenAI image API key) is
-# read from the install-time shell environment if present — set it for
-# this one invocation: `O_K=<key> bash driver/install-agent.sh`. The
-# plist file lives at ~/Library/LaunchAgents/ (not in the repo), so the
-# baked value never reaches git.
-ENV_EXTRA=""
-if [ -n "${O_K:-}" ]; then
-    ENV_EXTRA="
-        <key>O_K</key>
-        <string>${O_K}</string>"
-    echo "including O_K in plist EnvironmentVariables"
-else
-    echo "O_K not set in install-time env — plist will not include it"
-    echo "  (handlers/generate_header_image.py will fail clean on tick;"
-    echo "   re-run with O_K=<key> bash driver/install-agent.sh to add it)"
-fi
+# Plist generation, delegated to Python (plistlib stdlib) so we can:
+#   - PRESERVE existing EnvironmentVariables from the plist if it's already
+#     there. Running install without an env var no longer wipes the var —
+#     vars stay until you explicitly override them or delete the plist.
+#   - Override with install-time env values when set:
+#       `O_K=<key> bash driver/install-agent.sh`           — set/update O_K
+#       `C_F=<token> bash driver/install-agent.sh`         — set/update C_F
+#       `O_K=<key> C_F=<token> bash driver/install-agent.sh` — both at once
+#       `bash driver/install-agent.sh`                     — preserve all
+#   - PATH always gets the deterministic value (don't preserve a stale PATH).
+#
+# Plist file lives at ~/Library/LaunchAgents/ (not in the repo), so any
+# baked secret never reaches git. To clear a baked secret, edit the plist
+# directly with PlistBuddy or delete the whole file before re-running.
 
-cat > "$PLIST_PATH" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>${LABEL}</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/bin/bash</string>
-        <string>${TICK_PATH}</string>
-    </array>
-    <key>StartInterval</key>
-    <integer>${INTERVAL}</integer>
-    <key>RunAtLoad</key>
-    <false/>
-    <key>StandardOutPath</key>
-    <string>${LOG_PATH}</string>
-    <key>StandardErrorPath</key>
-    <string>${LOG_PATH}</string>
-    <key>EnvironmentVariables</key>
-    <dict>
-        <key>PATH</key>
-        <string>${HOME}/.local/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>${ENV_EXTRA}
-    </dict>
-</dict>
-</plist>
-EOF
+/usr/bin/python3 - "$PLIST_PATH" "$LABEL" "$TICK_PATH" "$LOG_PATH" "$INTERVAL" "$HOME" <<'PYEOF'
+import os, plistlib, sys
+from pathlib import Path
+
+plist_path = Path(sys.argv[1])
+label, tick_path, log_path, interval, home = sys.argv[2:7]
+
+# Preserve any EnvironmentVariables already in the plist.
+preserved = {}
+if plist_path.exists():
+    try:
+        with plist_path.open("rb") as f:
+            existing = plistlib.load(f)
+        preserved = dict(existing.get("EnvironmentVariables", {}) or {})
+    except Exception:
+        preserved = {}
+
+env = dict(preserved)
+# Force PATH every time — it's a known deterministic value.
+env["PATH"] = f"{home}/.local/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"
+
+# Pull known secret-style vars from install-time env if present.
+# Add more names here when a new monitored target gets its own token.
+for k in ("O_K", "C_F"):
+    v = os.environ.get(k)
+    if v:
+        env[k] = v
+
+plist = {
+    "Label": label,
+    "ProgramArguments": ["/bin/bash", tick_path],
+    "StartInterval": int(interval),
+    "RunAtLoad": False,
+    "StandardOutPath": log_path,
+    "StandardErrorPath": log_path,
+    "EnvironmentVariables": env,
+}
+
+with plist_path.open("wb") as f:
+    plistlib.dump(plist, f)
+
+extra = sorted(k for k in env if k != "PATH")
+if extra:
+    print(f"plist EnvironmentVariables: PATH + {', '.join(extra)}")
+else:
+    print("plist EnvironmentVariables: PATH only (no secrets set)")
+PYEOF
 
 launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
 
