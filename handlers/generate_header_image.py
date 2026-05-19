@@ -40,6 +40,12 @@ IMAGES_DIR = REPO_ROOT / "projects" / "blog" / "site" / "public" / "images"
 MODEL = "gpt-image-2"
 DEFAULT_SIZE = "1536x1024"
 
+# Mirror plist env so standalone invocations see the same secrets the
+# launchd-fired tick sees.
+sys.path.insert(0, str(REPO_ROOT))
+from driver.env_loader import import_plist_env  # noqa: E402
+import_plist_env()
+
 
 def _load_api_key() -> str | None:
     return os.environ.get("O_K")
