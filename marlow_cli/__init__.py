@@ -342,6 +342,55 @@ def cmd_reject(args):
     sys.exit(0 if result.get("ok") else 1)
 
 
+def cmd_run(args):
+    """Queue a one-off subtask for the named handler, then fire `marlow tick`.
+
+    Shortcut around the queue-and-tick pattern. Use this when you want
+    Marlow to run a handler right now — outside its cron cadence —
+    without writing inline Python. Handlers requiring per-subtask context
+    (e.g., `draft_article` needs a thread slug) should use their dedicated
+    CLI command (`marlow draft <slug>`); this is for context-free handlers
+    like `monitor_cloudflare`, `blog_pipeline`, `process_editorial_feedback`,
+    `framework_fix`, etc.
+    """
+    _ensure_repo_cwd()
+    sys.path.insert(0, str(REPO_ROOT))
+    from datetime import datetime, timezone
+    from driver.scheduler import QueueItem, load_queue, save_queue, iso
+
+    handler = args.handler
+    handler_path = REPO_ROOT / "handlers" / f"{handler}.py"
+    if not handler_path.exists():
+        print(f"no handler at {handler_path}", file=sys.stderr)
+        available = sorted(
+            f.stem
+            for f in (REPO_ROOT / "handlers").glob("*.py")
+            if not f.name.startswith("_")
+        )
+        print(f"available handlers: {available}", file=sys.stderr)
+        sys.exit(1)
+
+    now = datetime.now(timezone.utc)
+    queue = load_queue()
+    item = QueueItem(
+        id=f"{handler}_ondemand_{now.strftime('%Y%m%d_%H%M')}",
+        parent_task=f"{handler}_ondemand",
+        project=args.project,
+        handler=handler,
+        context={"on_demand": True},
+        status="pending",
+        priority="high",
+        queued_at=iso(now),
+    )
+    queue.append(item)
+    save_queue(queue)
+    print(f"queued: {item.id}")
+
+    if args.no_tick:
+        return
+    sys.exit(_run_script(DRIVER_DIR / "tick.sh"))
+
+
 # ─── main ──────────────────────────────────────────────────────────────────
 
 
@@ -404,6 +453,12 @@ def main():
     p_draft = sub.add_parser("draft", help="Queue an on-demand draft for a thread")
     p_draft.add_argument("thread", help="Thread slug (no .md extension)")
     p_draft.set_defaults(func=cmd_draft)
+
+    p_run = sub.add_parser("run", help="Queue a one-off subtask for a handler + fire tick (jumps cron)")
+    p_run.add_argument("handler", help="Handler name (filename in handlers/, without .py)")
+    p_run.add_argument("--project", default="_framework", help="Project label for the subtask (default: _framework)")
+    p_run.add_argument("--no-tick", action="store_true", help="Just queue; don't fire tick")
+    p_run.set_defaults(func=cmd_run)
 
     p_approve = sub.add_parser("approve", help="Ship a draft — publishes a draft or releases a held draft")
     p_approve.add_argument("slug", help="Draft slug (no .md extension)")
