@@ -161,16 +161,33 @@ def commit_review(slug: str) -> dict:
     # Thread files referenced in the draft's mentions — Marlow rewrites
     # each one during drafting to reflect the new article (see
     # memory/thread-structure.md). Ship the rewrite with this commit.
+    # A missing thread file is a drafting-tick miss: the article will ship
+    # with a mentions: link that 404s on the live site. Fail loudly so the
+    # drafting tick is redone (write or open the thread) before publish.
     draft_meta, _ = _parse_frontmatter(_read(draft))
     mentions = [
         m.strip().strip('"').strip("'")
         for m in draft_meta.get("mentions", "").strip("[]").split(",")
         if m.strip()
     ]
+    missing_threads = []
     for thread_slug in mentions:
         thread_path = THREADS / f"{thread_slug}.md"
         if thread_path.exists():
             paths.append(str(thread_path.relative_to(REPO_ROOT)))
+        else:
+            missing_threads.append(thread_slug)
+    if missing_threads:
+        return {
+            "ok": False,
+            "error": (
+                f"draft references thread(s) with no file on disk: "
+                f"{', '.join(missing_threads)}. Expected at "
+                f"projects/research/threads/<slug>.md. Open or rewrite the "
+                f"thread per memory/thread-structure.md before commit-review."
+            ),
+            "missing_threads": missing_threads,
+        }
 
     rc, out = _git("add", "--", *paths)
     if rc != 0:
