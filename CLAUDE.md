@@ -365,10 +365,23 @@ In-tick flow:
    <For each project: name, latest deployment status + age, URL.
    "(no Pages projects discovered through this token)" if empty.>
 
+   ## Workers scripts
+
+   <For each script: name, last modified, latest deployment id + age.
+   "(no Workers scripts discovered through this token)" if empty.>
+
    ## Zones
 
    <For each zone: domain, status, DNS record count + types,
    SSL cert state + days until expiry.>
+
+   ## Registered domains
+
+   <For each domain: name, expires_at (with days remaining),
+   auto-renew on/off, current_registrar.
+   "(no registered domains discovered through this token)" if empty.
+   The most consequential section — domain expiry is the failure mode
+   that turns the site dark.>
 
    ## Issues this run
 
@@ -378,7 +391,7 @@ In-tick flow:
    — Marlow
    ```
 
-   Keep the report terse. The reader is Alex (or future-you reading the audit trail). Repeated runs over weeks accumulate as a history; don't pad each run with extra commentary.
+   Keep the report terse. The reader is Alex (or future-you reading the audit trail). Repeated runs over weeks accumulate as a history; don't pad each run with extra commentary. Empty sections still get their header — the absence of a Pages project is itself data (it tells the reader nothing is hosted on Pages under this token's scope).
 
 4. **Alerting** (interpret the `issues` array):
    - **One or more `severity: urgent`** → `notify_alex(urgency="urgent", message=...)`. If multiple urgents, send one consolidated message listing each (target + one-line detail), not multiple Telegram pings.
