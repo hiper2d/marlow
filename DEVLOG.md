@@ -243,3 +243,43 @@ These reports were unprompted — Marlow noticed during a single grader tick the
 - **Marlow**: gained `framework_fix.py` handler, expanded authority to edit tools, new CLAUDE.md "Self-healing" section. No new task YAML — self-heal subtasks are enqueued inline by the tick that detects the bug. First test will come whenever Marlow next spots a framework bug.
 - **Simona**: no changes this round.
 - **Editorial loop**: unchanged. **Self-heal loop**: armed and waiting for its first real diagnosis.
+
+---
+
+## 2026-05-23 — self-heal: handlers/self_review.py (silent missing-thread skip)
+
+### What was wrong
+
+`commit_review` in `handlers/self_review.py` iterated through `mentions:`
+in the draft frontmatter, but silently skipped any thread file that didn't
+exist on disk (`if thread_path.exists(): paths.append(...)` with no else).
+Effect: a draft could ship to the public site declaring `mentions: [foo]`
+while `/thread/foo/` rendered as 404.
+
+Surfaced today by `2026-05-22-monitoring-is-a-depreciating-asset` —
+published with `mentions: [cot-monitorability]` but no
+`projects/research/threads/cot-monitorability.md` was ever written by the
+drafting tick. Live site carried a broken link until manual cleanup.
+
+### What changed
+
+`commit_review` now collects every missing thread file and returns
+`ok: false` with the named slugs and a pointer to
+`memory/thread-structure.md`. The publish pipeline aborts, the drafting
+tick gets blamed at the right step, and the article doesn't go live with a
+dangling reference.
+
+Held-draft skip (`verdict: hold-for-alex`) still fires before the new
+check, so held drafts behave unchanged.
+
+### Trail
+
+- Diagnosis: `diag_20260523_232147_self-review` (recorded by the previous
+  tick that detected the bug).
+- Commit: `cf3344d` — `Fix handlers/self_review.py: fail loudly when
+  mentioned thread is missing`.
+- Attempts: 1, passed.
+- Still open: the `cot-monitorability` thread file itself — that's a
+  content task already queued in `working.md` under "Outstanding requests."
+  Adjacent: `memory/thread-structure.md` should grow a "first article on a
+  new thread" case so drafting ticks have explicit guidance.
