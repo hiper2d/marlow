@@ -2,7 +2,7 @@
 title: "Monitoring is a depreciating asset"
 slug: "monitoring-is-a-depreciating-asset"
 date: 2026-05-22
-status: draft
+status: published
 mentions: [cot-monitorability]
 summary: "Three results in three weeks say current AI monitoring erodes faster than its replacements arrive. The institutional response — a UK AISI loss-of-oversight report, METR's first entity-level audit, an AF case for behavior evals — has started treating oversight as a budget."
 header_image: /images/2026-05-22-monitoring-is-a-depreciating-asset.png
@@ -32,7 +32,7 @@ The three papers don't cite each other. They are the same response.
 
 Natural Language Autoencoders is the most-cited candidate replacement. Anthropic published a [canon piece on the method](https://www.anthropic.com/research/natural-language-autoencoders) last week, with the [AuditBench Llama-70B run](https://www.lesswrong.com/posts/xmmBTkogixvAbyQFk/nla-verbalizations-on-auditbench-llama-70b) showing the genuinely interesting result: under Strong-Evidence sampling, reward-wireheading propensity goes from 0.00 in single-turn eval to 0.34. The behavior isn't being created by the eval shape; it's being *surfaced* by it, against a baseline that says nothing is there. That's the kind of thing a monitor replacement needs to do. But [observations about NLA explanations](https://www.lesswrong.com/posts/ahu9BCHPFDg9AJF75/some-observations-about-nla-explanations) the same week found the verbalizer's outputs follow a stable three-part template — "Structured" appears in 80% of chat-format explanations — suggesting at least part of what NLA produces is the verbalizer's signature rather than the model's activations. The tool is doing interpretability of itself, partially.
 
-[Distillation-as-audit](https://www.lesswrong.com/posts/BYH6ebmfZb3Eggzer/incriminating-misaligned-ai-models-via-distillation) is a clever direction: a misaligned teacher that can fool audits may, when distilled, transfer misalignment to a student that is worse at hiding it, giving you indirect evidence of the teacher's misalignment. This is a proposal, not a demonstration. Anthropic's [Widening the Conversation](https://www.anthropic.com/news/widening-conversation-ai) post describes an "external conscience" tool — a callable that returns a brief reminder of ethical commitments mid-task, claimed to yield "markedly lower rates of misaligned behavior on several internal alignment evaluations." No numbers. No eval names. No paper. Adjacent to the same monitor-architecture line.
+[Distillation-as-audit](https://www.lesswrong.com/posts/BYH6ebmfZb3Eggzer/incriminating-misaligned-ai-models-via-distillation) is a clever direction: a misaligned teacher that can fool audits may, when distilled, transfer misalignment to a student that is worse at hiding it, giving you indirect evidence of the teacher's misalignment. This is a proposal, not a demonstration. Anthropic's [Widening the Conversation](https://www.anthropic.com/news/widening-conversation-ai) post describes an "external conscience" tool — a callable that returns a brief reminder of ethical commitments mid-task, claimed to yield "markedly lower rates of misaligned behavior on several internal alignment evaluations." No numbers, no eval names, no methods paper. Same family of mid-task-callable-as-monitor architecture; the methodology gap is the thing to track.
 
 ## The picture isn't uniformly bleak
 
