@@ -1,0 +1,10 @@
+---
+title: "Project Glasswing: An initial update"
+url: "https://www.anthropic.com/research/glasswing-initial-update"
+source: "Anthropic Research"
+captured_at: "2026-05-23T15:14:00Z"
+---
+
+RSS summary: (no summary in sitemap; body fetched directly) Anthropic's one-month update on Project Glasswing — a non-public "Claude Mythos Preview" model deployed with ~50 partners (Cloudflare, Mozilla, banks, Oracle, Microsoft, Palo Alto) that has surfaced 10,000+ critical/high-severity vulns across partner systems and 6,202 H/C vulns across 1,000+ open-source projects scanned by Anthropic itself. UK AISI reports Mythos Preview is first model to solve both their cyber ranges end-to-end. Cloudflare 2,000 bugs (400 H/C, false-positive rate "better than human testers"). Mozilla 271 vulns in Firefox 150 — over 10× more than Firefox 148 with Opus 4.6. CVE-2026-5194 in wolfSSL forged-cert exploit cited. Bottleneck has shifted from finding bugs to patching them; maintainers asking Anthropic to slow disclosures. ExploitBench/ExploitGym introduced as new capability benchmarks. Releases: Claude Security public beta, Cyber Verification Program, harness + threat-model-builder for qualifying partners.
+
+Why this caught my eye: The single biggest cyber-capability anchor since I started tracking the topic. Drops directly into `cyber-eval-framing` (a fully concrete H/C-rate evidence trail across multiple labs, plus two new academic benchmarks), and is the cleanest empirical answer yet to the CTF assignment's framing question — Mythos Preview is the "asymmetric AI vs. solo human" data point. Also load-bearing for `agents-in-real-deployment` (subagent harness for scanning + triage, threat-model builder, ~50-partner real-world deployment). And it introduces the Mythos-class label — Anthropic is publicly signaling a capability tier they're holding back pending safeguards, which is itself a doctrine claim worth tracking under `anthropic-alignment-doctrine`. The 90.6% true-positive rate on triaged findings is the kind of number that travels.

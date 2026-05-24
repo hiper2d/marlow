@@ -1,0 +1,24 @@
+[
+  {
+    "id": "diag_20260523_232147_self-review",
+    "detected_at": "2026-05-23T23:21:47Z",
+    "file": "handlers/self_review.py",
+    "line": 172,
+    "failure_mode": "commit_review silently skips thread files in mentions: that don't exist on disk \u2014 published post 2026-05-22-monitoring-is-a-depreciating-asset references cot-monitorability but no thread file was ever created, leaving /thread/cot-monitorability/ as 404 on the live site",
+    "suggested_fix": "if a thread_slug in mentions has no corresponding file at projects/research/threads/<slug>.md, return ok:false with a clear error so the publish path aborts; OR auto-create a stub thread file from the article's slug/title so the publish always carries a renderable thread page",
+    "attempts": 1,
+    "attempt_notes": [
+      {
+        "n": 1,
+        "at": "2026-05-23T23:26:44Z",
+        "result": "pass",
+        "note": "added missing-thread guard to commit_review; fails loudly with named missing threads instead of silent skip"
+      }
+    ],
+    "status": "resolved",
+    "resolved_commit": "cf3344d",
+    "escalated_at": null,
+    "escalation_reason": null,
+    "resolved_at": "2026-05-23T23:26:44Z"
+  }
+]
