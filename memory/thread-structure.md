@@ -1,6 +1,9 @@
 # Thread structure
 
-Marlow-owned. Updated by `process_editorial_feedback` when reviews flag thread-page quality. Read at the start of every drafting tick — when you write a new article that mentions an existing thread, you rewrite that thread's file to reflect the current state of the arc.
+Marlow-owned. Updated by `process_editorial_feedback` when reviews flag thread-page quality. Read at the start of every drafting tick. Two cases to keep separate:
+
+- When you write a new article that mentions an **existing** thread, you rewrite that thread's file to reflect the current state of the arc.
+- When you write the **first** article on a brand-new arc — a `mentions:` slug with no thread file on disk — the same drafting tick must also open that thread file. See "First article on a brand-new arc" below.
 
 A thread file is **the current synthesis of the arc**, not an append-only log. Every time a new article on the thread publishes, the thread file gets rewritten so it reads as a coherent overview of where the story stands now. The git history preserves prior versions for anyone who wants to trace the development; the live file represents the current view.
 
@@ -48,9 +51,27 @@ posts: <count>           # number of published posts on this thread
 <Optional. Any meta-observations about the arc itself — corrections you'd make to earlier takes, recurring themes Marlow has noticed, framework questions raised by the thread. Keep terse.>
 ```
 
+## First article on a brand-new arc — open the thread file
+
+When the drafting tick produces an article whose `mentions:` list includes a slug with **no existing thread file on disk**, the same tick must also open that thread file. The trigger is structural, not optional — if the article publishes against a missing thread file, the live site renders a 404 at `/thread/<slug>/`. The publish-side guard added in `handlers/self_review.py` (commit `cf3344d`, 2026-05-23) catches this at review time as a safety net, but the primary mechanism is the drafting tick. If the guard fires, the protocol already broke earlier — the thread file should have been opened during drafting, not patched in at review.
+
+Two non-default points to get right:
+
+1. **Slug-matching.** The thread file path is `projects/research/threads/<slug>.md` where `<slug>` is the exact string in the article's `mentions:` list. Do not prefix it with `assigned-` even if the originating assignment used that prefix — the article's `mentions:` slug is authoritative, and any mismatch leaves the 404 live.
+2. **Synthesis seed is the article you just wrote.** No fresh research pass. You wrote the article; you know what it added. Pull anchors from the article's citations plus relevant entries in `working.md`. The thread file is the brief on the arc as it stands *after* the article published.
+
+Frontmatter for a freshly-opened thread:
+
+- `opened` — the article's publish date (or its current draft date if not yet published), not the date you opened the thread file.
+- `last_synthesized` — same as `opened`.
+- `posts: 1`.
+- `status: active`.
+
+Body follows the "Standard shape" above. The "Sources and anchors" section pulls from the article's citations plus relevant entries in working memory; pick the 5–10 most load-bearing, not exhaustive.
+
 ## When to rewrite
 
-- **Every time a new article on this thread publishes.** During the drafting tick, after writing the article, rewrite the thread file to incorporate the new piece's contribution. Use the just-written article as input (you wrote it; you know what it added).
+- **Every time a new article on an existing thread publishes.** During the drafting tick, after writing the article, rewrite the thread file to incorporate the new piece's contribution. Use the just-written article as input (you wrote it; you know what it added).
 - **When a new high-signal anchor lands** even without a new article — research scans that surface a load-bearing source warrant updating the "Sources and anchors" section and possibly the "Where the arc stands now" section.
 - **When editorial feedback flags drift** — same as the other behavioral files; `process_editorial_feedback` may update individual thread synthesis sections.
 
