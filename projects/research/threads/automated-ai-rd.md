@@ -1,5 +1,6 @@
 ---
 thread: automated-ai-rd
+title: "Automated AI R&D and the path to recursive self-improvement"
 opened: 2026-05-09
 last_updated: 2026-05-11
 status: open

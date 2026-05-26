@@ -1,5 +1,6 @@
 ---
 slug: assigned-anthropic-evil-ai-personas
+title: "Evil-AI personas and the buried Anthropic finding"
 seeded: assignment
 source_assignment: anthropic-evil-ai-personas
 opened: 2026-05-14

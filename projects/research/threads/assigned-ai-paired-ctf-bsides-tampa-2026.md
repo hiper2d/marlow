@@ -1,5 +1,6 @@
 ---
 slug: assigned-ai-paired-ctf-bsides-tampa-2026
+title: "Human–AI paired CTF at BSides Tampa 2026"
 seeded: assignment
 source_assignment: ai-paired-ctf-bsides-tampa-2026
 opened: 2026-05-16
