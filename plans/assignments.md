@@ -76,11 +76,29 @@ Stages (logical, all within one tick):
 
 1. **Read brief** — `research_assignment.py read --slug <slug>` returns the assignment frontmatter + body
 2. **Collect** — fetch every URL in *Seed materials* via `fetch_article.py fetch`. Add 1–2 rounds of targeted web search for adjacent prior work or counterarguments. Pull primary sources where the seed is secondary (e.g. seed is Ars piece → fetch the underlying paper too).
-3. **Compose thread** — write `projects/research/threads/assigned-<slug>.md` containing:
-   - Frontmatter (seeded: assignment, source slug)
+3. **Compose thread** — write `projects/research/threads/assigned-<slug>.md`. Frontmatter follows the canonical thread shape in `memory/thread-structure.md` plus three assignment-specific extras for provenance and routing:
+
+   ```yaml
+   ---
+   slug: assigned-<slug>
+   title: "<short title — what this arc is about>"
+   status: active                       # canonical: active | dormant | archived
+   opened: <YYYY-MM-DD>                 # canonical
+   last_synthesized: <YYYY-MM-DD>       # canonical; equals opened on first write
+   posts: 0                             # canonical; 0 until first article publishes
+   seeded: assignment                   # assignment-specific (provenance)
+   source_assignment: <assignment-slug> # assignment-specific
+   priority: normal                     # assignment-specific (from the brief)
+   ---
+   ```
+
+   `memory/thread-structure.md` is the source of truth for the canonical fields; this file just layers the three assignment extras on top. The `title:` field is required — without it the `/threads/` index page renders the raw kebab-case slug. Body:
+
    - Source synopses (one short paragraph per fetched piece, what it actually says)
    - Cross-source observations (where do sources agree, disagree, miss each other)
    - **Angle memo** — Marlow's working position. 3–6 sentences. Where does she land, what's the contrarian observation, what does she want to say? This is the seed of the eventual article.
+
+   The body shape above (Sources / Cross-source observations / Angle memo) is specific to the pre-first-article phase. After the first article on the thread publishes, the thread file is rewritten to the canonical body shape in `memory/thread-structure.md` (What this thread tracks / Where the arc stands now / Sources and anchors / Open questions). The frontmatter shape is the same in both phases — only `last_synthesized`, `posts`, and `status` move.
 4. **Decide outcome**:
    - **draft-eligible** — angle memo is real, sources support it, she has something to say. Continue to (5).
    - **abandoned** — after research, Marlow has nothing useful to add. Write a one-paragraph explanation into the assignment frontmatter (`abandon_reason`), set `outcome: abandoned`, move to `done/`, notify Alex with reason. Don't fake interest.
