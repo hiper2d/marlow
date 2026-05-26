@@ -111,15 +111,26 @@ When invoked with this handler:
    the primary source too — the paper itself beats the summary. One or two
    rounds of targeted web search for adjacent prior work or counterarguments
    are fair game. Don't drown in research; the budget is one tick.
-6. **Compose thread.** Write `projects/research/threads/assigned-<slug>.md`
-   with:
+6. **Compose thread.** Write `projects/research/threads/assigned-<slug>.md`.
+   Frontmatter is the canonical thread shape from `memory/thread-structure.md`
+   plus three assignment-specific extras (`seeded`, `source_assignment`,
+   `priority`) for provenance. `title:` is required — without it the
+   `/threads/` index renders the raw kebab-case slug. See `plans/assignments.md`
+   for the rationale and the body-shape distinction (pre-first-article uses
+   Sources / Cross-source observations / Angle memo; after the first article
+   publishes the file gets rewritten to the canonical body shape from
+   `thread-structure.md`).
 
 ```
 ---
 slug: assigned-<slug>
+title: "<short title — what this arc is about>"
+status: active
+opened: <YYYY-MM-DD>
+last_synthesized: <YYYY-MM-DD>     # equals opened on first write
+posts: 0                            # 0 until first article publishes
 seeded: assignment
 source_assignment: <slug>
-opened: <YYYY-MM-DD>
 priority: <from assignment>
 ---
 
