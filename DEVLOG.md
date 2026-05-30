@@ -283,3 +283,57 @@ check, so held drafts behave unchanged.
   content task already queued in `working.md` under "Outstanding requests."
   Adjacent: `memory/thread-structure.md` should grow a "first article on a
   new thread" case so drafting ticks have explicit guidance.
+
+---
+
+## 2026-05-30 — monitor_keys: Werewolf free-tier balance watch goes live
+
+### What landed
+
+- New handler `handlers/monitor_keys.py` + task `projects/werewolf-ops/tasks/monitor_keys.yaml`
+  (cron `0 8,20 * * *`). Watches the prepaid balance of the Werewolf free
+  tier's provider keys and turns a derived `issues` array into urgent/digest
+  Telegram alerts. Committed `6f11b53`; `firebase-admin` added.
+- **3 of 8 providers monitored** — only DeepSeek, Moonshot, and xAI/Grok
+  expose a balance API. The handler reads DeepSeek+Moonshot keys live from
+  Firestore (`/config/freeTierApiKeys`) so they never go stale on rotation;
+  xAI's *management* key + team id come from the plist env (it isn't a game
+  key, so it doesn't belong in the game's Firestore map). The other five
+  (OpenAI, Anthropic, Google, Mistral, GLM/Z.AI) have no balance endpoint —
+  Tier 2 (estimate from recorded top-up minus game spend), deferred.
+- First real run already earned its keep: **Grok at $0.98 (critical), DeepSeek
+  $9.83 (low), Moonshot $11.09 (ok).** Two real signals on day one.
+
+### Things that surprised us
+
+- xAI's raw `/prepaid/balance` ledger read **$2.58**, but the console showed
+  **$0.98**. The ledger only reflects *posted* usage; it lags by the current
+  period's metered-but-unposted spend ($1.60). Reading high is the dangerous
+  direction for a low-balance alarm. Fixed by switching to
+  `/postpaid/invoice/preview` (`coreInvoice.prepaidCredits` −
+  `prepaidCreditsUsed`), which nets out the lag and matches the console to the
+  penny. Lesson logged: for any "remaining balance" API, check it against the
+  vendor console before trusting it — ledgers lag live metering.
+
+### Decisions reconsidered
+
+- The original (2026-05-29) plan gated commit/enable on a dedicated read-only
+  service account. Alex chose not to block on that: ship now on the game's
+  read-write admin SA (reconstructed to `~/.config/marlow/game-sa-temp.json`,
+  pointed at by `MARLOW_FIREBASE_CREDS` in the plist), harden later.
+
+### What's deferred / open
+
+- **TODO (security): swap admin SA → read-only `marlow-readonly`
+  (roles/datastore.viewer).** Until then Marlow's LaunchAgent holds the game's
+  prod read-write creds. "Temporary" must not become permanent.
+- Tier 2: the 5 no-API providers via spend-estimate.
+- Unverified whether DeepSeek/Moonshot balance APIs have the same
+  console-vs-API lag xAI did — assumed real-time for now.
+
+### State at end of day
+
+- **Marlow**: gained `monitor_keys` handler + task, now live on the 08:00/20:00
+  UTC cron. Reads 3 provider balances, Telegrams Alex on low/critical.
+- **Simona**: drove the xAI console via browser to mint the management key
+  (Billing read-only, least privilege) and wired the plist.
