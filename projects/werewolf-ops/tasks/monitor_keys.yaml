@@ -12,10 +12,9 @@
 # minus game spend) and is not wired here yet.
 #
 # Credentials (all in the launchd plist):
-#   - MARLOW_FIREBASE_CREDS → path to a Firebase service-account JSON, used to
-#     read /config/freeTierApiKeys. CURRENTLY the game's read-write admin SA
-#     (reconstructed at ~/.config/marlow/game-sa-temp.json) — TODO: swap to a
-#     dedicated read-only SA (marlow-readonly, roles/datastore.viewer).
+#   - MARLOW_FIREBASE_CREDS → path to the dedicated read-only service-account
+#     JSON (marlow-readonly@…, roles/datastore.viewer; all writes denied by
+#     IAM), at ~/.config/marlow/marlow-readonly.json. Reads /config/freeTierApiKeys.
 #   - XAI_MGMT_KEY + XAI_TEAM_ID → xAI management key (Billing read-only) +
 #     team id. xAI's key is NOT a game key, so it's read from env, not Firestore.
 #   - DeepSeek/Moonshot provider keys are read live from Firestore — never env.

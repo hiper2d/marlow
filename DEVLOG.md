@@ -337,3 +337,14 @@ check, so held drafts behave unchanged.
   UTC cron. Reads 3 provider balances, Telegrams Alex on low/critical.
 - **Simona**: drove the xAI console via browser to mint the management key
   (Billing read-only, least privilege) and wired the plist.
+
+### Same-day follow-up — read-only SA TODO closed
+
+Didn't let the admin-SA "temporary" linger. Simona drove the GCP console
+(browser) and provisioned `marlow-readonly@werewolf-ai-party-game.iam.gserviceaccount.com`
+with `roles/datastore.viewer` (read-only; IAM denies all writes), minted a JSON
+key to `~/.config/marlow/marlow-readonly.json` (600), repointed
+`MARLOW_FIREBASE_CREDS` in the plist, reloaded, verified the report runs purely
+off the plist, and **deleted the reconstructed admin-SA file**
+(`game-sa-temp.json`). Marlow no longer holds the game's prod read-write creds.
+Security TODO from this morning: closed same day.
