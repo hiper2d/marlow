@@ -1,0 +1,52 @@
+# monitor_keys — low-balance watch for the Werewolf free-tier API keys.
+#
+# Fires twice daily (08:00 + 20:00 UTC). A public free tier can drain a key
+# fast, so once-a-day risks missing an empty key for ~24h.
+#
+# Covers the providers that expose a balance endpoint (Tier 1):
+#   - DeepSeek  (GET /user/balance)
+#   - Moonshot  (GET /v1/users/me/balance)
+#   - xAI/Grok  (management API; balance = invoice/preview, NOT the raw ledger)
+# The other five free-tier providers (OpenAI, Anthropic, Google, Mistral,
+# GLM/Z.AI) have no balance API — that's Tier 2 (estimate = recorded top-up
+# minus game spend) and is not wired here yet.
+#
+# Credentials (all in the launchd plist):
+#   - MARLOW_FIREBASE_CREDS → path to a Firebase service-account JSON, used to
+#     read /config/freeTierApiKeys. CURRENTLY the game's read-write admin SA
+#     (reconstructed at ~/.config/marlow/game-sa-temp.json) — TODO: swap to a
+#     dedicated read-only SA (marlow-readonly, roles/datastore.viewer).
+#   - XAI_MGMT_KEY + XAI_TEAM_ID → xAI management key (Billing read-only) +
+#     team id. xAI's key is NOT a game key, so it's read from env, not Firestore.
+#   - DeepSeek/Moonshot provider keys are read live from Firestore — never env.
+#
+# Alert behavior (Marlow's session interprets the handler's `issues` array):
+#   - severity: urgent → marlow notify. Reserved for: a key that's dry
+#     (balance_empty), critically low (< $3), or a 401/403 on the balance
+#     call (key revoked).
+#   - severity: digest → append to today's digest. Used for low-but-not-
+#     critical balances (< $10) and transient balance-check failures.
+#
+# In-tick flow:
+#   1. Run `uv run python handlers/monitor_keys.py report`.
+#   2. Parse the JSON. If `ok: false` (every provider failed to read — almost
+#      always MARLOW_FIREBASE_CREDS missing/invalid or firebase-admin absent),
+#      treat as a framework bug: record a diagnosis via framework_fix, and
+#      notify Alex urgent only if it's the Firestore creds failing.
+#   3. Write the report to projects/werewolf-ops/reports/keys/<YYYY-MM-DD>.md.
+#   4. If `any_urgent: true`, send one consolidated urgent Telegram listing
+#      each empty/critical key and its balance. If only digest-severity
+#      issues, append a single digest entry.
+#   5. If no issues, append a one-line digest: "Werewolf keys: DeepSeek $X,
+#      Moonshot $Y, Grok $Z — all healthy."
+#   6. Write the tick result and exit.
+name: monitor_keys
+project: werewolf-ops
+description: Twice-daily low-balance watch for the Werewolf free-tier API keys (DeepSeek + Moonshot + xAI/Grok).
+schedule: "0 8,20 * * *"
+priority: normal
+must_run_within_hours: 6
+subtasks:
+  - id: check_balances
+    handler: monitor_keys
+    context: {}
