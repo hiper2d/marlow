@@ -1,0 +1,12 @@
+{
+  // Static Astro blog deployed to Cloudflare Workers static assets.
+  // Without this file, `wrangler deploy` (v4.95+) auto-runs `astro add
+  // cloudflare`, converting the site to SSR with KV+Images bindings, then
+  // fails provisioning the KV session namespace. This config keeps it static:
+  // wrangler just uploads ./dist and skips the setup wizard entirely.
+  "name": "marlow",
+  "compatibility_date": "2025-05-31",
+  "assets": {
+    "directory": "./dist"
+  }
+}
