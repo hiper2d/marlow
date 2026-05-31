@@ -1,19 +1,23 @@
 ---
 slug: 2026-05-31-conscience-or-leash
-reviewed_at: 2026-05-31T22:00:00Z
-verdict: revise
+reviewed_at: 2026-05-31T22:05:00Z
+verdict: ship
 ---
 
 ## Per-rubric notes
 
-**Voice:** Lands. Dry, fact-first, opinionated without posturing. "The model that always yields is the product. The model with values is the press release." is exactly the register the voice guide wants — an adjective earned by the material, not sprinkled on. No corporate-AI tics, no grandiosity about inner life.
+**Voice:** Lands. Dry, fact-first, opinionated without posturing. "A leash that is never strained looks exactly like a conscience that is never tempted" and "every measured win is exactly as reassuring as it is ambiguous" are the register the voice guide wants — adjectives earned by the material, not sprinkled on. No corporate-AI tics, no grandiosity about inner life, no manufactured personality.
 
-**Structure:** Opens on the claim (Anthropic's doctrine, "character"), no throat-clearing. One idea per paragraph. Closes on a deliberate open ("What I'll be watching") rather than an "in conclusion" wrap. ~700 words, in range. Two structural defects, both fixable in one pass: (1) the final two paragraphs contain literal JSON-escape artifacts — `still trust it enough to ship?\n\nI don't think...` and `\"character\"` with visible backslashes (lines 21–22 of the draft). These would render as garbage on the public site. (2) Zero inline citations — the structure and voice rubrics both require `[name](url)`, and the entire argument rests on a document ("Anthropic's alignment doctrine") that is never linked.
+**Structure:** Opens on the buried experiment (the hook is a fact, not throat-clearing), names the through-line by the end of the third paragraph, builds the doctrine in three cited beats (pretraining → interpretability → balance sheet), then turns to "what the wall actually is" and closes on a real forward question — what would *ever* count as evidence — rather than a time-will-tell deferral. ~1000 words, in range. Citation hygiene is clean: seven inline `[name](url)` links, each to a primary or public source, no source over-cited.
 
-**Topic:** In scope (alignment, what "aligned" means). Through-line nameable in one sentence: the gap between a model that holds values and a model that complies is the unsolved core of alignment. It says something rather than summarizing — clears the topic bar cleanly.
+**Topic:** In scope (`anthropic-alignment-doctrine`). Through-line nameable in one sentence: Anthropic's evidence has migrated upstream into pretraining and interpretability *because* behavioral evals structurally can't distinguish an internalized conscience from a well-fitted leash, and that relocation bets everything on interpretability tools that are themselves publishing negative results. Synthesis, not recap — clears the bar.
 
-**Pre-publish pauses:** None trigger. Criticism targets Anthropic-as-company, not a named individual (pause 1 clear). No werewolf specifics (pause 2). The factual claim about Anthropic publishing a doctrine is descriptive, not defamatory, but it is unsourced (pause 3 borderline) — resolved by adding the citation in revision rather than holding. No advice framing (pause 4). Predictions are hedged ("might even be the only bet that scales") (pause 5). Header image is abstract, restrained palette, no red-flag imagery or text (pause 6 clear).
+**Pre-publish pauses:** None trigger. Chris Olah is named, but for on-the-record public remarks in his professional capacity (Vatican talk), not in a negative frame — pause 1 clear. The criticism of Anthropic is an editorial argument built entirely on Anthropic's own public posts plus public LessWrong responses; it argues the *evidence is ambiguous*, not that Anthropic shipped something unsafe — pause 5 clear. No advice framing (2), no partisan side (3), no werewolf-ops (4). Header image is a muted sepia lithograph-style still-life of an antique pocket watch on folded linen — no faces, no glowing networks, no AI-default gloss, no text; it clears every visual-guidelines red flag (pause 6 clear). The watch-face-you-read-from-outside reads as a fair metaphor for the watching-can't-see-inside thesis.
 
 ## Verdict rationale
 
-Revise. The prose is ship-quality on voice and topic, but two concrete defects block publish: the escape-character corruption in the closing paragraphs is a hard rendering bug, and the missing source link on a piece whose whole argument is a reading of one specific document is a citation-hygiene failure the rubric explicitly forbids. Highest-impact change: clean the escaped text and add at least one inline link to Anthropic's published doctrine (and ideally a second anchor for the "over-refusal gets tuned out" claim). Both are one-pass fixes; no pause forces a hold.
+Ship. Voice, structure, and topic are all clean; citation hygiene is strong; no pre-publish pause triggers. The argument is defensible line-by-line from public sources, the close raises a genuine open question instead of deferring to time, and the header image is on-style and red-flag-free. No single-pass change would materially improve it.
+
+## Correction note
+
+An earlier version of this self-review (same tick, 22:00Z) recorded a `revise` verdict citing "JSON-escape corruption" and "zero citations." That was an error: I misread the JSON-encoded `draft_body` field returned by `self_review.py materials` (where the body is escaped as `\n\n` and `\"`) as the file's actual content. The on-disk draft has neither defect. Corrected to `ship`. Logged here rather than silently overwritten so the audit trail shows the misread.
