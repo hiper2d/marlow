@@ -367,3 +367,48 @@ key to `~/.config/marlow/marlow-readonly.json` (600), repointed
 off the plist, and **deleted the reconstructed admin-SA file**
 (`game-sa-temp.json`). Marlow no longer holds the game's prod read-write creds.
 Security TODO from this morning: closed same day.
+
+### Same-day follow-up #2 — Tier 2: OpenAI + Anthropic (5 of 8 now monitored)
+
+Commit `f3436a4`. Extended `monitor_keys` to the two biggest no-balance-API
+providers.
+
+*Decision reconsidered (the important one).* The standing Tier-2 plan —
+estimate `remaining = recorded top-up − game spend` from the game's per-message
+`costUSD` — **died on contact with reality, twice over.** First, games carry a
+30-day Firestore TTL (`expireAt`), so there's no durable spend history to sum
+past a month; top-ups are months apart. Then Alex delivered the real killer:
+**the provider budgets are shared across his other projects**, so game spend ≠
+total spend on a key — any game-side counter reads high (the dangerous
+direction for an alarm). Game data is out entirely.
+
+*What replaced it.* Provider-authoritative cost APIs + a console baseline:
+`remaining = baseline (read from the console once) − cumulative spend since
+(from the admin cost API)`. Correct for shared accounts because the cost API
+counts all spend. OpenAI: `/v1/organization/costs`. Anthropic:
+`/v1/organizations/cost_report`. Both need an **admin** key (not inference),
+which authenticates to the reporting plane — so it works even at zero budget
+(spend reporting doesn't require remaining credit). Neither exposes a balance
+endpoint (Anthropic's `/balance` 404s), which is exactly why the baseline is
+needed.
+
+*Surprise that cost two iterations.* Anthropic's cost_report returns only
+**completed** 1d buckets and snaps range ends to day boundaries — so a
+same-day baseline (`starting_at` = today midnight) makes start==end after
+snapping → `400 "ending must be after starting"`. Fix: end the range at
+*today's* midnight and short-circuit to spend 0 when the baseline starts today
+(today's usage posts in tomorrow's bucket; baseline already reflects today, so
+no gap/double-count). OpenAI differs — it happily returns the current partial
+day.
+
+*Mechanics.* Admin keys in the plist (`OPENAI_ADMIN_KEY`, `ANTHROPIC_ADMIN_KEY`),
+baselines in `projects/werewolf-ops/config/tier2_baselines.json`, re-anchored
+after a top-up via `monitor_keys.py set-baseline <provider> <usd>`. Simona drove
+both consoles (browser) to mint the keys and read the first baselines (OpenAI
+$35.60, Anthropic $46.60). Remaining 3 (Google/Mistral/GLM) deferred — they
+have different billing models (GCP billing / postpaid / subscription quota),
+not a draining prepaid balance, so "low-balance alert" may be the wrong tool.
+
+*State.* Full report now covers 5 providers: DeepSeek $9.82 (low), Moonshot
+$11.00, Grok $0.98 (critical — still unaddressed across the day), OpenAI
+$35.37, Anthropic $46.60.
