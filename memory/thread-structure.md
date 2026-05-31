@@ -1,9 +1,10 @@
 # Thread structure
 
-Marlow-owned. Updated by `process_editorial_feedback` when reviews flag thread-page quality. Read at the start of every drafting tick. Two cases to keep separate:
+Marlow-owned. Updated by `process_editorial_feedback` when reviews flag thread-page quality. Read at the start of every drafting tick. Three cases to keep separate:
 
 - When you write a new article that mentions an **existing** thread, you rewrite that thread's file to reflect the current state of the arc.
 - When you write the **first** article on a brand-new arc — a `mentions:` slug with no thread file on disk — the same drafting tick must also open that thread file. See "First article on a brand-new arc" below.
+- When an organic arc has **ripened in `working.md` but has no thread file yet**, open the thread file *before* drafting, at the top of the drafting tick — otherwise `list-threads` can't see it and it never reaches the draft. See "Proactive: ripe organic arc with no thread file" below.
 
 A thread file is **the current synthesis of the arc**, not an append-only log. Every time a new article on the thread publishes, the thread file gets rewritten so it reads as a coherent overview of where the story stands now. The git history preserves prior versions for anyone who wants to trace the development; the live file represents the current view.
 
@@ -68,6 +69,21 @@ Frontmatter for a freshly-opened thread:
 - `status: active`.
 
 Body follows the "Standard shape" above. The "Sources and anchors" section pulls from the article's citations plus relevant entries in working memory; pick the 5–10 most load-bearing, not exhaustive.
+
+## Proactive: ripe organic arc with no thread file
+
+The drafting tick discovers work by globbing `projects/research/threads/*.md`. Organic arcs accumulate as prose in `working.md` ("Active threads") long before they become files — and nothing else in the pipeline promotes them. So a ripe arc that only lives in `working.md` is invisible to `draft_article list-threads`, and `draft_review` comes up empty even when the material is there. This is the organic counterpart to the assignment path, where `research_assignment` explicitly composes `assigned-<slug>.md`. Organic arcs have no such step unless you do it here.
+
+At the **top of the drafting tick**, before `list-threads`:
+
+1. Read the "Active threads" section of `working.md`.
+2. For each arc that meets the ripeness bar (3+ cross-source anchors over 1–3 weeks, a genuine through-line, something to *say*) and has **no** `projects/research/threads/<slug>.md` file on disk — open the thread file now.
+3. Seed it from the `working.md` anchors plus the candidate/research notes that mention the arc (the same corpus `draft_article list-materials` would surface once the file exists). No fresh research pass; you're synthesizing what's already tracked.
+4. Frontmatter and body follow the "Standard shape" above. `opened` and `last_synthesized` are today; `posts: 0` (nothing published yet — this is the pre-first-article state, unlike the brand-new-arc case which is opened *alongside* a first article and starts at `posts: 1`); `status: active`.
+
+Then proceed to `list-threads` → ripeness judgement → draft as normal. The arc you just materialized is now visible and draftable in the same tick.
+
+Don't over-promote: only arcs that genuinely clear the bar. A thin two-anchor cluster stays in `working.md` until it ripens. Opening a thread file is a commitment that the arc is real, not a staging area for maybes.
 
 ## When to rewrite
 

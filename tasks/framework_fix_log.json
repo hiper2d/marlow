@@ -20,5 +20,27 @@
     "escalated_at": null,
     "escalation_reason": null,
     "resolved_at": "2026-05-23T23:26:44Z"
+  },
+  {
+    "id": "diag_20260531_170900_draft-review",
+    "detected_at": "2026-05-31T17:09:00Z",
+    "file": "projects/blog/tasks/draft_review.yaml",
+    "line": null,
+    "failure_mode": "draft_review in-tick flow discovers work via draft_article list-threads (file-glob of threads/*.md) only; ripe organic arcs tracked as prose in working.md Active-threads are never materialized into thread files, so they are invisible to drafting and draft_review comes up empty every cycle while publishing stalls. Organic counterpart of the assignment path has no compose-thread step.",
+    "suggested_fix": "Add a step 0 to the in-tick flow, before 'Run draft_article list-threads': read working.md Active threads; for any arc that clears the ripeness bar but has no projects/research/threads/<slug>.md file, open the thread file now per memory/thread-structure.md 'Proactive: ripe organic arc with no thread file'. Companion edits to CLAUDE.md 'Drafting articles' and thread-structure.md already landed by Simona 2026-05-31; this is the single-file YAML change to bring the task flow in line.",
+    "attempts": 1,
+    "attempt_notes": [
+      {
+        "n": 1,
+        "at": "2026-05-31T18:28:26Z",
+        "result": "pass",
+        "note": null
+      }
+    ],
+    "status": "resolved",
+    "resolved_commit": "6d87f56751fcb4a138f4f98f2a4f7f658b12cee6",
+    "escalated_at": null,
+    "escalation_reason": null,
+    "resolved_at": "2026-05-31T18:28:26Z"
   }
 ]

@@ -185,6 +185,7 @@ own restatement.
 
 When invoked with this handler (every-3-days `draft_review` task, or ad-hoc):
 
+0. **Materialize ripe organic arcs first.** `list-threads` only sees thread files that exist on disk, so an arc that lives only as prose in `working.md` is invisible to the rest of this flow. Before listing threads, read the "Active threads" section of `working.md`. Any arc that meets the ripeness bar below but has **no** `projects/research/threads/<slug>.md` file yet — open the thread file now, seeded from its `working.md` anchors and the matching candidate notes. See `memory/thread-structure.md` → "Proactive: ripe organic arc with no thread file." This is the organic counterpart to the assignment path's "compose thread" step; without it, ripe organic arcs never reach drafting.
 1. Run `list-threads` to see what threads exist.
 2. For each thread, read the thread file and judge ripeness against this bar:
    - At least three cross-source anchors over the past one to three weeks
