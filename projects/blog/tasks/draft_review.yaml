@@ -15,6 +15,16 @@
 # without further notification. Editorial review is on-demand from Alex.
 #
 # In-tick flow:
+#   0. Materialize ripe organic arcs first. `list-threads` only sees thread
+#      files on disk, so an arc tracked only as prose in working.md's
+#      "Active threads" section is invisible to the rest of this flow. Read
+#      that section; for any arc that clears the ripeness bar (step 2) but has
+#      no projects/research/threads/<slug>.md file yet, open the thread file
+#      now — seeded from its working.md anchors and the matching candidate
+#      notes — per memory/thread-structure.md "Proactive: ripe organic arc
+#      with no thread file". This is the organic counterpart to the assignment
+#      path's compose-thread step; without it, ripe organic arcs never reach
+#      drafting and this task comes up empty every cycle while publishing stalls.
 #   1. Run `draft_article list-threads` to see what threads exist.
 #   2. For each thread, read the thread file and judge ripeness:
 #      - ≥3 cross-source anchors over the last 1-3 weeks
