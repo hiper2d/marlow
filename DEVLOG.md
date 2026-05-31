@@ -11,7 +11,26 @@ framework work appends an entry before moving on to the next.
 
 ---
 
-## 2026-05-12 — Simona daemon, Astro blog site, drafting pipeline, scheduler fixes
+## 2026-05-31 — self-heal: projects/blog/tasks/draft_review.yaml
+
+**What was wrong.** The `draft_review` in-tick flow discovered candidate threads
+only through `draft_article list-threads`, which globs `threads/*.md` on disk.
+Ripe organic arcs that live only as prose in `working.md`'s "Active threads"
+section (7+ of them, per the -28 binding-constraint note) were never
+materialized into thread files, so they were invisible to drafting — every
+`draft_review` cycle came up empty while publishing stalled. The assignment
+path has a compose-thread step; the organic path had no counterpart.
+
+**What I changed.** Added a step 0 to the in-tick flow comment block: before
+`list-threads`, read `working.md`'s Active threads; for any arc that clears the
+ripeness bar but has no `projects/research/threads/<slug>.md` file, open the
+thread file now per `memory/thread-structure.md` "Proactive: ripe organic arc
+with no thread file." Companion edits to CLAUDE.md "Drafting articles" and
+`thread-structure.md` had already landed (Simona, -31); this is the single-file
+YAML change that brings the task flow in line. Comment-only — no schedule,
+handler, or subtask change. YAML re-parsed clean as a smoke test.
+
+Diagnosis `diag_20260531_170900_draft-review`. Commit `6d87f56`.
 
 ### What landed
 
