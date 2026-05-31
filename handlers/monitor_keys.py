@@ -68,6 +68,30 @@ XAI_MGMT_BASE = os.environ.get("XAI_MANAGEMENT_BASE_URL", "https://management-ap
 ENV_XAI_KEY = "XAI_MGMT_KEY"
 ENV_XAI_TEAM = "XAI_TEAM_ID"
 
+# Tier 2 — providers with NO balance API but WITH an admin cost/usage API.
+# These accounts are shared across Alex's other projects (NOT game-dedicated),
+# so game spend can't estimate them; only the provider's own cost API counts
+# all usage. Model: remaining = a baseline Alex reads from the console once
+# (stored in TIER2_BASELINES) minus cumulative spend since that baseline date
+# (from the cost API). Admin keys are Marlow monitoring infra → env, not the
+# game's Firestore key map. Each provider is opt-in: included only when BOTH
+# its admin key (env) and its baseline entry exist.
+OPENAI_BASE = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com")
+ANTHROPIC_BASE = os.environ.get("ANTHROPIC_BASE_URL", "https://api.anthropic.com")
+ENV_OPENAI_ADMIN = "OPENAI_ADMIN_KEY"
+ENV_ANTHROPIC_ADMIN = "ANTHROPIC_ADMIN_KEY"
+ANTHROPIC_VERSION = "2023-06-01"
+
+# Baselines file: {provider: {remaining_usd: float, since: "YYYY-MM-DD"}}.
+# Alex updates remaining_usd + since whenever he tops up a provider. Lives in
+# the repo (versioned, not secret); override path via env for tests.
+TIER2_BASELINES = Path(
+    os.environ.get(
+        "TIER2_BASELINES_PATH",
+        str(Path(__file__).resolve().parent.parent / "projects/werewolf-ops/config/tier2_baselines.json"),
+    )
+)
+
 # Alert thresholds in USD-equivalent (tune later via editorial feedback).
 LOW_USD = 10.0       # digest: top up soon
 CRITICAL_USD = 3.0   # urgent: about to go dry
@@ -300,6 +324,166 @@ def _xai_configured() -> bool:
     return bool(os.environ.get(ENV_XAI_KEY) and os.environ.get(ENV_XAI_TEAM))
 
 
+# ─── Tier 2: cost-API + console baseline (OpenAI, Anthropic) ─────────────────
+
+
+def _load_baselines() -> dict:
+    """Read the Tier-2 baselines file. Returns {} if absent/unparseable so a
+    provider with no baseline is simply skipped rather than erroring."""
+    try:
+        with TIER2_BASELINES.open() as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _baseline_for(provider: str) -> dict | None:
+    b = _load_baselines().get(provider)
+    if not isinstance(b, dict) or "remaining_usd" not in b or "since" not in b:
+        return None
+    return b
+
+
+def set_baseline(provider: str, remaining_usd: float, since: str | None = None) -> dict:
+    """Re-anchor a Tier-2 baseline: record `remaining_usd` as of `since`
+    (default today UTC). Creates the file/dirs if missing. This is the one
+    thing to run after a top-up (or to clear drift). Idempotent per provider."""
+    since = since or _now_utc().date().isoformat()
+    data = _load_baselines()
+    data[provider] = {"remaining_usd": round(float(remaining_usd), 4), "since": since}
+    TIER2_BASELINES.parent.mkdir(parents=True, exist_ok=True)
+    with TIER2_BASELINES.open("w") as f:
+        json.dump(data, f, indent=2, sort_keys=True)
+        f.write("\n")
+    return {"ok": True, "provider": provider, "baseline": data[provider], "path": str(TIER2_BASELINES)}
+
+
+def _since_to_unix(since: str) -> int:
+    """'YYYY-MM-DD' (UTC midnight) → unix seconds. Also accepts full RFC3339."""
+    s = since.strip()
+    dt = datetime.fromisoformat(s.replace("Z", "+00:00")) if "T" in s else datetime.fromisoformat(s + "T00:00:00+00:00")
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return int(dt.timestamp())
+
+
+def _since_to_rfc3339(since: str) -> str:
+    return datetime.fromtimestamp(_since_to_unix(since), tz=timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _openai_spend_since(admin_key: str, start_unix: int) -> float:
+    """Sum GET /v1/organization/costs over [start_unix, now]. Amounts are USD
+    floats at data[].results[].amount.value. Paginates via next_page."""
+    total = 0.0
+    page = None
+    headers = {"Authorization": f"Bearer {admin_key}", "Accept": "application/json"}
+    for _ in range(60):  # hard cap on pages — ~60 days of 1d buckets at limit 1, far more in practice
+        params = {"start_time": start_unix, "bucket_width": "1d", "limit": 180}
+        if page:
+            params["page"] = page
+        resp = requests.get(f"{OPENAI_BASE}/v1/organization/costs", headers=headers, params=params, timeout=HTTP_TIMEOUT)
+        if resp.status_code != 200:
+            raise _ProviderError(resp.status_code, resp.text[:200])
+        body = resp.json()
+        for bucket in body.get("data") or []:
+            for r in bucket.get("results") or []:
+                total += float((r.get("amount") or {}).get("value", 0) or 0)
+        if body.get("has_more") and body.get("next_page"):
+            page = body["next_page"]
+        else:
+            break
+    return round(total, 6)
+
+
+def _anthropic_spend_since(admin_key: str, starting_at: str) -> float:
+    """Sum GET /v1/organizations/cost_report over [starting_at, now]. Amounts
+    are *cents* as decimal strings → /100 for USD. Paginates via next_page."""
+    total_cents = 0.0
+    page = None
+    # Anthropic's cost_report only returns COMPLETED 1d buckets — it rejects a
+    # range covering only the current (incomplete) day ("ending must be after
+    # starting"). So end the range at TODAY's UTC midnight (the last complete
+    # boundary). If the baseline starts today, there's no completed bucket yet →
+    # spend is 0 (today's usage posts in tomorrow's bucket; the baseline already
+    # reflects today, so no gap and no double-count).
+    ending_at = f"{_now_utc().date().isoformat()}T00:00:00Z"
+    if starting_at >= ending_at:  # same RFC3339 format → lexicographic compare is valid
+        return 0.0
+    headers = {"x-api-key": admin_key, "anthropic-version": ANTHROPIC_VERSION, "Accept": "application/json"}
+    for _ in range(60):
+        params = {"starting_at": starting_at, "ending_at": ending_at, "bucket_width": "1d", "limit": 31}
+        if page:
+            params["page"] = page
+        resp = requests.get(f"{ANTHROPIC_BASE}/v1/organizations/cost_report", headers=headers, params=params, timeout=HTTP_TIMEOUT)
+        if resp.status_code != 200:
+            raise _ProviderError(resp.status_code, resp.text[:200])
+        body = resp.json()
+        for bucket in body.get("data") or []:
+            for r in bucket.get("results") or []:
+                try:
+                    total_cents += float(r.get("amount", 0) or 0)
+                except (TypeError, ValueError):
+                    pass
+        if body.get("has_more") and body.get("next_page"):
+            page = body["next_page"]
+        else:
+            break
+    return round(total_cents / 100.0, 6)
+
+
+class _ProviderError(Exception):
+    def __init__(self, status: int, text: str):
+        self.status = status
+        self.text = text
+        super().__init__(f"HTTP {status}: {text}")
+
+
+def _check_cost_based(provider: str, admin_key_env: str, spend_fn, since_arg_fn) -> dict:
+    """Shared Tier-2 path: remaining = baseline.remaining_usd − spend(since→now)."""
+    admin_key = os.environ.get(admin_key_env)
+    baseline = _baseline_for(provider)
+    if not admin_key:
+        return {"provider": provider, "ok": False, "error": f"{admin_key_env} not set (admin key)"}
+    if not baseline:
+        return {"provider": provider, "ok": False, "error": f"no baseline for {provider} in {TIER2_BASELINES.name}"}
+    try:
+        spend = spend_fn(admin_key, since_arg_fn(baseline["since"]))
+    except _ProviderError as e:
+        return {"provider": provider, "ok": False, "http_status": e.status, "error": e.text}
+    except requests.RequestException as e:
+        return {"provider": provider, "ok": False, "error": f"request failed: {e}"}
+    try:
+        base_usd = float(baseline["remaining_usd"])
+    except (TypeError, ValueError):
+        return {"provider": provider, "ok": False, "error": "baseline.remaining_usd not a number"}
+    remaining = round(base_usd - spend, 4)
+    return {
+        "provider": provider,
+        "ok": True,
+        "is_available": remaining > 0,
+        "currency": "USD",
+        "balance_native": remaining,
+        "balance_usd": remaining,
+        "baseline_usd": round(base_usd, 4),
+        "spend_since_usd": round(spend, 4),
+        "since": baseline["since"],
+        "source": "cost API − console baseline",
+    }
+
+
+def check_openai() -> dict:
+    return _check_cost_based("openai", ENV_OPENAI_ADMIN, _openai_spend_since, _since_to_unix)
+
+
+def check_anthropic() -> dict:
+    return _check_cost_based("anthropic", ENV_ANTHROPIC_ADMIN, _anthropic_spend_since, _since_to_rfc3339)
+
+
+def _cost_provider_configured(provider: str, admin_key_env: str) -> bool:
+    return bool(os.environ.get(admin_key_env) and _baseline_for(provider))
+
+
 _CHECKERS = {
     "deepseek": (KEY_DEEPSEEK, _check_deepseek),
     "moonshot": (KEY_MOONSHOT, _check_moonshot),
@@ -377,6 +561,11 @@ def report() -> dict:
     # otherwise it would emit a "not set" digest issue on every run.
     if _xai_configured():
         providers.append(check_xai())
+    # Tier-2 cost-API providers, each opt-in on (admin key + baseline).
+    if _cost_provider_configured("openai", ENV_OPENAI_ADMIN):
+        providers.append(check_openai())
+    if _cost_provider_configured("anthropic", ENV_ANTHROPIC_ADMIN):
+        providers.append(check_anthropic())
     # ok:false only when *every* provider failed to read (e.g. creds missing) —
     # a single provider hiccup shouldn't mask the others.
     all_failed = all(not p.get("ok") for p in providers)
@@ -404,6 +593,12 @@ def main():
     sub.add_parser("check-deepseek", help="DeepSeek free-tier key balance")
     sub.add_parser("check-moonshot", help="Moonshot free-tier key balance")
     sub.add_parser("check-xai", help="xAI/Grok prepaid balance (management API)")
+    sub.add_parser("check-openai", help="OpenAI remaining = baseline − cost since (admin key)")
+    sub.add_parser("check-anthropic", help="Anthropic remaining = baseline − cost since (admin key)")
+    p_sb = sub.add_parser("set-baseline", help="Re-anchor a Tier-2 baseline after a top-up")
+    p_sb.add_argument("provider", choices=["openai", "anthropic"])
+    p_sb.add_argument("remaining_usd", type=float, help="Current 'credits remaining' from the provider console")
+    p_sb.add_argument("--since", help="Anchor date YYYY-MM-DD (default: today UTC)")
     sub.add_parser("report", help="All API-checkable balances + derived issues")
     args = parser.parse_args()
     if args.cmd == "check-deepseek":
@@ -412,6 +607,12 @@ def main():
         _emit(check_moonshot())
     elif args.cmd == "check-xai":
         _emit(check_xai())
+    elif args.cmd == "check-openai":
+        _emit(check_openai())
+    elif args.cmd == "check-anthropic":
+        _emit(check_anthropic())
+    elif args.cmd == "set-baseline":
+        _emit(set_baseline(args.provider, args.remaining_usd, args.since))
     elif args.cmd == "report":
         _emit(report())
 

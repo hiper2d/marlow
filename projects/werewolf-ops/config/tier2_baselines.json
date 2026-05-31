@@ -1,0 +1,10 @@
+{
+  "anthropic": {
+    "remaining_usd": 46.6,
+    "since": "2026-05-31"
+  },
+  "openai": {
+    "remaining_usd": 35.6,
+    "since": "2026-05-31"
+  }
+}
