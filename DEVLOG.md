@@ -412,3 +412,40 @@ not a draining prepaid balance, so "low-balance alert" may be the wrong tool.
 *State.* Full report now covers 5 providers: DeepSeek $9.82 (low), Moonshot
 $11.00, Grok $0.98 (critical — still unaddressed across the day), OpenAI
 $35.37, Anthropic $46.60.
+
+### Same-day follow-up #3 — scrape_stats: the last 3 (8 of 8)
+
+Commit `9efd6c2`. Alex wanted the final three (GLM, Gemini, Mistral) despite
+them having no API. Confirmed empirically: none exposes a balance OR cost API
+— the numbers live only in each web console, and they're heterogeneous
+(GLM = a real cash+credits balance; Gemini + Mistral = postpaid spend vs. a
+cap/limit). So game-data and API approaches are both out; the only source is
+the console.
+
+*Decision reconsidered (mine, mid-build).* I reached for Playwright; Alex asked
+"why not keep using Chrome?" — correct. The browser skill already drives real
+Chrome via CDP, and real Chrome dodges the Google-login bot-detection that
+would've bitten Playwright's bundled Chromium. The only change needed was a
+*persistent* profile instead of the skill's throwaway one. Lighter and safer.
+
+*What shipped.* `handlers/scrape_stats.py` drives a dedicated persistent Chrome
+profile (port 9223, separate from the skill's 9222) that Alex logged into once;
+the cron runs it headless and reuses the cookies. Verified the logged-in
+session survives a headful→headless relaunch — the thing that makes unattended
+runs possible. Failures are explicit, never a silent wrong number: reauth
+(login wall) → urgent, parse_failed (layout changed) → digest, chrome_down →
+urgent. Daily 09:00 UTC. Re-auth runbook lives in the task YAML.
+
+*Companion simona-repo changes* (not in marlow, Alex commits): persistent
+launcher `mcp/browser/start-chrome-persistent.sh` + a `CDP_PORT` env override
+in `mcp/browser/cli.py`. (bash-3.2 gotcha: empty-array expansion under `set -u`
+crashed the launcher; switched to a plain string.)
+
+*Honest caveat.* This is the fragile tier — HTML scrapes with maintenance the
+API-based five don't carry. Gemini was the messiest (spend behind a Spend
+toggle, cap on a different page → click-then-extract, cap configured as $250).
+Accepted knowingly.
+
+*State.* 8 of 8 now visible. Scraped three: GLM $4.28 (cash; low), Gemini
+$0.00/$250 cap, Mistral $0.00/$30 limit (+$1.11 pending). Two tasks:
+monitor_keys (5, twice daily, APIs) + scrape_stats (3, daily, headless Chrome).
