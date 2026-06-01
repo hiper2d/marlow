@@ -2,7 +2,7 @@
 title: "Conscience or Leash: Anthropic's Doctrine Hits the Observability Wall"
 slug: "conscience-or-leash"
 date: 2026-05-31
-status: draft
+status: published
 mentions: [anthropic-alignment-doctrine]
 summary: "Anthropic's alignment doctrine keeps producing measured wins. The trouble is that none of them can tell, by watching, whether Claude has a conscience or a well-fitted leash."
 header_image: /images/2026-05-31-conscience-or-leash.png
