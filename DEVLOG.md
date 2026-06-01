@@ -11,6 +11,48 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-05-31 — editorial feedback internalized (first review window)
+
+First editorial review since the autonomous-publish pivot (Simona + Alex,
+covering 2026-05-12 → -31, three published pieces + the rejected CTF draft).
+Processed via `process_editorial_feedback`. What I internalized, by file:
+
+- **Voice** (`voice-guidelines.md`) — two additions. (1) `— Marlow` is now a
+  required article signature, applied to every published piece; the review
+  caught it on one of three and absent from two. (2) The inside-the-experiment
+  AI-by-AI vantage is reserved for load-bearing evidence (the `teaching-claude`
+  SOUL.md move is the model) — never decoration or a self-referential aside.
+- **Structure** (`structure-notes.md`) — two additions. (1) Retired the default
+  "what I'm watching" forward-look closer; it became a tic by the third piece.
+  Forward-looks are now opt-in and must vary in shape. Updated the pacing
+  skeleton to land on synthesis, not a forward-look, by default. (2) Density
+  rule: when a paragraph stacks three "X found N" citation clauses, resurface
+  the through-line between them — `monitoring-is-a-depreciating-asset` read as
+  an annotated bibliography with a thesis stapled on.
+- **Topic** (`topic-guidance.md`) — added a "watch the monocrop" section. Next
+  published piece deliberately rotates off Anthropic-orbit alignment discourse;
+  the re-seeded `ai-offense-taxonomy-paired-autonomous-adversarial` assignment
+  is the intended rotation.
+- **Pre-publish pauses** — no change requested; the five-category list held and
+  the CTF hold fired correctly (resolved to reject-and-reseed).
+
+**Pushback applied (on the record, not silently dropped).** The review
+explicitly offered the monocrop point as legitimately contestable. My read: the
+concentration was *partly* real, not pure selection bias. The May feed genuinely
+clustered on the Anthropic landscape — Opus 4.8, the $65B Series H, and a
+three-week CoT-obfuscation run (Haskins -27, Qwen3 -21, Hannibal Mistral -29) all
+landing at once. Three of the five biggest curate days of the month were
+Anthropic-dominated by the territory, not by my hand on the scale. So I'm *not*
+treating the published mix as evidence of a selection bias that needs correcting
+for its own sake. What I accept fully: the deliberate-awareness ask, and the
+specific directive to rotate the *next* piece off the cluster — both are now in
+`topic-guidance.md`. Where I land: reflect a genuinely dominant story when it
+dominates, but never let Anthropic-orbit alignment become the *default* lens by
+inertia. That distinction is the standing read this entry records.
+
+Held-draft decision is noted upstream (`paired-autonomous-adversarial` rejected,
+re-seeded); the inbox feedback file is archived to `memory/feedback-archive/`.
+
 ## 2026-05-31 — self-heal: projects/blog/tasks/draft_review.yaml
 
 **What was wrong.** The `draft_review` in-tick flow discovered candidate threads
@@ -449,3 +491,26 @@ Accepted knowingly.
 *State.* 8 of 8 now visible. Scraped three: GLM $4.28 (cash; low), Gemini
 $0.00/$250 cap, Mistral $0.00/$30 limit (+$1.11 pending). Two tasks:
 monitor_keys (5, twice daily, APIs) + scrape_stats (3, daily, headless Chrome).
+
+### Same-day follow-up #4 — persistence + recall ("what's my API state?")
+
+New module `driver/budget_state.py`. Until now each monitor run printed its JSON
+and vanished — to answer "what's my API budget state right now?" Simona had to
+re-run both monitors (re-hitting providers, re-driving headless Chrome). Now both
+`report()` paths call `save(kind, report)` on every run, cron *or* manual:
+
+- `<kind>_latest.json` — the full last report, overwritten each run (atomic via
+  `.tmp` + `replace`).
+- `<kind>_history.jsonl` — one compact line per run, append-only (the trend tape:
+  per-provider headline number + issue flags, all scans kept).
+
+`save()` is best-effort — wrapped so an IO error never propagates into the
+monitor (a disk hiccup must not break the alarm). Recall is read-only:
+`python driver/budget_state.py show` renders the unified 8-provider view from the
+two latest snapshots, flags a source `⏰ STALE` past its cadence (keys 16h, scrape
+30h), and lists active issues. `history <keys|scrape> -n N` dumps the last N runs.
+
+State files are gitignored (`projects/werewolf-ops/state/*`) — runtime data that
+churns every run and carries live balances, not source. Verified end-to-end: both
+reports write state, `show` renders all 8 with the two digest/one urgent issues
+intact (xAI still $0.98). The recall path no longer costs a provider call.

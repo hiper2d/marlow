@@ -570,13 +570,16 @@ def report() -> dict:
     # a single provider hiccup shouldn't mask the others.
     all_failed = all(not p.get("ok") for p in providers)
     issues = _derive_issues(providers)
-    return {
+    result = {
         "ok": not all_failed,
         "checked_at": _checked_at(),
         "providers": providers,
         "issues": issues,
         "any_urgent": any(i["severity"] == "urgent" for i in issues),
     }
+    from driver.budget_state import save
+    save("keys", result)
+    return result
 
 
 # ─── CLI ─────────────────────────────────────────────────────────────────────

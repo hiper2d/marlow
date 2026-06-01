@@ -244,16 +244,21 @@ def _derive_issues(results: list[dict]) -> list[dict]:
 
 
 def report() -> dict:
+    from driver.budget_state import save
     if not ensure_chrome(headless=True):
-        return {"ok": False, "checked_at": _now_iso(), "providers": [],
-                "issues": [{"severity": "urgent", "kind": "chrome_down", "target": "scraper",
-                            "detail": f"persistent Chrome not reachable on :{CDP_PORT}"}],
-                "any_urgent": True}
+        result = {"ok": False, "checked_at": _now_iso(), "providers": [],
+                  "issues": [{"severity": "urgent", "kind": "chrome_down", "target": "scraper",
+                              "detail": f"persistent Chrome not reachable on :{CDP_PORT}"}],
+                  "any_urgent": True}
+        save("scrape", result)
+        return result
     results = [_check(p) for p in PROVIDERS]
     issues = _derive_issues(results)
-    return {"ok": any(r.get("ok") for r in results), "checked_at": _now_iso(),
-            "providers": results, "issues": issues,
-            "any_urgent": any(i["severity"] == "urgent" for i in issues)}
+    result = {"ok": any(r.get("ok") for r in results), "checked_at": _now_iso(),
+              "providers": results, "issues": issues,
+              "any_urgent": any(i["severity"] == "urgent" for i in issues)}
+    save("scrape", result)
+    return result
 
 
 def _emit(result: dict):
