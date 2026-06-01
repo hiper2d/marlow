@@ -1,0 +1,27 @@
+# poll_food — pull new food messages from the fitness bot and estimate them.
+#
+# Fires every tick. Alex sends food photos / text notes to
+# @marlow_fitness_bot throughout the day; this task ingests them and
+# Marlow estimates calories + macros in the same tick session (vision on
+# the photo, no metered API call).
+#
+# In-tick flow (full detail in CLAUDE.md → "Calorie tracking"):
+#   1. uv run python handlers/poll_food.py fetch
+#   2. uv run python tools/calorie_db.py pending
+#   3. For each pending entry: Read the photo (if any) + raw_text, then
+#      either calorie_db.py estimate (food) or calorie_db.py dismiss (not food).
+#   4. Write the tick result and exit. No notify on ingest — the digest
+#      is the only outbound message.
+#
+# A 20-min lag on a food log is fine, so normal priority. Frequent so the
+# pending queue stays short and photos get estimated while fresh.
+name: poll_food
+project: calories
+description: Pull new food photos/notes from the fitness bot and estimate each entry.
+schedule: "*/20 * * * *"   # every tick
+priority: normal
+must_run_within_hours: 6
+subtasks:
+  - id: fetch_and_estimate
+    handler: poll_food
+    context: {}

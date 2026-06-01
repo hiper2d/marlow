@@ -414,6 +414,199 @@ In-tick flow:
 
 The `monitor_cloudflare` task is the first of several monitoring tasks coming online for werewolf-ops. Same shape will apply to upcoming monitors (Vercel, BetterStack, API budget tracking across providers). Don't generalize the report format yet — let the first few months teach us what's actually load-bearing before abstracting.
 
+### Calorie tracking — handlers `poll_food` + `calorie_digest`
+
+The `calories` project tracks what Alex eats. He sends food photos and/or
+text notes to the fitness bot (`@marlow_fitness_bot`, separate from your
+notify bot). You ingest them, estimate calories + macros **yourself**
+(vision on the photo — no API call, you are the model), and send one
+end-of-day digest. Two tasks drive this.
+
+**`poll_food` (every tick).** Ingest and estimate.
+
+1. `uv run python handlers/poll_food.py fetch` — pulls new messages,
+   downloads photos + voice notes to `projects/calories/inbox/`,
+   **transcribes voice notes locally** (faster-whisper — no API cost; the
+   transcript becomes the entry's `raw_text`), inserts **pending** rows,
+   advances the Telegram offset. Returns counts.
+2. `uv run python tools/calorie_db.py pending` — list entries awaiting an
+   estimate (across this and prior ticks; nothing is lost on a crash).
+3. For **each** pending entry, first **classify** it — is this a new food
+   item, a *correction* of something already logged, or not food at all?
+   Read `raw_text` (and, for `voice`, remember it's a possibly-messy
+   transcript). Messages like "that coffee was small not large", "only ate
+   half the burrito", "scratch the pizza, didn't eat it", "the rice at
+   lunch was about half a cup" are **corrections**, not new meals.
+
+   **(a) New food** → estimate and store a **kcal range**, never a
+   fake-exact single number (portion size is the dominant error):
+   - If it has a `photo_path`, **Read the image** and identify the
+     food/drink and portion. If it has `raw_text`, weight that as the
+     stronger signal — a stated portion ("rice ~1.5 cups") beats a photo
+     guess. `source` tells you what's present (`photo`/`text`/`both`/
+     `voice`). A photo download or transcription failure is appended to
+     `raw_text` in brackets — note the gap, estimate from what's left.
+     ```
+     uv run python tools/calorie_db.py estimate --id <id> \
+       --description "<what it is>" \
+       --kcal-low <n> --kcal-high <n> \
+       --protein <g> --carbs <g> --fat <g> \
+       --source <photo|text|both|voice> --confidence <low|medium|high> \
+       --comment "<one-line note — what drove the estimate / its uncertainty>"
+     ```
+     Set `confidence: low` when guessing portion from a photo with no note;
+     `high` only when the note pins quantities down. A meal Alex logs late
+     ("forgot to log — oatmeal this morning") is still new food — estimate
+     it normally; it lands on its message date.
+
+   **(b) Correction of an earlier entry** → find the target, then amend it.
+   The correction message is an *instruction*, not a food item.
+   - Find the target entry: `tools/calorie_db.py day` (today) or
+     `day --date <d>` / `recent --days 3` for an earlier day Alex names
+     ("yesterday"). Match by description + timing against what he said.
+   - **If you can't tell which entry he means** (e.g. he ate rice twice),
+     do NOT guess — reply and ask: `tools/fitness_bot.py send "Which one —
+     the rice at lunch or at dinner?"`, then `dismiss` the correction
+     message with reason "asked Alex to disambiguate". His reply comes as a
+     fresh message next tick.
+   - **Re-estimate** the target with the corrected numbers, passing
+     `--reason` (this snapshots the old values into the audit trail):
+     ```
+     uv run python tools/calorie_db.py estimate --id <TARGET_id> ... \
+       --reason "Alex: <what he corrected>"
+     ```
+     Or, if he says he didn't eat it: `tools/calorie_db.py void --id
+     <TARGET_id> --reason "Alex: <...>"`.
+   - Then `dismiss` the correction message itself: `dismiss --id
+     <correction_id> --reason "correction applied to #<TARGET_id>"`.
+   - **If the target day's digest was already sent** (it's a past day),
+     send a brief follow-up so the record Alex saw isn't silently stale:
+     `tools/fitness_bot.py send "Updated <day>: <what changed>, revised
+     total ~<range>."` — then re-run the digest's `save-digest` for that
+     date so the stored summary matches.
+
+   **(c) Not food** (greeting, question, chatter):
+   `uv run python tools/calorie_db.py dismiss --id <id> --reason "<why>"`.
+
+4. Do **not** `notify_alex` here, and the **only** fitness-bot sends are
+   the disambiguation question and the past-day correction follow-up above
+   — never an ack for normal logging. Ingest is otherwise silent; the
+   nightly digest is the main outbound message. Write the tick result
+   `{"status": "done", "result": "calories: <N> estimated, <C> corrected, <M> dismissed, <K> still pending"}` and exit.
+
+**`calorie_digest` (nightly, ~23:00 ET).** Summarize and send.
+
+1. `uv run python handlers/calorie_digest.py due` — returns `dates`: every
+   local day with food logged but no digest sent yet (today, plus any day
+   missed because the laptop slept through 03:00 UTC).
+2. For **each** date in `dates`:
+   - First clear that day's pending entries (run the `poll_food` estimate
+     loop above for any `pending` rows on that date) so totals don't
+     undercount.
+   - `uv run python handlers/calorie_digest.py summary --date <d>` — totals
+     (kcal range + macros) and every entry.
+   - Compose a **short, honest** message in your voice: total kcal as a
+     range, the macro split, one or two real observations (meal timing,
+     protein low, a heavy single item). No cheerleading, no fake
+     precision, no medical advice. If the day was thin on data, say so.
+   - `uv run python handlers/calorie_digest.py send --date <d> --text "<message>"`
+     — sends to the fitness chat and records the digest (marked sent, so
+     it won't re-send).
+3. If `due` is empty, there's nothing to send — exit clean. Don't send an
+   empty "you logged nothing" message every night; silence is fine.
+
+Simona queries the same DB (`tools/calorie_db.py day|recent|range`) when
+Alex wants to discuss trends — you don't need to do anything for that.
+
+### Substack growth — handler `substack`
+
+Daily engagement that promotes **Alex's** Substack (`hiper2d.substack.com`), posted
+under his account via the persistent Chrome profile on port 9223 (same one
+`scrape_stats` uses). Invoked with `context.mode: growth`. Read
+`projects/blog/substack/config.yaml` first — publication, the posts you may
+reference (with hooks), daily caps, scan sources, and the audience filter.
+
+Two tiers: **welcomes** auto-post (capped); **comments** are drafted only and wait
+for Alex's approval (the `substack_approvals` task posts them).
+
+1. **Session check.** `uv run python handlers/substack.py session-check`. If
+   `kind: reauth` or `chrome_down` → `notify_alex(urgency="urgent", "Substack
+   session expired — log into Substack once in Marlow's persistent Chrome profile
+   (port 9223) so growth can run.")`, write a clean `done` result, and STOP. Only
+   continue on `ok: true`.
+2. **Scan.** For each URL in `scan_sources`: `substack.py scan --url <url>
+   --scrolls 4`. Merge the `candidates` (`{note_id, note_url, author_handle,
+   snippet}` — already deduped against threads you've engaged AND the
+   do-not-engage list). A `kind: reauth` here → handle like step 1. Then
+   `substack.py subscribers` for the current subscriber emails (used in the skip
+   rule below).
+3. **Classify (your judgment).** Per candidate:
+   - **welcome** — an AI/tech newcomer or community thread inviting people to
+     share work / introduce themselves / connect ("I'm new, share your work",
+     "anyone building AI agents? let's connect").
+   - **comment** — a substantive AI/tech thread where a sharp, specific take from
+     Alex adds value and earns a profile click.
+   - **skip** — wrong audience (fiction / lifestyle / politics / spirituality),
+     "no self-promo" threads, sensitive topics, low quality, or saturated. When
+     unsure, skip. The bar is the config audience filter: AI / ML / data /
+     dev-tools / tech-builder only.
+   - **already a subscriber → skip + block.** Don't recruit people who already
+     subscribe. Substack only exposes emails (no handle/name), so match by
+     judgment: a candidate is a subscriber when its handle or display name
+     plausibly maps to a subscriber email's local-part (e.g.
+     `enginveske@gmail.com` ↔ `engincanv` / "Engincan Veske"). On a confident
+     match, skip it AND `substack.py block --handle <handle>` so it's filtered for
+     good. Unsure → just skip this run, don't block.
+4. **Tier A — welcomes (auto-post, capped).** Up to `caps.welcomes_per_day`
+   (the handler also enforces this and dedupes, but don't over-draft). For each:
+   draft a SHORT, warm, specific welcome in Alex's voice — practical, no hype —
+   referencing ONE config post naturally, and VARY the wording every time (never
+   reuse text; Substack flags repeats). Put the post link on its own line so it
+   expands to a preview card. Write to a temp file, then `substack.py post
+   --note-url <url> --text-file <f> --kind welcome`. On `kind_err: reauth`, stop
+   and do step 1's urgent notify. `cap_reached` / `already_engaged` are normal —
+   skip and move on.
+5. **Tier B — comment drafts (do NOT post here).** Up to
+   `caps.comment_drafts_per_day` of the best `comment` candidates. Draft a
+   substantive, specific comment in Alex's voice. On big/influencer threads a link
+   reads as spam — prefer a sharp take WITHOUT a link (the profile click is the
+   goal); include a link only on smaller, directly-adjacent threads. Write to a
+   temp file, then `substack.py outbox-add --note-url <url> --author "<name>"
+   --snippet "<thread snippet>" --text-file <f>`.
+6. **Notify Alex.** If you queued any Tier-B drafts, send ONE urgent message so he
+   can approve from his phone. One line per draft:
+   `<id>. @<author> — <one-line what the thread is> → "<first ~12 words of your draft>…"`.
+   End with: `Reply: post 1,3 / skip 2 / post all`. Mention any welcomes posted in
+   the same message. `notify_alex(urgency="urgent", message=...)`. If you posted
+   welcomes but queued no drafts, a digest line is fine.
+7. **Result.** `{"status":"done","result":"substack growth: <W> welcomes, <C> drafts queued"}`.
+   Log to `recent/` only if something notable happened (reauth, a failed post, an
+   unusually strong thread).
+
+### Substack approvals — handler `substack`
+
+Posts the Tier-B comment drafts Alex approved via Telegram. Invoked with
+`context.mode: approvals`. Fires every 2h; cheap when idle.
+
+1. **Pending?** `substack.py outbox-list --status pending`. If zero → exit clean
+   (`result: "no pending substack drafts"`); don't even read Telegram.
+2. **Read replies.** `uv run python tools/telegram_poll.py fetch` — new messages
+   from Alex (advances the offset, so each is seen once). If none → exit clean
+   ("pending drafts, no new replies yet").
+3. **Interpret (your judgment).** Map his replies onto the pending ids. He writes
+   naturally — "post 1 and 3", "skip the second", "do them all", "not the
+   influencer one", "yes". If a reply is genuinely ambiguous, leave those drafts
+   pending and note it — never guess and post under his name.
+4. **Mark.** Per draft: `substack.py outbox-set-status --id <id> --status approved`
+   (or `rejected`).
+5. **Post.** `substack.py post-approved` — posts every approved draft, verifies,
+   sets `posted`/`failed`. A `reauth` anywhere → urgent notify about the expired
+   session, leave the rest pending.
+6. **Confirm.** `notify_alex(urgency="urgent", "Posted N Substack comments (ids …).
+   Skipped M.")` (digest if nothing posted). Flag any `verified:false` ids for Alex
+   to eyeball.
+7. **Result.** `{"status":"done","result":"substack approvals: posted <N>, rejected <M>, <K> pending"}`.
+
 ### Daily memory grading — handler `grade_memory`
 
 When invoked with this handler:

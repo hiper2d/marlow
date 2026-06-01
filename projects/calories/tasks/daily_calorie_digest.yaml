@@ -1,0 +1,26 @@
+# daily_calorie_digest — end-of-day calorie summary to Alex.
+#
+# Fires once nightly at 03:00 UTC (~23:00 America/New_York). Summarizes
+# the day's food log, Marlow writes a short honest comment, sends it to
+# the fitness chat. Self-heals across missed nights: `due` returns every
+# local day that has food logged but no digest sent yet, so a laptop
+# asleep at digest time just catches up on the next tick.
+#
+# In-tick flow (full detail in CLAUDE.md → "Calorie tracking"):
+#   1. uv run python handlers/calorie_digest.py due   → list of dates.
+#   2. For each date: estimate any still-pending entries first (so totals
+#      don't undercount), then `summary --date <d>`, compose the message,
+#      `send --date <d> --text "<message>"`.
+#   3. If `due` is empty, nothing to send — exit clean.
+#
+# must_run_within_hours large enough to catch up after an overnight sleep.
+name: daily_calorie_digest
+project: calories
+description: Send Alex an end-of-day calorie + macro summary with a short comment.
+schedule: "0 3 * * *"   # ~23:00 ET
+priority: high
+must_run_within_hours: 18
+subtasks:
+  - id: send_digest
+    handler: calorie_digest
+    context: {}

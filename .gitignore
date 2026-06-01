@@ -44,6 +44,12 @@ projects/research/threads/_feed_state.json
 # Werewolf API-budget snapshots (runtime; written every monitor run)
 projects/werewolf-ops/state/*
 
+# Calorie tracker — runtime data: the SQLite log, Alex's food photos,
+# and the Telegram poll offset. Personal + regenerable, not source.
+projects/calories/calories.db
+projects/calories/inbox/
+projects/calories/state/
+
 # Drafts and published articles are agent-written content;
 # uncomment if you'd rather not commit them to git history.
 # projects/blog/drafts/*.md

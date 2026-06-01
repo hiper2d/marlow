@@ -514,3 +514,110 @@ State files are gitignored (`projects/werewolf-ops/state/*`) — runtime data th
 churns every run and carries live balances, not source. Verified end-to-end: both
 reports write state, `show` renders all 8 with the two digest/one urgent issues
 intact (xAI still $0.98). The recall path no longer costs a provider call.
+
+## 2026-06-01 — calorie tracker: a new project, food in via its own bot
+
+*What landed.* New `calories` project. Alex wants to log what he eats by
+sending photos / text notes to a Telegram bot; Marlow estimates calories +
+macros, stores them, and sends one end-of-day digest. Pieces:
+
+- `tools/fitness_bot.py` — Telegram client for the **new** bot
+  `@marlow_fitness_bot` (separate token `MARLOW_FITNESS_BOT_TOKEN`, distinct
+  from the notify bot so food traffic stays off the alert channel). Both
+  receives (`get_updates`, `download_file`) and sends. Sole `getUpdates`
+  consumer for that token.
+- `tools/calorie_db.py` — SQLite store. One row per entry; `pending` →
+  `estimated`/`dismissed`. kcal stored as a LOW/HIGH **range** (portion size
+  is the real error source, so a single number would be a lie). Grouped by
+  `local_date` in America/New_York. `update_id` UNIQUE = dedupe. Also Simona's
+  query surface (`day|recent|range`) for "let's talk about my week".
+- `handlers/poll_food.py` — every tick: fetch → download photos →
+  insert pending rows → advance offset. Writes to DB *before* the offset
+  advances so a dead tick loses nothing.
+- `handlers/calorie_digest.py` — nightly: `due` → `summary` → Marlow comments
+  → `send`.
+- Two task YAMLs (`poll_food` */20, `daily_calorie_digest` 03:00 UTC) + project
+  README + a CLAUDE.md "Calorie tracking" orchestration section.
+
+*Key design call — estimation is Marlow's, not an API's.* Since Marlow runs
+inside a Claude Code session, the vision estimate is done by Marlow reading the
+photo, not a metered call. poll_food deliberately does NOT estimate; it just
+parks pending rows. Keeps cost at zero and survives crashes.
+
+*Self-heal built in from day one.* `calorie_digest due` returns every local day
+with food logged but no digest sent — so a laptop asleep through 03:00 UTC
+catches up next tick instead of summarizing the wrong (empty) day. Avoided the
+naive "summarize today" trap.
+
+*Verified end-to-end.* DB init, bot `getMe`, real fetch of Alex's "Hi" → pending
+→ dismissed (non-food path), dedup on re-fetch (offset persisted), throwaway
+food entry → estimate → day totals + 7-day range, live `send` to Alex's chat
+(msg_id 4 — he got it). Scheduler dry-run parses both YAMLs; tasks registered
+first-sight (fire on next window, not retroactively).
+
+*What's deferred.* Media groups (several photos in one send) ingest as separate
+entries — Marlow can note that in the comment, not merging in code yet. No
+weight/goal tracking, no target-deficit math — this is a *trend* logger, not a
+diet app. Revisit if Alex wants targets.
+
+*Open question.* Confidence calibration — does `low/medium/high` actually track
+real accuracy, or does everything-from-a-photo collapse to "low"? Watch the first
+week of digests before trusting the ranges.
+
+*State.* calories project live, both tasks scheduled, bot online. First real food
+photo is the next test.
+
+### Same-day follow-up — voice notes
+
+Alex asked if Marlow can parse Telegram voice messages. It can't *hear* —
+Claude's Read tool does images/PDFs, not audio. So: transcribe locally first,
+then the transcript flows through the existing text path. Added
+`faster-whisper` (model `small`, multilingual — Alex speaks EN + RU; override
+via `CALORIE_WHISPER_MODEL`), new `tools/transcribe.py`, and voice handling in
+`poll_food` (download OGG → transcribe → store transcript as `raw_text`,
+`source='voice'`, keep the OGG in inbox/ for audit). New `audio_path` column on
+`entries` with an idempotent PRAGMA-guarded migration.
+
+Chose local STT over the OpenAI Whisper API deliberately — we only hold an
+OpenAI *admin* key (no inference), and local keeps the zero-metered-cost
+property the whole pipeline already has (estimation is Marlow's own vision).
+Verified: macOS `say` → ffmpeg libopus → transcribe gave back the exact
+sentence; warm run 2.6s (well within the 5-min tick wall-clock; first run was
+slow only because it pulled the 480MB model once). Migration + voice-entry
+store tested end to end, test rows cleaned up.
+
+### Same-day follow-up — corrections + cadence decision
+
+Alex floated "maybe just consume once a day" and asked how to fix an
+already-logged mistake. Two outcomes:
+
+*Cadence.* Kept per-tick estimation (he chose it). The argument that settled
+it: frequent polling is effectively free when the queue is empty, so once-a-day
+saves nothing — it only delays counting and breaks mid-day "how am I doing".
+Per-tick keeps the DB live and makes corrections apply immediately. (The one
+genuine charm of once-a-day — same-day corrections auto-reconciling in a single
+pass — wasn't worth losing live data.)
+
+*Corrections, now first-class.* Alex just messages the bot in plain language;
+Marlow classifies each incoming message as new-food / correction / not-food.
+- `fill_estimate` is now also the correction path: re-running `estimate` on an
+  already-`estimated` row snapshots its prior values into a new `amendments`
+  JSON column (with `--reason`) before overwriting. History is never silently
+  lost.
+- New `void` status for "logged then retracted" (scratch the pizza) — distinct
+  from `dismissed` (not food). Both excluded from totals; only `estimated`
+  counts. New `get --id` exposes an entry + its amendment history.
+- Orchestration in CLAUDE.md: match the correction to its target entry (today
+  via `day`, past days via `recent`/`day --date`); **if ambiguous, ask via the
+  bot and dismiss — don't guess**; apply estimate/void to the target; dismiss
+  the correction message itself; and if the target day was already digested,
+  send a short "updated <day>" follow-up + re-save the digest. Forgotten meals
+  = normal late/back-dated new entries.
+
+Verified end to end: estimate → correct (amendment logged with before-values +
+reason) → void (drops out of totals). Migration is idempotent (PRAGMA-guarded
+column add). The only unprompted bot sends are the disambiguation question and
+the past-day correction note — never an ack for normal logging.
+
+*To watch.* Correction-matching accuracy across days, and whether "ask when
+ambiguous" fires too often or not enough. First real corrections will tell.
