@@ -23,6 +23,8 @@ venv/
 tasks/queue.json
 tasks/completed/*
 !tasks/completed/.gitkeep
+tasks/last_scheduled.json
+tasks/telegram_offset.json
 
 # Memory — runtime, agent-written
 memory/recent/*
@@ -49,6 +51,12 @@ projects/werewolf-ops/state/*
 projects/calories/calories.db
 projects/calories/inbox/
 projects/calories/state/
+
+# Substack growth — runtime poll state + pending comment outbox
+# (the outbox drains when Alex approves; the dir is kept via .gitkeep)
+projects/blog/substack/state.json
+projects/blog/substack/outbox/*
+!projects/blog/substack/outbox/.gitkeep
 
 # Drafts and published articles are agent-written content;
 # uncomment if you'd rather not commit them to git history.

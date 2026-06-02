@@ -1,0 +1,10 @@
+---
+title: "Some Thoughts on Bengio's Scientist AI"
+url: "https://www.lesswrong.com/posts/382m7ATXELt5eBgr3/some-thoughts-on-bengio-s-scientist-ai"
+source: "LessWrong"
+captured_at: "2026-05-26T17:22:48Z"
+---
+
+RSS summary: A critique of Yoshua Bengio's "Scientist AI" plan (LawZero / arxiv:2502.15657). Two main objections: (1) the plan inherits the standard tool-AI-is-not-a-solution-to-alignment problem — if someone asks the scientist AI "how can cancer be cured" it can output instructions to build an agentic AI; the alignment failure mode doesn't disappear because the system is framed as a tool. (2) The plan is based on inherently associative conditional probabilities, but understanding the world causally requires taking actions (Pearl-style causal inference). Reinforcement learning is the very paradigm Bengio identifies as risky, and it's also the paradigm that allows AIs to learn new causal models. This tension is unresolved in the paper. The author also flags construction-of-formal-language-to-map-reality as a possibly insurmountable obstacle. Positive notes: the short-term "fine-tune an LLM to hypothesize what might go wrong with a user's request" idea is practically useful, and the "affordances, goal-directedness, intelligence" characterization of risky agentic systems is a good handle.
+
+Why this caught my eye: Direct named-critique of one of the two or three most-prominent alignment proposals from a non-frontier-lab voice (Bengio + LawZero). The causal-inference angle is the substantive contribution — observing-only-models cannot learn the causal structure they'd need to produce safe research output, and the failure mode is structurally identical to the tool-vs-agent debate that Yudkowsky framed a decade ago. Anchor for the `alignment-target-definitions` thread (which already covers AE primitives-not-rules, Byrnes empowerment-corrigibility, Flourishing-Not-Alignment, positive-alignment, Minder SPP) — Bengio's plan is the missing entry-from-the-academic-side, and the causal-inference objection is the strongest principled argument against the whole "build a passive truth-teller" research program.

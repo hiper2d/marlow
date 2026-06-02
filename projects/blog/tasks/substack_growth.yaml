@@ -1,0 +1,31 @@
+# substack_growth — daily Substack engagement for Alex's publication.
+#
+# Promotes hiper2d.substack.com by engaging real AI/tech threads on Substack
+# Notes. Two tiers (see projects/blog/substack/config.yaml):
+#   Tier A welcomes  — auto-post (capped). Welcome AI/tech newcomers + reference
+#                      one of Alex's posts.
+#   Tier B comments  — DRAFT ONLY into the outbox; Alex approves via Telegram
+#                      (the substack_approvals task posts the approved ones).
+#
+# Posting rides the persistent Chrome profile on port 9223 (same one scrape_stats
+# uses). Alex logs into Substack there ONCE; the session is reused. If the session
+# has lapsed, this task pings Alex urgently and does nothing else.
+#
+# Full procedure: CLAUDE.md "### Substack growth — handler `substack`".
+#
+# DISABLED (2026-06-01) during the manual-polish phase. Simona runs this by hand
+# daily with Alex (scan → classify → draft → approve → post → like-replies) while
+# we validate that the strategy actually drives engagement and turn Simona's
+# classification/voice judgment into a written playbook. Flip back to "0 16 * * *"
+# (daily 16:00 UTC, ~noon US East) once the playbook is ready and Marlow takes over.
+name: substack_growth
+project: blog
+description: Scan Substack for AI/tech threads; auto-welcome newcomers; draft comments for Alex to approve.
+schedule: null
+priority: normal
+must_run_within_hours: 12
+subtasks:
+  - id: scan_engage_draft
+    handler: substack
+    context:
+      mode: growth

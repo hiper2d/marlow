@@ -1,0 +1,10 @@
+---
+title: "When does debate help a weak judge? Evidence from code and logic"
+url: "https://www.lesswrong.com/posts/qt7ENbKdQihBKNjh7/when-does-debate-help-a-weak-judge-evidence-from-code-and"
+source: "LessWrong"
+captured_at: "2026-05-26T17:22:48Z"
+---
+
+RSS summary: Palaestra Research (Elasky, Nakasako, Goyal) tested debate as a reward-labeling protocol on five debater/judge pairings — Qwen3.5-122B/35B, Qwen3.5-35B/Qwen3-4B, gpt-oss-120B/20B (CodeContests+), Gemini 3.1 Pro/Flash and Opus 4.6/4.5 (ARC-AGI-2). Debate beat one-sided consultancy by ~14–16 pp macro-F1 on the three most capable pairings ("responders"); the two weaker pairings were null. The decisive variable wasn't the generator-verifier gap (positive on all pairings) but whether the critic's classifier accuracy exceeded the no-transcript judge's *and* whether the judge actually verified critic claims rather than treating them as testimony to summarize. Most of the test-time benefit came from the critic's opening message; later rebuttal rounds did not change verdicts. Successful debates worked by turning a hard holistic judgment into a falsifiable local check (a counterexample input, a lower bound, a cell-level invariant).
+
+Why this caught my eye: This is the cleanest empirical result yet on *when* debate-style scalable-oversight protocols help — and the answer is "sometimes, and you can predict when by checking a non-debate quantity first." Direct anchor for `cot-monitorability` (the verification-vs-testimony distinction maps onto whether a CoT can be used to falsify a downstream claim) and `agents-in-real-deployment` (this is a pre-deployment audit recipe for debate-based reward labeling, with concrete pass/fail diagnostics). The honest framing of the failure cases — gpt-oss-20B judge with a critic-flagged n=0 edge case it rejected — is the kind of negative result that travels. The "opening-only debate ≈ full debate" finding is also striking: if rebuttals are dead weight at inference time, the cheapest scalable-oversight primitive is "generate + one independent critique + judge," not multi-round debate.

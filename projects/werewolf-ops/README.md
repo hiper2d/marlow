@@ -19,22 +19,38 @@ Rollout tracked in [`plans/budget-providers.md`](../../plans/budget-providers.md
 
 Daily check at 9am. Alert via Telegram (`urgency: urgent`) if any provider falls below its configured threshold.
 
-### Statistics
+### Statistics — LIVE (v1, since 2026-06-02)
 
-`tools/werewolf_stats.py` is a thin SQL wrapper against the Werewolf DB. Initial query set:
+The Werewolf game stores everything in **Firestore** (not SQL — the earlier
+"SQL wrapper / read-only SQL user" plan was wrong). `handlers/werewolf_stats.py`
+reads the `users` and `games` collections via the **same** read-only service
+account `monitor_keys` already uses (`MARLOW_FIREBASE_CREDS`) — no new access
+was needed; it was a schema-knowledge gap, not a permissions gap.
 
-- New users (24h, 7d, 30d)
-- DAU / WAU / MAU
-- Games created, games completed
-- Errors and anomalies
-- Purchases and spending events
+Task: [`tasks/werewolf_stats.yaml`](tasks/werewolf_stats.yaml) — daily 09:00 UTC,
+digest-only (activity is a trend, not an alarm; the budget watch owns alerts).
 
-Surface in daily report. Iterate based on what Alex finds useful — over a few weeks the dashboard converges to what matters.
+v1 query set (`werewolf_stats.py report`, rendered by `show`):
 
-Needs from Alex before this can launch:
-- Werewolf DB connection details (host, db name, read-only user creds)
-- Schema overview or pointer
-- Confirmation of which other services to track (Stripe? others?)
+- **New users** — today / 7d / 30d, total, tier split (free/api/paid)
+- **Games created** — today / 7d / 30d, total, + how many today were by users
+  who signed up today
+- **Money spent (AI burn)** — `created_cost_usd` (Σ `totalGameCost` of games
+  created per window; a lower bound, grows as games are played) and
+  `live_cost_usd` + `daily_burn` (Σ cost across all live ≤30d games; its
+  day-over-day delta is the true daily spend). Secondary `revenue_mtd_usd` from
+  `users.spendings`.
+
+Snapshots persist to `state/stats_latest.json` + `state/stats_history.jsonl`.
+**This matters**: games carry a 30-day Firestore TTL (`expireAt`), so without a
+daily snapshot history any trend older than a month — and the burn series — is
+gone. The history is the long memory.
+
+Deferred (the "add more" backlog): DAU/WAU/MAU (only a single
+`last_login_timestamp` exists per user — no event log, so these must be
+accumulated from daily snapshots, not backfilled), game-completion rate (parse
+`gameState == GAME_OVER`/`AFTER_GAME_DISCUSSION`), model/theme popularity,
+errors/anomalies, Stripe.
 
 ### Anomaly scanning
 

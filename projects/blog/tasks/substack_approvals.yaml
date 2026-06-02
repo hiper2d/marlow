@@ -1,0 +1,29 @@
+# substack_approvals — read Alex's Telegram replies and post the comment drafts
+# he approved.
+#
+# The substack_growth task drafts Tier-B comments into the outbox and pings Alex
+# with the list (each draft has an id). Alex replies in Telegram — e.g. "post 1,3",
+# "skip 2", "post all", "yes do them" — in his own words. This task polls those
+# replies, interprets them against the pending outbox, marks each draft
+# approved/rejected, posts the approved ones, and confirms back.
+#
+# Telegram is read via tools/telegram_poll.py (the notify bot's inbound half).
+# Interpretation is Marlow's judgment, not rigid command parsing.
+#
+# Full procedure: CLAUDE.md "### Substack approvals — handler `substack`".
+#
+# DISABLED (2026-06-01) during the manual-polish phase — paired with
+# substack_growth. While Simona drives the daily run by hand there are no
+# Telegram-queued drafts to post (she posts approved comments directly in-session).
+# Re-enable to "0 */2 * * *" when substack_growth goes back on Marlow's schedule.
+name: substack_approvals
+project: blog
+description: Poll Telegram for Alex's approvals and post the Substack comment drafts he OK'd.
+schedule: null
+priority: normal
+must_run_within_hours: 4
+subtasks:
+  - id: check_and_post
+    handler: substack
+    context:
+      mode: approvals

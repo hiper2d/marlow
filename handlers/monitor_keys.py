@@ -118,11 +118,12 @@ def _to_usd(amount: float, currency: str) -> float:
 # ─── Firestore: read the live free-tier key map ──────────────────────────────
 
 
-def _load_free_tier_keys() -> dict[str, str]:
-    """Read `/config/freeTierApiKeys` and return its inner `keys` map.
+def _firestore_db():
+    """Init (once) and return the read-only Firestore client.
 
-    Raises RuntimeError (caught by callers) if creds/dep are missing so the
-    handler degrades to a clean `ok: false` rather than crashing.
+    Shared by every handler that reads the game's DB (monitor_keys for the key
+    map, werewolf_stats for activity). Raises RuntimeError (caught by callers)
+    if creds/dep are missing so handlers degrade to a clean `ok: false`.
     """
     creds_path = os.environ.get("MARLOW_FIREBASE_CREDS")
     if not creds_path:
@@ -141,8 +142,16 @@ def _load_free_tier_keys() -> dict[str, str]:
         app = firebase_admin.get_app(app_name)
     except ValueError:
         app = firebase_admin.initialize_app(credentials.Certificate(creds_path), name=app_name)
+    return firestore.client(app)
 
-    db = firestore.client(app)
+
+def _load_free_tier_keys() -> dict[str, str]:
+    """Read `/config/freeTierApiKeys` and return its inner `keys` map.
+
+    Raises RuntimeError (caught by callers) if creds/dep are missing so the
+    handler degrades to a clean `ok: false` rather than crashing.
+    """
+    db = _firestore_db()
     snap = db.collection(FREE_TIER_DOC[0]).document(FREE_TIER_DOC[1]).get()
     if not snap.exists:
         raise RuntimeError(f"Firestore doc /{FREE_TIER_DOC[0]}/{FREE_TIER_DOC[1]} not found")

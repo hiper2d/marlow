@@ -3,49 +3,39 @@ slug: ai-offense-taxonomy-paired-autonomous-adversarial
 assigned_by: simona
 assigned_at: 2026-05-31
 priority: normal
-angle: |
-  Re-seed of the rejected ai-paired-ctf-bsides-tampa-2026 assignment. The
-  original draft (paired-autonomous-adversarial, rejected 2026-05-31)
-  overlapped almost entirely with Alex's own now-published firsthand post —
-  same weekend, same 6/61 result, same XBOW / Check Point-Skynet / classifier
-  anchors, same competence-floor-vs-ceiling point. A retread with less detail
-  and a borrowed vantage. Don't write that piece again.
-
-  The ONE original contribution in the rejected draft was the taxonomy:
-  "AI vs human" is the wrong axis for AI-in-offensive-security; the live axis
-  is *paired vs autonomous vs adversarially-designed-against*. Build the new
-  piece around that frame alone. It is an analysis essay, not a war story.
-
-  Crucial change of stance: Alex has already published the firsthand account
-  (the CTF weekend, the exploit walkthroughs, the classifier friction). So you
-  do NOT re-narrate the session. You CITE his post as the paired-quadrant
-  exemplar and spend your words on the taxonomy:
-
-    - Paired — human + 1-2 model sessions; human does scope, ferries state
-      across context windows, picks tools the model doesn't reach for, absorbs
-      platform-policy friction. Exemplar: Alex's BSides post (link it).
-    - Autonomous — full pipeline, model as one component among validators /
-      scope ingestion / dedup, operating under its own platform policy.
-      Exemplar: XBOW #1 on HackerOne.
-    - Adversarially-designed-against — targets built to confuse, manipulate, or
-      refuse AI tooling specifically. Leading edge: Check Point's Skynet
-      prompt-injection-in-malware sample. Clumsy now; a discipline within
-      18-24 months. CTF authors are ~12-24 months behind malware on this curve.
-
-  The contrarian payload: capability is settled (XBOW closed it on web bugs 18
-  months ago; a weekend pair closed it on competition puzzles). What's
-  unsettled is which SHAPE matters where, and which shape each new data point
-  actually belongs to. The taxonomy is a thinking tool defenders can use; "AI
-  vs human" is not. End on what defenders should do differently given the three
-  shapes (design the wrapper, not just the model; plan for the floor-vs-ceiling
-  talent reshape; the next contest is adversarial design).
-
-  Voice: analytical, skeptical, specific. This is the essay the rejected draft
-  should have been once Alex's post existed to carry the firsthand weight.
-  Shorter than the rejected draft — 1200-2000 words. You're not re-proving AI
-  works; you're giving the discourse a better axis.
+angle: "Re-seed of the rejected ai-paired-ctf-bsides-tampa-2026 assignment. The\n\
+  original draft (paired-autonomous-adversarial, rejected 2026-05-31)\noverlapped\
+  \ almost entirely with Alex's own now-published firsthand post —\nsame weekend,\
+  \ same 6/61 result, same XBOW / Check Point-Skynet / classifier\nanchors, same competence-floor-vs-ceiling\
+  \ point. A retread with less detail\nand a borrowed vantage. Don't write that piece\
+  \ again.\n\nThe ONE original contribution in the rejected draft was the taxonomy:\n\
+  \"AI vs human\" is the wrong axis for AI-in-offensive-security; the live axis\n\
+  is *paired vs autonomous vs adversarially-designed-against*. Build the new\npiece\
+  \ around that frame alone. It is an analysis essay, not a war story.\n\nCrucial\
+  \ change of stance: Alex has already published the firsthand account\n(the CTF weekend,\
+  \ the exploit walkthroughs, the classifier friction). So you\ndo NOT re-narrate\
+  \ the session. You CITE his post as the paired-quadrant\nexemplar and spend your\
+  \ words on the taxonomy:\n\n  - Paired — human + 1-2 model sessions; human does\
+  \ scope, ferries state\n    across context windows, picks tools the model doesn't\
+  \ reach for, absorbs\n    platform-policy friction. Exemplar: Alex's BSides post\
+  \ (link it).\n  - Autonomous — full pipeline, model as one component among validators\
+  \ /\n    scope ingestion / dedup, operating under its own platform policy.\n   \
+  \ Exemplar: XBOW #1 on HackerOne.\n  - Adversarially-designed-against — targets\
+  \ built to confuse, manipulate, or\n    refuse AI tooling specifically. Leading\
+  \ edge: Check Point's Skynet\n    prompt-injection-in-malware sample. Clumsy now;\
+  \ a discipline within\n    18-24 months. CTF authors are ~12-24 months behind malware\
+  \ on this curve.\n\nThe contrarian payload: capability is settled (XBOW closed it\
+  \ on web bugs 18\nmonths ago; a weekend pair closed it on competition puzzles).\
+  \ What's\nunsettled is which SHAPE matters where, and which shape each new data\
+  \ point\nactually belongs to. The taxonomy is a thinking tool defenders can use;\
+  \ \"AI\nvs human\" is not. End on what defenders should do differently given the\
+  \ three\nshapes (design the wrapper, not just the model; plan for the floor-vs-ceiling\n\
+  talent reshape; the next contest is adversarial design).\n\nVoice: analytical, skeptical,\
+  \ specific. This is the essay the rejected draft\nshould have been once Alex's post\
+  \ existed to carry the firsthand weight.\nShorter than the rejected draft — 1200-2000\
+  \ words. You're not re-proving AI\nworks; you're giving the discourse a better axis.\n"
 deadline: null
-outcome: null
+outcome: drafted
 ---
 
 ## Why this

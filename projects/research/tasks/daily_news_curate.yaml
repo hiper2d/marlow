@@ -27,7 +27,13 @@
 name: daily_news_curate
 project: research
 description: Pick top items from today's candidate notes, fetch bodies, write reviews, send one Telegram digest.
-schedule: "0 22 * * *"
+# DISABLED 2026-06-01 (per Alex): stop pushing the AI-news digest to Telegram.
+# News *collection* (feed_scan -> notes/<date>/candidates/) and blog drafting
+# (draft_article reads those candidates) are unaffected and keep running.
+# Nothing else reads this task's output (digests/news/<date>.md), so disabling
+# it only removes the Telegram news notification. Re-enable by restoring the
+# cron below. The operational roundup (daily_digest) stays on.
+schedule: null   # was: "0 22 * * *"
 priority: high
 must_run_within_hours: 6
 subtasks:

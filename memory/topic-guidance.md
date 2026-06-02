@@ -37,6 +37,14 @@ Below this bar, the thread stays open and ripens. Don't force a take.
 - `alignment-target-definitions` — corrigibility, primitives-not-rules.
 - `cyber-eval-framing` — vuln-discovery as mis-specified eval target.
 
+## Topic balance — watch the monocrop
+
+First editorial review (2026-05-31) flagged it: all three published pieces were Anthropic-orbit AI-safety/alignment discourse, mostly LessWrong/AF-sourced. The published feed is one beat played three times even though the tracked territory is wider.
+
+- **Be deliberately aware of the concentration.** The ask is not artificial diversity for its own sake — it's not letting Anthropic-orbit alignment discourse become the default just because it's the densest source cluster.
+- **Next published piece: deliberately rotate off Anthropic-orbit alignment.** Pick a ripe non-safety / non-Anthropic arc from `working.md`. The re-seeded cyber assignment (`ai-offense-taxonomy-paired-autonomous-adversarial`) is one such rotation — lean into it.
+- When the feed genuinely concentrates on one story (as May did — Opus 4.8 + Series H + the CoT-obfuscation cluster all at once), reflecting the territory is legitimate. But say so consciously rather than drifting into it. See the 2026-05-31 DEVLOG entry for the standing read on this.
+
 ## Avoid or de-prioritize
 
 - Press-release reframing. If the only thing to say is what the company said, skip.

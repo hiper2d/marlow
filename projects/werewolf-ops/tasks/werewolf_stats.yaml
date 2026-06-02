@@ -1,0 +1,70 @@
+# werewolf_stats — daily user-activity snapshot for the Werewolf game.
+#
+# Companion to monitor_keys: that watches what the free tier COSTS (provider
+# balances); this watches what it PRODUCES (signups, games, AI burn). Same
+# Firestore, same read-only service account.
+#
+# Fires once daily (09:00 UTC). Activity is a trend, not an alarm — unlike a
+# draining key, a slow signup day needs no same-hour reaction. The daily cadence
+# also defines the burn series: each run snapshots the cumulative game cost, and
+# the day-over-day delta IS the money spent that day (see below).
+#
+# v1 metrics (what Alex asked for — "start with this, we can add more"):
+#   1. New users     — created today / 7d / 30d, + total + tier split (free/api/paid).
+#   2. Games created — started today / 7d / 30d, + total, + how many today were
+#                      by users who signed up today ("their" games). The report
+#                      also carries today's detail: new-user emails, and each
+#                      game started today (theme — there's no name field —
+#                      + owner, gameState, cost, new-user tag).
+#   3. Money spent   — the free tier's AI burn, two honest cuts:
+#        - created_cost_usd: Σ totalGameCost of games CREATED in each window.
+#          A lower bound — totalGameCost keeps rising as a game is played, so
+#          freshly-created games are undercounted.
+#        - live_cost_usd + daily_burn: live_cost is Σ cost across ALL current
+#          (≤30d) games; its day-over-day DELTA (daily_burn.usd) is the true
+#          money spent since the last snapshot. Negative delta = games expired
+#          out of the 30d TTL window (flagged, floored at 0), not a refund.
+#      revenue_mtd_usd is a secondary line from users.spendings (monthly
+#      free/api/paid buckets) — ~= burn while everyone's free tier; the right
+#      field if a paid tier ever grows.
+#
+# WHY snapshot to state/: games auto-expire after 30 days (Firestore TTL on
+# `expireAt`). Without a daily history, any trend older than a month — and the
+# burn series itself — is unrecoverable. stats_history.jsonl is the long memory.
+#
+# Credentials (in the launchd plist): MARLOW_FIREBASE_CREDS → the same read-only
+# service-account JSON monitor_keys uses (marlow-readonly@…, datastore.viewer).
+# No new secret. Reads collections `users` and `games`.
+#
+# In-tick flow:
+#   1. Run `uv run python handlers/werewolf_stats.py report`.
+#   2. Parse the JSON. If `ok: false` (almost always MARLOW_FIREBASE_CREDS
+#      missing/invalid or firebase-admin absent), treat as a framework bug:
+#      record a diagnosis via framework_fix; notify Alex urgent only if it's the
+#      Firestore creds failing (same failure mode as monitor_keys).
+#   3. Write the snapshot to projects/werewolf-ops/reports/stats/<YYYY-MM-DD>.md
+#      — render via `werewolf_stats.py show`, plus a sentence on what moved vs
+#      yesterday's report (new signups, notable burn).
+#   4. Append to the end-of-day digest the handler's ready-made block:
+#      `uv run python handlers/werewolf_stats.py digest` → pass verbatim to
+#      `notify --digest`. It's a header line (new users, games, $ since
+#      yesterday) plus today's new-user emails and game themes, auto-collapsing
+#      to bare counts above DIGEST_LIST_CAP so a busy day can't flood Telegram.
+#      No immediate ping — digest-only; activity has no urgent severity (the
+#      budget watch owns the alarms). compose_daily_digest (23:00 UTC) sends the
+#      accumulated digest, so this rides out with the budget lines in one message.
+#   5. Write the tick result and exit.
+#
+# This task is activity reporting only. It deliberately raises NO alerts — if a
+# metric ever warrants one (e.g. a signup spike worth capacity planning), add an
+# explicit threshold here rather than letting the report turn noisy.
+name: werewolf_stats
+project: werewolf-ops
+description: Daily Werewolf user-activity snapshot — new users, games created, and AI burn (cost) — from Firestore users/games collections. Digest-only, no alerts.
+schedule: "0 9 * * *"
+priority: normal
+must_run_within_hours: 6
+subtasks:
+  - id: collect_stats
+    handler: werewolf_stats
+    context: {}

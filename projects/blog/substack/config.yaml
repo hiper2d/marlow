@@ -1,0 +1,47 @@
+# Substack growth — config for the substack_growth + substack_approvals tasks.
+#
+# This promotes ALEX's Substack (hiper2d.substack.com), not Marlow's blog. Two
+# tiers of engagement, both posted under Alex's account via the persistent Chrome
+# profile (port 9223):
+#   Tier A (welcomes)  — auto-posted, capped. Welcome AI/tech newcomers, reference
+#                        one of Alex's posts.
+#   Tier B (comments)  — drafted only; Alex approves via Telegram before they post.
+
+publication_url: https://hiper2d.substack.com
+profile_url: https://substack.com/@hiper2d
+
+# Daily caps (anti-spam — Substack shadowbans link-spammers; slow + good wins).
+caps:
+  welcomes_per_day: 3
+  comment_drafts_per_day: 5
+
+# Alex's posts available to reference in welcomes/comments. Freshest first.
+# Add new posts here as he publishes; keep hooks tight and honest.
+posts:
+  - title: "We're all about to find out what AI actually costs. Spoiler: it's bad."
+    url: https://hiper2d.substack.com/p/were-all-about-to-find-out-what-ai
+    hook: >-
+      Everyone's mad about Copilot moving to usage-based billing, but that's
+      downstream. The real move is the per-token API price - tracked across 8
+      providers in a Werewolf side-project, almost every spring model shipped
+      more expensive than the one it replaced.
+  - title: "CTF. Everyone was using AI. So I brought mine."
+    url: https://hiper2d.substack.com/p/ctf-everyone-was-using-ai-so-i-brought
+    hook: >-
+      Took a customized Claude Code agent into a 24-task cybersecurity CTF that
+      was framed as "AI won't be much use here" - placed 6th of 61, all solved.
+      The reasoning-vs-retrieval question, walked through the technical weeds.
+
+# Where to look. The home "For you" feed is already AI-heavy (Alex follows AI
+# writers), so it's the primary source. The search URL supplements it with fresh
+# "share your work / building" threads. Scan these in order.
+scan_sources:
+  - https://substack.com/home
+  - https://substack.com/search/AI%20builders%20share%20your%20work?searching=recent
+
+# AUDIENCE FILTER (judgment Marlow applies — not enforced in code):
+# ONLY engage AI / ML / data / dev-tools / tech-builder threads. SKIP fiction,
+# poetry, lifestyle, spirituality, politics, and anything sensitive. A sub-back
+# from the wrong audience is a vanity subscriber who never reads — worse than
+# nothing. Also SKIP threads that explicitly say "no self-promo / don't share
+# your own work."

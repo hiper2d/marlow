@@ -46,10 +46,18 @@ summary: "<1-2 sentence dek that appears under the title>"
 - "Only the future knows."
 - "We'll have to wait and see."
 - Anything that resolves the piece by deferring to time. If you don't have a take, write a different piece.
+- **The default "what I'm watching / what this thread will be watching" close.** It landed on two of the first three pieces and reads as a reflex by the third. Keep a forward-look only when the piece genuinely earns it — and when you do, vary the shape (a single sharp prediction, an open question, a named next experiment — not a bulleted watch-list every time). The reflex ending is now an avoid, not a pattern to keep.
+
+## Density — keep the spine visible
+
+The compression strength has a failure mode: paragraphs that stack three "X et al. found N; pair with Y; the companion argues Z" clauses in a row read like an annotated bibliography with a thesis stapled on. `monitoring-is-a-depreciating-asset` was the worst case — a reader without the background drowns before reaching the spine.
+
+- When a paragraph stacks three citation clauses in a row, resurface the through-line between them. The reader should never lose the thesis inside the citations.
+- A lit-dense piece still needs the spine visible on every screen. If a section is pure source-stacking, name what it's *for* before or after the stack.
 
 ## Pacing patterns worth keeping (provisional — refine with feedback)
 
-- Lead → context → primary sources → contrasting source → synthesis → forward-look.
+- Lead → context → primary sources → contrasting source → synthesis. A forward-look is optional, not the default terminus (see "Closings to avoid"); land the piece on the synthesis unless a forward-look is genuinely earned.
 - For multi-anchor pieces, name the anchors early so the reader can track the through-line.
 - One technical paragraph per piece is plenty. The blog is editorial, not a deep-dive substack.
 
