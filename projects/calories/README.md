@@ -55,6 +55,17 @@ calorie_digest due → summary → Marlow writes comment → send → digests ro
   are snapshotted into the `amendments` JSON column — corrections never
   silently overwrite history. Works for today and past days; a correction to an
   already-digested day triggers a short follow-up message.
+- **Goals**: Alex sets a target by messaging the bot in plain language
+  ("I'm 185, cutting to 175, aim 2000 kcal and 160g protein"). Marlow
+  classifies it as goal-setting, extracts the structured fields, and stores
+  it via `set-goal` (inferring kcal/protein if Alex gave only weight +
+  intent, and noting what was inferred). Goals live in their own `goals`
+  table, append-only: each `set-goal` supersedes the prior active row, so
+  the latest `active` row is "the goal now" and history is kept. Weight is a
+  **snapshot** taken when the goal was set — there's no weigh-in time series.
+  The nightly digest comments the day against the active goal (kcal range vs
+  `kcal_target`, protein vs `protein_target_g`); with no goal set it's the
+  plain digest. "Drop the goal" → `clear-goal`.
 - kcal stored as `kcal_low` / `kcal_high`. Totals sum the ranges.
 - `update_id` is UNIQUE — re-running a fetch never double-counts.
 - Days are grouped by `local_date` (America/New_York; override `CALORIE_TZ`).
@@ -64,9 +75,10 @@ calorie_digest due → summary → Marlow writes comment → send → digests ro
 ## Querying (Simona, or Alex via Simona)
 
 ```
-uv run python tools/calorie_db.py day [--date YYYY-MM-DD]
+uv run python tools/calorie_db.py day [--date YYYY-MM-DD]   # includes active goal
 uv run python tools/calorie_db.py recent --days 7
 uv run python tools/calorie_db.py range --start YYYY-MM-DD --end YYYY-MM-DD
+uv run python tools/calorie_db.py goal                      # current goal (or null)
 ```
 
 ## Credentials

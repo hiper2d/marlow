@@ -426,11 +426,15 @@ end-of-day digest. Two tasks drive this.
 2. `uv run python tools/calorie_db.py pending` — list entries awaiting an
    estimate (across this and prior ticks; nothing is lost on a crash).
 3. For **each** pending entry, first **classify** it — is this a new food
-   item, a *correction* of something already logged, or not food at all?
+   item, a *correction* of something already logged, a *goal-setting*
+   message, or not food at all?
    Read `raw_text` (and, for `voice`, remember it's a possibly-messy
    transcript). Messages like "that coffee was small not large", "only ate
    half the burrito", "scratch the pizza, didn't eat it", "the rice at
-   lunch was about half a cup" are **corrections**, not new meals.
+   lunch was about half a cup" are **corrections**, not new meals. Messages
+   like "I'm 185, cutting to 175, aim 2000 kcal and 160g protein", "let's
+   maintain around 2400", "new goal: bulk, 3000 a day" are **goal-setting**
+   (branch d), not food.
 
    **(a) New food** → estimate and store a **kcal range**, never a
    fake-exact single number (portion size is the dominant error):
@@ -482,11 +486,43 @@ end-of-day digest. Two tasks drive this.
    **(c) Not food** (greeting, question, chatter):
    `uv run python tools/calorie_db.py dismiss --id <id> --reason "<why>"`.
 
+   **(d) Goal-setting** → Alex is telling you his target, not logging food.
+   Extract the structured goal and store it; the message itself is an
+   *instruction*, not a meal.
+   - Pull whatever he gave: `direction` (cut/bulk/maintain/recomp), current
+     weight (a snapshot — `--start-weight`), `--target-weight`, and the
+     daily aims `--kcal-target` / `--protein-target`.
+   - **If he gave numbers, use them.** If he gave only weight + intent
+     ("185, want to cut"), **infer** a reasonable daily kcal + protein
+     target from that and say so in `--notes` (e.g. "kcal/protein inferred
+     from 185lb cut, not stated"). Don't invent a target he can't trace.
+   - Store it (supersedes any prior goal — latest active wins):
+     ```
+     uv run python tools/calorie_db.py set-goal \
+       --direction <cut|bulk|maintain|recomp> \
+       --start-weight <lb> --target-weight <lb> \
+       --kcal-target <n> --protein-target <g> \
+       --notes "<what was stated vs inferred>" \
+       --raw-text "<his message>" --update-id <update_id>
+     ```
+     Omit any flag he didn't give and you can't responsibly infer.
+   - Then `dismiss` the goal message entry: `dismiss --id <id> --reason
+     "goal set"`.
+   - **Confirm** so he knows it registered (a goal is a deliberate config
+     action — a one-line ack is warranted, unlike normal food logging):
+     `tools/fitness_bot.py send "Goal set: <one-line readback — direction,
+     weights, daily kcal/protein, and which parts you inferred>."`
+   - If the message *changes* one field of an existing goal ("make it 2200
+     instead"), read the current goal first (`tools/calorie_db.py goal`),
+     carry the unchanged fields forward, and `set-goal` the merged result.
+     A bare "drop the goal" / "no more tracking targets" → `clear-goal`.
+
 4. Do **not** `notify_alex` here, and the **only** fitness-bot sends are
-   the disambiguation question and the past-day correction follow-up above
-   — never an ack for normal logging. Ingest is otherwise silent; the
-   nightly digest is the main outbound message. Write the tick result
-   `{"status": "done", "result": "calories: <N> estimated, <C> corrected, <M> dismissed, <K> still pending"}` and exit.
+   the disambiguation question, the past-day correction follow-up above,
+   and the goal-set confirmation — never an ack for normal food logging.
+   Ingest is otherwise silent; the nightly digest is the main outbound
+   message. Write the tick result
+   `{"status": "done", "result": "calories: <N> estimated, <C> corrected, <G> goals set, <M> dismissed, <K> still pending"}` and exit.
 
 **`calorie_digest` (nightly, ~23:00 ET).** Summarize and send.
 
@@ -498,11 +534,21 @@ end-of-day digest. Two tasks drive this.
      loop above for any `pending` rows on that date) so totals don't
      undercount.
    - `uv run python handlers/calorie_digest.py summary --date <d>` — totals
-     (kcal range + macros) and every entry.
+     (kcal range + macros), every entry, and Alex's active `goal` (or
+     `null`).
    - Compose a **short, honest** message in your voice: total kcal as a
      range, the macro split, one or two real observations (meal timing,
      protein low, a heavy single item). No cheerleading, no fake
      precision, no medical advice. If the day was thin on data, say so.
+   - **If `goal` is set, comment the day against it** — that's the point of
+     the goal. Compare the kcal range to `kcal_target` and protein to
+     `protein_target_g`, in plain language ("2,100–2,500 vs your ~2,000
+     aim — a touch over"; "protein 145g, under your 160g target"). Respect
+     the range: if `kcal_target` sits inside the day's low–high band, say
+     it's roughly on target rather than over/under — don't fake precision
+     the estimate doesn't have. One day is a data point, not a verdict;
+     keep it observational, never scolding, no medical advice. If `goal` is
+     `null`, just give the plain digest as before.
    - `uv run python handlers/calorie_digest.py send --date <d> --text "<message>"`
      — sends to the fitness chat and records the digest (marked sent, so
      it won't re-send).

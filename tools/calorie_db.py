@@ -30,6 +30,12 @@ CLI (handlers call these; Simona uses them to pull data for discussion):
     uv run python tools/calorie_db.py recent [--days 7]
     uv run python tools/calorie_db.py save-digest --date YYYY-MM-DD \
         --comment "..." [--sent]
+    uv run python tools/calorie_db.py set-goal --direction cut \
+        --start-weight 185 --target-weight 175 \
+        --kcal-target 2000 --protein-target 160 \
+        --notes "..." --raw-text "<Alex's message>" --update-id 42
+    uv run python tools/calorie_db.py goal          # show current goal
+    uv run python tools/calorie_db.py clear-goal    # retire it
 """
 
 from __future__ import annotations
@@ -52,6 +58,7 @@ LOCAL_TZ = ZoneInfo(os.environ.get("CALORIE_TZ", "America/New_York"))
 
 VALID_SOURCES = ("photo", "text", "both", "voice")
 VALID_CONFIDENCE = ("low", "medium", "high")
+VALID_DIRECTIONS = ("cut", "bulk", "maintain", "recomp")
 
 
 def _now_utc() -> datetime:
@@ -116,6 +123,27 @@ def init_db() -> None:
                 created_at  TEXT NOT NULL,
                 sent_at     TEXT
             );
+
+            -- Alex's current goal. Append-only: each `set_goal` inserts a new
+            -- row and supersedes the prior active one, so the latest `active`
+            -- row is "the goal now" and the history stays intact. Weight is a
+            -- snapshot taken when the goal was set, not a time series.
+            CREATE TABLE IF NOT EXISTS goals (
+                id               INTEGER PRIMARY KEY AUTOINCREMENT,
+                update_id        INTEGER,            -- Telegram update that set it (nullable)
+                ts_utc           TEXT NOT NULL,
+                local_date       TEXT NOT NULL,
+                direction        TEXT,               -- cut | bulk | maintain | recomp
+                start_weight_lb  REAL,               -- weight when the goal was set
+                target_weight_lb REAL,
+                kcal_target      INTEGER,            -- daily kcal aim (stated or inferred)
+                protein_target_g REAL,
+                notes            TEXT,               -- free text — the rest of the intent
+                raw_text         TEXT,               -- Alex's original message
+                status           TEXT NOT NULL DEFAULT 'active',  -- active | superseded | cleared
+                created_at       TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_goals_status ON goals(status);
             """
         )
         # Migration: add columns introduced after the first DB was created.
@@ -289,7 +317,72 @@ def get_day(date: str | None = None) -> dict:
             (date,),
         ).fetchall()
     entries = [_row_to_dict(r) for r in rows]
-    return {"date": date, "totals": _totals(entries), "entries": entries}
+    return {
+        "date": date,
+        "totals": _totals(entries),
+        "entries": entries,
+        "goal": get_active_goal(),
+    }
+
+
+# --------------------------------------------------------------------------
+# Goals — Alex's current target (weight snapshot + daily kcal/protein aim)
+# --------------------------------------------------------------------------
+
+def set_goal(
+    *,
+    direction: str | None = None,
+    start_weight_lb: float | None = None,
+    target_weight_lb: float | None = None,
+    kcal_target: int | None = None,
+    protein_target_g: float | None = None,
+    notes: str | None = None,
+    raw_text: str | None = None,
+    update_id: int | None = None,
+) -> dict:
+    """Record a new goal. Supersedes any prior active goal so the latest
+    `active` row is always "the goal now"; prior goals stay as history.
+    Marlow fills `kcal_target`/`protein_target_g` from what Alex stated, or
+    infers them from weight + direction and notes that in `notes`."""
+    now = _now_utc()
+    with _connect() as conn:
+        conn.execute("UPDATE goals SET status = 'superseded' WHERE status = 'active'")
+        cur = conn.execute(
+            """
+            INSERT INTO goals
+                (update_id, ts_utc, local_date, direction, start_weight_lb,
+                 target_weight_lb, kcal_target, protein_target_g, notes,
+                 raw_text, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?)
+            """,
+            (
+                update_id, now.isoformat(timespec="seconds"), _local_date(now),
+                direction, start_weight_lb, target_weight_lb, kcal_target,
+                protein_target_g, notes, raw_text,
+                now.isoformat(timespec="seconds"),
+            ),
+        )
+        row = conn.execute("SELECT * FROM goals WHERE id = ?", (cur.lastrowid,)).fetchone()
+    return _row_to_dict(row)
+
+
+def get_active_goal() -> dict | None:
+    """The current goal, or None if none set / it was cleared."""
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM goals WHERE status = 'active' ORDER BY id DESC LIMIT 1"
+        ).fetchone()
+    return _row_to_dict(row) if row else None
+
+
+def clear_goal() -> bool:
+    """Retire the active goal without setting a new one. Returns False if
+    there was nothing active to clear."""
+    with _connect() as conn:
+        cur = conn.execute(
+            "UPDATE goals SET status = 'cleared' WHERE status = 'active'"
+        )
+    return cur.rowcount > 0
 
 
 def get_range(start: str, end: str) -> dict:
@@ -424,6 +517,24 @@ def main() -> int:
     psd.add_argument("--comment", required=True)
     psd.add_argument("--sent", action="store_true", help="Mark as already sent.")
 
+    pgo = sub.add_parser(
+        "set-goal",
+        help="Set/replace Alex's current goal (supersedes the prior one).",
+    )
+    pgo.add_argument("--direction", choices=VALID_DIRECTIONS, default=None)
+    pgo.add_argument("--start-weight", type=float, default=None,
+                     help="Weight (lb) when the goal was set — a snapshot.")
+    pgo.add_argument("--target-weight", type=float, default=None)
+    pgo.add_argument("--kcal-target", type=int, default=None,
+                     help="Daily kcal aim — stated by Alex or inferred (note which in --notes).")
+    pgo.add_argument("--protein-target", type=float, default=None)
+    pgo.add_argument("--notes", default=None)
+    pgo.add_argument("--raw-text", default=None, help="Alex's original message.")
+    pgo.add_argument("--update-id", type=int, default=None)
+
+    sub.add_parser("goal", help="Show the current active goal (or null).")
+    sub.add_parser("clear-goal", help="Retire the active goal without setting a new one.")
+
     args = p.parse_args()
 
     if args.cmd == "init":
@@ -458,6 +569,21 @@ def main() -> int:
     elif args.cmd == "save-digest":
         date = args.date or _today_local()
         _print(save_digest(date=date, comment=args.comment, sent=args.sent))
+    elif args.cmd == "set-goal":
+        _print(set_goal(
+            direction=args.direction,
+            start_weight_lb=args.start_weight,
+            target_weight_lb=args.target_weight,
+            kcal_target=args.kcal_target,
+            protein_target_g=args.protein_target,
+            notes=args.notes,
+            raw_text=args.raw_text,
+            update_id=args.update_id,
+        ))
+    elif args.cmd == "goal":
+        _print(get_active_goal())
+    elif args.cmd == "clear-goal":
+        _print({"ok": clear_goal()})
 
     return 0
 
