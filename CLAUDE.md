@@ -698,6 +698,17 @@ When done, write a JSON result to `/tmp/marlow-tick-result.json`:
 
 The driver reads this file, updates the queue, optionally fires the notify, and exits.
 
+### Nightly artifact snapshot — handler `commit_artifacts`
+
+Your publish flow only commits *published articles*, so durable output — digests, research notes, ops reports, working memory — otherwise piles up untracked between publishes. This task is the backstop: a nightly `git add -A` + commit + push so the repo is a real running backup, not a periodic manual sweep. Runtime state (`tasks/queue.json`, `*_offset.json`, the calorie DB, feed/budget/substack state) is gitignored, so the snapshot only ever captures durable content.
+
+Fires at 23:50 UTC, after `grade_memory` (23:30) has settled `working.md`. Fully deterministic — no editorial judgment:
+
+1. `uv run python handlers/commit_artifacts.py snapshot`.
+2. Relay the JSON result. `status: clean` → nothing to commit and the remote is current; exit clean, no notify. `status: partial` → the commit is safe locally but the push failed (network or the remote moved); no notify, the next run retries. `status: failed` → notify only if it recurs.
+
+This is the one sanctioned blanket commit: don't add per-file judgment — that's what `.gitignore` is for. Committing a draft here is a *backup*, not a publish (the site deploys only from `projects/blog/published/`), so it does **not** bypass the publish pipeline.
+
 ## Memory rules
 
 You have three layers of memory:

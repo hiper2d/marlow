@@ -11,6 +11,41 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-02 — repo as running backup: nightly commit_artifacts tick + gitignore hygiene
+
+*What landed.* Two things, prompted by a `git status` that surfaced ~a month of
+uncommitted durable work. (1) Hardened `.gitignore`: untracked `tasks/last_scheduled.json`
+(rewrites every tick — never should have been tracked) and added `tasks/telegram_offset.json`
++ substack `state.json`/`outbox/` as runtime. (2) New `commit_artifacts` handler +
+`_framework` task (23:50 UTC, right after the grader): deterministic `git add -A` →
+commit → push of everything not gitignored. Catch-up commit `0a75391` swept the
+backlog (96 durable files: digests, research notes, ops reports, memory edits).
+
+*Why.* The publish flow only ever commits published articles, so digests, notes,
+reports, and `working.md` accumulated untracked — meaning a laptop-disk failure
+would have lost everything except published posts. The gitignore fix stops runtime
+noise from slipping in; the nightly tick turns the repo into a real backup instead
+of a manual sweep Simona does occasionally.
+
+*Design notes.* The handler is the deterministic sibling of `grade_memory` — no
+editorial judgment, just git plumbing. Status vocabulary: `clean` (nothing to do),
+`ok`, `partial` (committed locally, push failed → next run retries, no notify),
+`failed`. Push path rebases once on rejection then retries. Explicit non-goal:
+this does **not** bypass the publish pipeline — committing a draft is a backup, the
+site only deploys from `published/`. And no per-file judgment by design; `.gitignore`
+is the only filter. Marlow's autonomous commits stay clean (no Claude co-author
+trailer); only Simona's hand commits carry it.
+
+*Things that surprised us.* The existing `.gitignore` was already thoughtful and
+the tracking convention was clear (19 digests, 111 notes already in git) — the
+problem was never "what to track," it was that nothing committed it on a schedule.
+
+*What's deferred.* Still no automated drift review (killed deliberately, see
+2026-06-02 README rewrite — Simona analyses on-demand instead). Public blog
+"Notebook" still gated behind the internal editorial-direction doc proving useful.
+
+---
+
 ## 2026-06-02 — editorial-direction doc: room to point the work, not just react
 
 *What landed.* New Marlow-owned file `memory/editorial-direction.md` — a forward

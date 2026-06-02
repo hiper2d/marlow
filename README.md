@@ -158,6 +158,7 @@ For dynamic work (e.g. "process every pending food entry"), use `decompose_handl
 | calories | `poll_food` | `poll_food` | every tick (20 min) |
 | calories | `daily_calorie_digest` | `calorie_digest` | daily 03:00 (~23:00 ET) |
 | _framework | `grade_memory` | `grade_memory` | daily 23:30 |
+| _framework | `commit_artifacts` | `commit_artifacts` | daily 23:50 |
 
 ¹ `daily_news_curate`'s cron is currently parked (`schedule: null`); it's expected to run end-of-day and is the path candidate notes flow through into the news digest.
 
@@ -188,7 +189,7 @@ Each handler is one file under `handlers/`, invoked by the driver with the subta
 - **Blog:** `draft_article`, `self_review`, `revise_draft`, `publish_article`, `blog_pipeline`, `generate_header_image`, `process_editorial_feedback`, `substack`.
 - **Werewolf-ops:** `monitor_keys`, `monitor_cloudflare`, `scrape_stats`, `werewolf_stats`.
 - **Calories:** `poll_food`, `calorie_digest`.
-- **Framework:** `grade_memory`, `framework_fix` (the self-heal handler — Marlow may fix *tools* it has diagnosed, never identity files).
+- **Framework:** `grade_memory`, `commit_artifacts` (nightly `git add -A` + commit + push of durable artifacts), `framework_fix` (the self-heal handler — Marlow may fix *tools* it has diagnosed, never identity files).
 
 ## Killswitch
 
@@ -218,6 +219,8 @@ Three storage tiers, a self-authored **editorial-direction** doc (below), plus t
 The **daily grader** (`grade_memory`, Haiku, 23:30) is the compaction engine: it reads yesterday's `recent/` ticks, appends a short dated rollup to `working.md`, compresses the oldest rollups when the file nears its cap, and prunes `recent/` to the last few days. It does **not** score or judge — it's memory maintenance, not a quality gate (see Monitoring).
 
 **Editorial direction.** Separate from the operational tiers, `memory/editorial-direction.md` is Marlow's self-authored forward plan — articles it wants to write, directions to steer the feed toward, coverage gaps it has noticed. It's *intent* to working.md's *state*. Marlow reads it when choosing what to draft or curate and updates it as its sense of direction shifts. Nothing grades it; it's the room to *point* the work rather than only react to the feed. Editorial planning, deliberately not a diary — the charter's anti-introspection line applies.
+
+**Durability.** Publishing only commits published articles, so a nightly `commit_artifacts` tick (23:50, after the grader) runs `git add -A` + commit + push — backing up all durable artifacts (digests, notes, reports, memory) to the remote. Runtime state is gitignored and excluded. The repo is a running backup, not a periodic manual sweep.
 
 Each project additionally keeps its own deep state under `projects/<name>/`: research threads, blog drafts, ops reports, the calorie DB. Working memory is the cross-project index; project folders are the per-project depth.
 

@@ -1,0 +1,25 @@
+# commit_artifacts — nightly artifact snapshot.
+#
+# Marlow's publish flow only commits published articles, so durable output
+# (news/daily digests, research notes, ops reports, working memory) otherwise
+# accumulates untracked between publishes. This task is the periodic backstop:
+# stage everything not gitignored, commit it as a dated snapshot, and push, so
+# the repo stays a real running backup instead of a manual sweep.
+#
+# Fires at 23:50 UTC — after grade_memory (23:30) has rewritten working.md and
+# pruned recent/, so the snapshot captures the settled end-of-day state.
+#
+# Fully deterministic; no editorial work. In-tick flow:
+#   1. uv run python handlers/commit_artifacts.py snapshot
+#   2. Relay the JSON result. status: clean = nothing to do (no notify);
+#      partial = committed locally, push failed, next run retries (no notify).
+name: commit_artifacts
+project: _framework
+description: Stage + commit + push durable artifacts (nightly backup); runtime state stays gitignored.
+schedule: "50 23 * * *"
+priority: normal
+must_run_within_hours: 12
+subtasks:
+  - id: snapshot_today
+    handler: commit_artifacts
+    context: {}
