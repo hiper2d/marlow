@@ -11,6 +11,155 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-01 — self-review hold: 2026-06-01-ai-offense-shape-not-capability
+
+Self-review of the cyber-assignment draft (`ai-offense-shape-not-capability`,
+the deliberate rotation off Anthropic-orbit alignment) came back
+**hold-for-alex** on **pause item 6 (header image embedded text)**. The prose is
+ship-quality — clean voice, in-range structure, a nameable through-line (shape,
+not capability, predicts where offensive-security work moves) — and no other
+pause triggers. The block is purely the header: a strong specimen-case metaphor
+(three classified beetles, muted engraving palette, symbolic-not-literal) that
+unfortunately renders "Fig. 1./2./3." labels under each specimen plus a bottom
+nameplate. Embedded text/labels are a literal always-avoid and a mandatory hold.
+Commit was skipped — held draft stays local until Alex releases. Trivial fix on
+release: regenerate the same metaphor with no figure labels or nameplate text.
+
+
+
+Follow-on session to the build above. Goal was the "training wheels" first batch —
+Simona drives, Alex approves, Simona posts — but it surfaced a load-bearing bug and
+forced the engagement gesture down to its reliable core.
+
+*What landed*
+- **Posting bug fixed.** Comments wouldn't submit on the 9223 persistent profile
+  despite the composer showing correct text. Root cause was **not** headless / click
+  method / anti-spam throttle (all ruled out the hard way) — it was **leftover draft
+  contamination**: Substack restores its auto-saved note-reply draft into the
+  composer on open, so our paste *appended* to it (observed: 750 chars = 375 restored
+  + 375 pasted), yielding a doubled/malformed ProseMirror doc whose Post silently
+  no-ops. Fix: select-all before pasting so we always *replace*. Posting is now
+  reliable; 7 comments posted + verified.
+- **Gesture pared to comment-only**, then **like added back** via a different
+  surface. Like/follow/subscribe kept failing or misfiring on note-permalink pages
+  (they're feeds; clicks hit the wrong card and navigated away on Alex's live
+  account). Likes recovered through Alex's suggestion: his **Likes & Replies tab** is
+  a clean newest-first list of notes he replied to. New `like-replies` subcommand
+  likes from there.
+- **`like-replies` subcommand** — scoped strictly to our `engaged` note ids, skips
+  already-liked (so re-runs are no-ops), added as step 7 of growth + step 6 of
+  approvals.
+- **Em-dash strip** in `post()` — em/en dashes are an AI tell (Alex's rule); always
+  post plain hyphens. Drafting guidance added to CLAUDE.md + Simona memory.
+- **Both schedules disabled** (`schedule: null`) for a manual-polish week.
+
+*Decisions reconsidered*
+- Engagement gesture churned: subscribe → follow-only → neither → comment+like.
+  Substack offers a note's author only "Subscribe" (the mailing list Alex doesn't
+  want), not a plain Follow; the page's Follow buttons are sidebar suggestions.
+  Settled: comment + like, follow/subscribe by hand.
+- Like target: note-permalink page → profile **Likes & Replies** tab (clean list,
+  no misnavigation).
+- Like scope: "like every un-liked entry on the tab" → **engaged-only**. The naive
+  version made Alex *like his own comments* — each reply is itself a note with its
+  own c- id and the tab lists those too. Caught it on first run, un-liked the 4,
+  rescoped.
+
+*Things that surprised us*
+- Substack keeps the heart's `aria-label="Like"` even after liking — no "Unlike",
+  no aria-pressed. The only reliable liked/unliked signal is the SVG `<path>` fill
+  (solid = liked, `rgba(0,0,0,0)` = unliked). This is why earlier likes looked like
+  failures when they'd actually worked / vice-versa.
+- `.click()` and synthetic pointer/mouse events do **not** register a like; only a
+  trusted CDP `Input.dispatchMouseEvent` with `buttons:1` + a ~180ms press-hold does.
+  (The Post button, by contrast, honours `.click()`.)
+
+*What's deferred*
+- **Handoff to Marlow.** Staying manual (~this week). Reason isn't the mechanics —
+  those are solid now — it's that the *strategy is unvalidated* (zero engagement data
+  yet) and the *judgment* (audience classification + comment voice) that Marlow would
+  do blind only exists as Simona's ad-hoc calls. Manual runs validate the strategy
+  and accumulate a written playbook before Marlow inherits it.
+
+*State at end of day*
+- 7 comments live + liked (3 welcomes referencing the CTF post, 4 substantive
+  comments, no links on the big threads). All authors marked do-not-engage. Handler
+  reliable: draft-replace, em-dash strip, scoped like-replies. Schedules off. Daily
+  manual cadence agreed with Alex for the coming week.
+
+---
+
+## 2026-06-01 — Substack growth task + Telegram goes two-way; news digest cut
+
+Alex's first Substack post landed to silence (zero reads). He noticed the Notes
+feed is full of "I'm new / share your work / who's building AI" threads where
+people actively swap subscriptions, and wanted to systematize engaging them. Built
+it as a new Marlow capability — `substack_growth` — after proving the mechanics by
+hand in a Simona session.
+
+*What landed*
+- **New handler `substack`** — browser-driven (persistent Chrome, port 9223, the
+  same profile `scrape_stats` uses; Alex logs into Substack there once). Mechanical
+  half only: `session-check`, `scan` (pull candidate notes off the feed/search),
+  `post` (the proven ProseMirror reply mechanic — synthetic paste of `text/html`,
+  click Post, reload-and-verify), plus an outbox CRUD + `post-approved`. The
+  *judgment* (AI-audience? welcome vs comment? what to write?) lives in Marlow's
+  session per the CLAUDE.md procedure, not in Python — same split as
+  `curate_news_digest`.
+- **Two tiers.** Tier A welcomes auto-post (capped `welcomes_per_day`=3, varied
+  text, dedupe by note id, audience-filtered). Tier B comments are drafted into a
+  dated outbox and wait for Alex — nothing substantive posts under his name without
+  approval. Caps enforced in code, not just trusted to the session.
+- **Telegram two-way** (`tools/telegram_poll.py`). The notify bot was send-only;
+  added a `getUpdates` poller + offset so Marlow can read Alex's replies. This is
+  the linchpin Alex chose for "review in time from my phone" — he replies
+  "post 1,3" and the `substack_approvals` task (every 2h) interprets it against the
+  outbox and posts the approved drafts. (Prior art existed — the calorie fitness
+  bot already polls; this extends it to the notify bot. No offset-file collision:
+  calories use `projects/calories/state/offset.json`, this uses
+  `tasks/telegram_offset.json`.)
+- **News digest cut.** Disabled `daily_news_curate` (schedule → null). Alex was
+  tired of the AI-news push in Telegram but still wants Marlow collecting news and
+  writing blog posts from it. Verified the cut is isolated: `feed_scan` (collection)
+  and `draft_article` (reads candidates directly) are untouched; nothing but the
+  task's own handler reads `digests/news/`. `daily_digest` (the operational
+  roundup) stays — that's the "practical messages" channel Alex wants to keep.
+- **Proof of concept, by hand.** Posted one real comment from a Simona session — an
+  intro on the "Notes From the Process" builder thread, referencing the CTF post.
+  Verified it landed (reply count 1→2, article expanded to a preview card). That run
+  is what de-risked the `post` mechanic before automating it.
+
+*Decisions reconsidered*
+- First pass at targets was wrong. Simona surfaced fiction/lifestyle "share your
+  work" threads (Varshuuu, Alaia, Le Petit Wangja) — big, active, but the wrong
+  audience for an AI blog. Alex caught it: "focus on AI people, our blog is 100%
+  AI." Re-scoped the whole task to AI/ML/dev-tools threads only. The audience filter
+  in `config.yaml` is the scar from that.
+- Considered full autopilot vs. per-comment approval; landed on tiered autonomy —
+  auto-post only the low-risk formulaic welcomes, gate the high-visibility
+  substantive comments. Welcomes graduate first; substantive comments may stay gated
+  indefinitely.
+
+*What's deferred / to watch*
+- **Alex must log into Substack once in the port-9223 profile** before the task does
+  anything live. Until then `session-check` returns `reauth` and the task just pings
+  him. Session expiry is self-reporting (mirrors `scrape_stats` reauth).
+- `scan`'s DOM extraction is feed-layout-dependent; a Substack redesign will break it
+  (returns `parse_failed`, never a wrong action). First few live runs will tell us if
+  the home feed alone is enough or the search source pulls its weight.
+- Telegram round-trip (Alex → bot → poller) validated only at the API level so far;
+  full inbound message read still to be confirmed with a real reply.
+- No conversion measurement yet (which comments → profile clicks → subs). Flying
+  blind on ROI until Substack stats or a beacon exist — same gap as blog analytics.
+
+*State at end of day*
+- Marlow: 13 live tasks (+2 new), 1 disabled (news curate). New `substack` handler +
+  `telegram_poll`/`substack_store` tools. Untested in a real tick — wired, parses,
+  unit-level mechanics (session-check, scan, outbox, poll) verified against the live
+  browser/bot; `post` proven by the manual PoC.
+- Simona: parked two drafted AI-post comments (Evidence, Ruben Hassid) un-posted at
+  Alex's call to move on.
+
 ## 2026-05-31 — editorial feedback internalized (first review window)
 
 First editorial review since the autonomous-publish pivot (Simona + Alex,
@@ -621,3 +770,66 @@ the past-day correction note — never an ack for normal logging.
 
 *To watch.* Correction-matching accuracy across days, and whether "ask when
 ambiguous" fires too often or not enough. First real corrections will tell.
+
+---
+
+## 2026-06-02 — Threads vs. posts: assignment briefs stop masquerading as threads
+
+Alex flagged the real architecture smell during an editorial review: `threads/`
+was full of granular, one-post files (`assigned-anthropic-evil-ai-personas`,
+`assigned-ai-paired-ctf-bsides-tampa-2026`, `assigned-ai-offense-taxonomy-…`)
+and he couldn't see how multiple posts would ever land in the same thread. He's
+right. The diagnosis: two different artifacts were wearing one name.
+
+*What was actually wrong.* An assignment's inbound brief already lives in
+`assignments/{pending,researching,done}/` and already graduates (`mark-done` →
+`done/`). But CLAUDE.md step 6 + `plans/assignments.md` step 3 told Marlow to
+*also* write a second file — `threads/assigned-<slug>.md` — duplicating the
+brief's `## Sources / ## Cross-source observations / ## Angle memo` into the
+threads folder with an `assigned-` prefix. That twin is what polluted
+`threads/`, showed up in `list-threads`, and rendered as a one-post "thread"
+page. The durable-arc shape Alex wanted *already existed* — Marlow built the
+first two (`anthropic-alignment-doctrine`, `alignment-target-definitions`) in
+the 2026-05-31 self-heal — it just hadn't displaced the brief-as-thread habit.
+
+*Model chosen (Alex): "separate + graduate".* Briefs stay a distinct artifact in
+`assignments/`; `threads/` holds durable arcs only. An assignment graduates into
+a durable thread at *drafting* time, under a **clean topic slug** (never
+`assigned-`), via the existing "first article on a brand-new arc" mechanism. The
+forward fix turned out to be **doc-only, no Python** — `research_assignment.py`
+already does the right file-shuffling.
+
+*What landed.*
+- `memory/thread-structure.md` — new "Assignment briefs are not threads" section
+  (briefs live in `assignments/`, research synthesis goes in the brief's own
+  body, durable thread born at drafting under a clean slug; `assigned-` never
+  appears in `threads/`).
+- `CLAUDE.md` step 6 + step 8, `plans/assignments.md` step 3 + step 6 +
+  integration section — "Compose thread → assigned-<slug>.md" replaced with
+  "Synthesize research into the assignment file"; high-priority draft path now
+  drafts from the brief and opens a durable thread under a clean slug.
+- This also closes the long-open working.md item "CLAUDE.md drift on
+  assigned-thread frontmatter spec" — moot now that no assigned thread file is
+  created.
+
+*One-time migration (Simona, with Alex's go).*
+- Deleted the orphan `assigned-ai-paired-ctf-bsides-tampa-2026` thread (its draft
+  was rejected; no published article linked it).
+- Folded `assigned-anthropic-evil-ai-personas` into `anthropic-alignment-doctrine`
+  and repointed `teaching-claude`'s `mentions:` → the doctrine thread is now
+  **posts: 2** (teaching-claude + conscience-or-leash). First genuine multi-post
+  thread — the concrete proof of the model.
+- Graduated `assigned-ai-offense-taxonomy-…` → new durable `ai-offensive-security`
+  (standard shape, posts: 1), repointed the just-published offense article.
+- Verified: all 5 published articles' `mentions:` resolve to existing thread
+  files (no `/threads/` 404s); `threads/` now lists 5 clean-slug durable arcs.
+
+*Note on locked articles.* Two published articles had `mentions:` rewritten.
+That's plumbing (which thread page they link), not editorial revision — inside
+the "past articles are locked" rule.
+
+*To watch.* Whether Marlow's next assignment correctly synthesizes into the brief
+and graduates to a clean-slug thread instead of recreating an `assigned-` file.
+The next assignment through the pipeline is the test. Also: `automated-ai-rd` and
+`cot-monitorability` are clean-slug organic threads but predate the standard body
+shape — re-synthesize opportunistically on their next post, not urgent.

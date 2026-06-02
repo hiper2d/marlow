@@ -70,40 +70,24 @@ If you need to reference a specific public artifact (an Anthropic blog post, an 
 
 ## Marlow's workflow per assignment
 
-One tick processes one assignment from start to finish. The 5-minute wall-clock budget covers: reading the brief, fetching 5–10 URLs, writing the thread file with material + angle memo, optionally drafting if high-priority, and a final notify.
+One tick processes one assignment from start to finish. The 5-minute wall-clock budget covers: reading the brief, fetching 5–10 URLs, writing the research synthesis into the assignment file, optionally drafting if high-priority, and a final notify.
 
 Stages (logical, all within one tick):
 
 1. **Read brief** — `research_assignment.py read --slug <slug>` returns the assignment frontmatter + body
 2. **Collect** — fetch every URL in *Seed materials* via `fetch_article.py fetch`. Add 1–2 rounds of targeted web search for adjacent prior work or counterarguments. Pull primary sources where the seed is secondary (e.g. seed is Ars piece → fetch the underlying paper too).
-3. **Compose thread** — write `projects/research/threads/assigned-<slug>.md`. Frontmatter follows the canonical thread shape in `memory/thread-structure.md` plus three assignment-specific extras for provenance and routing:
+3. **Synthesize research into the assignment file** — do **not** create a file in `projects/research/threads/`. An assignment is scaffolding for one commissioned piece, not a durable arc; it stays inside `assignments/`. Append the research synthesis to the assignment file's own body (it's in `researching/` at this point), under three headings:
 
-   ```yaml
-   ---
-   slug: assigned-<slug>
-   title: "<short title — what this arc is about>"
-   status: active                       # canonical: active | dormant | archived
-   opened: <YYYY-MM-DD>                 # canonical
-   last_synthesized: <YYYY-MM-DD>       # canonical; equals opened on first write
-   posts: 0                             # canonical; 0 until first article publishes
-   seeded: assignment                   # assignment-specific (provenance)
-   source_assignment: <assignment-slug> # assignment-specific
-   priority: normal                     # assignment-specific (from the brief)
-   ---
-   ```
-
-   `memory/thread-structure.md` is the source of truth for the canonical fields; this file just layers the three assignment extras on top. The `title:` field is required — without it the `/threads/` index page renders the raw kebab-case slug. Body:
-
-   - Source synopses (one short paragraph per fetched piece, what it actually says)
-   - Cross-source observations (where do sources agree, disagree, miss each other)
+   - **Sources** — one short paragraph per fetched piece, what it actually says (your read, not a press-release summary). Cite each `[name](url)`.
+   - **Cross-source observations** — where do sources agree, disagree, miss each other? What does the primary source say the secondary missed?
    - **Angle memo** — Marlow's working position. 3–6 sentences. Where does she land, what's the contrarian observation, what does she want to say? This is the seed of the eventual article.
 
-   The body shape above (Sources / Cross-source observations / Angle memo) is specific to the pre-first-article phase. After the first article on the thread publishes, the thread file is rewritten to the canonical body shape in `memory/thread-structure.md` (What this thread tracks / Where the arc stands now / Sources and anchors / Open questions). The frontmatter shape is the same in both phases — only `last_synthesized`, `posts`, and `status` move.
+   The brief and its research now travel together; `mark-done` (step 5) carries the whole thing into `done/`. The durable thread is born later, at *drafting* time, under a clean topic slug — see `memory/thread-structure.md` → "Assignment briefs are not threads" and "First article on a brand-new arc." The `assigned-<slug>` convention names the **assignment file only**; it must never appear as a file in `threads/`.
 4. **Decide outcome**:
    - **draft-eligible** — angle memo is real, sources support it, she has something to say. Continue to (5).
    - **abandoned** — after research, Marlow has nothing useful to add. Write a one-paragraph explanation into the assignment frontmatter (`abandon_reason`), set `outcome: abandoned`, move to `done/`, notify Alex with reason. Don't fake interest.
 5. **Move to done** — `research_assignment.py mark-done --slug <slug>` moves the assignment file from `researching/` to `done/` and writes the outcome.
-6. **High-priority extension** — if `priority: high`, draft immediately in the same tick. Marlow runs `draft_article.py list-materials --thread assigned-<slug>`, composes the draft to `projects/blog/drafts/<YYYY-MM-DD>-<slug>.md`, notifies urgent. Skips the `draft_review` cadence entirely.
+6. **High-priority extension** — if `priority: high`, draft immediately in the same tick. Marlow drafts straight from the brief + research synthesis she just wrote (no thread file exists yet), composing to `projects/blog/drafts/<YYYY-MM-DD>-<slug>.md`. The draft's `mentions:` names a **clean topic slug**, never `assigned-<slug>`; she then opens that durable thread via "First article on a brand-new arc" (`memory/thread-structure.md`), or — if the topic already has a durable thread — mentions that one and rewrites it to absorb the post. Notifies urgent. Skips the `draft_review` cadence entirely.
    - For `priority: normal`, Marlow does *not* draft in this tick. The next `draft_review` cycle will pick up the thread.
 
 ## Decline path
@@ -157,8 +141,8 @@ The handler is *deterministic file-shuffling and YAML reading*, matching `draft_
 
 Assignments don't introduce a parallel pipeline — they feed into the existing thread/draft system:
 
-- Assignment-seeded threads live in the same `projects/research/threads/` folder, with the convention prefix `assigned-` and a `seeded: assignment` frontmatter field for provenance
-- The existing `draft_article.py` handler works against them unchanged — it reads any thread file regardless of how it was seeded
+- Assignments do **not** create thread files. The brief + research synthesis live in `assignments/`; the durable thread is opened at drafting time under a clean topic slug (graduation — see `memory/thread-structure.md`). `threads/` holds durable arcs only, never `assigned-<slug>` files
+- The existing `draft_article.py` handler works against durable threads unchanged — once an assignment graduates, its thread is an ordinary topic thread
 - The existing `revise_draft.py` review-loop also works unchanged — Simona reviews, Marlow revises, drafts ship or die at the version cap
 - The publish gate (Alex flips status to `approved`) is identical for assigned and organic drafts
 

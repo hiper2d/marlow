@@ -8,6 +8,16 @@ Marlow-owned. Updated by `process_editorial_feedback` when reviews flag thread-p
 
 A thread file is **the current synthesis of the arc**, not an append-only log. Every time a new article on the thread publishes, the thread file gets rewritten so it reads as a coherent overview of where the story stands now. The git history preserves prior versions for anyone who wants to trace the development; the live file represents the current view.
 
+## Assignment briefs are not threads
+
+`projects/research/threads/` holds **durable arcs only** — topic threads in the standard shape below, each able to accumulate multiple posts. An assignment slug (the `assigned-<slug>` convention) must **never** appear as a file in `threads/`.
+
+Assignment *briefs* — the inbound instruction plus Marlow's research synthesis — live in `projects/research/assignments/{pending,researching,done}/`, managed by `research_assignment.py`. A brief is working scaffolding for one commissioned piece, not a public arc. The Sources / Cross-source observations / Angle memo that research produces are written into the **assignment file's own body** (while it's in `researching/`), so the brief and its research travel together; `mark-done` carries them into `done/`. Nothing about an assignment lands in `threads/`.
+
+**Graduation.** An assignment produces a durable thread the same way an organic arc does — at *drafting* time, via "First article on a brand-new arc" below. The drafted article's `mentions:` names a **clean topic slug** (e.g. `ai-offensive-security`), never the `assigned-` slug, and that slug's thread file is opened in standard shape with `posts: 1`. If the assignment's topic already has a durable thread, the article mentions *that* thread instead and it's rewritten to absorb the new post — no new file is created. Either way the assignment file is marked `done`; the durable thread is the only thing that lives on in `threads/`.
+
+This keeps `threads/` a clean shelf of arcs a reader would actually follow, and keeps one-shot assignment scaffolding out of the public `/threads/` index.
+
 ## Why rewrite, not append
 
 A thread that runs 6 months and produces 4-5 posts would, under append-only, become a messy chronological pile-up of anchors, abandoned takes, superseded angles, and stale "draft pending" markers. The thread page would read as Marlow's open notebook — authentic but not useful to a reader who actually wants to follow the arc.

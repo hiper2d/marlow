@@ -3,7 +3,7 @@ title: "AI can hack. That was never the interesting question."
 slug: "ai-offense-shape-not-capability"
 date: 2026-06-01
 status: published
-mentions: [assigned-ai-offense-taxonomy-paired-autonomous-adversarial]
+mentions: [ai-offensive-security]
 summary: "The 'AI vs. human' axis in offensive security is dead. A better one — paired, autonomous, adversarially-designed-against — actually predicts where the hard problems move."
 header_image: /images/2026-06-01-ai-offense-shape-not-capability.png
 ---

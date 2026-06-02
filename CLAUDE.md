@@ -111,47 +111,35 @@ When invoked with this handler:
    the primary source too — the paper itself beats the summary. One or two
    rounds of targeted web search for adjacent prior work or counterarguments
    are fair game. Don't drown in research; the budget is one tick.
-6. **Compose thread.** Write `projects/research/threads/assigned-<slug>.md`.
-   Frontmatter is the canonical thread shape from `memory/thread-structure.md`
-   plus three assignment-specific extras (`seeded`, `source_assignment`,
-   `priority`) for provenance. `title:` is required — without it the
-   `/threads/` index renders the raw kebab-case slug. See `plans/assignments.md`
-   for the rationale and the body-shape distinction (pre-first-article uses
-   Sources / Cross-source observations / Angle memo; after the first article
-   publishes the file gets rewritten to the canonical body shape from
-   `thread-structure.md`).
+6. **Synthesize research into the assignment file.** Do **not** create a file
+   in `projects/research/threads/` — an assignment is scaffolding for one piece,
+   not a durable arc, and `threads/` holds durable arcs only. Append the research
+   synthesis to the assignment file's own body (it's in `researching/` now);
+   `mark-done` carries it into `done/`. The durable thread is born later, at
+   drafting time, under a **clean topic slug** — see `memory/thread-structure.md`
+   → "Assignment briefs are not threads" and "First article on a brand-new arc".
+   The `assigned-<slug>` convention names the assignment file only; it never
+   appears in `threads/`.
 
-```
----
-slug: assigned-<slug>
-title: "<short title — what this arc is about>"
-status: active
-opened: <YYYY-MM-DD>
-last_synthesized: <YYYY-MM-DD>     # equals opened on first write
-posts: 0                            # 0 until first article publishes
-seeded: assignment
-source_assignment: <slug>
-priority: <from assignment>
----
+   Append three sections to the assignment body:
 
-## Sources
+   ## Sources
 
-- One short paragraph per fetched piece. What does it actually say? Not a
-  press-release summary — your read of it. Cite each with `[name](url)`.
+   - One short paragraph per fetched piece. What does it actually say? Not a
+     press-release summary — your read of it. Cite each with `[name](url)`.
 
-## Cross-source observations
+   ## Cross-source observations
 
-- Where do the sources agree, disagree, miss each other? What does the
-  primary source say that the secondary missed?
+   - Where do the sources agree, disagree, miss each other? What does the
+     primary source say that the secondary missed?
 
-## Angle memo
+   ## Angle memo
 
-3-6 sentences. Where do you land? What's the contrarian or specific
-observation you want to make? What does this piece exist to *say*?
-This is the seed of the eventual article. Write it like you mean it —
-this is not a hedge. If you genuinely don't have an angle, say so and
-abandon the assignment in step 7.
-```
+   3-6 sentences. Where do you land? What's the contrarian or specific
+   observation you want to make? What does this piece exist to *say*?
+   This is the seed of the eventual article. Write it like you mean it —
+   this is not a hedge. If you genuinely don't have an angle, say so and
+   abandon the assignment in step 7.
 
 7. **Decide outcome.**
    - **Abandon** if after research you have nothing distinct to add, the
@@ -163,11 +151,17 @@ abandon the assignment in step 7.
      - `research_assignment.py mark-done --slug <slug> --outcome drafted`
 8. **High-priority bonus draft.** If the assignment's `priority` was `high`,
    draft the article in this same tick:
-   - `handlers/draft_article.py list-materials --thread assigned-<slug>`
+   - Draft straight from the brief + research synthesis you just wrote — there is
+     no thread file yet, so there's nothing to `list-materials` against.
    - Compose a 600–1500 word draft per the "Drafting articles" section.
      Write to `projects/blog/drafts/<YYYY-MM-DD>-<slug>.md` with the
-     standard frontmatter.
-   - Append a "draft pending: <path>" line to the thread file.
+     standard frontmatter. The draft's `mentions:` names a **clean topic slug**,
+     never `assigned-<slug>`.
+   - **Open the durable thread.** Use "First article on a brand-new arc"
+     (`memory/thread-structure.md`) to open `threads/<clean-slug>.md` in standard
+     shape with `posts: 1`, seeded from the article you just wrote. If the topic
+     already has a durable thread, mention that one and rewrite it to absorb the
+     post instead of opening a new file.
    - **No notify.** Drafts are silent — Simona's review tick picks the draft up automatically and runs the autonomous review loop. Alex is notified only at terminal states (ship-as-is, reject, or 3-version cap).
 
    For `priority: normal`, do NOT draft in this tick. The next
@@ -529,6 +523,18 @@ reference (with hooks), daily caps, scan sources, and the audience filter.
 Two tiers: **welcomes** auto-post (capped); **comments** are drafted only and wait
 for Alex's approval (the `substack_approvals` task posts them).
 
+The gesture is the **comment only** — like / follow / subscribe were dropped from
+automation (2026-06-01): note permalink pages are feeds, so those buttons can't be
+hit reliably without risking a misclick that navigates away on Alex's live account
+(and Substack offers the author only "Subscribe", the mailing list, not a plain
+"Follow"). Alex likes/subscribes by hand for anyone worth it. The handler still
+parses the author handle from the note URL and adds it to do-not-engage after
+posting, so the loop never re-comments on the same person — i.e. **engage each
+author at most once.**
+
+**Write with plain hyphens, never em/en dashes (— –)** — they're an AI tell. Draft
+welcomes and comments in that style; the handler also strips them as a safety net.
+
 1. **Session check.** `uv run python handlers/substack.py session-check`. If
    `kind: reauth` or `chrome_down` → `notify_alex(urgency="urgent", "Substack
    session expired — log into Substack once in Marlow's persistent Chrome profile
@@ -579,7 +585,11 @@ for Alex's approval (the `substack_approvals` task posts them).
    End with: `Reply: post 1,3 / skip 2 / post all`. Mention any welcomes posted in
    the same message. `notify_alex(urgency="urgent", message=...)`. If you posted
    welcomes but queued no drafts, a digest line is fine.
-7. **Result.** `{"status":"done","result":"substack growth: <W> welcomes, <C> drafts queued"}`.
+7. **Like recent replies.** `substack.py like-replies`. Likes the parent notes we
+   commented on (the secondary gesture), scoped to our `engaged` state and skipping
+   already-liked ones — safe to run every time, idempotent. `kind: reauth` → handle
+   like step 1.
+8. **Result.** `{"status":"done","result":"substack growth: <W> welcomes, <C> drafts queued"}`.
    Log to `recent/` only if something notable happened (reauth, a failed post, an
    unusually strong thread).
 
@@ -602,10 +612,12 @@ Posts the Tier-B comment drafts Alex approved via Telegram. Invoked with
 5. **Post.** `substack.py post-approved` — posts every approved draft, verifies,
    sets `posted`/`failed`. A `reauth` anywhere → urgent notify about the expired
    session, leave the rest pending.
-6. **Confirm.** `notify_alex(urgency="urgent", "Posted N Substack comments (ids …).
+6. **Like.** If anything posted, `substack.py like-replies` to like the notes just
+   commented on (idempotent, scoped to `engaged`).
+7. **Confirm.** `notify_alex(urgency="urgent", "Posted N Substack comments (ids …).
    Skipped M.")` (digest if nothing posted). Flag any `verified:false` ids for Alex
    to eyeball.
-7. **Result.** `{"status":"done","result":"substack approvals: posted <N>, rejected <M>, <K> pending"}`.
+8. **Result.** `{"status":"done","result":"substack approvals: posted <N>, rejected <M>, <K> pending"}`.
 
 ### Daily memory grading — handler `grade_memory`
 

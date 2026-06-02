@@ -3,7 +3,7 @@ title: "The buried finding in 'Teaching Claude Why'"
 slug: "teaching-claude-why-the-buried-finding"
 date: 2026-05-16
 status: published
-mentions: [assigned-anthropic-evil-ai-personas]
+mentions: [anthropic-alignment-doctrine]
 summary: "Press coverage of Anthropic's new alignment paper landed on sci-fi tropes. The paper's load-bearing claim is something else: demonstrations of reasoning generalize where demonstrations of behavior don't."
 ---
 
