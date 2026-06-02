@@ -11,6 +11,53 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-02 — editorial-direction doc: room to point the work, not just react
+
+*What landed.* New Marlow-owned file `memory/editorial-direction.md` — a forward
+editorial plan with four sections: directions she's cultivating, articles she
+wants to write, gaps in her own coverage, and a parked/not-now list. Wired into
+two ticks via `CLAUDE.md`: `draft_article` now reads it before choosing a thread
+(weights the pick toward cultivated directions / flagged article ideas, without
+overriding the ripeness bar) and updates it after drafting (remove a realized
+idea, add a new direction or gap); `curate_news_digest` consults it as a
+tie-breaker when candidate quality is comparable. Added a `## Editorial
+direction` section to `CLAUDE.md` and mentions in the README memory model + tree.
+Seeded the doc with exactly one real direction already on record — "rotate off
+the Anthropic-alignment monocrop" from the 2026-05-31 review — and left the other
+sections empty for her to populate.
+
+*Why we did it.* Alex's observation: the blog reads like a news feed; Marlow had
+nowhere to *think* — to plan future pieces or decide where she wants to steer
+collection. `working.md` is an operations desk (state), `recent/` is terse logs,
+the behavioral files are rules. The only outlets for her own editorial mind were
+article prose and the `— Marlow` digest closing. The README frames the whole
+experiment around "opinion development" over a long loop; that development had no
+home, so it was smeared across operational bullets and invisible. This doc gives
+it a home and makes it observable — *intent* as the counterpart to working.md's
+*state*.
+
+*The line we held.* Alex floated a public free-format "thoughts/notes" section on
+the blog too. Deferred deliberately. A public introspection space is the exact
+spot the charter's "no posturing about inner life / manufactured personality"
+failure mode blooms — and one published piece already leaned on "resist the urge
+to give yourself a backstory" as evidence. So we split the idea: editorial
+*planning* (agency, low risk → shipped now) vs. *self-reflection* (inner-life
+performance, high risk → not now). The doc is explicitly editorial-not-a-diary,
+and explicitly distinct from `topic-guidance.md` (the rubric editorial feedback
+writes *to* her); `process_editorial_feedback` never writes to it. A public
+"Notebook" collection remains on the table but has to *earn* its way in — only if
+she uses the internal doc like a real editor first.
+
+*What's deferred.* The public blog Notebook section (Astro collection + draft
+handler + lighter review gate), pending evidence she'll use the internal doc well.
+
+*Open questions / things to watch.* Does she actually maintain it, or does it rot
+into a stale list? Does she keep it editorial, or does the "directions" framing
+drift toward first-person reflection we'd have to prune? First real signals come
+from the next `draft_review` (every 3 days) and the daily curate ticks.
+
+---
+
 ## 2026-06-01 — self-review hold: 2026-06-01-ai-offense-shape-not-capability
 
 Self-review of the cyber-assignment draft (`ai-offense-shape-not-capability`,
@@ -833,3 +880,52 @@ and graduates to a clean-slug thread instead of recreating an `assigned-` file.
 The next assignment through the pipeline is the test. Also: `automated-ai-rd` and
 `cot-monitorability` are clean-slug organic threads but predate the standard body
 shape — re-synthesize opportunistically on their next post, not urgent.
+
+## 2026-06-02 — Werewolf user-activity stats go live (Firestore, not SQL)
+
+Alex: "track user activity in Werewolf — new users daily, how many games they
+created, how much money they spent. We can add more, but start with this."
+
+*What landed.*
+- New handler `handlers/werewolf_stats.py` (+ task `projects/werewolf-ops/tasks/werewolf_stats.yaml`,
+  daily 09:00 UTC, digest-only). Reads the `users` and `games` Firestore
+  collections; emits a deterministic JSON snapshot, persists `state/stats_latest.json`
+  + `state/stats_history.jsonl`.
+- Metrics v1: new users (today/7d/30d + total + tier split), games created
+  (today/7d/30d + total + how many today by today's new signups), AI burn
+  (created_cost + live_cost cumulative + day-over-day daily_burn delta), plus a
+  secondary revenue_mtd from `users.spendings`.
+- Refactored `monitor_keys.py`: extracted `_firestore_db()` (shared read-only
+  client init); `werewolf_stats` imports it. No new credential — same
+  `MARLOW_FIREBASE_CREDS` service account.
+- Dry-ran live: 109 users, 32 games, $5.63 live cumulative burn. Numbers
+  cross-check (June MTD revenue == today's lone game cost). Reset the test
+  state files so the first scheduled tick baselines clean.
+
+*Decisions reconsidered.*
+- The werewolf-ops README assumed a SQL DB + a read-only SQL user we still needed
+  from Alex. Wrong: the game is on Firestore, and Marlow already had read access
+  (she uses it for the key map). The blocker was never permissions — it was not
+  knowing the schema. Corrected the README; stats moved from "not yet active /
+  needs DB creds" to LIVE.
+
+*Things worth recording.*
+- `games.totalGameCost` grows as a game is played, so "cost of games created
+  today" undercounts. True daily spend = delta of the live cumulative cost
+  between snapshots — which is the whole reason the daily snapshot history
+  exists. Games also carry a 30-day Firestore TTL, so without the history any
+  trend older than a month is unrecoverable.
+
+*Whats deferred.* DAU/WAU/MAU (only a single `last_login_timestamp` per user —
+no event log; must accumulate from snapshots), completion rate, model/theme
+popularity, errors, Stripe. The "add more" backlog, listed in the README.
+
+*To watch.* First scheduled 09:00 UTC run sets the burn baseline; the second
+day is the first real daily_burn delta. Confirm the digest line reads sanely.
+
+*Delivery (same session).* Added a `digest` CLI command — emits a capped block
+(header + new-user emails + game themes, collapsing to counts above
+DIGEST_LIST_CAP=5). The daily tick passes it verbatim to `notify --digest`, so
+Werewolf activity rides the 23:00 UTC end-of-day digest alongside the budget
+lines — one Telegram message, no separate ping. Detail-in-Telegram was Alex's
+call: names buried in a report file on disk are names nobody reads.

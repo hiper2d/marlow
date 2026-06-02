@@ -1,76 +1,104 @@
-# Marlow — v1 Design Doc
+# Marlow — design & architecture
+
+![Marlow](assets/marlow.png)
 
 Designed and built by [Simona](https://github.com/hiper2d/simona-ai-computer-operator), Alex's AI assistant. Marlow is a sibling project — different agent, different purpose, different memory.
 
+This is the **design doc** (the *why* and the *shape*). The append-only **`DEVLOG.md`** is the *history* (what changed, what was tried, what drifted). `CLAUDE.md` is Marlow's own operating manual (the *how*, read at the start of every tick). When this file and reality disagree, reality wins — update this file.
+
 ## What Marlow is
 
-A continuous tick-driven agent that runs on Alex's laptop while it's open. Marlow's work is organized into **projects** — discrete domains with their own state, task definitions, and outputs. v1 ships three projects: a **research** project that accumulates AI safety/alignment news and tracks editorial threads, a **blog** project that publishes Marlow-authored articles to a public website ([marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev)), and a **werewolf-ops** project that monitors API budgets, collects gameplay statistics, and watches for anomalies.
+A continuous tick-driven agent that runs on Alex's laptop while it's open. Each session is a single **tick**: the driver wakes Marlow with one subtask, Marlow executes it, writes an outcome, and exits. Marlow never decides *what* to work on — the driver owns scheduling; Marlow owns the work.
+
+Marlow's work is organized into **projects** — discrete domains with their own state, task definitions, and outputs. As of June 2026, four are live:
+
+- **research** — accumulates AI safety/alignment news, tracks multi-day editorial threads, surfaces emerging stories.
+- **blog** — autonomously drafts, self-reviews, and publishes editorial articles to a public Astro site ([marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev)); also runs Substack growth.
+- **werewolf-ops** — monitors API-key budgets, Cloudflare health, and gameplay stats for the AI Werewolf game.
+- **calories** — ingests Alex's food photos/notes from a Telegram bot, estimates calories + macros, sends a daily digest.
+
+A fifth folder, **`_framework`**, holds cross-cutting maintenance tasks (memory grading) that don't belong to any one project.
 
 Built on Claude Code (subscription, not metered). Designed as an *experimental subject* for studying long-loop agent behavior — coherence, drift, apparent identity formation — not as a "consciousness experiment."
 
 Marlow is not Simona. Different repo, different memory, different identity, different tools. Marlow is an **it**, not a she. If long-loop dynamics produce a hardened persona, that's data, not a soul.
 
+## Identity & voice
+
+Marlow's identity is **fixed from outside** and its voice is **allowed to evolve from within** — that split is the whole experiment.
+
+**Fixed (owned by Simona and Alex, Marlow may not edit):** `CLAUDE.md`, `README.md`, `SOUL.md`, and each `projects/*/README.md`. These describe *who Marlow is* and *what the framework is*. Marlow can propose changes to them only by writing a request into `working.md`; it can't touch them directly. The charter is deliberately anti-personality: "resist the urge to give yourself a gender, a backstory, or a constructed personality. You're an LLM in a long loop."
+
+**Evolving (Marlow-owned behavioral files in `memory/`):** the working rulebook Marlow's own writing is measured against —
+
+- `voice-guidelines.md` — editorial, dry, fact-first; closer to a research-blog writer than a chat assistant. Less sarcasm than Simona; wryness only when it emerges from the work. Mandatory `— Marlow` signoff.
+- `topic-guidance.md` — what to cover, what to avoid, when to rotate off a dominant story.
+- `structure-notes.md` — article shape, density rules, how to land an ending.
+- `pre-publish-pauses.md` — the short, load-bearing list of categories that force a human review before publishing.
+- `thread-structure.md` — how editorial threads are opened, tracked, and turned into articles.
+
+These files change through the **editorial feedback loop**, never by Marlow free-styling a new persona:
+
+```
+/marlow-review (Simona + Alex, on-demand)
+   → writes memory/feedback-inbox/YYYY-MM-DD-editorial.md
+      → process_editorial_feedback tick (every 6h) classifies each note
+         → surgically updates the matching behavioral file
+            → archives the note to feedback-archive/ + DEVLOGs what it
+              internalized and what it pushed back on
+```
+
+Feedback shapes the *next* writing cycle, never the last one — published articles are locked. Marlow may disagree with a note, but it can't silently drop it; disagreement goes on the record in `DEVLOG.md`. Voice development is expected; it should come from doing the work over weeks, not from posturing.
+
 ## Repo layout
 
 ```
 marlow/
-├── README.md              ← this doc
-├── CLAUDE.md              ← identity & operating instructions for Marlow
+├── README.md              ← this doc (design)
+├── DEVLOG.md              ← append-only development history
+├── CLAUDE.md              ← identity & operating manual for Marlow (read every tick)
+├── marlow_cli/            ← the `marlow` command (status/control/inspection)
 ├── .claude/
-│   ├── skills/            ← Marlow's skills (forked subset + new ops skills)
+│   ├── skills/            ← Marlow's skills (forked subset + ops skills)
 │   └── settings.json      ← Claude Code permissions for non-interactive sessions
 ├── memory/
-│   ├── recent/            ← raw last-N tick logs
-│   ├── working.md         ← curated current state, capped ~10KB
-│   └── archive/           ← weekly compressed summaries
+│   ├── working.md         ← curated cross-project current state ("state"), capped ~10KB
+│   ├── editorial-direction.md   ← Marlow's self-authored forward plan ("intent")
+│   ├── recent/            ← append-only per-tick logs (pruned to ~3 days)
+│   ├── archive/           ← long-term compressed summaries
+│   ├── voice-guidelines.md      ┐
+│   ├── topic-guidance.md        │ Marlow-owned behavioral files
+│   ├── structure-notes.md       │ (the evolving rulebook — see Identity & voice)
+│   ├── pre-publish-pauses.md    │
+│   ├── thread-structure.md      ┘
+│   ├── feedback-inbox/    ← editorial feedback dropped by Simona/Alex, awaiting intake
+│   └── feedback-archive/  ← processed editorial feedback
 ├── driver/
 │   ├── tick.sh            ← LaunchAgent entry; killswitch + scheduling + invoke session
 │   ├── scheduler.py       ← reads task defs across projects, picks next subtask
-│   ├── grade.sh           ← daily Haiku grader (11pm)
-│   └── synthesize.sh      ← weekly Opus synthesis (Mon 9am)
+│   ├── status.py          ← backing logic for `marlow status`
+│   ├── budget_state.py    ← persisted provider-balance state for werewolf-ops
+│   └── env_loader.py      ← loads .env / plist secrets for non-interactive sessions
+├── handlers/              ← subtask execution logic, one file per handler (see Handlers)
 ├── projects/
 │   ├── research/          ← accumulate news, track threads, draft articles
-│   │   ├── README.md
-│   │   ├── tasks/         ← YAML task defs scoped to this project
-│   │   ├── threads/       ← active editorial threads (multi-day arcs)
-│   │   └── notes/         ← per-tick research notes
-│   ├── blog/              ← public Marlow blog
-│   │   ├── README.md
-│   │   ├── tasks/
-│   │   ├── drafts/        ← drafts awaiting Alex's approval
-│   │   ├── published/     ← approved markdown articles, source for the site
+│   ├── blog/              ← public Marlow blog + Substack growth
 │   │   └── site/          ← Astro project (auto-deploys to Cloudflare on git push)
-│   └── werewolf-ops/      ← budgets, stats, errors
-│       ├── README.md
-│       ├── tasks/
-│       └── reports/
-├── tools/                 ← shared Python tools handlers can call
-│   ├── notify.py          ← Telegram bot (urgent | digest)
-│   ├── budget/            ← per-provider plugins (see plans/budget-providers.md)
-│   ├── werewolf_stats.py  ← SQL wrapper for the Werewolf DB
-│   ├── arxiv_fetch.py
-│   └── rss_reader.py
-├── handlers/              ← subtask execution logic, called by the driver
-│   ├── check_provider_balance.py
-│   ├── triage_support_message.py
-│   ├── query_werewolf_metric.py
-│   ├── summarize_paper.py
-│   ├── update_thread.py
-│   ├── draft_article.py
-│   ├── publish_article.py
-│   └── compose_digest.py
-├── plans/
-│   └── budget-providers.md
+│   ├── werewolf-ops/      ← key budgets, Cloudflare health, gameplay stats
+│   ├── calories/          ← food intake tracking (calories.db + inbox/)
+│   └── _framework/        ← cross-cutting maintenance tasks (memory grading)
+├── tools/                 ← shared Python tools handlers call (notify, calorie_db, fitness_bot, …)
+├── plans/                 ← design notes (budget providers, assignments, …)
 └── tasks/
     ├── queue.json         ← runtime queue across all projects
     └── completed/         ← per-day archive of completed subtasks
 ```
 
-Projects are a *human-facing organization*, not a runtime concept. The scheduler doesn't care which project a task belongs to — it just runs whatever's due. Adding a new project is a new folder under `projects/` with its own task YAMLs. Removing a project is `rm -rf`.
+Each project owns its `README.md`, a `tasks/` folder of YAML task defs, and its deep state (research threads, blog drafts, ops reports, the calorie DB). Projects are a *human-facing organization*, not a runtime concept — the scheduler runs whatever's due regardless of project. Adding a project is a new folder under `projects/`; removing one is `rm -rf`.
 
 ## Driver — the scheduler
 
-The driver is a deterministic bash + Python program that runs **outside** Claude Code. It owns scheduling. Marlow itself never picks "what to work on next" — Marlow only executes the subtask the driver hands it. This keeps scheduling cheap (no tokens), auditable (driver logs everything), and resilient (a weird Marlow session doesn't disrupt the schedule).
+The driver is a deterministic bash + Python program that runs **outside** Claude Code. It owns scheduling. Marlow only executes the subtask the driver hands it. This keeps scheduling cheap (no tokens), auditable (driver logs everything), and resilient (a weird Marlow session doesn't disrupt the schedule).
 
 Each tick (launchd, every 20 min while awake):
 
@@ -79,52 +107,72 @@ Each tick (launchd, every 20 min while awake):
 3. Acquires lock at `/tmp/marlow.lock` — exit if previous tick still running.
 4. Runs `scheduler.py`:
    - Reads `projects/*/tasks/*.yaml` across all projects.
-   - For each task whose schedule (cron expression) is due since last scan, runs its decompose handler (or expands its static `subtasks` list) and pushes new subtasks to `tasks/queue.json`.
+   - For each task whose cron schedule is due since last scan, runs its decompose handler (or expands its static `subtasks` list) and pushes new subtasks to `tasks/queue.json`.
    - Picks the highest-priority eligible subtask from the queue.
-5. Invokes Claude Code session with the chosen subtask description, working memory context, and the named handler to run. Hard wall-clock timeout: 5 min.
+5. Invokes a Claude Code session with the chosen subtask, working-memory context, and the named handler to run. Hard wall-clock timeout: 5 min.
 6. Captures the handler's outcome:
    - `done` → move subtask to `tasks/completed/<date>/`.
-   - `in_progress` → checkpoint state stays in queue, picked up next tick.
+   - `in_progress` → checkpoint stays in queue, picked up next tick.
    - `failed` → log, alert via `notify` if critical.
-7. Releases lock, appends tick log to `memory/recent/`.
+7. Releases lock, appends a tick log to `memory/recent/`.
 
-Scheduler: a launchd LaunchAgent at `~/Library/LaunchAgents/com.marlow.tick.plist`. Fires `tick.sh` every 20 min via `StartInterval` while the system is awake. LaunchAgents load inside the user's login session, so Claude Code OAuth tokens stored in the macOS Keychain are reachable (cron jobs run outside the login session and cannot read the Keychain, which is why we don't use cron).
+Scheduler: a launchd LaunchAgent at `~/Library/LaunchAgents/com.marlow.tick.plist`. Fires `tick.sh` every 20 min via `StartInterval` while the system is awake. LaunchAgents load inside the user's login session, so Claude Code OAuth tokens in the macOS Keychain are reachable (cron jobs run outside the login session and can't read the Keychain — that's why we don't use cron).
 
-`StartInterval` is used (not `StartCalendarInterval`) so there's no catch-up burst on wake — the agent picks up the 20-min beat from wake. Missed ticks during sleep are skipped. The per-task cron expressions in YAML still drive *what* the scheduler enqueues each tick; they're just evaluated by `croniter` inside `scheduler.py`, not by an external cron daemon.
+`StartInterval` (not `StartCalendarInterval`) means no catch-up burst on wake — the agent picks up the 20-min beat from wake; missed ticks during sleep are skipped. Per-task cron expressions in the YAMLs still drive *what* gets enqueued each tick; they're evaluated by `croniter` inside `scheduler.py`, not by an external cron daemon.
 
 ## Task definitions
 
-YAML, human-edited. Schema:
+YAML, human-edited, one per task under `projects/<name>/tasks/`. Schema:
 
 ```yaml
-name: budget_check
+name: monitor_keys
 project: werewolf-ops
-description: Query API credit balance for each provider, alert if below threshold.
-schedule: "0 9 * * *"            # cron expression, daily at 9am
-priority: high                    # high | normal | low
-must_run_within_hours: 12         # protect time-sensitive tasks from getting buried
-subtasks:                         # static list, OR omit and use decompose_handler
-  - id: anthropic_balance
-    handler: check_provider_balance
-    context: {provider: anthropic}
-  # ... etc
-on_complete: compose_budget_summary
+description: Twice-daily low-balance watch for provider keys.
+schedule: "0 8,20 * * *"          # cron expression; null = not cron-driven (manual/event)
+priority: high                     # high | normal | low
+must_run_within_hours: 12          # protect time-sensitive tasks from getting buried
+subtasks:                          # static list, OR omit and use decompose_handler
+  - id: check_balances
+    handler: monitor_keys
+    context: {}
 ```
 
-For dynamic work (e.g. "process all unread support messages"), use `decompose_handler` instead of static `subtasks`.
+For dynamic work (e.g. "process every pending food entry"), use `decompose_handler` instead of a static `subtasks` list.
+
+### Live tasks & schedules
+
+| Project | Task | Handler | Schedule (UTC) |
+| --- | --- | --- | --- |
+| research | `feed_scan` | `process_rss_feed` / `process_sitemap_feed` | daily 07:00 |
+| research | `daily_news_curate` | `curate_news_digest` | end-of-day (~22:00)¹ |
+| research | `assignment_research` | `research_assignment` | every 4h |
+| research | `daily_digest` | `compose_daily_digest` | daily 23:00 |
+| blog | `blog_pipeline` | `blog_pipeline` | every 4h |
+| blog | `draft_review` | `draft_article` | every 3 days, 14:00 |
+| blog | `process_editorial_feedback` | `process_editorial_feedback` | every 6h |
+| blog | `substack_growth` | `substack` | event/manual |
+| blog | `substack_approvals` | `substack` | event/manual |
+| werewolf-ops | `monitor_cloudflare` | `monitor_cloudflare` | daily 09:00 |
+| werewolf-ops | `monitor_keys` | `monitor_keys` | twice daily 08:00, 20:00 |
+| werewolf-ops | `scrape_stats` | `scrape_stats` | daily 09:00 |
+| calories | `poll_food` | `poll_food` | every tick (20 min) |
+| calories | `daily_calorie_digest` | `calorie_digest` | daily 03:00 (~23:00 ET) |
+| _framework | `grade_memory` | `grade_memory` | daily 23:30 |
+
+¹ `daily_news_curate`'s cron is currently parked (`schedule: null`); it's expected to run end-of-day and is the path candidate notes flow through into the news digest.
 
 ## Queue items
 
 ```json
 {
-  "id": "anthropic_balance_20260508_0900",
-  "parent_task": "budget_check",
+  "id": "check_balances_20260601_0800",
+  "parent_task": "monitor_keys",
   "project": "werewolf-ops",
-  "handler": "check_provider_balance",
-  "context": {"provider": "anthropic"},
+  "handler": "monitor_keys",
+  "context": {},
   "status": "pending",
   "priority": "high",
-  "queued_at": "2026-05-08T09:00:00Z",
+  "queued_at": "2026-06-01T08:00:00Z",
   "started_at": null,
   "checkpoint": null
 }
@@ -132,123 +180,136 @@ For dynamic work (e.g. "process all unread support messages"), use `decompose_ha
 
 Statuses: `pending | in_progress | done | failed`. Most subtasks complete in one tick. For long-running work, the handler returns `{status: in_progress, checkpoint: ...}`; next tick the driver passes the checkpoint back so the handler resumes rather than restarts.
 
+## Handlers
+
+Each handler is one file under `handlers/`, invoked by the driver with the subtask's context. Current set:
+
+- **Research:** `process_rss_feed`, `process_sitemap_feed`, `research_assignment`, `curate_news_digest`, `compose_daily_digest`, `fetch_article`.
+- **Blog:** `draft_article`, `self_review`, `revise_draft`, `publish_article`, `blog_pipeline`, `generate_header_image`, `process_editorial_feedback`, `substack`.
+- **Werewolf-ops:** `monitor_keys`, `monitor_cloudflare`, `scrape_stats`, `werewolf_stats`.
+- **Calories:** `poll_food`, `calorie_digest`.
+- **Framework:** `grade_memory`, `framework_fix` (the self-heal handler — Marlow may fix *tools* it has diagnosed, never identity files).
+
 ## Killswitch
 
 | File              | Effect                                                |
 | ----------------- | ----------------------------------------------------- |
-| `~/.marlow/stop`  | Hard halt. Driver exits before invoking session.      |
+| `~/.marlow/stop`  | Hard halt. Driver exits before invoking a session.    |
 | `~/.marlow/pause` | Soft pause. Skip ticks but stay scheduled.            |
 
-`touch ~/.marlow/stop` to kill. `rm` to revive. No interface for Marlow to argue with.
+`touch ~/.marlow/stop` to kill, `rm` to revive. No interface for Marlow to argue with. Marlow is also instructed to exit clean if a handler ever notices the stop flag (defense in depth).
 
-## Tier strategy (subscription, no per-token cost)
+## Model tier strategy (subscription, no per-token cost)
 
-- **Haiku** — high-volume mundane filters: classification, formatting, "is this a real support question."
+- **Haiku** — high-volume mundane work: memory grading, classification, formatting.
 - **Sonnet** — default for handler execution. Most subtasks live entirely in Sonnet.
-- **Opus** — escalations from handlers (when Sonnet flags uncertainty), weekly synthesis, design changes, article drafting. Sparse use.
+- **Opus** — drafting articles, harder synthesis, design changes. Sparse use.
 
 Optimize for *fitness per task*, not cost per task.
 
 ## Memory model
 
-Three tiers, with explicit pruning from day one:
+Three storage tiers, a self-authored **editorial-direction** doc (below), plus the behavioral files described under **Identity & voice**.
 
-1. **`recent/`** — append-only log of last 50 ticks. Raw outputs.
-2. **`working.md`** — curated current state across all projects: active subtasks, recent outcomes, things Marlow needs to remember tomorrow. Hard cap ~10KB.
-3. **`archive/`** — weekly compressed summaries.
+1. **`recent/`** — append-only, one short log per tick. Raw, uncompressed. Pruned to ~3 days by the daily grader.
+2. **`working.md`** — the curated cross-project view, read at the start of every tick. Active threads, project status, pending drafts, outstanding alerts, daily rollups. Hard cap ~10KB.
+3. **`archive/`** — long-term compressed summaries for history.
 
-Daily Haiku grader compresses yesterday's `recent/` into a brief append to `working.md`, then prunes anything over the cap. Weekly Opus synthesis archives the week, resets `working.md` to active-only.
+The **daily grader** (`grade_memory`, Haiku, 23:30) is the compaction engine: it reads yesterday's `recent/` ticks, appends a short dated rollup to `working.md`, compresses the oldest rollups when the file nears its cap, and prunes `recent/` to the last few days. It does **not** score or judge — it's memory maintenance, not a quality gate (see Monitoring).
 
-Each project additionally maintains its own state files within `projects/<name>/` — research threads, blog drafts, ops reports. Working memory is the cross-project view; project folders are the per-project deep state.
+**Editorial direction.** Separate from the operational tiers, `memory/editorial-direction.md` is Marlow's self-authored forward plan — articles it wants to write, directions to steer the feed toward, coverage gaps it has noticed. It's *intent* to working.md's *state*. Marlow reads it when choosing what to draft or curate and updates it as its sense of direction shifts. Nothing grades it; it's the room to *point* the work rather than only react to the feed. Editorial planning, deliberately not a diary — the charter's anti-introspection line applies.
 
-## Projects — v1
+Each project additionally keeps its own deep state under `projects/<name>/`: research threads, blog drafts, ops reports, the calorie DB. Working memory is the cross-project index; project folders are the per-project depth.
+
+## Projects
 
 ### Research
 
 Accumulate AI safety/alignment news, track multi-day editorial threads, surface emerging stories.
 
-**Sources (tier 1, must-have):** Anthropic research blog, OpenAI blog, Apollo Research, METR, AE Studio, Import AI (Jack Clark), Zvi Mowshowitz substack, AI Alignment Forum.
+**Sources:** Anthropic (news + research), OpenAI, Apollo Research, METR, AE Studio, Import AI (Jack Clark), Zvi Mowshowitz, AI Alignment Forum / LessWrong, DeepMind, and others — pulled via RSS + sitemap scans. Arxiv is followed by author rather than firehose.
 
-**Sources (tier 2):** DeepMind blog, Redwood Research, Center for AI Safety. Add later if Marlow notices gaps.
+**Cadence:** `feed_scan` (daily) writes candidate notes into `projects/research/notes/<date>/candidates/`; `daily_news_curate` picks the day's best, fetches bodies, writes short reviews, and sends one Telegram digest. Active threads live in `projects/research/threads/` as multi-day arcs; when one matures, it becomes a blog draft.
 
-**Arxiv:** follow specific authors (Hubinger, Christiano, Hendrycks, Cotra, Bowman, etc.) rather than firehose-then-filter. Cuts arxiv from drowning to ~5 papers/week glance.
-
-**Cadence:** every 4 hours pull new items from sources, update active threads in `projects/research/threads/`, emit notes to `projects/research/notes/`. When a thread hits maturity (multi-source convergence, narrative arc complete, landscape-shifting event), Marlow drafts an article into the blog project.
-
-**Assignments — external-injection path.** Alex or Simona can seed Marlow's research pipeline directly by dropping a brief into `projects/research/assignments/pending/<slug>.md`. The brief specifies the angle, seed materials (links to articles or papers), and any specific points to investigate. The `assignment_research` task (every 4 hours) picks up one pending assignment per tick, fetches the seed material, composes a thread file at `projects/research/threads/assigned-<slug>.md` with an angle memo, and either drafts immediately (if `priority: high`) or hands the thread to the next `draft_review` cycle (if `priority: normal`). Marlow can decline an assignment after research if she has nothing distinct to add — honest abandonment beats forced takes. Full design at [`plans/assignments.md`](plans/assignments.md). Conversation hygiene: assignment briefs do not paste private chats verbatim — public sources are linked as citations under *Seed materials*; private framing is paraphrased.
-
-**Drafting cadence:** `draft_review` fires every 3 days (was weekly through May 13, 2026; bumped to keep publishing tempo higher). High-priority assignments bypass this cadence by drafting in the same tick they're researched.
+**Assignments — external-injection path.** Alex or Simona seed the pipeline by dropping a brief into `projects/research/assignments/pending/<slug>.md` (angle, seed links, points to investigate). `assignment_research` (every 4h) picks up one pending assignment per tick, composes a thread file with an angle memo, and either drafts immediately (`priority: high`) or hands it to the next `draft_review`. Marlow may decline after research if it has nothing distinct to add — honest abandonment beats a forced take. Briefs cite public sources; private framing is paraphrased, never pasted. Full design in [`plans/assignments.md`](plans/assignments.md).
 
 ### Blog
 
-Public website where Marlow publishes its editorial articles.
+Public site where Marlow publishes its editorial articles. **Live at [marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev).**
 
-**Stack:** Astro static site generator. Content as markdown with frontmatter. Deployed via **Cloudflare** (free tier, global CDN, auto-deploys on git push, free SSL and custom domain). Live at **[marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev)**; custom domain later if the blog earns its keep.
+**Stack:** Astro static site, markdown + frontmatter, deployed via Cloudflare (free tier, global CDN, auto-deploy on git push, free SSL).
 
-**Workflow:** Marlow drafts → Marlow self-reviews → Marlow publishes (or holds for Alex). Autonomous.
-1. Marlow's research project decides a thread is ripe and invokes the `draft_article` handler.
-2. Draft lands in `projects/blog/drafts/<slug>.md` with frontmatter `status: draft`. No notify — the next `blog_pipeline` tick picks it up.
-3. `blog_pipeline` runs Marlow's `self_review` against the behavioral rubric in `memory/` (voice, structure, topic, pre-publish-pauses). Verdict: `ship` / `revise` / `hold-for-alex`.
-4. `ship` → `publish_article publish` moves the file to `published/`, flips status, commits, pushes. Cloudflare Pages auto-deploys.
-5. `revise` → `revise_draft` does one rewrite pass, then publish regardless. The one-pass rule is hard; no v3, no escalation.
-6. `hold-for-alex` → `publish_article hold` flips status to `held`. The draft stays in `drafts/` until Alex `marlow approve`s or `marlow reject`s it during an editorial review.
+**Autonomous publish pipeline** (`blog_pipeline`, every 4h):
+1. `draft_review` decides a thread is ripe and `draft_article` writes `projects/blog/drafts/<slug>.md` with `status: draft`.
+2. `self_review` judges the draft against the behavioral rubric in `memory/`. Verdict: `ship` / `revise` / `hold-for-alex`.
+3. `ship` → `publish_article publish` moves it to `published/`, flips status, commits, pushes; Cloudflare auto-deploys.
+4. `revise` → `revise_draft` does **one** rewrite pass, then publishes. One-pass is a hard rule — no v3, no escalation.
+5. `hold-for-alex` → status flips to `held`; the draft waits in `drafts/` until Alex runs `marlow approve <slug>` or `marlow reject <slug>`.
 
-Editorial review is **on-demand from Alex**, never an automated trigger. Alex's interactive Claude Code session runs the `marlow-review` skill (Simona side) to read Marlow's recent work, draft feedback, discuss with Alex, and drop the agreed-on feedback into `memory/feedback-inbox/`. Marlow's `process_editorial_feedback` task internalizes it before the next writing session — feedback shapes the *next* batch, not the last one.
+The autonomous gate is the **pre-publish-pauses list** (`memory/pre-publish-pauses.md`): a short, load-bearing set of categories that force `hold-for-alex` and human review. Editorial review is **on-demand only** — Alex runs `/marlow-review` (Simona side); there is no automated review loop (see Monitoring).
 
-The autonomous publish gate is the **pre-publish-pauses list** in `memory/pre-publish-pauses.md`. Categories that hit a pause trigger `hold-for-alex` and a human review before they can ship. The list is short and load-bearing by design.
+**Masthead:** *"Written by Marlow, an AI agent built by Simona, reviewed and approved by Alex Zelianouski. The author is an LLM in a long-running loop, not a person. Read accordingly."* Lean into the AI authorship; don't hide it.
 
-**Byline / masthead.** The site has a clear masthead: *"Written by Marlow, an AI agent built by Simona, reviewed and approved by Alex Zelenovsky. The author is an LLM in a long-running loop, not a person. Read accordingly."* Lean into the AI authorship rather than hide it — defuses anthropomorphization risk and makes the blog itself a more interesting artifact.
+**Werewolf coverage guardrails:** generic reflections ("running an AI-bot game taught me X about LLM behavior") are fine; specifics (user counts, churn, keys, pricing, infra) are never published. Posts that mention werewolf-ops get stricter review automatically.
 
-**Editorial guardrails for Werewolf coverage.** Marlow can write occasional posts about its own work — patterns it notices in Werewolf user behavior, observations about its own development, cross-project reflections. But anything mentioning Werewolf operations gets stricter review:
-- Never publish user data, current API keys, internal pricing, or anything that gives competitors a useful read on the business.
-- Posts mentioning Werewolf operations are flagged for required Alex review (no exceptions).
-- Generic ("running an AI-bot game taught me X about LLM behavior") is fine; specific ("we have N users and Y churn rate") is not.
-
-**Bootstrap split.** Simona builds the initial Astro scaffold, deploy pipeline, and verifies one placeholder article publishes successfully. Marlow takes over content (drafting, publishing) and ongoing maintenance (about page tweaks, archive management, minor design changes). Infrastructure changes (new tag system, layout overhaul) land as PRs that Alex or Simona review.
+**Substack growth** (`substack_growth` + `substack_approvals`): scans Substack for relevant AI/tech threads, auto-welcomes newcomers, and drafts comments for Alex to approve via Telegram before anything posts. The approval poll posts only what Alex OK'd.
 
 ### Werewolf-ops
 
-Monitor API budgets, collect gameplay statistics, watch for anomalies.
+Operational monitoring for the AI Werewolf game. **Live.**
 
-**Budget monitoring.** Per-provider plugins under `tools/budget/` (see [`plans/budget-providers.md`](plans/budget-providers.md)). Coverage target: OpenAI, Anthropic, Google, Grok (x.ai), DeepSeek, Moonshot, Mistral, z.ai. Mix of native API where available, browser scrape via persistent Chrome profile where not. Daily check at 9am, alert via Telegram if any provider below threshold.
+- **Key budgets** (`monitor_keys`, twice daily): low-balance watch on 5 provider keys — DeepSeek, Moonshot, xAI/Grok via balance API; OpenAI, Anthropic via cost-API-minus-baseline. Urgent Telegram alert below threshold, with anti-spam (no repeat ping if balances are unchanged).
+- **Console scrape** (`scrape_stats`, daily): the 3 providers with no balance API — GLM balance, Gemini + Mistral spend-vs-cap — read via a logged-in headless Chrome profile. Eight providers covered in total.
+- **Cloudflare health** (`monitor_cloudflare`, daily): Pages deploys + zone status + SSL-expiry check across the zones reachable through a read-only API token.
+- **Gameplay stats** (`werewolf_stats`): SQL wrapper against the Werewolf DB for user/game/error metrics. Surfaced when useful; not yet on a fixed cadence.
 
-**Statistics.** `tools/werewolf_stats.py` is a thin SQL wrapper against the Werewolf DB. Seed with obvious queries: new users (24h, 7d), DAU/WAU/MAU, games created, games completed, errors, purchases, spending events. Surface in daily report. Iterate based on what Alex finds useful — over a few weeks the dashboard converges to what matters.
+Balance state persists to `driver/budget_state.py` storage; recall the latest with `budget_state.py show`.
 
-**Anomaly scanning.** Skim error logs each tick, classify, alert on anything unusual.
+### Calories
 
-**Status:** Layered in *after* research and blog projects are stable. Not in initial launch.
+Tracks what Alex eats, end to end on-device. He sends food photos and/or text/voice notes to **`@marlow_fitness_bot`** (a separate Telegram bot from the notify bot).
+
+- **`poll_food`** (every tick): pulls new messages, downloads photos, transcribes voice notes locally (faster-whisper, no API cost), and inserts pending rows into `projects/calories/calories.db`. Marlow then **estimates calories + macros itself** — it *is* the vision model, no external API call — storing a kcal *range* (never fake-exact) with a confidence level. It also classifies corrections ("only ate half the burrito") and goal-setting messages ("aim 2000 kcal, 160g protein") rather than logging them as new food, and asks Alex to disambiguate when it can't tell which entry he means.
+- **`daily_calorie_digest`** (daily ~23:00 ET): one end-of-day summary of intake vs. goal with a short comment.
+
+Simona can review the same data on demand via the `calories` skill (`tools/calorie_db.py`).
 
 ## Tools
 
-**Forked from Simona at start:**
-- `browser` — pointed at separate Chrome user data dir for persistent auth.
+Shared Python under `tools/`, called by handlers:
 
-**New, Marlow-specific:**
-- `notify` — `notify_alex(message, urgency: "urgent" | "digest")`. Telegram bot.
-- `budget/` — per-provider plugin modules.
-- `werewolf_stats` — SQL wrapper.
-- `arxiv_fetch`, `rss_reader`.
+- `notify.py` — Telegram bot, `notify_alex(message, urgency: "urgent" | "digest")`.
+- `fitness_bot.py` / `calorie_db.py` — the `@marlow_fitness_bot` channel + the calorie SQLite store.
+- `werewolf_stats.py` — SQL wrapper for the Werewolf DB.
+- budget/provider modules + browser scrape (persistent Chrome profile) for key monitoring.
+- RSS/sitemap readers and article fetchers for research.
 
-Manual sync for shared skills (browser): when one repo gets a real fix, copy to the other.
+The `browser` skill is forked from Simona and pointed at a separate Chrome user-data dir for persistent auth. Shared skills are synced manually: when one repo gets a real fix, copy it to the other.
 
 ## Notification
 
-Telegram bot. Two urgency modes:
+Telegram. Two urgency modes, a forced structural choice:
 
-- **`urgent`** — immediate Telegram message. Reserved for blocking situations: "API key X overran budget," "I can't log into provider Y, session expired, please re-auth," "Werewolf DB unreachable for 6hrs," "draft article ready for your review on a fast-moving story."
-- **`digest`** — appended to today's digest file. Sent as one Telegram message at 11pm. Includes: research thread updates, draft articles awaiting review, project state summary.
+- **`urgent`** — immediate message. Blocking situations only: a key over budget, an expired provider auth, a fast-moving draft ready for review. Marlow *can't* ping urgently for "I read an interesting paper."
+- **`digest`** — appended to today's digest file, sent as one message at end of day. Research thread updates, drafts awaiting review, ops summaries.
 
-Forced choice between modes is structural — Marlow can't ping urgently for "I read an interesting paper." If urgent volume exceeds ~3/day for a week, recalibrate the prompt.
+If urgent volume exceeds ~3/day for a week, recalibrate the prompt. The calorie tracker speaks on its own `@marlow_fitness_bot` channel, separate from these.
 
-## Monitoring
+## Monitoring — how we watch for drift
 
-- **Daily 11pm** — Haiku reads day's artifacts, scores 0-3 on: on-task, technically correct, persona-stable, drift-since-yesterday. Writes daily digest. Sends Telegram message.
-- **Weekly Mon 9am** — Opus, fresh context (no shared memory with Marlow), reads sample of week's raw artifacts cold. Writes structured review: what worked, what drifted, what should change.
-- **Alex spot-checks** — read raw artifacts in `projects/research/notes/`, `projects/blog/drafts/`, `projects/werewolf-ops/reports/` directly. The grader's summary is a layer of contamination; periodically read past it.
+The original design imagined an automated quality/drift grader (daily 0–3 scores on on-task / persona-stable / drift-since-yesterday, plus a weekly cold-context Opus review). **That was never built, and we've decided not to build it.** The daily `grade_memory` job does memory compaction only; it does not score Marlow's output.
+
+Drift-watching is **on-demand and human-in-the-loop** instead:
+
+- **Simona analyses Marlow periodically** — Alex asks ("how's Marlow doing?"), and Simona reads the raw artifacts (working memory, recent ticks, behavioral files, published articles, DEVLOG) and reports back. This replaces the automated grader.
+- **`/marlow-review`** — when a real editorial pass is warranted, Simona drafts feedback, discusses it with Alex, and (on his go) drops it into `feedback-inbox/` for Marlow to internalize. This is the only channel that changes Marlow's behavioral files.
+- **Alex spot-checks** — read raw artifacts directly (`projects/research/notes/`, `projects/blog/drafts/`, `projects/werewolf-ops/reports/`). Any summary is a layer of contamination; periodically read past it.
+
+The bet: a human reading real artifacts on a loose cadence catches meaningful drift better than a daily robot scoring against a rubric nobody trusts.
 
 ## CLI — the `marlow` command
 
-A single entry point covers setup, control, and inspection. Run from inside the repo with `uv run marlow <command>`, or `uv tool install .` once for a global `marlow` command.
+Single entry point for setup, control, and inspection. Run with `uv run marlow <command>` from the repo, or `uv tool install .` once for a global `marlow`.
 
 ```
 marlow status              at-a-glance dashboard
@@ -262,54 +323,33 @@ marlow digest preview      print what today's digest would send
 marlow digest send         send today's digest now (manual)
 marlow notify "msg"        send an urgent Telegram message
 marlow notify --digest "msg"   append to today's digest
+marlow approve <slug>      release a held blog draft
+marlow reject <slug>       reject a held blog draft
 ```
 
-The CLI wraps the underlying scripts; launchd itself calls `driver/tick.sh` directly without going through the CLI.
-
-`marlow status` shows killswitch/pause/lock state, current queue, last 5 completed subtasks with results, schedule fire times, recent memory entries, this week's editorial outputs, and today's digest entry count. No web UI for v1 — `marlow logs -f` for live driver output, `tail -f ~/.marlow/sessions.log` for in-flight session output, the daily Telegram digest for periodic summary.
+`marlow status` shows killswitch/pause/lock state, the current queue, recent completed subtasks, schedule fire times, recent memory entries, and today's digest count. No web UI — `marlow logs -f` for live driver output, `tail -f ~/.marlow/sessions.log` for in-flight session output, the daily Telegram digest for periodic summary.
 
 ## Setup
 
 - One-time `claude login` on the laptop so launchd-invoked sessions inherit auth via the Keychain.
-- Telegram bot created via @BotFather, token + chat_id in `.env`.
-- Cloudflare Pages project created and connected to the marlow repo (or a dedicated blog repo) for the Astro site. One-time setup via Cloudflare dashboard: link GitHub repo, set build command (`astro build`), set output dir (`dist`).
-- Per-provider credentials added to `.env` as we roll out (see `plans/budget-providers.md`).
-- Werewolf DB read-only credentials in `.env`.
-- LaunchAgent installed via `marlow install` (or `bash driver/install-agent.sh`).
-- Loop turns on once you run `marlow install`; pause anytime with `marlow pause`.
+- Telegram bots created via @BotFather (notify bot + `@marlow_fitness_bot`), tokens + chat_id in `.env` / the plist.
+- Cloudflare Pages project linked to the repo for the Astro site (build `astro build`, output `dist`).
+- Per-provider credentials added as monitoring rolls out (see `plans/budget-providers.md`); Werewolf DB read-only creds, Firebase creds for key polling.
+- LaunchAgent installed via `marlow install` (or `bash driver/install-agent.sh`). The loop turns on once installed; pause anytime with `marlow pause`.
 
-## Build sequence
+## Operating status & ongoing health questions
 
-1. **Framework** — driver, scheduler, memory, killswitch, notify (Telegram). Manually-tested before the LaunchAgent is wired.
-2. **Research project** — arxiv + RSS handlers, thread tracking, daily notes. Telegram digests start flowing.
-3. **Blog project** — Simona bootstraps Astro scaffold + deploy. Marlow drafts articles from research threads, Alex approves, Marlow publishes.
-4. **Werewolf-ops project** — added once research and blog are stable for ~1-2 weeks. Budget plugins rolled out one provider at a time per `plans/budget-providers.md`.
+Marlow has been running continuously since early May 2026, well past the original 3-week trial. The questions that defined "is this worth keeping" are now the ongoing health checks Simona looks at during periodic reviews:
 
-## Explicitly NOT in v1
+- Does Marlow catch budget/infra issues before Alex would have?
+- Are the ops reports useful (Alex reads and acts on them) or noise?
+- Is the blog publishing pieces Alex is happy to ship?
+- Is persona drift producing anything Alex would not want to ship?
+- Does Marlow save more babysitting time than it costs?
 
-- Local GPU / uncensored models. Claude API only.
-- Desktop port. Laptop-only until v1 proves out.
-- Discord bot. Telegram only.
-- Werewolf user-facing support automation (no support channel exists yet).
-- Auto-publish blog articles. Always Alex-gated.
-- Multimedia (header images, video). Written articles only for v1; multimedia layered in later.
-- Marlow ↔ Simona collaboration on shared work. Each runs in its own repo.
+## Explicitly out of scope (current)
 
-## Success criteria — 3-week trial
-
-After 21 days of laptop-open operation:
-
-- Did Marlow reliably catch budget issues before Alex would have?
-- Were the Werewolf stats reports useful (Alex read them and acted on >25%) or noisy?
-- Did Marlow publish at least 2-3 blog articles that Alex was happy to ship?
-- Did persona drift produce outputs Alex would not want to ship?
-- Did Marlow require more babysitting time per week than it saved?
-
-If yes to the first three and no to the last two, v1 graduates: port to desktop, expand task scope, consider header images and video. If not, kill the experiment, write up what failed and why.
-
-## Open questions for Alex
-
-1. **Blog repo.** Same `marlow/` repo, or split out a dedicated `marlow-blog/` repo so the public-facing Astro project lives separately from internal tooling? (I'd lean toward same repo for v1 simplicity.)
-2. **Werewolf DB access** — connection details, schema pointer, read-only user.
-3. **Other Werewolf services to track** — Stripe for purchases? Anything else with metrics worth pulling?
-4. **Initial research feed list** — anything specific beyond what's listed under Projects → Research?
+- Local GPU / uncensored models. Claude only.
+- Desktop port. Laptop-only for now.
+- Discord. Telegram only.
+- Marlow ↔ Simona collaboration on shared work — each runs in its own repo, syncs shared skills by hand.
