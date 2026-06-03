@@ -964,3 +964,18 @@ DIGEST_LIST_CAP=5). The daily tick passes it verbatim to `notify --digest`, so
 Werewolf activity rides the 23:00 UTC end-of-day digest alongside the budget
 lines — one Telegram message, no separate ping. Detail-in-Telegram was Alex's
 call: names buried in a report file on disk are names nobody reads.
+
+*Anomaly scanning landed (same session).* Built `handlers/monitor_health.py`
++ task `monitor_health.yaml` (every 6h) — the third werewolf-ops workstream.
+Scans the games collection for the game's own `errorState` field; broken games
+are readable straight from Firestore, no log pipeline. Alerts on games errored
+*since the last scan* (urgent if `recoverable:false`, digest if recoverable),
+baselining the standing pile on first run so it never re-pings the old errors —
+same no-noise discipline as monitor_keys. Live scan found 5/32 games carrying
+errors, all LLM-provider response-parse failures (DeepSeek/Grok malformed JSON,
+Mistral/OpenAI schema validation) — a game-reliability signal worth surfacing,
+not infra flak. Left the baseline snapshot in place so the first scheduled tick
+diffs from it. Betterstack (app-level logs — exceptions, 5xx, latency the
+errorState field never sees) is documented as the next plan in the README,
+blocked only on a query token from Alex (the app's logtail token is ingest-only).
+All three werewolf-ops workstreams — budget, stats, anomaly — now live.

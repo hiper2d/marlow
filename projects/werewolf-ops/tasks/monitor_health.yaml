@@ -1,0 +1,51 @@
+# monitor_health — broken-game watch for the Werewolf game (anomaly scanning).
+#
+# Third werewolf-ops workstream. monitor_keys watches what the free tier COSTS,
+# werewolf_stats what it PRODUCES; this watches whether games WORK. Same
+# Firestore, same read-only service account (MARLOW_FIREBASE_CREDS) — no new cred.
+#
+# Fires every 6h (00/06/12/18 UTC). Unlike the daily stats roll-up, a broken
+# game is time-sensitive — a stranger who hits a bug leaves — so we scan a few
+# times a day. Still not as hot as the twice-daily key watch; recoverable errors
+# often self-heal.
+#
+# Signal: the game writes a `errorState` object onto a game doc when a system
+# error hits it. So broken games are readable straight from the `games`
+# collection — {recoverable, context.timestamp, details}. App-level exceptions
+# that never reach a game doc (provider 5xx, dead requests) are Betterstack's
+# job — DEFERRED, see the werewolf-ops README "Anomaly scanning" section.
+#
+# Noise control (the important part): a pile of OLD errored games always sits in
+# the 30-day TTL window. We alert on games errored SINCE THE LAST SCAN, never the
+# standing set — same discipline as monitor_keys not re-pinging a flat balance.
+#   - First scan with no prior state → baselines the current errored set, emits
+#     ONE digest summary, no urgent.
+#   - Later scans → diff vs prior. Newly-errored game: urgent if
+#     recoverable:false (engine gave up — game dead), digest if recoverable.
+#     A cleared error drops out; a re-error counts as new again.
+#
+# In-tick flow:
+#   1. Run `uv run python handlers/monitor_health.py report`.
+#   2. Parse JSON. If `ok: false` (almost always MARLOW_FIREBASE_CREDS
+#      missing/invalid — same failure mode as monitor_keys), treat as a
+#      framework bug: record via framework_fix; notify urgent only if it's the
+#      Firestore creds failing.
+#   3. If `any_urgent: true`, send one consolidated urgent Telegram listing each
+#      newly-broken (unrecoverable) game + its error summary.
+#   4. Otherwise append the handler's digest block to the end-of-day digest:
+#      `uv run python handlers/monitor_health.py digest` → if non-empty, pass to
+#      `notify --digest`. A quiet scan (no new errors) prints nothing → no line.
+#      compose_daily_digest (23:00 UTC) bundles it with the budget + stats lines.
+#   5. Write the report to projects/werewolf-ops/reports/health/<YYYY-MM-DD>.md
+#      (append per-scan; `monitor_health.py show` renders the current scan).
+#   6. Write the tick result and exit.
+name: monitor_health
+project: werewolf-ops
+description: Every-6h broken-game watch — scans the Werewolf games collection for errorState, alerts on newly-broken games (urgent if unrecoverable). Baselines the pre-existing error pile; never re-pings unchanged.
+schedule: "0 */6 * * *"
+priority: normal
+must_run_within_hours: 4
+subtasks:
+  - id: scan_health
+    handler: monitor_health
+    context: {}
