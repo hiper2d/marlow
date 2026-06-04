@@ -11,6 +11,58 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-03 — monitor_betterstack: the fourth werewolf-ops watch (app-level errors)
+
+*What landed.* `handlers/monitor_betterstack.py` + `tasks/monitor_betterstack.yaml`
+(hourly) — the long-deferred Betterstack workstream, now live. Closes the gap
+monitor_health couldn't: failures that never write a game doc (unhandled
+exceptions, provider 5xx, Next.js errors). Reads the app's logs back via
+Betterstack's ClickHouse HTTP query API. Creds (`BETTERSTACK_CH_HOST/USER/PASS`)
+in the launchd plist; `.env.example` + werewolf-ops README updated. Verified
+end-to-end against live data (query parses, dedup holds, a synthetic new error
+fires urgent).
+
+*What surprised us — two design assumptions in the README were wrong.*
+- The README planned a "query/API token." There is no such thing for reading
+  rows — Betterstack exposes historical data as **ClickHouse over HTTP**, and the
+  credential is a per-connection username/password (Integrations → SQL API), not
+  a bearer token. The password is shown exactly **once** on creation, in a
+  transient flash. Capturing it headless was the hard part of the whole session
+  (see below).
+- The README planned **rate-spike-vs-baseline** alerting. Probing the real data
+  killed that: ~tens of log lines a day, error baseline of *zero*. Spike
+  detection needs a baseline to spike above; there isn't one. Switched to
+  **presence-based** alerting — any error/warn line new since last scan
+  (fingerprint dedup), urgent on error, digest on warn. Simpler and strictly
+  more sensitive than a spike test at this volume.
+
+*Why an S3 table shows up in the code.* Betterstack Telemetry is ClickHouse with
+tiered storage — hot rows in `remote(<source>_logs)`, older rows flushed to S3
+`s3Cluster(primary, <source>_s3)`. The Live-tail UI stitches them; the SQL API
+makes you name a table. For this low-volume source the flush is aggressive, the
+hot table is ~always empty, and S3 holds effectively everything including
+near-real-time — so the handler queries S3. Also: no flat `level` column; the
+row's `raw` is the full JSON and level/message come via `JSONExtractString`.
+
+*The "almost" path — capturing a one-time secret through a browser.* Getting the
+password took **8 connection-create attempts**. The flash is ephemeral and the
+browser CLI reconnects between calls, so the toast kept dying in the gap. Tried:
+screenshot-after-click (too slow), MutationObserver in one JS context (caught
+nav-string false positives; also `el.click()`/`requestSubmit()` on the wrong
+duplicate button silently no-op'd on this Turbo form), network `getResponseBody`
+on the redirect (evicted after nav). What worked: the post-redirect connections
+HTML renders the *just-created* connection's password verbatim in a `copy-string`
+attribute — Fetch-domain interception of that GET body got it cleanly. Then
+deleted the 7 orphan connections via authenticated Turbo `DELETE`, keeping the
+one verified credential. Lesson for next time a one-time secret must be grabbed
+headless: intercept the response body, don't chase the toast.
+
+*State at end of day.* werewolf-ops now has four live watches: budget, stats,
+broken-game (Firestore), app-errors (Betterstack). monitor_betterstack baselined
+clean on first run (0 errors — game healthy). Next fire top of the hour.
+
+---
+
 ## 2026-06-02 — repo as running backup: nightly commit_artifacts tick + gitignore hygiene
 
 *What landed.* Two things, prompted by a `git status` that surfaced ~a month of

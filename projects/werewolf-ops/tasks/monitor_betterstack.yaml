@@ -1,0 +1,58 @@
+# monitor_betterstack — app-level error watch for the Werewolf game (Betterstack).
+#
+# Fourth werewolf-ops workstream, companion to monitor_health. monitor_keys
+# watches what the free tier COSTS, werewolf_stats what it PRODUCES, monitor_health
+# whether a GAME works (its errorState in Firestore). This watches whether the APP
+# is throwing — the failures that never reach a game doc: unhandled exceptions,
+# provider 5xx, Next.js server errors, dead requests. The game already ships these
+# to Betterstack via @logtail/node; we read them back through Betterstack's
+# ClickHouse HTTP query API.
+#
+# Fires hourly. App-level errors are more time-sensitive than the 6h broken-game
+# scan — a stranger who hits a 500 leaves immediately — so we check often. Cheap:
+# one HTTP query against a tiny log volume.
+#
+# Storage note (why an S3 table): Betterstack is ClickHouse with tiered storage —
+# recent rows in a hot table, older rows flushed to S3. For this low-volume source
+# the flush is aggressive and the hot table is usually empty, so S3 holds
+# effectively everything. The handler queries the S3 table; see its docstring and
+# the werewolf-ops README "Betterstack logs" section.
+#
+# Alert model — PRESENCE, not rate-spike. At this volume the error baseline is
+# zero, so "did any error/warn appear?" beats "did the rate spike?". Alerts on
+# error/warn lines NEW since the last scan (fingerprint dedup), never the standing
+# set — same discipline as monitor_health.
+#   - First scan with no prior state → baselines the current error/warn lines,
+#     emits ONE digest summary, no urgent.
+#   - Later scans → a new error line is urgent; a new warn is digest. Lines already
+#     fingerprinted are never re-pinged.
+#
+# Credentials (in the launchd plist): BETTERSTACK_CH_HOST, BETTERSTACK_CH_USER,
+# BETTERSTACK_CH_PASS — the ClickHouse query connection (Telemetry → Integrations
+# → SQL API). The app's BETTER_STACK_SOURCE_TOKEN is ingest-only and is NOT this.
+#
+# In-tick flow:
+#   1. Run `uv run python handlers/monitor_betterstack.py report`.
+#   2. Parse JSON. If `ok: false` (almost always the BETTERSTACK_CH_* creds
+#      missing/invalid, or a 401/403 = connection revoked), treat as a framework
+#      bug: record a diagnosis via framework_fix, and notify Alex urgent if it's
+#      the query creds failing (the watch is blind until fixed).
+#   3. If `any_urgent: true`, send one consolidated urgent Telegram listing each
+#      new error line + its message.
+#   4. Otherwise append the handler's digest block to the end-of-day digest:
+#      `uv run python handlers/monitor_betterstack.py digest` → if non-empty, pass
+#      to `notify --digest`. A quiet scan (nothing new) prints nothing → no line.
+#      compose_daily_digest (23:00 UTC) bundles it with the budget/stats/health lines.
+#   5. Write the report to projects/werewolf-ops/reports/betterstack/<YYYY-MM-DD>.md
+#      (`monitor_betterstack.py show` renders the current scan).
+#   6. Write the tick result and exit.
+name: monitor_betterstack
+project: werewolf-ops
+description: Hourly app-level error watch — queries Betterstack (ClickHouse SQL API) for new error/warn log lines from the Werewolf app, alerts urgent on a new error. Baselines the pre-existing set; never re-pings.
+schedule: "0 * * * *"
+priority: normal
+must_run_within_hours: 2
+subtasks:
+  - id: scan_app_logs
+    handler: monitor_betterstack
+    context: {}

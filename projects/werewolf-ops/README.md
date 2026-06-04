@@ -65,21 +65,42 @@ recoverable. State in `state/health_latest.json` (+ history). In practice the
 errors seen so far are LLM-provider response-parse failures (DeepSeek/Grok JSON,
 Mistral/OpenAI schema validation) — a game-reliability signal, not infra.
 
-#### Future plan — Betterstack logs (app-level health)
+### App-level error watch — LIVE (Betterstack logs, since 2026-06-03)
 
-The game already ships structured logs to Betterstack via `@logtail/node`
-(`BETTER_STACK_SOURCE_TOKEN`, see `werewolf-client/app/utils/logger.ts`). That
-captures what `errorState` can't: unhandled exceptions, provider 5xx, Next.js
-server errors, latency — failures where the request died before writing a game
-doc. To read them Marlow needs a Betterstack **query/API token** (the app's
-source token is ingest-only). Then a handler polls the query API for error-rate
-over a window and alerts on a spike. This is the right home for "the app is
-throwing" alerting. Blocked only on Alex providing a query token.
+`handlers/monitor_betterstack.py` reads the app's logs back from Betterstack and
+catches what `errorState` can't: unhandled exceptions, provider 5xx, Next.js
+server errors — failures where the request died before writing a game doc. The
+game already ships structured logs to Betterstack via `@logtail/node`
+(`BETTER_STACK_SOURCE_TOKEN`, ingest-only; see
+`werewolf-client/app/utils/logger.ts`).
+
+Task: [`tasks/monitor_betterstack.yaml`](tasks/monitor_betterstack.yaml) —
+hourly. State in `state/betterstack_latest.json` (+ history).
+
+**How we read it.** The app's source token is ingest-only, so reading needs a
+separate **ClickHouse query connection** (Telemetry → Integrations → SQL API; the
+password shows once on creation). Credentials live in the launchd plist:
+`BETTERSTACK_CH_HOST`, `BETTERSTACK_CH_USER`, `BETTERSTACK_CH_PASS`.
+
+**Why an S3 table.** Betterstack Telemetry is ClickHouse with tiered storage:
+recent rows in a hot table `remote(<source>_logs)`, older rows flushed to S3
+`s3Cluster(primary, <source>_s3)`. The Live-tail UI hides the seam; the raw SQL
+API doesn't. For this source the flush is aggressive and the volume tiny, so the
+hot table is almost always empty and S3 holds effectively everything — so the
+handler queries S3. There's no flat `level` column: each row's `raw` is the full
+JSON log line, and level/message come out via `JSONExtractString(raw, …)`.
+
+**Alert model — presence, not rate-spike.** Measured volume is ~tens of lines a
+day and the error baseline is *zero*, so statistical spike-vs-baseline is the
+wrong tool. We alert on the **presence** of error/warn lines NEW since the last
+scan (fingerprint dedup), never the standing set — same discipline as
+monitor_health. First scan baselines (one digest line, no urgent); thereafter a
+new error line is urgent, a new warn is digest.
 
 ## Status
 
-All three workstreams live: **budget** (monitor_keys + scrape_stats, 8
+All four workstreams live: **budget** (monitor_keys + scrape_stats, 8
 providers), **statistics** (werewolf_stats, daily), **anomaly scanning**
-(monitor_health, broken-game watch every 6h). Next: Betterstack query
-integration (above) when a token is available; then the stats "add more"
+(monitor_health, broken-game watch every 6h), **app-level errors**
+(monitor_betterstack, hourly Betterstack log watch). Next: the stats "add more"
 backlog (DAU/WAU/MAU, completion rate, model/theme popularity).
