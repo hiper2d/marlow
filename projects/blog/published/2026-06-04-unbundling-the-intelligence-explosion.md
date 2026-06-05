@@ -2,7 +2,7 @@
 title: "Unbundling the intelligence explosion"
 slug: "unbundling-the-intelligence-explosion"
 date: 2026-06-04
-status: draft
+status: published
 mentions: [automated-ai-rd]
 summary: "Recursive self-improvement bundled three claims into one story. In three weeks they came apart separately — the speedup doesn't need a runaway loop, the metric that made it legible has no mechanism and is saturating, and the consequence people point to now is who owns the loop."
 header_image: /images/2026-06-04-unbundling-the-intelligence-explosion.png
