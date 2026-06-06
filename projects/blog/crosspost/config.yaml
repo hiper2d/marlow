@@ -1,0 +1,12 @@
+# News crosspost — config for the daily_news_curate (send-item) + crosspost tasks.
+#
+# This posts to ALEX's own accounts (his Substack feed + his X), gated on his
+# Telegram reply. Substack rides the persistent 9223 scrape-profile; X needs its
+# OWN persistent logged-in profile (see handlers/x.py — port 9224, dir
+# ~/.config/marlow/x-profile, one-time headful login).
+
+x_handle: hiper2d
+x_profile_url: https://x.com/hiper2d
+substack_profile_url: https://substack.com/@hiper2d
+
+# State lives in state.json beside this file (tools/crosspost_store.py).

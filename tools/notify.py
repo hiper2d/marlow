@@ -58,11 +58,18 @@ def _log_fallback(message: str, reason: str) -> None:
         f.write(line)
 
 
-def send_telegram(message: str) -> tuple[bool, str]:
-    """Send a single message via Telegram. Returns (ok, detail)."""
+def send_telegram_message(message: str) -> dict:
+    """Send one Telegram message. Returns {ok, message_id, detail}.
+
+    Unlike send_telegram (which returns just (ok, detail)), this surfaces the
+    sent message_id. The crosspost flow needs it: each news item is sent as its
+    own message, and Alex replies *to that message* to ask for a crosspost — we
+    match his threaded reply (reply_to_message.message_id) back to the item by
+    this id.
+    """
     token, chat_id = _env()
     if not token or not chat_id:
-        return False, "missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID in .env"
+        return {"ok": False, "message_id": None, "detail": "missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID in .env"}
     try:
         resp = requests.post(
             TELEGRAM_API.format(token=token),
@@ -70,10 +77,20 @@ def send_telegram(message: str) -> tuple[bool, str]:
             timeout=TELEGRAM_TIMEOUT,
         )
         if resp.status_code != 200:
-            return False, f"telegram returned {resp.status_code}: {resp.text[:200]}"
-        return True, "sent"
-    except requests.RequestException as e:
-        return False, f"telegram request failed: {e}"
+            return {"ok": False, "message_id": None, "detail": f"telegram returned {resp.status_code}: {resp.text[:200]}"}
+        mid = (resp.json().get("result") or {}).get("message_id")
+        return {"ok": True, "message_id": mid, "detail": "sent"}
+    except (requests.RequestException, ValueError) as e:
+        return {"ok": False, "message_id": None, "detail": f"telegram request failed: {e}"}
+
+
+def send_telegram(message: str) -> tuple[bool, str]:
+    """Send a single message via Telegram. Returns (ok, detail).
+
+    Thin back-compat wrapper over send_telegram_message for callers that don't
+    need the message_id (the digest sender, urgent notifies, etc.)."""
+    r = send_telegram_message(message)
+    return r["ok"], r["detail"]
 
 
 def append_to_digest(message: str) -> Path:

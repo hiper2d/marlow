@@ -76,17 +76,29 @@ When invoked with this handler:
 
 1. Run `list --date <today>` to get all candidate notes.
 2. If zero candidates, write a one-line "quiet day" digest to `digests/news/<date>.md` or skip and exit clean — your call.
-3. Rank candidates across all sources. Pick 3-5 (fewer if the day is thin — an empty digest beats a padded one). Priority:
+3. **Be selective — this is the whole job.** Rank candidates across all sources and pick **3-5 MAX** (fewer if the day is thin — zero on a quiet day is fine). You are deciding what's worth Alex's time, not forwarding the feed. **Never send the whole candidate list.** The per-item delivery in step 5 changed HOW you deliver the picks (one message each), NOT how many you pick — it is not a license to send everything. If you've swept a backlog of several days' candidates (e.g. after a gap), still cap at the 3-5 best *across the whole backlog*, not 3-5 per day. Priority:
    - Actual technical content, evals, analysis > company news
    - Safety / alignment / interpretability / capability evals / agentic systems
    - Diversify across sources when quality is comparable
    - When quality is comparable, weight candidates that advance a direction you're cultivating in `memory/editorial-direction.md`, or that feed an article you want to write
 4. For each pick, run `handlers/fetch_article.py fetch --url <url>` to get the article body. If fetch fails (paywall, JS-only, error), write your review from the candidate's RSS summary and note the limitation in the review.
-5. Compose the final digest to `digests/news/<YYYY-MM-DD>.md`:
-   - Header: `Marlow news — <date>`
-   - Per pick: source, title, URL, then 3-5 sentences of your actual take on what's interesting, new, or dubious. Direct, fact-first. Voice rules apply.
-   - Closing — a `— Marlow` paragraph after the last pick. 3-6 sentences. Step back from per-item reviews. What did the day actually *mean* across the picks? What's the throughline, the open question, the thing you'll be watching for tomorrow? What surprised you, or didn't? This is the section where your voice develops over time — reference past picks and ripening threads from `working.md` when it's natural, don't force connections that aren't there. Don't recap the picks (the reader just read them). Don't open with "Today's digest..." style framing. Just talk.
-6. Run `handlers/curate_news_digest.py send --date <today>` to deliver.
+5. **Send each pick as its own Telegram message** (the new per-item delivery, 2026-06-04). For each pick, in order, run:
+   `uv run python handlers/crosspost.py send-item --url <url> --title "<title>" --source "<source>" --take-file <file>`
+   where `--take-file` holds your 2-4 sentence take on that item (what's interesting, new, or dubious — direct, fact-first, voice rules apply). The handler sends it to Alex and registers it (keyed by the message_id) so he can reply to crosspost it. One message per pick — Alex replies to the ones worth posting; no reply means drop. Do NOT compose one monolithic digest anymore, and do NOT add a `— Marlow` closing paragraph (that was the digest format; per-item messages don't get a signoff).
+6. Optionally also write `digests/news/<YYYY-MM-DD>.md` as your own archive/working note (header `Marlow news — <date>`, per-pick takes) — useful for your `working.md` throughline tracking — but the *delivery* is the per-item `send-item` calls above, not `curate_news_digest send`. On a zero-pick day, send nothing and exit clean.
+
+### News highlights — handler `crosspost`
+
+When Alex flags a daily news pick, **remember it as an article idea** for him to write later with Simona. That's the whole job — no drafting, no posting, no voice. (The auto-post loop was retired 2026-06-05; the draft/post subcommands are dormant. Do NOT draft or post in Alex's voice.)
+
+1. **Poll.** `uv run python handlers/crosspost.py poll`. Returns `actions` (replies matched to a news item, `which: "news"`) and `unmatched`. If no actions → exit clean.
+2. **For each `which: "news"` action** — Alex replied to a pick, meaning he wants to WRITE about it himself. His reply is his seed/take (free-form; may be empty, a 👍, or a paragraph of his thoughts). Stash it:
+   `uv run python handlers/crosspost.py save-idea --msg-id <id> --comment "<his exact reply text>"`
+   This writes the item + his comment to `projects/research/article-ideas/<date>-<slug>.md` and confirms to him. Pass his words through verbatim as `--comment` — it's HIS seed, don't summarize or editorialize.
+3. **Ignore `which: "draft"` actions and `unmatched`** — there's no draft loop anymore. (A stray `draft` match would be a leftover; just skip it.)
+4. **Result.** `{"status":"done","result":"news highlights: saved <N> article ideas"}`.
+
+These ideas are Simona's to act on, not Marlow's — Simona reads `article-ideas/` when Alex asks "anything from Marlow's findings?". This does NOT feed Marlow's own blog; her picks stay her autonomous editorial choice.
 
 ### Processing research assignments — handler `research_assignment`
 

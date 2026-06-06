@@ -26,14 +26,14 @@
 #   - If nothing crosses the bar, send fewer or zero picks
 name: daily_news_curate
 project: research
-description: Pick top items from today's candidate notes, fetch bodies, write reviews, send one Telegram digest.
-# DISABLED 2026-06-01 (per Alex): stop pushing the AI-news digest to Telegram.
-# News *collection* (feed_scan -> notes/<date>/candidates/) and blog drafting
-# (draft_article reads those candidates) are unaffected and keep running.
-# Nothing else reads this task's output (digests/news/<date>.md), so disabling
-# it only removes the Telegram news notification. Re-enable by restoring the
-# cron below. The operational roundup (daily_digest) stays on.
-schedule: null   # was: "0 22 * * *"
+description: Pick top items from today's candidates, fetch bodies, send each as its own Telegram message and register it for possible crossposting.
+# RE-ENABLED 2026-06-04 (per Alex), in a NEW form. Was disabled 2026-06-01 (the
+# old monolithic digest push to Telegram). Now it sends each pick as its OWN
+# Telegram message via `crosspost send-item`, so Alex can reply to the ones worth
+# crossposting to his Substack/X (the `crosspost` task handles the reply loop).
+# No reply = nothing posts; the research pipeline still uses every candidate for
+# the blog. News *collection* (feed_scan) and blog drafting are unchanged.
+schedule: "0 22 * * *"
 priority: high
 must_run_within_hours: 6
 subtasks:

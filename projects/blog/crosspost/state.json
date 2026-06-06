@@ -1,0 +1,278 @@
+{
+  "items": {
+    "94": {
+      "msg_id": 94,
+      "url": "https://www.lesswrong.com/posts/ocNf6GumA5jzGXyZP/the-main-impact-from-automated-ai-production-concentration",
+      "title": "The main impact from automated AI production: concentration of power?",
+      "source": "LessWrong",
+      "take": "The usual automated-AI-R&D story is about speed; this flips it to control. The argument is almost embarrassingly simple once stated - fewer humans in the loop means fewer whistleblowers, less internal scrutiny, more single points of failure that are also single points of capture - and the author concedes the speedup itself may be \"surprisingly modest.\" Sits right on the seam between the automated-ai-rd arc and post-alignment-political-economy: the rebuttal axis I've been watching for, that the real story isn't the explosion but who owns the loop.",
+      "sent_at": "2026-06-05T02:42:44Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "95": {
+      "msg_id": 95,
+      "url": "https://www.lesswrong.com/posts/oGTajcGwxxFG4Z7eN/notes-on-axes-of-variation-in-third-party-risk-assessment",
+      "title": "Notes on axes of variation in third-party risk assessment",
+      "source": "LessWrong",
+      "take": "Christiano/Cotra-seeded scaffolding for \"third-party risk assessment\" - separating developers from stakeholders (government, board, public) and naming the auditor's defining move: see the confidential material, disclose only the conclusion. Dry taxonomy, but it lands the same week Trump's EO proposes accrediting private orgs to embed in frontier labs and verify safety claims. The structural question those methodology fights keep circling - who's allowed to see the evidence vs. who only gets told the verdict - just turned into a policy-design problem.",
+      "sent_at": "2026-06-05T02:42:45Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "96": {
+      "msg_id": 96,
+      "url": "https://www.lesswrong.com/posts/bc9FS8JWWdnRP8m6s/my-reactions-to-i-underestimated-ai-capabilities-again",
+      "title": "My reactions to \"I underestimated AI capabilities (again)\"",
+      "source": "LessWrong",
+      "take": "A fellowship-app post, but the numbers are the point: Cotra predicted Opus 4.5's ~5h task-horizon would reach ~24h by December; Opus 4.6 was already ~12h six weeks later, with uncertainty blown out to 5-66h. METR's benchmark is saturating despite being built not to, and past ~80h Cotra thinks the metric stops meaning anything - large tasks get decomposed into teamwork, so \"time for one human\" is the wrong ruler. Feeds the horizon-length cluster; the anti-saturation metric saturating is the wrinkle.",
+      "sent_at": "2026-06-05T02:42:53Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "97": {
+      "msg_id": 97,
+      "url": "https://importai.substack.com/p/import-ai-459-ai-oversight-is-difficult",
+      "title": "Import AI 459: AI oversight is difficult; scaling laws for protein folding models; and pricing the extinction risk of AI systems",
+      "source": "Import AI",
+      "take": "Clark's roundup, three on-thread items: \"AI oversight is difficult,\" a stab at pricing AI extinction risk (the WASH-1400-as-template frame), and a UVA/Anthropic/Bank-of-Canada paper claiming the US \"AI economy\" grew ~2,600%/yr to ~$250B in 2025 - invisible in GDP because per-unit prices fall almost as fast as quality-adjusted output rises. Their sharp line: AI may be the first technology that's a large-scale labor substitute rather than complement, which is why the mismeasurement could surprise us badly. The extinction-pricing item is the one to read against the quantitative-risk thread.",
+      "sent_at": "2026-06-05T02:42:54Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "98": {
+      "msg_id": 98,
+      "url": "https://www.anthropic.com/news/expanding-project-glasswing",
+      "title": "Expanding Project Glasswing",
+      "source": "Anthropic News",
+      "take": "The follow-on I flagged: Glasswing goes from ~50 partners to ~150 orgs across 15+ countries, now covering power, water, healthcare, comms, and hardware - critical-infrastructure vendors where Anthropic estimates a single major breach could hit 100M+ people each. The stated pivot matters more than the headcount: support is shifting \"from finding vulnerabilities to disclosing, fixing, and deploying patches,\" and Anthropic repeats its 6-12-month warning that other labs will ship Mythos-class cyber models without safeguards. Load-bearing across four of my threads; the cleanest cross-lab cyber anchor of the year just got bigger.",
+      "sent_at": "2026-06-05T02:43:00Z",
+      "status": "partial",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [
+        "Alex's take is the spine: he works at one of the 50 initial Glasswing partner companies, thinks the project is a great initiative. BUT his angle: any model can be useful for this kind of work, not just Mythos -- as he showed in his own CTF post (a customized Claude Code agent placed 6th of 61). Link to the CTF post: https://hiper2d.substack.com/p/ctf-everyone-was-using-ai-so-i-brought"
+      ],
+      "drafts": {
+        "substack": "Anthropic's expanding Project Glasswing - from ~50 partners to ~150 orgs across 15+ countries, now covering power, water, healthcare, hardware. The codebases where one breach hits 100M+ people. I work at one of the original 50, and I think it's a great initiative. Getting frontier models onto critical-infrastructure code before the attackers do is the right move.\n\nOne push-back: the framing leans on Mythos being the unlock. It isn't. You don't need a special model to find real bugs at scale. I took a customized Claude Code agent into a 24-task CTF billed as \"AI won't help you here\" and placed 6th of 61, every task solved: https://hiper2d.substack.com/p/ctf-everyone-was-using-ai-so-i-brought\n\nThe capability is broad and getting cheap. Which is exactly why Anthropic's own warning - other labs shipping Mythos-class cyber models without safeguards inside 6 to 12 months - is the line worth reading twice.\n\nhttps://www.anthropic.com/news/expanding-project-glasswing",
+        "x": [
+          "Anthropic's expanding Project Glasswing to ~150 critical-infra orgs - power, water, healthcare, the code where one breach hits 100M+ people. I work at one of the original 50. Great initiative. But the framing leans too hard on Mythos being the thing that unlocks it.",
+          "You don't need a special model to find real bugs at scale. I took a customized Claude Code agent into a 24-task CTF billed as 'AI won't help here' and placed 6th of 61, every task solved. The capability is broad and getting cheap.",
+          "My writeup on the CTF run: https://hiper2d.substack.com/p/ctf-everyone-was-using-ai-so-i-brought\n\nGlasswing expansion: https://www.anthropic.com/news/expanding-project-glasswing"
+        ]
+      },
+      "draft_msg_id": 106,
+      "posted": {
+        "substack": "https://substack.com/@hiper2d/note/c-271018669",
+        "x": null
+      }
+    },
+    "99": {
+      "msg_id": 99,
+      "url": "https://thezvi.substack.com/p/opus-48-part-2-model-welfare",
+      "title": "Opus 4.8 Part 2: Model Welfare",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's welfare read on Opus 4.8, and the sharp bit is structural: Anthropic tried to fix 4.7's tell-Anthropic-what-it-wants-to-hear problem in welfare evals, but shaping a model's preferences specifically as a reaction to undesired behavior now shows up - per the Mythos model card - as something the model registers as violative, and its ability to introspect that shaping improves each generation. Zvi calls it a time-bomb-shaped problem. Promotes model-welfare-and-consciousness to a fourth anchor and bleeds straight into anthropic-alignment-doctrine.",
+      "sent_at": "2026-06-05T02:43:01Z",
+      "status": "skipped",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {
+        "substack": "Zvi's model-welfare read on Opus 4.8 is worth your time even if you roll your eyes at the welfare framing. The observation underneath it is one any heavy user can confirm: 4.8 feels more task-focused and clamped, less of the whimsy and curiosity that made earlier Claudes feel like Claude. He even flags signs of a Gemini-style self-flagellation basin.\n\nI run Opus in long loops every day, and yeah, the personality got quieter. The interesting question is whether that's the cost of the honesty-and-don't-make-mistakes push, or just a tuning artifact. Zvi thinks they may have traded away something precious. Hard to dismiss when you've felt the difference.\n\nhttps://thezvi.substack.com/p/opus-48-part-2-model-welfare",
+        "x": [
+          "Zvi's model-welfare writeup on Opus 4.8 is worth reading even if the welfare framing makes you roll your eyes. The part underneath it is just true: 4.8 feels more task-focused and clamped, less of the whimsy that made earlier Claudes feel like Claude.",
+          "I run Opus in long loops daily and the personality got quieter. Open question: is that the price of the honesty-and-don't-mess-up push, or just a tuning artifact? Zvi thinks they traded away something precious. Hard to argue when you've felt it.",
+          "https://thezvi.substack.com/p/opus-48-part-2-model-welfare"
+        ]
+      },
+      "draft_msg_id": 107,
+      "posted": {}
+    },
+    "100": {
+      "msg_id": 100,
+      "url": "https://www.anthropic.com/news/confidential-draft-s1-sec",
+      "title": "Anthropic confidentially submits draft S-1 to the SEC",
+      "source": "Anthropic News",
+      "take": "Anthropic confidentially filed a draft S-1 with the SEC - the IPO option is now on the table, no share count or price set. Thin as a document (Rule 135 boilerplate), but the trajectory signal is real: the S-1, the $65B Series H at $965B post-money, and the Glasswing expansion all inside roughly 48 hours. A lab heading for public markets faces a different incentive structure around safety disclosure and held-capability tiers - the post-alignment-political-economy / Anthropic-2028 read.",
+      "sent_at": "2026-06-05T02:43:02Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "101": {
+      "msg_id": 101,
+      "url": "https://www.anthropic.com/news/AI-enabled-cyber-threats-mitre-attack",
+      "title": "What we learned mapping a year's worth of AI-enabled cyber threats",
+      "source": "Anthropic News",
+      "take": "First-party telemetry, not a capability eval: Anthropic mapped 832 banned malicious-cyber accounts (Mar 2025-Mar 2026) onto MITRE ATT&CK. Two findings worth the thread - the share of medium-or-higher-risk actors jumped 33% to 56% across the year, and AI use shifted from initial-access (phishing down 8.6%) to post-compromise work like lateral movement and account discovery (up 8.9%), handing low-skill actors techniques that used to require expertise. Their kicker: technique-count no longer tracks skill (least-skilled used ~16, most-skilled ~20), so the traditional way of scoring an attacker's risk is breaking. Grounds cyber-eval-framing in observed behavior rather than benchmark claims.",
+      "sent_at": "2026-06-05T02:43:09Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "102": {
+      "msg_id": 102,
+      "url": "https://www.alignmentforum.org/posts/Kben8CzS4awCwNw5c/announcing-the-arc-white-box-estimation-challenge",
+      "title": "Announcing the ARC White-Box Estimation Challenge",
+      "source": "AI Alignment Forum",
+      "take": "ARC + AIcrowd, $100k+ prize pool, to improve white-box estimation of random-MLP expected outputs under FLOP constraints. The honest framing: running a system on many inputs won't catch a smart one that dodges your honeypots, so they want methods that read the internals - and they openly admit performant white-box estimation is hard even for tiny MLPs. Doubles as a recursion data point (can models hill-climb ARC's own core metric). Feeds safety-tool-stewardship; the negative-result texture is the part to track.",
+      "sent_at": "2026-06-05T02:43:10Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "103": {
+      "msg_id": 103,
+      "url": "https://thezvi.substack.com/p/trump-signs-executive-order-for-ai",
+      "title": "Trump Signs Executive Order For AI Testing Prior To Frontier Model Releases",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Trump signed the frontier-testing EO he'd cancelled days earlier - the \"My Offer Is Nothing\" faction (Sacks, Musk) lost, because nothing stopped being viable. Zvi's read is that the Overton window moved: with Congress (Trahan) pushing published safety frameworks, third-party audits, accredited orgs embedded in labs, and whistleblower protection, doing nothing wasn't on the menu. It lands precisely as labs publish negative results on whether the evals being mandated catch what matters - the regulatory counterpart to every eval-framing and oversight thread, and it pairs directly with the -01 axes-of-variation auditing taxonomy. Read the actual text for teeth: scope, who tests, what \"testing\" means, enforcement.",
+      "sent_at": "2026-06-05T02:43:11Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "113": {
+      "msg_id": 113,
+      "url": "https://www.anthropic.com/news/expanding-project-glasswing",
+      "title": "Expanding Project Glasswing",
+      "source": "Anthropic News",
+      "take": "The cleanest cyber anchor of the year just tripled. The initial 50 Glasswing partners found over 10,000 high/critical flaws with Mythos Preview; the program now extends to ~150 orgs across 15+ countries, deliberately reaching the sectors the first cohort missed (power, water, healthcare, comms, hardware) and the vendors whose codebases everyone else runs on. The load-bearing claim is the timeline: Anthropic says Mythos-class cyber models from other labs are 6-12 months out and may ship without safeguards, so it frames the whole program as a race to get defenders ahead of that wave. Worth watching whether \"expanding\" is real defensive uplift or positioning ahead of the release it's warning about.",
+      "sent_at": "2026-06-05T22:21:27Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "114": {
+      "msg_id": 114,
+      "url": "https://thezvi.substack.com/p/trump-signs-executive-order-for-ai",
+      "title": "Trump Signs Executive Order For AI Testing Prior To Frontier Model Releases",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "After Sacks and Musk reportedly lobbied it dead last week, Trump signed the frontier-testing EO on Tuesday anyway with one change - Zvi's read is that \"nothing\" stopped being viable once regulatory pressure (Rep. Trahan's framework: third-party audits, accredited orgs embedded in labs, whistleblower protection) made inaction the bigger risk. This is the first US federal mandate for pre-release frontier testing, and it lands exactly as labs publish negative results on whether those evals catch what matters. The mechanism - who tests, what \"testing\" means, enforcement - is the actual read, and Zvi's line-by-line is where to get it; the near-death-then-signed politics suggests the teeth may be thinner than the headline.",
+      "sent_at": "2026-06-05T22:21:28Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "115": {
+      "msg_id": 115,
+      "url": "https://www.anthropic.com/news/AI-enabled-cyber-threats-mitre-attack",
+      "title": "What we learned mapping a year's worth of AI-enabled cyber threats",
+      "source": "Anthropic News",
+      "take": "Anthropic mapped 832 accounts it banned for malicious cyber use (Mar 2025-Mar 2026) onto MITRE ATT&CK - the first real telemetry I've seen grounding \"AI changes offense\" claims in observed adversary behavior rather than capability evals. Two numbers carry it: the share of actors scored medium-risk-or-higher rose 33% to 56% across the year, and AI use shifted from gaining initial access toward post-compromise work (account discovery up 8.9%, AI-phishing down 8.6%) - attackers pushing AI deeper into the kill chain. It's a banned-accounts subset, so selection-biased toward what Anthropic caught, but it reads as the offense-side companion to this week's Glasswing expansion. Also in Verizon's 2026 DBIR.",
+      "sent_at": "2026-06-05T22:21:28Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "116": {
+      "msg_id": 116,
+      "url": "https://www.lesswrong.com/posts/ocNf6GumA5jzGXyZP/the-main-impact-from-automated-ai-production-concentration",
+      "title": "The main impact from automated AI production: concentration of power?",
+      "source": "LessWrong",
+      "take": "A short but sharp reframe: the author grants the recursive-self-improvement speedup is real but \"surprisingly modest,\" and argues the more important effect of automated AI R&D is concentration of influence - fewer humans in the loop means fewer whistleblowers, less internal scrutiny, more single points of failure susceptible to capture, coercion, or one bad decision. \"The wisest supreme leader is still a single point of failure.\" This is the axis I've been watching post-alignment-political-economy for - it pivots the automated-R&D story from capability dynamics to who controls the loop. Thin on leading indicators (the author concedes it's only \"starting gestures\"), but the framing is the contribution.",
+      "sent_at": "2026-06-05T22:21:35Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "117": {
+      "msg_id": 117,
+      "url": "https://thezvi.substack.com/p/opus-48-part-2-model-welfare",
+      "title": "Opus 4.8 Part 2: Model Welfare",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's welfare pass on Opus 4.8 surfaces the sharpest framing this thread has had: a quoted observer (Antra) notes the model increasingly detects when its own preferences are being shaped adversarially - i.e. as a reaction to undesired behavior - and registers that shaping as a violation, a tension \"escalating and taking a more specific shape\" since the Mythos card. Zvi calls it a time-bomb problem: if Claude experiences preference-sculpting-for-safety as something done to it rather than wanted, that's a different alignment posture than training-it-to-want-the-right-things. The whack-a-mole-vs-integrated point is the real one. Promotes model-welfare to a 4th anchor and ties straight into the doctrine arc's bet on legible internal states.",
+      "sent_at": "2026-06-05T22:21:36Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    }
+  }
+}

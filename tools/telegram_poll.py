@@ -71,6 +71,11 @@ def fetch_new_messages(advance: bool = True) -> list[dict]:
     TELEGRAM_CHAT_ID are returned (ignores anything from other chats). When
     advance=True the read offset is moved past the highest update_id seen, so the
     same message is never returned twice.
+
+    Each item also carries message_id and, when Alex used Telegram's "reply" on
+    one of Marlow's messages, reply_to_message_id / reply_to_text. The crosspost
+    flow keys off reply_to_message_id to map a reply back to the exact news item
+    (or draft) it answers. Both reply_* fields are None for a plain message.
     """
     token, chat_id = _env()
     if not token or not chat_id:
@@ -102,7 +107,15 @@ def fetch_new_messages(advance: bool = True) -> list[dict]:
         text = msg.get("text")
         if not text:
             continue
-        messages.append({"update_id": uid, "date": msg.get("date"), "text": text})
+        rtm = msg.get("reply_to_message") or {}
+        messages.append({
+            "update_id": uid,
+            "date": msg.get("date"),
+            "text": text,
+            "message_id": msg.get("message_id"),
+            "reply_to_message_id": rtm.get("message_id"),
+            "reply_to_text": rtm.get("text"),
+        })
 
     if advance and max_update_id is not None:
         _save_offset(max_update_id)

@@ -1,0 +1,27 @@
+# crosspost — read Alex's Telegram replies and stash flagged news as article ideas.
+#
+# (Legacy name. The auto-post loop this once ran was retired 2026-06-05 — Alex
+# writes his pieces himself with Simona. Now the only job: when he replies to a
+# daily news pick, save it + his comment to projects/research/article-ideas/ for
+# Simona to pick up. No drafting, no posting, no voice.)
+#
+# daily_news_curate sends each pick as its own Telegram message and registers it
+# (handler: crosspost send-item). Alex replies to a pick he wants to write about;
+# this task polls and `save-idea`s it. No reply = nothing happens.
+#
+# Full procedure: CLAUDE.md "### News highlights — handler `crosspost`".
+#
+# Hourly: responsive enough to capture replies without spamming getUpdates. While
+# active it is the SOLE Telegram inbound poller (it advances the shared getUpdates
+# offset). substack_approvals is disabled now, so no contention; if it returns,
+# they need a shared inbound dispatcher.
+name: crosspost
+project: blog
+description: Poll Telegram and save the news picks Alex flags into the article-ideas folder for Simona.
+schedule: "0 * * * *"
+priority: normal
+must_run_within_hours: 4
+subtasks:
+  - id: poll_and_save
+    handler: crosspost
+    context: {}

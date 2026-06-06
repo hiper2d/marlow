@@ -369,6 +369,85 @@ def post(note_url: str, text: str, kind: str = "comment", enforce_caps: bool = T
             "detail": "posted (verified)" if verified else "posted but verification probe not found — check manually"}
 
 
+# ─── post_note (original Note, for the news-crosspost flow) ──────────────────
+#
+# Different from post() above (which REPLIES to someone else's note). This posts
+# an ORIGINAL Note to Alex's own feed — the fast cross-post format. Proven by
+# hand 2026-06-04; the two gotchas it encodes:
+#   * "What's on your mind?" is a <button> that needs a TRUSTED click — .click()
+#     is a silent no-op on it. Click its rect via CDP, then the inline
+#     [contenteditable] editor appears.
+#   * A bare URL on its own paragraph auto-links into a clickable note link, so
+#     put the article link as the last paragraph of the text.
+
+def _text_to_html_note(text: str) -> str:
+    """One <p> per paragraph (blank-line separated), bare URLs anchored. Multi-
+    paragraph notes need real paragraph breaks, unlike the single-<p> reply."""
+    out = []
+    for para in text.strip().split("\n\n"):
+        escaped = html.escape(para.strip())
+        linked = _URL_RE.sub(lambda m: f'<a href="{m.group(1)}">{m.group(1)}</a>', escaped)
+        out.append(f"<p>{linked}</p>")
+    return "".join(out)
+
+
+_COMPOSER_RECT_JS = r"""(()=>{const b=[...document.querySelectorAll('button')].find(x=>(x.textContent||'').trim()==="What's on your mind?");if(!b)return JSON.stringify({found:false});b.scrollIntoView({block:'center'});const r=b.getBoundingClientRect();return JSON.stringify({found:true,x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2)});})()"""
+
+
+def post_note(text: str) -> dict:
+    """Post an original Note to Alex's own Substack feed. Verifies + resolves the
+    note permalink from the profile /notes page afterward."""
+    text = text.replace("—", "-").replace("–", "-").strip()
+    base = {"posted_at": _now_iso(), "kind": "note"}
+    if not ensure_chrome(headless=True):
+        return {**base, "ok": False, "kind_err": "chrome_down", "detail": f"Chrome not reachable on :{CDP_PORT}"}
+    _cli("viewport", "1280x1600", "--scale", "1")
+    if not _navigate("https://substack.com/home"):
+        return {**base, "ok": False, "kind_err": "nav_failed", "detail": "navigate to home failed"}
+    time.sleep(NAV_SETTLE_S)
+    sess = _json_js(_SESSION_JS) or {}
+    if sess.get("login_wall") or not sess.get("logged_in"):
+        return {**base, "ok": False, "kind_err": "reauth", "detail": "Substack session expired"}
+
+    rect = _json_js(_COMPOSER_RECT_JS)
+    if not isinstance(rect, dict) or not rect.get("found"):
+        return {**base, "ok": False, "kind_err": "no_composer", "detail": "composer button not found"}
+    _trusted_click(rect["x"], rect["y"])
+    time.sleep(ACT_SETTLE_S)
+
+    b64 = base64.b64encode(_text_to_html_note(text).encode()).decode()
+    pasted = _raw_js(_paste_js(b64))
+    if pasted in (None, "no-editor"):
+        return {**base, "ok": False, "kind_err": "no_editor", "detail": "note editor not found after opening composer"}
+    time.sleep(ACT_SETTLE_S)
+
+    clicked = _raw_js(_CLICK_POST_JS)
+    if clicked != "posted":
+        return {**base, "ok": False, "kind_err": "no_post_button", "detail": f"could not click Post (got {clicked})"}
+    time.sleep(NAV_SETTLE_S)
+
+    probe = re.sub(r"https?://\S+", "", text).strip()
+    probe = (probe[:40] or text[:40]).strip()
+    profile = (_config().get("profile_url") or "https://substack.com/@hiper2d").rstrip("/")
+    _navigate(profile + "/notes")
+    time.sleep(NAV_SETTLE_S)
+    finder = (
+        "(()=>{const M=" + json.dumps(probe[:30]) + ";"
+        "for(const a of document.querySelectorAll('a[href*=\"/note/c-\"]')){"
+        "let box=a;for(let i=0;i<8&&box.parentElement;i++){box=box.parentElement;"
+        "if((box.innerText||'').includes(M))return a.href.split('?')[0];}}return '';})()"
+    )
+    url = None
+    for _ in range(4):
+        hit = _raw_js(finder)
+        if hit and "/note/" in hit:
+            url = hit
+            break
+        time.sleep(2)
+    return {**base, "ok": True, "url": url, "verified": url is not None,
+            "detail": "posted" + ("" if url else " (permalink not resolved — verify manually)")}
+
+
 def post_approved() -> dict:
     """Post every draft in today's outbox marked 'approved'; update each status."""
     drafts = store.outbox_list(status="approved")
@@ -487,6 +566,8 @@ def main():
     po.add_argument("--note-url", required=True)
     po.add_argument("--text-file", required=True)
     po.add_argument("--kind", choices=["welcome", "comment"], default="comment")
+    pn = sub.add_parser("post-note", help="post an ORIGINAL Note to Alex's own feed")
+    pn.add_argument("--text-file", required=True)
 
     oa = sub.add_parser("outbox-add")
     oa.add_argument("--note-url", required=True)
@@ -519,6 +600,8 @@ def main():
     elif args.cmd == "post":
         text = Path(args.text_file).read_text()
         _emit(post(args.note_url, text, kind=args.kind))
+    elif args.cmd == "post-note":
+        _emit(post_note(Path(args.text_file).read_text()))
     elif args.cmd == "outbox-add":
         _, ccap = _caps()
         if len(store.outbox_list()) >= ccap:

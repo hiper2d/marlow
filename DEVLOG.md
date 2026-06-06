@@ -11,6 +11,104 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-05 — crosspost loop retired same day; news feed becomes an article-idea capture
+
+*What changed.* Less than a day after shipping the news-crosspost auto-draft/post
+loop, Alex reconsidered the whole content strategy and we retired the posting half.
+The trigger: he saw the first real outputs get ~no engagement, and reflected that
+daily/multi-daily posting (his and others') reads as noise that overwhelms an
+audience rather than building one. New strategy: **one meaningful original post a
+week (Alex writes it, with Simona) + a daily hunt; automation amplifies, it doesn't
+generate.** And he never wants posting fully automated — he wants to own the text,
+especially the hook ("the gut-punch line").
+
+*What Marlow keeps.* Exactly one job from this workstream: surface the daily
+selective news picks (3-5, `daily_news_curate`) and, when Alex replies to one he
+wants to write about, **save it as an article idea** —
+`crosspost save-idea` writes `projects/research/article-ideas/<date>-<slug>.md`
+with his comment as the seed. Simona reads that folder when Alex asks "anything
+from Marlow's findings?" and they craft the piece together. Marlow does not draft
+or post.
+
+*What got cut.* The draft-in-Alex's-voice + Substack/X auto-post loop is dormant
+(`send-draft`/`post`/`set-platforms` still in the file but unused);
+`memory/voice-alex.md` deleted (Marlow no longer drafts as Alex — Simona does that
+in her own session from her own voice memory). The `crosspost` task + CLAUDE.md
+procedure shrank from a multi-step approval loop to "poll → save-idea". Considered
+but rejected: making a flagged item *mandatory* in Marlow's own blog — kills the
+editorial autonomy that's the point of her, and forces flat writing. Her picks
+stay hers.
+
+*Things that surprised us.* The X auto-post never actually worked end-to-end: the
+9224 profile was launched headless (no window to log into), `session-check`
+false-positived on the login redirect, and `_find_permalink` flaked so a thread
+chain broke and left an orphan hook tweet (Alex deleted it). Made `post`
+idempotent before retiring it. Net: the only thing that ever posted cleanly was
+one Substack note (also deleted). A lot of machinery for a strategy that lasted a
+day — but the reusable parts (X/Substack posting handlers, the Telegram
+reply-match transport) stay, and the real lesson is recorded.
+
+*State at end of day.* Marlow = daily news feed + article-idea capture, nothing
+more on the media side. First idea already stashed (Zvi's Trump-AI-executive-order
+piece — Alex wants to write it). Legacy `crosspost` name kept to avoid queue/churn;
+rename deferred.
+
+## 2026-06-04 — news crosspost: Marlow drafts Alex's Substack/X posts, gated on his Telegram reply
+
+*What landed.* A reply-driven pipeline that turns a daily news pick into a post on
+Alex's OWN Substack/X, with him as the volume filter and approver. New:
+`handlers/crosspost.py` (orchestration), `handlers/x.py` (Marlow's first X
+capability — compose/paste/post + thread-reply over CDP, mirrors `substack.py`),
+`tools/crosspost_store.py` (per-item state machine: sent → awaiting_approval →
+posted), `memory/voice-alex.md` (Alex's voice, firewalled from Marlow's own),
+`projects/blog/tasks/crosspost.yaml` (hourly poll/draft/review loop),
+`projects/blog/crosspost/config.yaml`. Extended: `substack.py` gained `post_note`
+(original Notes, not just replies — codifies the composer flow Simona proved by
+hand the same morning, incl. the trusted-click + select-all-replace gotchas);
+`tools/notify.py` gained `send_telegram_message` (returns the message_id);
+`tools/telegram_poll.py` now captures `reply_to_message` linkage. Re-enabled
+`daily_news_curate` (disabled since 2026-06-01) in a NEW per-item form — each
+pick is its own Telegram message via `crosspost send-item`, so Alex can reply to
+the worth-posting ones. Pure-Python pieces compile + the store unit-tests green;
+the two browser handlers are codified from a proven manual run but not yet live
+end-to-end (needs the one-time X login — see below).
+
+*The loop.* curate sends each pick → Alex replies to a message (`substack`/`x`/
+`both`, optional angle) → `poll` matches the reply to the item by
+`reply_to_message_id` → Marlow drafts in Alex's voice → `send-draft` sends it
+back → Alex replies `go` (post), an edit (re-draft, loop), or `voice: ...` (a
+durable lesson appended to `voice-alex.md`). No reply = drop; the research
+pipeline still uses every candidate for the blog.
+
+*Decisions taken.* (1) **Two-step approval, not one.** Alex's routing reply
+doesn't fire the post — Marlow drafts and sends it back for an explicit `go`,
+because it's his byline going public. He asked to keep the review step; collapse
+to one-and-done later once the voice is trusted. (2) **Alex IS the volume
+filter.** His original idea — send everything, he replies to what's worth it —
+solved the slop/cadence worry better than a fixed "one best pick"; weak days just
+get no reply. (3) **Two firewalled voices.** `voice-alex.md` (crossposts) vs
+`voice-guidelines.md` (Marlow's articles); the handler/CLAUDE.md only ever loads
+one. (4) **Per-draft edit vs durable lesson** are distinguished by an explicit
+`voice:` prefix, so Marlow never guesses which feedback is forever.
+
+*What surprised us / things to watch.* `telegram_poll` was reply-blind — it
+dropped `reply_to_message` entirely. The whole "reply to the exact message" UX
+depended on adding that. And the Telegram getUpdates **offset is global**:
+`crosspost poll` advances the same offset `substack_approvals` would — while both
+active they'd steal each other's replies. Fine today (substack_approvals disabled
+in the manual-polish phase), but if it returns they need a shared inbound
+dispatcher. Flagged in both task files.
+
+*What's deferred.* The "noticed repeat edits → suggest a standing rule" opt-in
+nicety (v2). Richer X link-reply composition beyond hook+link. A canonical
+cross-link back to a blog hub (notes are standalone).
+
+*State at end of day.* Code in place, unit-tested where pure. **Blocked on one
+manual step before first live run:** Alex logs into X once in a dedicated
+persistent profile — `MARLOW_SCRAPE_PROFILE=~/.config/marlow/x-profile bash
+$SIMONA_DIR/mcp/browser/start-chrome-persistent.sh 9224` (headful), sign in, done.
+Substack reuses the existing 9223 login. Then a dry end-to-end on one real item.
+
 ## 2026-06-03 — monitor_betterstack: the fourth werewolf-ops watch (app-level errors)
 
 *What landed.* `handlers/monitor_betterstack.py` + `tasks/monitor_betterstack.yaml`
