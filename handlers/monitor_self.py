@@ -23,6 +23,19 @@ Invariant registry — each check(now) returns a list of Issue dicts:
   - scheduler_freshness  every scheduled task fired within its window.
                          Catches the whole class of "a tick silently
                          stopped firing" (the 2026-06 curate slot).
+  - failed_ticks         no automation's most-recent run failed. Catches a
+                         tick that ran but CRASHED (the 2026-06-07 werewolf
+                         stats session that died "without writing a result
+                         file") — a failed run looks identical to a quiet day
+                         in the digest otherwise. THE big one: silent automation
+                         death you can't know to ask about.
+  - output_freshness     declared daily artifacts are recent. Catches a tick
+                         marked "done" that produced nothing, or an output
+                         series that silently went stale — verifies the EFFECT,
+                         not just that the task was dispatched. (last_scheduled
+                         updates even on failure, so freshness-of-dispatch is
+                         not enough — 06-07 was "scheduled" yet produced no
+                         snapshot.)
   - held_artifacts       no blog draft has been status:held past the SLA.
                          Catches "draft blocked on Alex, nobody told Alex".
   - site_integrity       every active thread file has >=1 published post and
@@ -58,7 +71,26 @@ from tools.notify import notify_alex  # noqa: E402
 DRAFTS_DIR = REPO_ROOT / "projects" / "blog" / "drafts"
 THREADS_DIR = REPO_ROOT / "projects" / "research" / "threads"
 PUBLISHED_DIR = REPO_ROOT / "projects" / "blog" / "published"
+COMPLETED_DIR = REPO_ROOT / "tasks" / "completed"
 REPORT_DIR = REPO_ROOT / "projects" / "_framework" / "reports" / "self-audit"
+
+# Look back this far over completed-task records. Wider than the daily audit
+# cadence so a failure can't slip between two runs; a still-broken task simply
+# re-reports until it recovers.
+FAILED_LOOKBACK_HOURS = 36
+
+# Declared daily artifacts that must stay fresh. A tick can be marked "done"
+# yet produce nothing (06-05) or stop producing silently — this verifies the
+# OUTPUT exists and is recent, not just that the task was dispatched.
+# (name, path, jsonl timestamp key, max age in hours)
+FRESH_ARTIFACTS = [
+    (
+        "werewolf_stats snapshot",
+        REPO_ROOT / "projects" / "werewolf-ops" / "state" / "stats_history.jsonl",
+        "checked_at",
+        26,
+    ),
+]
 
 # A scheduled tick is "overdue" only once it's past its expected next fire
 # PLUS a grace window — the task's own must_run_within_hours, or this default.
@@ -231,7 +263,117 @@ def check_site_integrity(now: datetime) -> list[dict]:
     return issues
 
 
-CHECKS = [check_scheduler_freshness, check_held_artifacts, check_site_integrity]
+def _completed_records(now: datetime, hours: int) -> list[tuple[Path, dict]]:
+    """Load completion records from date-dirs covering the lookback window."""
+    out: list[tuple[Path, dict]] = []
+    if not COMPLETED_DIR.exists():
+        return out
+    cutoff_date = (now - timedelta(hours=hours)).date()
+    for daydir in sorted(COMPLETED_DIR.glob("20*-*-*")):
+        try:
+            if date.fromisoformat(daydir.name) < cutoff_date:
+                continue
+        except ValueError:
+            continue
+        for rec in daydir.glob("*.json"):
+            try:
+                out.append((rec, json.loads(rec.read_text())))
+            except (json.JSONDecodeError, OSError):
+                continue
+    return out
+
+
+def _record_time(rec_path: Path, data: dict) -> datetime:
+    for key in ("started_at", "queued_at"):
+        v = data.get(key)
+        if v:
+            try:
+                return _parse_iso(v)
+            except ValueError:
+                pass
+    return _mtime(rec_path)
+
+
+def check_failed_ticks(now: datetime) -> list[dict]:
+    """An automation whose MOST RECENT run (within the lookback) ended in
+    `failed` is currently broken, not just quiet. Group by parent_task, keep
+    the latest record per group, flag if it failed. Grouping dedupes retries —
+    a failure that already recovered won't nag, but at the time it would page.
+    This is the check that catches a tick that ran and crashed (06-07 werewolf
+    stats: 'session exited without writing result file')."""
+    issues: list[dict] = []
+    cutoff = now - timedelta(hours=FAILED_LOOKBACK_HOURS)
+    latest: dict[str, tuple[datetime, dict]] = {}
+    for path, data in _completed_records(now, FAILED_LOOKBACK_HOURS):
+        t = _record_time(path, data)
+        if t < cutoff:
+            continue
+        key = data.get("parent_task") or data.get("handler") or data.get("id", "?")
+        if key not in latest or t > latest[key][0]:
+            latest[key] = (t, data)
+    for key, (t, data) in sorted(latest.items()):
+        if data.get("status") == "failed":
+            age_h = max(0.0, (now - t).total_seconds() / 3600)
+            issues.append(_issue(
+                "failed_ticks", "urgent",
+                f"Automation '{key}' last run FAILED {age_h:.0f}h ago — currently broken, not just quiet.",
+                f"Check handler '{data.get('handler', key)}' + the session log; re-run or fix.",
+                str(data.get("result", ""))[:300],
+            ))
+    return issues
+
+
+def _jsonl_last(path: Path, ts_key: str) -> datetime | None:
+    if not path.exists():
+        return None
+    last = None
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            last = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+    if not isinstance(last, dict) or not last.get(ts_key):
+        return None
+    try:
+        return _parse_iso(last[ts_key])
+    except ValueError:
+        return None
+
+
+def check_output_freshness(now: datetime) -> list[dict]:
+    """Declared daily artifacts must exist and be recent. Catches the case a
+    failed/empty run looks identical to a quiet day: the task is 'done' but no
+    output landed. Verifies the effect, which last_scheduled does not."""
+    issues: list[dict] = []
+    for name, path, ts_key, max_age in FRESH_ARTIFACTS:
+        ts = _jsonl_last(path, ts_key)
+        if ts is None:
+            issues.append(_issue(
+                "output_freshness", "urgent",
+                f"{name}: no readable artifact ({path.name}) — its producing tick may never have run.",
+                f"Check the handler that writes {path}.",
+            ))
+            continue
+        age_h = (now - ts).total_seconds() / 3600
+        if age_h > max_age:
+            issues.append(_issue(
+                "output_freshness", "urgent",
+                f"{name} is {age_h:.0f}h stale (newest {_iso(ts)}, max {max_age}h) — the tick ran but produced nothing, or stopped.",
+                f"Check the handler that writes {path.name}; a failed/empty run looks identical to a quiet day.",
+            ))
+    return issues
+
+
+CHECKS = [
+    check_scheduler_freshness,
+    check_failed_ticks,
+    check_output_freshness,
+    check_held_artifacts,
+    check_site_integrity,
+]
 
 
 def run_checks(now: datetime) -> tuple[list[dict], list[dict]]:
