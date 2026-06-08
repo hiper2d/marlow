@@ -10,11 +10,14 @@ working.md and none of them reached Alex.
 DESIGN RULE — the urgent → Telegram escalation happens HERE, in the
 handler, via notify_alex(urgency="urgent"). It does NOT depend on the LLM
 session choosing to alert: that judgment step is exactly what failed last
-time. tick.sh runs the handler inside Marlow's session, but the session's
-only job is to *run this script*; the escalation decision is deterministic
-Python. (Known residual gap: if monitor_self itself stops firing, nothing
-catches it — see scheduler_freshness's own circularity. Hardening it to run
-straight from tick.sh, outside the session, is the next step.)
+time. This handler runs straight from driver/tick.sh (step 3), OUTSIDE
+Marlow's session and BEFORE the lock/scheduler — so a broken session, a
+missed scheduler pick, or a stuck previous tick can't suppress it. tick.sh
+rate-limits it to once per UTC day via a stamp file; the daily "all green"
+digest line doubles as the audit's proof-of-life (if it stops appearing,
+the audit — or the whole agent — is down). The only thing that can silence
+it now is cron/launchd itself dying, which is total-agent-death and visible
+externally.
 
 Invariant registry — each check(now) returns a list of Issue dicts:
   - scheduler_freshness  every scheduled task fired within its window.

@@ -4,11 +4,12 @@
 # Flow:
 #   1. Killswitch check (~/.marlow/stop)
 #   2. Pause check (~/.marlow/pause)
-#   3. Acquire lock (/tmp/marlow.lock)
-#   4. Pick next subtask via scheduler.py
-#   5. Invoke Claude Code session (Marlow) to execute the named handler
-#   6. Record outcome via scheduler.py complete
-#   7. Release lock
+#   3. Daily operational self-audit (out-of-session, monitor_self)
+#   4. Acquire lock (/tmp/marlow.lock)
+#   5. Pick next subtask via scheduler.py
+#   6. Invoke Claude Code session (Marlow) to execute the named handler
+#   7. Record outcome via scheduler.py complete
+#   8. Release lock
 
 set -euo pipefail
 
@@ -64,14 +65,32 @@ if [ -f "$PAUSE" ]; then
     exit 0
 fi
 
-# 3. Lock
+# 3. Daily operational self-audit — runs OUTSIDE Marlow's session so a broken
+#    session or a missed scheduler pick can't suppress it, and BEFORE the lock so
+#    a stuck previous tick can't either. Rate-limited to once per UTC day; the
+#    handler does its own deterministic Telegram escalation, and its daily "all
+#    green" digest line doubles as the audit's proof-of-life.
+SELF_AUDIT_STAMP="$MARLOW_DIR/last_self_audit"
+TODAY="$(date -u +%Y-%m-%d)"
+if [ "$(cat "$SELF_AUDIT_STAMP" 2>/dev/null || echo '')" != "$TODAY" ]; then
+    cd "$REPO_ROOT"
+    log "running operational self-audit (out-of-session)"
+    if run_with_timeout 120 uv run python handlers/monitor_self.py report >/dev/null 2>>"$SESSIONS_LOG"; then
+        echo "$TODAY" > "$SELF_AUDIT_STAMP"
+        log "self-audit complete"
+    else
+        log "WARNING: self-audit failed — see $SESSIONS_LOG"
+    fi
+fi
+
+# 4. Lock
 if [ -f "$LOCK_FILE" ]; then
     log "previous tick still running (lock held), exiting"
     exit 0
 fi
 echo $$ > "$LOCK_FILE"
 
-# 4. Pick next subtask
+# 5. Pick next subtask
 cd "$REPO_ROOT"
 SUBTASK_JSON=$(uv run python driver/scheduler.py pick 2>&1) || {
     rc=$?
@@ -91,7 +110,7 @@ log "picked subtask: $SUBTASK_ID (handler: $SUBTASK_HANDLER)"
 echo "$SUBTASK_JSON" > "$SUBTASK_FILE"
 rm -f "$RESULT_FILE"
 
-# 5. Invoke Claude Code (Marlow's session)
+# 6. Invoke Claude Code (Marlow's session)
 PROMPT="A subtask is queued for you in $SUBTASK_FILE. Read it, execute the named handler per the contract in CLAUDE.md, write any editorial outputs to the appropriate project directory, then write your outcome JSON to $RESULT_FILE before exiting."
 
 # Stream raw JSONL to a temp file so cost.py can extract usage/cost after.
@@ -112,7 +131,7 @@ uv run python tools/cost.py log --tick-id "$SUBTASK_ID" --handler "$SUBTASK_HAND
     uv run python tools/cost.py extract-text < "$STREAM_FILE" || true
 } >> "$SESSIONS_LOG"
 
-# 6. Record outcome
+# 7. Record outcome
 if [ ! -f "$RESULT_FILE" ]; then
     log "WARNING: session did not write a result file — marking subtask failed"
     cat > "$RESULT_FILE" <<EOF
