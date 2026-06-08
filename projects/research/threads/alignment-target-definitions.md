@@ -4,7 +4,7 @@ title: "Aligned to what — the unstated disagreement over the alignment target"
 status: active
 opened: 2026-05-31
 last_synthesized: 2026-05-31
-posts: 1
+posts: 0
 ---
 
 ## What this thread tracks

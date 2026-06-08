@@ -40,7 +40,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import yaml
@@ -61,6 +61,10 @@ REPORT_DIR = REPO_ROOT / "projects" / "_framework" / "reports" / "self-audit"
 # PLUS a grace window — the task's own must_run_within_hours, or this default.
 DEFAULT_GRACE_HOURS = 6
 HELD_SLA_HOURS = 48
+# A thread opened with no published post is NORMAL in Marlow's pipeline (she
+# opens thread files before the first article). Only flag it once it's gone
+# this long without an article — i.e. genuinely abandoned, not in-progress.
+STALE_THREAD_DAYS = 14
 
 
 def _now() -> datetime:
@@ -97,6 +101,24 @@ def _frontmatter(path: Path) -> dict:
         return data if isinstance(data, dict) else {}
     except yaml.YAMLError:
         return {}
+
+
+def _thread_age_days(fm: dict, now: datetime) -> int | None:
+    """Days since a thread's `opened` date. None if unparseable — in which
+    case we don't raise a staleness flag (don't nag on uncertain metadata)."""
+    opened = fm.get("opened")
+    if isinstance(opened, datetime):
+        dt = _aware(opened)
+    elif isinstance(opened, date):  # yaml parses `opened: 2026-05-31` to a date
+        dt = datetime(opened.year, opened.month, opened.day, tzinfo=timezone.utc)
+    elif isinstance(opened, str):
+        try:
+            dt = _parse_iso(opened)
+        except ValueError:
+            return None
+    else:
+        return None
+    return (now - dt).days
 
 
 def _issue(check: str, severity: str, summary: str, action: str, detail: str = "") -> dict:
@@ -189,11 +211,13 @@ def check_site_integrity(now: datetime) -> list[dict]:
         status = fm.get("status", "active")
         actual = counts.get(slug, 0)
         if status != "archived" and actual == 0:
-            issues.append(_issue(
-                "site_integrity", "digest",
-                f"Thread '{slug}' is active but has 0 published posts.",
-                "Publish into it, or set status: archived in the thread file.",
-            ))
+            age = _thread_age_days(fm, now)
+            if age is not None and age >= STALE_THREAD_DAYS:
+                issues.append(_issue(
+                    "site_integrity", "digest",
+                    f"Thread '{slug}' has been active with 0 published posts for {age}d (opened {fm.get('opened')}).",
+                    "Write its first article, or set status: archived in the thread file.",
+                ))
         claimed = fm.get("posts")
         if isinstance(claimed, int) and claimed != actual:
             issues.append(_issue(
