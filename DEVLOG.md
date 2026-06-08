@@ -55,9 +55,20 @@ draft that working.md still lists as in-flight isn't on disk anymore (only the r
 `paired-autonomous-adversarial` remains, and it oddly still carries `status: held`
 inside the rejected/ folder). working.md may be stale on the blog pipeline state.
 
-*What's deferred / to watch.* (1) Circularity — if `monitor_self` itself stops firing,
-nothing catches it; next step is to run it straight from tick.sh, outside the session.
-(2) Self-fixable blockers (thread-file backlog, header-image-has-text pauses) still
+*Late same-day follow-ups.* (a) First dry-run flagged its own false positive: an active
+thread with 0 posts is a *normal* interim state (thread files open before the first
+article). Age-gated `site_integrity` to only flag empty threads >14d old — without it,
+every freshly-opened thread would nag daily, the cry-wolf failure that makes an audit
+ignorable. Fixed the one genuine drift it found (`alignment-target-definitions` posts:1→0)
+and reconciled working.md, which had carried the *published* offense-shape article as a
+"held draft" for ~6 days. (b) Closed the circularity below: `monitor_self` now runs as
+step 3 of `tick.sh` — out-of-session, before the lock/scheduler — so a broken session, a
+stale scheduler, or a stuck previous tick can't suppress it. Removed the scheduled yaml
+(would double-fire). Daily "all green" digest line is now the audit's proof-of-life.
+
+*What's deferred / to watch.* (1) The only thing that can now silence the audit is
+cron/launchd itself dying (total agent death) — visible externally, but no internal
+catch. (2) Self-fixable blockers (thread-file backlog, header-image-has-text pauses) still
 route to digest, not auto-queued repair — that's phase 2. (3) `alignment-target-
 definitions` is still an unresolved active-thread-with-0-posts; the audit will nag it
 daily until someone decides publish-vs-archive. (4) Precision risk: a self-audit that
