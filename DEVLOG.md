@@ -11,6 +11,60 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-08 — Marlow gets an operational self-audit; the empty-thread / silent-stall class closed
+
+*What landed.* Two fixes, one symptom, one cause. Alex noticed the public blog had
+a live, empty `alignment-target-definitions` thread page ("No posts written yet"),
+and — the real complaint — that Marlow was effectively stalled (blog idle for days,
+a held draft, a non-firing curate slot) and *he was never told*.
+
+- **Symptom (render layer).** `thread/[slug].astro` + `threads/index.astro` now
+  only emit a thread page when it has ≥1 published post. An early-opened thread file
+  stays invisible until its first article lands, then surfaces automatically. Kills
+  the whole empty-thread *class*, not just the one instance. (`22f904b`)
+- **Cause (no escalation path).** New `monitor_self` daily tick (`f6ec6cf`). Marlow
+  could already *observe* her stalls — the grader literally wrote "Blog idle ×3" and
+  "curate-slot still non-firing — open question for Simona" into working.md. The gap
+  was never detection; it was that observations died in a file Alex never reads.
+
+*The design decision that matters.* The urgent→Telegram escalation is **deterministic
+and lives in the handler** (`notify_alex`), not in the LLM session that runs it.
+tick.sh runs handlers *inside* Marlow's session, and the established monitor pattern
+lets the session interpret an `issues` array and decide whether to alert — which is
+exactly the judgment step that failed here. monitor_self inverts it: the session's
+only job is to run the script; the escalation is Python. Three invariant checks, each
+mapped to a real failure this month — `scheduler_freshness` (a tick silently stopped
+firing → the curate slot), `held_artifacts` (draft held >48h, blocked on Alex),
+`site_integrity` (active thread with 0 posts / `posts:` drift → the empty thread).
+
+*What we reconsidered.* Simona's first instinct was a bespoke `monitor_blog_health`
+handler. Alex pushed back — that's whack-a-mole, the next blind spot is by definition
+one we didn't write a monitor for. So we generalized to an invariant registry on the
+reflective organ Marlow already has (`grade_memory`), with a severity→channel exit
+pipe. This also supersedes the earlier call (2026-05) that operational stuck-detection
+was Simona's job via review — it failed live; Alex caught it before Simona did.
+Moving active detection into Marlow, Simona as backstop.
+
+*Verification.* Dry-run (`monitor_self.py check`) against live state independently
+re-found the empty-thread bug — both "0 published posts" and the `posts:1` frontmatter
+drift — with zero false positives on the other checks. Proof the audit would have
+caught the incident on its own.
+
+*Things that surprised us.* The held `2026-06-01-ai-offense-shape-not-capability`
+draft that working.md still lists as in-flight isn't on disk anymore (only the rejected
+`paired-autonomous-adversarial` remains, and it oddly still carries `status: held`
+inside the rejected/ folder). working.md may be stale on the blog pipeline state.
+
+*What's deferred / to watch.* (1) Circularity — if `monitor_self` itself stops firing,
+nothing catches it; next step is to run it straight from tick.sh, outside the session.
+(2) Self-fixable blockers (thread-file backlog, header-image-has-text pauses) still
+route to digest, not auto-queued repair — that's phase 2. (3) `alignment-target-
+definitions` is still an unresolved active-thread-with-0-posts; the audit will nag it
+daily until someone decides publish-vs-archive. (4) Precision risk: a self-audit that
+cries wolf becomes working.md 2.0 — keep the urgent channel sparse.
+
+---
+
 ## 2026-06-05 — crosspost loop retired same day; news feed becomes an article-idea capture
 
 *What changed.* Less than a day after shipping the news-crosspost auto-draft/post
