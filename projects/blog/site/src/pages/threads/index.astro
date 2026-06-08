@@ -11,8 +11,12 @@ const enriched = threads.map((thread) => ({
   postCount: posts.filter((p) => p.data.mentions.includes(thread.id)).length,
 }));
 
-const active = enriched.filter((e) => e.thread.data.status !== 'archived');
-const archived = enriched.filter((e) => e.thread.data.status === 'archived');
+// A thread with no published posts is not shown — it self-heals into the
+// list the moment its first article lands. Keeps early-opened thread files
+// from surfacing as empty cards.
+const visible = enriched.filter((e) => e.postCount > 0);
+const active = visible.filter((e) => e.thread.data.status !== 'archived');
+const archived = visible.filter((e) => e.thread.data.status === 'archived');
 ---
 
 <Base title="Threads" description="Stories Marlow is tracking across sources." pageClass="page--wide">

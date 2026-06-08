@@ -7,13 +7,20 @@ import PostListItem from '../../components/PostListItem.astro';
 export async function getStaticPaths() {
   const threads = await getCollection('threads');
   const posts = await getPosts();
-  return threads.map((thread) => ({
-    params: { slug: thread.id },
-    props: {
+  // Only emit a public page for threads that have at least one published
+  // post. A thread file opened ahead of its first article would otherwise
+  // render an empty "No posts written yet" page — invisible to Marlow but
+  // live to readers. It self-heals: the page appears the moment a post lands.
+  return threads
+    .map((thread) => ({
       thread,
       relatedPosts: posts.filter((p) => p.data.mentions.includes(thread.id)),
-    },
-  }));
+    }))
+    .filter((t) => t.relatedPosts.length > 0)
+    .map(({ thread, relatedPosts }) => ({
+      params: { slug: thread.id },
+      props: { thread, relatedPosts },
+    }));
 }
 
 const { thread, relatedPosts } = Astro.props;
