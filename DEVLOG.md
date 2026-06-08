@@ -65,6 +65,19 @@ and reconciled working.md, which had carried the *published* offense-shape artic
 step 3 of `tick.sh` — out-of-session, before the lock/scheduler — so a broken session, a
 stale scheduler, or a stuck previous tick can't suppress it. Removed the scheduled yaml
 (would double-fire). Daily "all green" digest line is now the audit's proof-of-life.
+(c) Alex asked why he never sees new-user reports — turned out werewolf_stats
+*looked* fine (it ran daily) but 06-07's session crashed ("exited without writing
+result file"), so a real day with 3 signups produced no report; a failed run is
+indistinguishable from a quiet day in the digest. scheduler_freshness wouldn't
+catch it (last_scheduled updates even on failure). Added two checks that verify
+the *effect*: `failed_ticks` (most-recent run per parent_task ended `failed` →
+urgent) and `output_freshness` (declared daily artifacts must be <max-age old).
+On its first live run `failed_ticks` immediately surfaced a bigger fish: the blog
+**`draft_review` tick has failed EVERY run since ~05-31** (8+ days, all "session
+exited without writing result file", handler `draft_article`, schedule `0 14 */3
+* *`) — the real reason the blog stalled, silent the whole time. Strong suspect:
+`draft_article` exceeds the 300s tick timeout. Monitoring shipped; the draft_review
+fix itself is the next task.
 
 *What's deferred / to watch.* (1) The only thing that can now silence the audit is
 cron/launchd itself dying (total agent death) — visible externally, but no internal
