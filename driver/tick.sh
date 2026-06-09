@@ -19,6 +19,8 @@ export PATH="$HOME/.local/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$PA
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOCK_FILE="/tmp/marlow.lock"
+LOCK_SKIPS="/tmp/marlow.lock.skips"   # consecutive blocked-tick counter (staleness signal, not time)
+MAX_LOCK_SKIPS=3                       # force-break the lock after this many blocked AWAKE ticks
 SUBTASK_FILE="/tmp/marlow-subtask.json"
 RESULT_FILE="/tmp/marlow-tick-result.json"
 STREAM_FILE="/tmp/marlow-tick-stream.jsonl"
@@ -26,7 +28,9 @@ MARLOW_DIR="$HOME/.marlow"
 KILLSWITCH="$MARLOW_DIR/stop"
 PAUSE="$MARLOW_DIR/pause"
 SESSIONS_LOG="$MARLOW_DIR/sessions.log"
+LOCK_BREAK_LOG="$MARLOW_DIR/lock_breaks.log"   # append-only record of auto-recovered stale/wedged locks
 TICK_TIMEOUT_SEC=300
+OWNS_LOCK=0   # flips to 1 once THIS tick acquires the lock, so cleanup only frees its own
 
 mkdir -p "$MARLOW_DIR"
 
@@ -49,7 +53,12 @@ run_with_timeout() {
 }
 
 cleanup() {
-    rm -f "$LOCK_FILE" "$SUBTASK_FILE" "$RESULT_FILE" "$STREAM_FILE"
+    rm -f "$SUBTASK_FILE" "$RESULT_FILE" "$STREAM_FILE"
+    # Only release the lock if WE acquired it. A tick that skipped because the
+    # lock was held by a live holder must never delete that holder's lock.
+    if [ "$OWNS_LOCK" = "1" ]; then
+        rm -f "$LOCK_FILE" "$LOCK_SKIPS"
+    fi
 }
 trap cleanup EXIT
 
@@ -83,12 +92,42 @@ if [ "$(cat "$SELF_AUDIT_STAMP" 2>/dev/null || echo '')" != "$TODAY" ]; then
     fi
 fi
 
-# 4. Lock
+# 4. Lock — staleness-aware, no wall-clock (sleep makes elapsed time lie).
+# If the lock is held, decide whether the holder is alive (skip) or wedged
+# (break it) from two signals:
+#   fast path — PID check: the recorded holder process is plainly gone -> break.
+#   slow path — skip counter: holder looks alive but has blocked MAX_LOCK_SKIPS
+#               consecutive AWAKE ticks -> force-break. The counter only advances
+#               when a tick actually fires, so an overnight sleep never inflates
+#               it, and a holder that's merely paused gets a grace window to
+#               resume and clean up before we break its lock.
 if [ -f "$LOCK_FILE" ]; then
-    log "previous tick still running (lock held), exiting"
-    exit 0
+    holder_pid="$(cat "$LOCK_FILE" 2>/dev/null || echo '')"
+    if [ -n "$holder_pid" ] && ! kill -0 "$holder_pid" 2>/dev/null; then
+        # Fast path: the recorded holder process is dead. Stale lock -> break it.
+        log "lock held by dead PID $holder_pid — breaking stale lock"
+        echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) stale-lock-break: holder PID $holder_pid was dead" >> "$LOCK_BREAK_LOG"
+        rm -f "$LOCK_FILE" "$LOCK_SKIPS"
+    else
+        # Holder looks alive (or PID unreadable): count this blocked attempt.
+        skips="$(cat "$LOCK_SKIPS" 2>/dev/null || echo 0)"
+        case "$skips" in ''|*[!0-9]*) skips=0 ;; esac
+        skips=$((skips + 1))
+        if [ "$skips" -ge "$MAX_LOCK_SKIPS" ]; then
+            log "lock blocked $skips consecutive ticks (holder PID ${holder_pid:-?}) — force-breaking wedged lock"
+            echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) force-lock-break: blocked $skips ticks, holder PID ${holder_pid:-?}" >> "$LOCK_BREAK_LOG"
+            rm -f "$LOCK_FILE" "$LOCK_SKIPS"
+        else
+            echo "$skips" > "$LOCK_SKIPS"
+            log "previous tick still running (lock held, skip $skips/$MAX_LOCK_SKIPS), exiting"
+            exit 0
+        fi
+    fi
 fi
+# Acquire: claim the lock, reset the skip counter, mark ownership.
 echo $$ > "$LOCK_FILE"
+rm -f "$LOCK_SKIPS"
+OWNS_LOCK=1
 
 # 5. Pick next subtask
 cd "$REPO_ROOT"

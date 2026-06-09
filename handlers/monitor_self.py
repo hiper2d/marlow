@@ -73,6 +73,9 @@ THREADS_DIR = REPO_ROOT / "projects" / "research" / "threads"
 PUBLISHED_DIR = REPO_ROOT / "projects" / "blog" / "published"
 COMPLETED_DIR = REPO_ROOT / "tasks" / "completed"
 REPORT_DIR = REPO_ROOT / "projects" / "_framework" / "reports" / "self-audit"
+# tick.sh appends here whenever it auto-recovers a stale/wedged tick lock. A
+# break self-heals, but it means a prior tick died hard — worth surfacing.
+LOCK_BREAK_LOG = Path.home() / ".marlow" / "lock_breaks.log"
 
 # Look back this far over completed-task records. Wider than the daily audit
 # cadence so a failure can't slip between two runs; a still-broken task simply
@@ -367,12 +370,43 @@ def check_output_freshness(now: datetime) -> list[dict]:
     return issues
 
 
+def check_lock_health(now: datetime) -> list[dict]:
+    """Surface tick-lock auto-recoveries from the last 24h. tick.sh self-heals a
+    stale/wedged lock (dead-PID fast path or skip-counter slow path), but a break
+    means a prior tick died hard — reboot, OOM, or a sleep-kill mid-tick. It
+    recovered, so digest-level, but it shouldn't be invisible."""
+    issues: list[dict] = []
+    if not LOCK_BREAK_LOG.exists():
+        return issues
+    cutoff = now - timedelta(hours=24)
+    recent = []
+    for line in LOCK_BREAK_LOG.read_text().splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            ts = _parse_iso(line.split(None, 1)[0])
+        except (ValueError, IndexError):
+            continue
+        if ts >= cutoff:
+            recent.append(line)
+    if recent:
+        issues.append(_issue(
+            "lock_health", "digest",
+            f"Tick lock auto-recovered {len(recent)}x in 24h — a prior tick died hard (reboot/OOM/sleep-kill mid-tick).",
+            "Self-healed; act only if it recurs often. Detail in ~/.marlow/lock_breaks.log.",
+            recent[-1][:200],
+        ))
+    return issues
+
+
 CHECKS = [
     check_scheduler_freshness,
     check_failed_ticks,
     check_output_freshness,
     check_held_artifacts,
     check_site_integrity,
+    check_lock_health,
 ]
 
 
