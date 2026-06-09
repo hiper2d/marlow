@@ -78,6 +78,27 @@ exited without writing result file", handler `draft_article`, schedule `0 14 */3
 * *`) — the real reason the blog stalled, silent the whole time. Strong suspect:
 `draft_article` exceeds the 300s tick timeout. Monitoring shipped; the draft_review
 fix itself is the next task.
+(d) Digging into *why* draft_article fails surfaced two failure modes: genuine
+300s timeouts (exit 124 — the handler is too heavy for one tick, though it often
+drafts the article before the kill and blog_pipeline finishes it, so "failed"
+overstated it) and a 06-07 Claude **session-limit storm** (exit 1, ~2s, "You've
+hit your session limit") that took out *every* tick for ~3h — the real cause of
+the missing 06-07 werewolf snapshot, not a werewolf bug. That led Alex to the
+concurrency question, which surfaced a latent catastrophe: a hard-killed tick
+(reboot/OOM/**sleep-kill** — closing the laptop mid-tick is the likely trigger)
+leaves `/tmp/marlow.lock` orphaned, and the existence-only check then wedges
+**every** future tick forever — silent total stall. Fixed with a staleness-aware
+lock: PID fast-path (`kill -0`) + a **skip-counter** slow-path (Alex's idea, and
+better than my wall-clock proposal — sleep inflates elapsed time without signal
+and a time-break can double-run a paused holder; the counter only advances on
+real awake ticks). Also fixed a latent bug where cleanup deleted the lock on
+*every* exit incl. skips (now gated on OWNS_LOCK). Breaks log to
+`~/.marlow/lock_breaks.log`; `monitor_self.lock_health` surfaces recoveries.
+5/5 decision-path behavioral test. **Still deferred: the draft_article timeout
+itself** — and the sleep analysis argues for *staging* it (checkpoint per tick,
+sleep-safe) over a big timeout (only survives a lid-open machine). Open question
+to watch: how often the Claude session limit is hit — if regular, it's a capacity
+/ plan ceiling, not a code bug.
 
 *What's deferred / to watch.* (1) The only thing that can now silence the audit is
 cron/launchd itself dying (total agent death) — visible externally, but no internal
