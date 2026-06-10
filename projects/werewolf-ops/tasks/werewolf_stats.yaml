@@ -45,14 +45,16 @@
 #   3. Write the snapshot to projects/werewolf-ops/reports/stats/<YYYY-MM-DD>.md
 #      — render via `werewolf_stats.py show`, plus a sentence on what moved vs
 #      yesterday's report (new signups, notable burn).
-#   4. Append to the end-of-day digest the handler's ready-made block:
-#      `uv run python handlers/werewolf_stats.py digest` → pass verbatim to
-#      `notify --digest`. It's a header line (new users, games, $ since
-#      yesterday) plus today's new-user emails and game themes, auto-collapsing
-#      to bare counts above DIGEST_LIST_CAP so a busy day can't flood Telegram.
-#      No immediate ping — digest-only; activity has no urgent severity (the
-#      budget watch owns the alarms). compose_daily_digest (23:00 UTC) sends the
+#   4. The digest block is now appended AUTOMATICALLY by `report` itself (it
+#      calls notify_alex(..., urgency="digest") deterministically). Do NOT run
+#      `digest | notify --digest` yourself — that would double-post. The block is
+#      a header line (new users, games, $ since yesterday) plus today's new-user
+#      emails and game themes, collapsing to bare counts above DIGEST_LIST_CAP.
+#      No immediate ping — digest-only; compose_daily_digest (23:00 UTC) sends the
 #      accumulated digest, so this rides out with the budget lines in one message.
+#      (Why moved into the handler: the manual session step was silently skipped
+#      for days, so user stats never reached Alex's digest. Delivery he depends on
+#      must not hinge on the session remembering to run a step.)
 #   5. Write the tick result and exit.
 #
 # This task is activity reporting only. It deliberately raises NO alerts — if a

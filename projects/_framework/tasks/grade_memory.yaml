@@ -33,4 +33,4 @@ must_run_within_hours: 12
 subtasks:
   - id: grade_today
     handler: grade_memory
-    context: {}
+    context: {timeout_sec: 900}   # reflective compression of a full day of ticks; 300s was too tight (failed 06-09)

@@ -143,7 +143,13 @@ SUBTASK_JSON=$(uv run python driver/scheduler.py pick 2>&1) || {
 
 SUBTASK_ID=$(echo "$SUBTASK_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])")
 SUBTASK_HANDLER=$(echo "$SUBTASK_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin)['handler'])")
-log "picked subtask: $SUBTASK_ID (handler: $SUBTASK_HANDLER)"
+# Per-handler timeout. Heavy ticks (draft_article, grade_memory) declare a larger
+# timeout_sec in their task context; everything else uses the 300s default. Keep
+# values < the launchd interval (1200s) so a long tick releases the lock before
+# the next fire — we use 900s.
+SUBTASK_TIMEOUT=$(echo "$SUBTASK_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin).get('context',{}).get('timeout_sec') or '')" 2>/dev/null || echo '')
+TICK_TIMEOUT="${SUBTASK_TIMEOUT:-$TICK_TIMEOUT_SEC}"
+log "picked subtask: $SUBTASK_ID (handler: $SUBTASK_HANDLER, timeout ${TICK_TIMEOUT}s)"
 
 # Stage subtask for the session to read.
 echo "$SUBTASK_JSON" > "$SUBTASK_FILE"
@@ -155,7 +161,7 @@ PROMPT="A subtask is queued for you in $SUBTASK_FILE. Read it, execute the named
 # Stream raw JSONL to a temp file so cost.py can extract usage/cost after.
 # Stderr still goes to SESSIONS_LOG for crash diagnostics.
 rm -f "$STREAM_FILE"
-if run_with_timeout "$TICK_TIMEOUT_SEC" claude -p --output-format stream-json --verbose "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
+if run_with_timeout "$TICK_TIMEOUT" claude -p --output-format stream-json --verbose "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
     log "session exited cleanly"
 else
     rc=$?

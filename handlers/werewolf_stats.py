@@ -385,6 +385,17 @@ def main():
     args = ap.parse_args()
     if args.cmd == "report":
         res = report()
+        # Append the digest block deterministically here — do NOT rely on the
+        # session to run a separate `digest | notify --digest` step. That step
+        # was silently skipped for days, so user stats never reached the digest
+        # even though the snapshot persisted fine. Same lesson as monitor_self:
+        # delivery a human depends on must not hinge on the LLM remembering to.
+        if res.get("ok"):
+            try:
+                from tools.notify import notify_alex
+                notify_alex(render_digest(res), urgency="digest")
+            except Exception as e:  # noqa: BLE001 — never let delivery break the snapshot
+                print(f"warning: digest append failed: {e}", file=sys.stderr)
         print(json.dumps(res, indent=2, ensure_ascii=False))
         sys.exit(0 if res.get("ok") else 1)
     elif args.cmd == "show":

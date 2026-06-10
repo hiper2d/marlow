@@ -49,4 +49,4 @@ must_run_within_hours: 36
 subtasks:
   - id: review_and_draft
     handler: draft_article
-    context: {}
+    context: {timeout_sec: 900}   # full draft+image+self-review flow; 300s killed it mid-draft (failed every run since 05-31)
