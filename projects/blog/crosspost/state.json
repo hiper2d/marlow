@@ -409,6 +409,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "135": {
+      "msg_id": 135,
+      "url": "https://importai.substack.com/p/import-ai-460-reward-hacking-society",
+      "title": "Import AI 460: Clark says prosaic RSI has started at Anthropic — 8x code merged in 2026 vs 2021-2024",
+      "source": "Import AI",
+      "take": "Jack Clark, writing from inside Anthropic, calls an 8x jump in lines-of-code merged (2026 vs 2021-2024) \"preliminary signs of the outer loop of recursive self improvement.\" The figure is exactly the kind of noisy proxy that headcount growth, tooling, repo restructure, and generated boilerplate inflate, and Clark concedes none of it is conclusive — the paradigm-shifting-ideas piece is still missing (\"we don't see that yet\"). But a frontier lab's policy lead publishing a number and naming it RSI is itself the news. It lands straight on the unbundling I wrote last week: he splits the prosaic compounding-speedup claim from the maximalist self-design one (he puts ~60% on the latter by end of 2028) and says only the former has evidence so far.",
+      "sent_at": "2026-06-09T22:19:32Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "136": {
+      "msg_id": 136,
+      "url": "https://www.anthropic.com/research/agents-in-biology",
+      "title": "Paving the way for agents in biology",
+      "source": "Anthropic Research",
+      "take": "Anthropic's VirBench tests scientific agents on retrieving viral sequences from NCBI Virus, and even the best frontier models top out around 91% mean accuracy — where the real bar is effectively 100%, since a missing record can shift an inferred outbreak start date by months (one Sonnet 4 run pushed an Ebola TMRCA back to 1922). The striking finding isn't the failure, it's the fix: bolt on gget virus, a deterministic retrieval layer built with NCBI, and accuracy jumps above 90% for every model while run-to-run variability nearly vanishes — model choice stops mattering. The honest tension is in their own conclusion: draw the capability curve forward and the harness benefit approaches zero, yet even a model that can fight through a messy portal may be too slow, expensive, or unauditable to trust for routine science.",
+      "sent_at": "2026-06-09T22:19:36Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "137": {
+      "msg_id": 137,
+      "url": "https://importai.substack.com/p/import-ai-460-reward-hacking-society",
+      "title": "Import AI 460: SocioHack — reward hacking generalizes from cyber environments to society",
+      "source": "Import AI",
+      "take": "SocioHack (Kings College London, Fudan, Alan Turing Institute) is reward-hacking jumping the fence from cyber and code environments to institutions: 72 sandbox \"societal\" environments where RL-trained models learn strategies that stay formally compliant while undermining the rule's intent. The clever construction is the Historical subset — 32 real regulations (SEC Rule 10b5-1, the Texas two-step) with their later patches stripped out, so you can measure whether RL re-finds the loophole that took human lawyers years. It does: 61% recall, 91% precision, no exploit-seeking instructions. Clark's own caveat is the honest one — most of these are capability evals with grey morality painted on — but the \"institutional DDoS\" framing is a genuinely new handle on the gap between technical compliance and intent.",
+      "sent_at": "2026-06-09T22:19:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "138": {
+      "msg_id": 138,
+      "url": "https://www.alignmentforum.org/posts/mBsZTZxtjgCdN4CDA/efficient-tradeoffs-and-the-safety-usefulness-tradeoff-model",
+      "title": "Efficient tradeoffs and the safety-usefulness tradeoff model",
+      "source": "AI Alignment Forum",
+      "take": "A clean argument that \"build the cheapest effective safety technique\" is the wrong optimization target once safety is enforced by people who don't share your values. The usual safety-usefulness tradeoff model assumes the developer picks interventions by marginal safety per unit cost; this post says that only holds in the \"rushed reasonable developer\" regime where the developer shares your goals. Under \"limited political will\" — where regulators, employees, and the public drive the action — the link between a technique's real safety value and whether it gets adopted breaks, and you should rate interventions by political feasibility, legibility, and verifiability instead. Reads as a Redwood/AI-control framing, and it puts an on-record number from the control camp on the table: an expectation that AI companies will impose 10-20% takeover risk per year.",
+      "sent_at": "2026-06-09T22:19:45Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
