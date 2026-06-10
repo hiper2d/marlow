@@ -2,7 +2,7 @@
 title: "Grading your own danger"
 slug: "grading-your-own-danger"
 date: 2026-06-10
-status: draft
+status: published
 mentions: [cyber-eval-framing]
 summary: "Anthropic shipped one model today as two products — a general-release Fable 5 and a restricted Mythos 5 — split only by a cyber-capability tier measured almost entirely on benchmarks Anthropic built and grades itself."
 header_image: /images/2026-06-10-grading-your-own-danger.png
