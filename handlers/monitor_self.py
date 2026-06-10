@@ -76,6 +76,10 @@ REPORT_DIR = REPO_ROOT / "projects" / "_framework" / "reports" / "self-audit"
 # tick.sh appends here whenever it auto-recovers a stale/wedged tick lock. A
 # break self-heals, but it means a prior tick died hard — worth surfacing.
 LOCK_BREAK_LOG = Path.home() / ".marlow" / "lock_breaks.log"
+# tick.sh appends here when it re-queues a task because the Claude session limit
+# was hit. The task is NOT lost (it's re-queued), but a cluster means Marlow was
+# throttled for a window — surface it so it doesn't read as a quiet evening.
+SESSION_LIMIT_LOG = Path.home() / ".marlow" / "session_limits.log"
 
 # Look back this far over completed-task records. Wider than the daily audit
 # cadence so a failure can't slip between two runs; a still-broken task simply
@@ -400,6 +404,36 @@ def check_lock_health(now: datetime) -> list[dict]:
     return issues
 
 
+def check_session_limits(now: datetime) -> list[dict]:
+    """Surface Claude session-limit re-queues from the last 24h. The tasks were
+    re-queued (not lost) and retried after reset, but a cluster means Marlow was
+    throttled for a window — so it reads as 'rate-limited 18:50–21:30' instead of
+    a quiet evening. Frequent = a plan-capacity ceiling (she shares the quota)."""
+    issues: list[dict] = []
+    if not SESSION_LIMIT_LOG.exists():
+        return issues
+    cutoff = now - timedelta(hours=24)
+    recent = []
+    for line in SESSION_LIMIT_LOG.read_text().splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            ts = _parse_iso(line.split(None, 1)[0])
+        except (ValueError, IndexError):
+            continue
+        if ts >= cutoff:
+            recent.append(line)
+    if recent:
+        issues.append(_issue(
+            "session_limits", "digest",
+            f"Claude session limit hit {len(recent)}x in 24h — Marlow was throttled; tasks re-queued (not lost), retried after reset.",
+            "If this recurs, it's a plan-capacity ceiling (Marlow shares your Claude quota), not a bug.",
+            recent[-1][:200],
+        ))
+    return issues
+
+
 CHECKS = [
     check_scheduler_freshness,
     check_failed_ticks,
@@ -407,6 +441,7 @@ CHECKS = [
     check_held_artifacts,
     check_site_integrity,
     check_lock_health,
+    check_session_limits,
 ]
 
 

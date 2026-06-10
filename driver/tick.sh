@@ -29,6 +29,7 @@ KILLSWITCH="$MARLOW_DIR/stop"
 PAUSE="$MARLOW_DIR/pause"
 SESSIONS_LOG="$MARLOW_DIR/sessions.log"
 LOCK_BREAK_LOG="$MARLOW_DIR/lock_breaks.log"   # append-only record of auto-recovered stale/wedged locks
+SESSION_LIMIT_LOG="$MARLOW_DIR/session_limits.log"   # append-only record of Claude-quota throttle re-queues
 TICK_TIMEOUT_SEC=300
 OWNS_LOCK=0   # flips to 1 once THIS tick acquires the lock, so cleanup only frees its own
 
@@ -163,9 +164,11 @@ PROMPT="A subtask is queued for you in $SUBTASK_FILE. Read it, execute the named
 rm -f "$STREAM_FILE"
 if run_with_timeout "$TICK_TIMEOUT" claude -p --output-format stream-json --verbose "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
     log "session exited cleanly"
+    SESSION_OK=1
 else
     rc=$?
     log "session exited with code $rc (124 = timeout)"
+    SESSION_OK=0
 fi
 
 # Log cost record (always — even on crash, so the audit trail is complete).
@@ -175,6 +178,18 @@ uv run python tools/cost.py log --tick-id "$SUBTASK_ID" --handler "$SUBTASK_HAND
     echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] === $SUBTASK_ID ($SUBTASK_HANDLER) ==="
     uv run python tools/cost.py extract-text < "$STREAM_FILE" || true
 } >> "$SESSIONS_LOG"
+
+# Session-limit re-queue. If the session died because the Claude quota was
+# exhausted, the tick never really ran — the task was picked but not attempted.
+# Put it back to pending (don't consume it) and exit; the next tick after the
+# quota resets re-picks it untouched. This is what stops a storm (e.g. 06-07)
+# from silently marking-failed every task scheduled during the throttle window.
+if [ "${SESSION_OK:-1}" = "0" ] && grep -qiE "hit your (session|usage) limit|session limit|usage limit reached" "$STREAM_FILE" 2>/dev/null; then
+    log "Claude session limit hit — re-queueing $SUBTASK_ID (not consumed), exiting"
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) session-limit: re-queued $SUBTASK_ID ($SUBTASK_HANDLER)" >> "$SESSION_LIMIT_LOG"
+    uv run python driver/scheduler.py requeue "$SUBTASK_ID" --result "re-queued: Claude session limit (transient, not consumed)" || true
+    exit 0
+fi
 
 # 7. Record outcome
 if [ ! -f "$RESULT_FILE" ]; then

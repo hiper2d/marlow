@@ -250,6 +250,24 @@ def cmd_complete(args):
     print(f"marked {args.id} as {args.status}")
 
 
+def cmd_requeue(args):
+    """Return a subtask to `pending` without consuming it. For transient no-ops
+    where the tick never really ran — e.g. the Claude session limit was hit, so
+    the agent was throttled, not the task broken. NOT archived, NOT marked
+    failed; the next tick re-picks it untouched. This is what stops a quota
+    storm from silently dropping every task scheduled during the window."""
+    queue = load_queue()
+    item = next((i for i in queue if i.id == args.id), None)
+    if item is None:
+        print(f"unknown subtask id: {args.id}", file=sys.stderr)
+        sys.exit(2)
+    item.status = "pending"
+    if args.result:
+        item.result = args.result
+    save_queue(queue)
+    print(f"requeued {args.id} (back to pending)")
+
+
 def cmd_dry_run(args):
     now = now_utc()
     queue = load_queue()
@@ -283,6 +301,10 @@ def main():
     p_complete.add_argument("--checkpoint", help="JSON checkpoint state")
     p_complete.add_argument("--result", help="Short result summary")
 
+    p_requeue = sub.add_parser("requeue", help="Return a subtask to pending (transient no-op, e.g. session limit)")
+    p_requeue.add_argument("id")
+    p_requeue.add_argument("--result", help="Short note on why")
+
     sub.add_parser("dry-run", help="Show what would be picked without modifying state")
     sub.add_parser("status", help="Print the current queue")
 
@@ -292,6 +314,8 @@ def main():
         cmd_pick(args)
     elif args.cmd == "complete":
         cmd_complete(args)
+    elif args.cmd == "requeue":
+        cmd_requeue(args)
     elif args.cmd == "dry-run":
         cmd_dry_run(args)
     elif args.cmd == "status":
