@@ -36,11 +36,28 @@ result-writing — every silent failure this week traces to a human-facing effec
 left to LLM-session discretion. The fix is always the same shape: make the effect
 deterministic, in code, off the session's critical-judgment path.
 
-*Deferred.* draft_article at 900s is unblocked but not *staged* — it still dies if the lid
-closes mid-draft (sleep-kill); the checkpoint-early refactor is the sleep-safe follow-up.
-grade_memory's 06-09 rollup was lost (the failed run never wrote it); recoverable from
-recent/ logs for ~2 more days if we want a catch-up. And the Claude session-limit count is
-still owed.
+*Retryable vs terminal failures.* Alex's call, and the right one: a Claude session-limit
+failure isn't a task failure — the agent was throttled, so the task was picked but never
+attempted. Marking it `failed` (and archiving it) silently dropped every task scheduled
+during a storm — the actual 06-07 mechanism. Fixed: tick.sh detects the limit in the
+session stream and `requeue`s the task to pending (new scheduler command) instead of
+consuming it; the next post-reset tick re-picks it untouched. Most handlers are idempotent
+so redo-from-scratch is fine. Throttle windows now log to `session_limits.log` and surface
+via a new `monitor_self.session_limits` digest line — so a storm reads as "rate-limited
+18:50–21:30," not silence. **Session-limit count answered:** intermittent, not chronic — 16
+hits across just 2 days (05-31 ×10, 06-07 ×6) in two weeks, zero otherwise; likely Marlow
+sharing Alex's Claude quota during his own heavy use.
+
+*Checkpoints — deliberately deferred.* The queue field + `--checkpoint` plumbing + the
+`in_progress`-stays-in-queue behavior all exist, but nothing uses them (no handler writes
+or resumes a checkpoint). Building real checkpointed staging only benefits draft_article
+(every other handler is idempotent → re-queue+redo suffices), requires restructuring the
+drafting flow in CLAUDE.md (identity file), and may be moot if 900s makes draft_article fit
+one tick. Decision: ship the cheap re-queue, watch the next draft cycle, build checkpoints
+only if 900s proves insufficient.
+
+*Still deferred.* draft_article sleep-safe staging (above). grade_memory's 06-09 rollup was
+lost (the failed run never wrote it); recoverable from recent/ logs for ~2 more days.
 
 ---
 
