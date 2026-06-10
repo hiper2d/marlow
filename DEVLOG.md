@@ -11,6 +11,39 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-09 — the audit earns its keep: catches grade_memory dead, two root-cause fixes
+
+*What happened.* `monitor_self` fired for real overnight — `failed_ticks` urgent on the
+06-10 self-audit: "grade_memory last run FAILED." That *is* the system working; the thing
+Alex couldn't see before now pages him. Two root causes, both fixed:
+
+- **Heavy-tick timeouts.** grade_memory (failed 06-09) and draft_article (failing every run
+  since 05-31) both die "session exited without writing result file" — the global 300s
+  tick timeout SIGKILLs a heavy session mid-work. Added a **per-handler timeout**: tick.sh
+  reads `timeout_sec` from the task context (default 300), set to 900s for both. 900 < the
+  1200s launchd interval, so a long tick still frees the lock before the next fire. Carried
+  via the subtask `context` field — zero scheduler change.
+- **Silent digest-delivery skip.** Alex got no user stats in his report. werewolf_stats
+  *succeeded* (116 users, +1 fogflea) and persisted the snapshot — but the digest block was
+  a *session step* (`digest | notify --digest`) that got silently skipped for days. Moved
+  it into the handler: `report` now appends the block deterministically via notify_alex.
+  Same lesson as monitor_self — **delivery a human depends on must not hinge on the LLM
+  remembering to run a step.** Verified live: the block lands now, even on a +0 day (so
+  silence = genuinely zero, not broken).
+
+*The pattern, three times over now.* monitor_self's escalation, werewolf's digest, draft's
+result-writing — every silent failure this week traces to a human-facing effect that was
+left to LLM-session discretion. The fix is always the same shape: make the effect
+deterministic, in code, off the session's critical-judgment path.
+
+*Deferred.* draft_article at 900s is unblocked but not *staged* — it still dies if the lid
+closes mid-draft (sleep-kill); the checkpoint-early refactor is the sleep-safe follow-up.
+grade_memory's 06-09 rollup was lost (the failed run never wrote it); recoverable from
+recent/ logs for ~2 more days if we want a catch-up. And the Claude session-limit count is
+still owed.
+
+---
+
 ## 2026-06-08 — Marlow gets an operational self-audit; the empty-thread / silent-stall class closed
 
 *What landed.* Two fixes, one symptom, one cause. Alex noticed the public blog had
