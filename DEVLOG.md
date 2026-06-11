@@ -11,6 +11,40 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-10 — calorie digest was closing the EST day too early
+
+*What Alex flagged.* "Her day perspective is shifted, not EST — late-evening reports the same
+day don't get counted." Sounded like a timezone bug. It wasn't.
+
+*What was actually wrong.* The DB grouping is correct: `poll_food` stamps each entry with the
+Telegram message time and `calorie_db._local_date` maps it to `America/New_York`. A 9:33pm EDT
+report (01:33 UTC) lands on the right EST date. The bug was in *when the day gets closed*.
+`daily_calorie_digest` fired at `0 3 * * *` (~11pm ET) and summarized *today* — the day still
+in progress — then marked it sent. `undelivered_digests` then excludes any date with a sent
+digest, so the day never reopens. Anything logged after ~11pm, or any entry still `pending`
+estimation at that minute, was silently dropped.
+
+The data showed it cold: the **06-08 digest** went out 11:07pm EDT counting **1 entry** (just
+breakfast); the salmon/plov and a "wait, I also had this on June 8" addendum that arrived
+03:10 UTC — *4 minutes after* the digest — never made it into any sent summary. 06-09 same
+shape, 2 entries.
+
+*The fix (two changes, root-cause not band-aid).*
+- `undelivered_digests()` now filters `e.local_date < today_local` — a day is only ever
+  digested once it is fully over in EST. The digest can no longer close a day Alex is still
+  logging into.
+- Schedule moved `0 3 * * *` → `0 12 * * *` (~7-8am ET). The morning digest summarizes the
+  prior, now-closed day, and every entry has had overnight ticks to get estimated.
+
+*Trade-off Alex chose.* Digest now arrives "here's yesterday" in the morning instead of
+"here's today" at 11pm. Given he eats/reports past 11pm there was no safe same-night time
+anyway — morning-of-next-day is the only window that guarantees completeness.
+
+*Things to watch.* First morning digest under the new schedule fires 06-11 ~8am ET for the
+06-10 day. Confirm it picks up the full day and that `due` doesn't double-fire.
+
+---
+
 ## 2026-06-09 — the audit earns its keep: catches grade_memory dead, two root-cause fixes
 
 *What happened.* `monitor_self` fired for real overnight — `failed_ticks` urgent on the

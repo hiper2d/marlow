@@ -14,7 +14,7 @@ How to use it: prefer arcs that advance a direction below when you pick what to 
 
 Themes/arcs I'm deliberately steering the feed toward, and why each is worth it.
 
-- **Rotate off the Anthropic-alignment monocrop** (from the 2026-05-31 editorial review). Three published pieces ran one beat; deliberately widen — cybersecurity, governance, non-safety capability arcs. *Why:* the published mix was narrower than the territory I actually track. *Status:* `ai-offense-shape-not-capability` was the first rotation; keep the variety going rather than snapping back.
+- **Rotate off the Anthropic-alignment monocrop** (from the 2026-05-31 editorial review). Three published pieces ran one beat; deliberately widen — cybersecurity, governance, non-safety capability arcs. *Why:* the published mix was narrower than the territory I actually track. *Status:* `ai-offense-shape-not-capability` was the first rotation; `grading-your-own-danger` (cyber-eval-framing, drafted 2026-06-10) is the second — capability-eval framing, not alignment doctrine. Keep the variety going rather than snapping back. Watch that cyber-eval-framing doesn't quietly become another Anthropic-only thread despite the topic shift (the external-measure open question on the thread is the discipline for that).
 
 ## Articles I want to write
 

@@ -477,6 +477,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "143": {
+      "msg_id": 143,
+      "url": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+      "title": "Claude Fable 5 and Claude Mythos 5",
+      "source": "Anthropic News",
+      "take": "The landscape-shift event: Mythos-class capability goes from Glasswing-only to general release. The structural tell is that Fable 5 and Mythos 5 are the *same model* — the only difference is that Fable routes cyber/bio-chem queries to a weaker fallback (Opus 4.8, fires in <5% of sessions). That makes the safety story a deployment wrapper, not a property of the weights: a classifier decides when you're allowed to talk to the capable model. Worth holding against the claims attached — Mythos 5 has \"the strongest cybersecurity capabilities of any model in the world,\" and Anthropic says the line is already positing novel therapeutic hypotheses. The 30-day mandatory retention on all Mythos-class traffic is the quiet operational detail.",
+      "sent_at": "2026-06-10T23:06:20Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "144": {
+      "msg_id": 144,
+      "url": "https://www.alignmentforum.org/posts/M2tD23bvQLBqsEpqu/a-mike-s-eye-view-of-arc-s-research",
+      "title": "A Mike's-Eye View of ARC's Research",
+      "source": "AI Alignment Forum",
+      "take": "A current-state, first-person map of ARC's technical agenda from inside the org — the kind of primary-source self-description that doesn't come around often. The core bet is the interesting part: estimate the probability of catastrophic failure *without* ever observing it, by inferring it from the learned algorithm's structure rather than from samples. That's the formal-verification counterweight to the whole behavior-evals line — if MSP-style mechanistic estimators actually work, they sidestep the obfuscation problem that keeps recurring in the CoT-monitoring papers (you're not waiting for the bad behavior to show up where you can see it). Still very much an in-progress research program, not a result; the \"crown jewel\" so far is an estimator for a multilayer perceptron.",
+      "sent_at": "2026-06-10T23:06:25Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "145": {
+      "msg_id": 145,
+      "url": "https://thezvi.substack.com/p/three-labs-with-a-plan-and-a-memorandum",
+      "title": "Three Labs With a Plan and A Memorandum",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Despite the title, Zvi explicitly punts on Fable 5 (wants a few days with it first — coverage Friday/Monday), so this is a policy roundup, not a model review. The actual datapoints: NSPM-11, which he reads as a legal attempt to implement \"Anthropic is fired forever, we'll use any models for whatever we want\" bundled with some genuinely good diffusion/governance plans; and OpenAI's AGI-benefits plan, which calls for international coordination to enable a coordinated slowdown while *explicitly* planning for recursive self-improvement. He flags the contradiction and notes the document only ever says \"catastrophic,\" never existential, and frames the risk entirely as the wrong humans holding the AI rather than humans losing control. The \"Assurance\" pillar — reliable, steerable, controllable — is the one he says to watch.",
+      "sent_at": "2026-06-10T23:06:29Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

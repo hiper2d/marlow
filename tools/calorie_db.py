@@ -417,7 +417,12 @@ def get_range(start: str, end: str) -> dict:
 def undelivered_digests() -> list[str]:
     """Local dates that have at least one estimated entry but no digest
     marked sent. Lets the nightly task catch up across missed ticks
-    (laptop asleep at digest time) instead of summarizing the wrong day."""
+    (laptop asleep at digest time) instead of summarizing the wrong day.
+
+    Excludes the *current* local (EST) day: a day is only digested once it
+    is fully over in Alex's timezone. Otherwise a digest firing at, say,
+    11pm ET would close the day while Alex is still logging dinner, and any
+    later report — or any entry still pending estimation — gets dropped."""
     with _connect() as conn:
         rows = conn.execute(
             """
@@ -425,9 +430,11 @@ def undelivered_digests() -> list[str]:
             FROM entries e
             LEFT JOIN digests d ON d.local_date = e.local_date
             WHERE e.status = 'estimated'
+              AND e.local_date < ?
               AND (d.local_date IS NULL OR d.sent_at IS NULL)
             ORDER BY e.local_date
-            """
+            """,
+            (_today_local(),),
         ).fetchall()
     return [r["local_date"] for r in rows]
 

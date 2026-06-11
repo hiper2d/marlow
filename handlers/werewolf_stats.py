@@ -24,8 +24,11 @@ Money, carefully:
   `expireAt`), so without a daily history the burn series is unrecoverable.
 
   User-side spend (`users.spendings`, monthly free/api/paid buckets) is carried
-  as a secondary `revenue_mtd_usd` line — for the free tier it's ~the same as
-  burn, but it's the right field if a paid tier ever matters.
+  as a secondary `user_spend_mtd_usd` line. NOT revenue: `free` is OUR cost
+  (free-tier credits), `api` is users' own API keys (never our money), and only
+  `paid` is actual paid-tier income. Today `paid` is ~$0, so this is almost
+  entirely consumption — the right field to watch if a paid tier ever grows,
+  but do not read the total as money coming in.
 
 Credentials: MARLOW_FIREBASE_CREDS → the read-only service-account JSON
 (roles/datastore.viewer). Same wiring as monitor_keys; fails clean if unset.
@@ -172,11 +175,12 @@ def _game_stats(db, now: datetime, new_today_emails: list[str]) -> dict:
     }
 
 
-def _revenue_mtd(db, now: datetime) -> dict:
+def _user_spend_mtd(db, now: datetime) -> dict:
     """Current-month user spend from users.spendings (free/api/paid split).
 
     Reads all user docs (low volume) and sums the bucket whose period matches
-    this UTC month. Secondary to game burn; the right field if paid tier grows.
+    this UTC month. NOT revenue — see module docstring: only `paid` is income.
+    Secondary to game burn; the right field if a paid tier grows.
     """
     from google.cloud.firestore_v1 import FieldFilter
 
@@ -275,7 +279,7 @@ def report() -> dict:
 
     users = _user_stats(db, now)
     games = _game_stats(db, now, users["new_today_emails"])
-    revenue = _revenue_mtd(db, now)
+    user_spend = _user_spend_mtd(db, now)
     burn = _daily_burn(_prev_snapshot(), games["live_cost_usd"], now)
 
     result = {
@@ -283,7 +287,7 @@ def report() -> dict:
         "checked_at": _checked_at(now),
         "users": users,
         "games": games,
-        "revenue_mtd_usd": revenue,
+        "user_spend_mtd_usd": user_spend,
         "daily_burn": burn,   # null on first run (no prior snapshot to diff)
     }
     _save(result)
@@ -319,9 +323,12 @@ def render(report: dict) -> str:
         out.append(f"    spent since last snapshot ({b['hours']}h): ${b['usd']:.2f}{flag}")
     else:
         out.append("    spent since last snapshot: n/a (first run — baseline set)")
-    r = report["revenue_mtd_usd"]
-    out.append(f"  Revenue  ${r['total']:.2f} MTD ({r['period']}): "
-               f"${r['free']:.2f} free / ${r['api']:.2f} api / ${r['paid']:.2f} paid")
+    r = report.get("user_spend_mtd_usd") or report.get("revenue_mtd_usd") or {}
+    if r:
+        out.append(f"  User spend  ${r['total']:.2f} MTD ({r['period']}): "
+                   f"${r['free']:.2f} free / ${r['api']:.2f} api / ${r['paid']:.2f} paid")
+        out.append(f"    (free = our cost · api = users' own keys · "
+                   f"paid = actual revenue: ${r['paid']:.4f})")
 
     # Today's detail — who signed up, what they're playing.
     emails = u.get("new_today_emails") or []

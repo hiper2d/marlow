@@ -1,10 +1,13 @@
-# daily_calorie_digest — end-of-day calorie summary to Alex.
+# daily_calorie_digest — morning summary of the previous (closed) day.
 #
-# Fires once nightly at 03:00 UTC (~23:00 America/New_York). Summarizes
-# the day's food log, Marlow writes a short honest comment, sends it to
-# the fitness chat. Self-heals across missed nights: `due` returns every
-# local day that has food logged but no digest sent yet, so a laptop
-# asleep at digest time just catches up on the next tick.
+# Fires each morning at 12:00 UTC (~07:00-08:00 America/New_York) and
+# summarizes the most recent *fully-completed* EST day — never the day in
+# progress. `due` only returns local days strictly before today (EST), so
+# a day is closed only once it is actually over in Alex's timezone; any
+# late-evening report is folded in before the digest goes out. Marlow
+# writes a short honest comment and sends it to the fitness chat.
+# Self-heals across missed mornings: `due` returns every undelivered past
+# day, so a laptop asleep at digest time just catches up on the next tick.
 #
 # In-tick flow (full detail in CLAUDE.md → "Calorie tracking"):
 #   1. uv run python handlers/calorie_digest.py due   → list of dates.
@@ -17,7 +20,7 @@
 name: daily_calorie_digest
 project: calories
 description: Send Alex an end-of-day calorie + macro summary with a short comment.
-schedule: "0 3 * * *"   # ~23:00 ET
+schedule: "0 12 * * *"   # ~07:00-08:00 ET — morning, prior day fully closed
 priority: high
 must_run_within_hours: 18
 subtasks:

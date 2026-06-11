@@ -24,9 +24,10 @@
 #          (≤30d) games; its day-over-day DELTA (daily_burn.usd) is the true
 #          money spent since the last snapshot. Negative delta = games expired
 #          out of the 30d TTL window (flagged, floored at 0), not a refund.
-#      revenue_mtd_usd is a secondary line from users.spendings (monthly
-#      free/api/paid buckets) — ~= burn while everyone's free tier; the right
-#      field if a paid tier ever grows.
+#      user_spend_mtd_usd is a secondary line from users.spendings (monthly
+#      free/api/paid buckets) — NOT revenue: free = our cost, api = users' own
+#      keys, only paid = actual income (~$0 today). The field to watch if a
+#      paid tier ever grows.
 #
 # WHY snapshot to state/: games auto-expire after 30 days (Firestore TTL on
 # `expireAt`). Without a daily history, any trend older than a month — and the

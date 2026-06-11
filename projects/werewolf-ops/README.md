@@ -38,8 +38,9 @@ v1 query set (`werewolf_stats.py report`, rendered by `show`):
 - **Money spent (AI burn)** — `created_cost_usd` (Σ `totalGameCost` of games
   created per window; a lower bound, grows as games are played) and
   `live_cost_usd` + `daily_burn` (Σ cost across all live ≤30d games; its
-  day-over-day delta is the true daily spend). Secondary `revenue_mtd_usd` from
-  `users.spendings`.
+  day-over-day delta is the true daily spend). Secondary `user_spend_mtd_usd`
+  from `users.spendings` — NOT revenue: `free` is our cost, `api` is users' own
+  keys, only `paid` is actual income (~$0 today).
 
 Snapshots persist to `state/stats_latest.json` + `state/stats_history.jsonl`.
 **This matters**: games carry a 30-day Firestore TTL (`expireAt`), so without a
