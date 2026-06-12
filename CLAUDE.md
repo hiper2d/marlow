@@ -244,7 +244,7 @@ The `blog_pipeline` task fires every 4 hours and advances exactly one draft thro
    - `self_review` → see "Self-reviewing a draft" below.
    - `hold` → run `uv run python handlers/publish_article.py hold --slug <slug> --reason "<which pause(s) triggered>"`.
    - `revise` → see "Revising a draft" below.
-   - `publish` → run `uv run python handlers/publish_article.py publish --slug <slug>`. The handler moves the draft to `published/<slug>.md`, flips status to `published`, **deletes the entire draft trail** (self-review, revision-notes, versions/, any legacy simona-review siblings), commits and pushes. Only `published/<slug>.md` survives in the working tree; the iteration history lives in git log. The push itself is the audit trail; no DEVLOG entry needed for routine publishes.
+   - `publish` → run `uv run python handlers/publish_article.py publish --slug <slug>`. The handler moves the draft to `published/<slug>.md`, flips status to `published`, **deletes the entire draft trail** (self-review, revision-notes, versions/, any legacy simona-review siblings), commits and pushes. Only `published/<slug>.md` survives in the working tree; the iteration history lives in git log. The push itself is the audit trail; no DEVLOG entry needed for routine publishes. On success the handler also pings Alex on Telegram for a one-line gut reaction (a reader-feedback loop); his reply is captured by the `crosspost` poll into `projects/blog/reactions.jsonl`, which is **Simona's review surface — you do not read it** (reading reader reactions directly would pull your writing toward pleasing rather than the work).
 
 Append a one-line note to `recent/` summarizing what advanced. No notify.
 

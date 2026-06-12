@@ -46,6 +46,10 @@ DRAFTS = REPO_ROOT / "projects" / "blog" / "drafts"
 PUBLISHED = REPO_ROOT / "projects" / "blog" / "published"
 REJECTED = DRAFTS / "rejected"
 VERSIONS = DRAFTS / "versions"
+SITE_BASE = "https://marlow.hiper2d.workers.dev"
+
+sys.path.insert(0, str(REPO_ROOT))
+from tools import notify, reactions_store  # noqa: E402
 
 
 def _read_frontmatter(path: Path) -> tuple[dict, str]:
@@ -228,6 +232,27 @@ def _publish_internal(slug: str, commit_message: str | None = None) -> dict:
     }
 
 
+def _request_reaction(slug: str, meta: dict) -> None:
+    """After a successful publish, ping Alex for a one-line gut reaction and
+    register it so `crosspost.poll` can capture his reply. Best-effort: a failed
+    ping must never fail the publish. Reactions are Simona's review surface —
+    Marlow never reads them (see tools/reactions_store)."""
+    try:
+        url_slug = meta.get("slug") or slug
+        title = meta.get("title") or url_slug
+        url = f"{SITE_BASE}/post/{url_slug}"
+        msg = (
+            f"📄 Published: {title}\n{url}\n\n"
+            f"One-line gut reaction? Reply to this — bored, loved the opening, "
+            f"too dry, whatever you've got. (No reply is fine.)"
+        )
+        res = notify.send_telegram_message(msg)
+        if res.get("ok") and res.get("message_id"):
+            reactions_store.request(res["message_id"], slug, title, url)
+    except Exception:  # noqa: BLE001 — a publish that pushed must report success
+        pass
+
+
 def publish(slug: str) -> dict:
     """Marlow's autonomous publish path. Requires status:draft."""
     draft = DRAFTS / f"{slug}.md"
@@ -239,7 +264,10 @@ def publish(slug: str) -> dict:
             "ok": False,
             "error": f"status is '{meta.get('status')}', expected 'draft' (use 'release' for held drafts)",
         }
-    return _publish_internal(slug)
+    result = _publish_internal(slug)
+    if result.get("ok"):
+        _request_reaction(slug, meta)
+    return result
 
 
 def hold(slug: str, reason: str | None = None) -> dict:

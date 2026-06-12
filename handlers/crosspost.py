@@ -48,6 +48,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tools import crosspost_store as store  # noqa: E402
 from tools import notify  # noqa: E402
+from tools import reactions_store  # noqa: E402
 from tools import telegram_poll  # noqa: E402
 
 
@@ -84,6 +85,19 @@ def poll() -> dict:
         rid = m.get("reply_to_message_id")
         item, which = store.find_by_reply(rid) if rid else (None, None)
         if item is None:
+            # Not a news/draft reply — maybe a gut reaction to a published
+            # article. This poll is the sole inbound poller, so it also files
+            # those into the Simona-side reactions store (Marlow never reads it).
+            req = reactions_store.find_request(rid) if rid else None
+            if req is not None:
+                reactions_store.record(req["msg_id"], req.get("slug"), req.get("title"), m.get("text"))
+                actions.append({
+                    "reply_text": m.get("text"),
+                    "which": "reaction",
+                    "item_msg_id": req["msg_id"],
+                    "item": {"title": req.get("title"), "url": req.get("url"), "slug": req.get("slug")},
+                })
+                continue
             unmatched.append({"text": m.get("text"), "reply_to_message_id": rid})
             continue
         actions.append({
