@@ -12,7 +12,11 @@ see simona/mcp/browser/start-chrome-persistent.sh). The cron runs it headless
 and reuses the stored cookies. When a session lapses the page shows a login
 wall — we detect that and raise a `reauth` issue (urgent) instead of reporting a
 bogus number. Console redesigns will break the per-provider extractors; those
-surface as `parse_failed` (digest), never as a silent wrong value.
+surface as `parse_failed` (digest), never as a silent wrong value. A zero GLM
+balance is never trusted from one read — the SPA paints $0.00 placeholders
+before the balance request lands — so zeros are re-read with longer settles,
+and an unconfirmable zero right after a run that saw money surfaces as
+`suspect_zero` (digest), not `balance_empty` (urgent).
 
 Driving is delegated to simona's browser CLI (CDP_PORT=9223) rather than a
 second automation stack — same machinery the browser skill uses.
@@ -98,17 +102,18 @@ def _cli(*args: str) -> subprocess.CompletedProcess:
     )
 
 
-def _navigate_and_extract(url: str, js: str, click_js: str | None = None) -> dict:
+def _navigate_and_extract(url: str, js: str, click_js: str | None = None,
+                          settle_s: float = NAV_SETTLE_S) -> dict:
     """Navigate tab 0 to `url`, let it settle, optionally run `click_js` to
     reveal a sub-view (then settle again), run `js` (must return a JSON string),
     parse it. Returns the parsed dict, or {error:...} on failure."""
     nav = _cli("navigate", url, "--tab", "0")
     if nav.returncode != 0:
         return {"error": f"navigate failed: {nav.stderr[:160] or nav.stdout[:160]}"}
-    time.sleep(NAV_SETTLE_S)
+    time.sleep(settle_s)
     if click_js:
         _cli("js", click_js, "--tab", "0")
-        time.sleep(NAV_SETTLE_S)
+        time.sleep(settle_s)
     res = _cli("js", js, "--tab", "0")
     if res.returncode != 0:
         return {"error": f"js failed: {res.stderr[:160] or res.stdout[:160]}"}
@@ -181,6 +186,16 @@ PROVIDERS = {p["name"]: p for p in (GLM, GEMINI, MISTRAL)}
 # ─── Normalize each provider's raw extract into a common shape ───────────────
 
 
+def _last_balance(provider: str) -> float | None:
+    """Last successfully-read balance for `provider` from the saved snapshot."""
+    from driver.budget_state import load_latest
+    rep = load_latest("scrape") or {}
+    for p in rep.get("providers", []):
+        if p.get("provider") == provider and p.get("ok"):
+            return p.get("balance_usd")
+    return None
+
+
 def _check(provider: str) -> dict:
     cfg = PROVIDERS[provider]
     raw = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"))
@@ -195,6 +210,31 @@ def _check(provider: str) -> dict:
         if cash is None and credits is None:
             return {**base, "ok": False, "kind": "parse_failed", "error": "no cash/credits balance found"}
         total = (cash or 0.0) + (credits or 0.0)
+        # The billing SPA paints "$0.00" placeholders before the balance
+        # request lands, and a placeholder zero parses exactly like a real
+        # one (bit us 2026-06-11: $9.23 reported as dry). Never trust a
+        # zero from a single read — re-extract with longer settles.
+        if total == 0:
+            for settle in (10.0, 15.0):
+                retry = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"), settle_s=settle)
+                r_cash, r_credits = retry.get("cash"), retry.get("credits")
+                if r_cash is None and r_credits is None:
+                    continue
+                cash, credits = r_cash, r_credits
+                total = (cash or 0.0) + (credits or 0.0)
+                if total > 0:
+                    break
+        # Still zero after retries: if the last saved run had money, a
+        # one-window drop to exactly $0.00 is far more likely a render/parse
+        # issue than a real drain — report suspect (digest), not dry (urgent).
+        # If it IS a real drain, the next run has no prior balance and the
+        # confirmed zero goes through as balance_empty.
+        if total == 0:
+            prev = _last_balance(provider)
+            if prev and prev > 0:
+                return {**base, "ok": False, "kind": "suspect_zero",
+                        "error": f"reads $0.00 across retries but last run saw ${prev:.2f} — "
+                                 "likely placeholder render; verify in console before topping up"}
         return {**base, "ok": True, "metric": "balance", "balance_usd": round(total, 4),
                 "cash_usd": cash, "credits_usd": credits, "is_available": total > 0}
     if provider == "gemini":

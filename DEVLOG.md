@@ -1312,3 +1312,48 @@ diffs from it. Betterstack (app-level logs — exceptions, 5xx, latency the
 errorState field never sees) is documented as the next plan in the README,
 blocked only on a query token from Alex (the app's logtail token is ingest-only).
 All three werewolf-ops workstreams — budget, stats, anomaly — now live.
+
+## 2026-06-11 — GLM false "balance dry" urgent: placeholder zero defeated the scraper's defenses
+
+*What happened.* The 15:01Z `scrape_stats` run read GLM at $0.00 (was $9.23
+the day before), reported the key unavailable, and fired a `balance_empty`
+urgent to Telegram. The console actually held ~$9. Reproduced from Simona's
+side at 15:36Z: same scraper, same session, $9.09 — money never left. Root
+cause: the z.ai billing page is an SPA that paints "$0.00" next to the
+Cash/Credits labels before the balance request lands. The handler's defenses
+(login-wall guard, missing-number → `parse_failed`) both assume a wrong read
+looks *absent*; a placeholder zero is present and parseable, so it sailed
+through as `ok: true`. The docstring's "never a silent wrong value" promise
+had a hole exactly at zero.
+
+*What landed.* Three-layer guard in `handlers/scrape_stats.py` (Simona):
+a zero GLM read is never trusted once — re-extracted with 10s/15s settles;
+a zero that persists while the last saved snapshot had money surfaces as
+`suspect_zero` (digest, "verify in console") instead of `balance_empty`
+(urgent); a confirmed zero with no prior balance still escalates urgent, so
+a real drain is delayed at most one cycle, never lost. All three paths
+covered by stubbed-read tests. `_navigate_and_extract` grew a `settle_s`
+param along the way.
+
+*What Marlow flagged that we acted on.* Her own on-demand follow-up (16:56Z,
+queued via `marlow run scrape_stats`) reasoned from the $9.23 → $0.00 → $9.09
+sequence that the zero was transient and wrote "a confirm re-scrape before
+the urgent would have caught this one" — converging on the fix independently,
+after it had already shipped. The follow-up also healed state and the daily
+report through her own loop, per the queued-ticks-not-direct-CLI discipline.
+
+*Things that surprised us.* Marlow's 15:01Z narrative was *too* good: the
+false zero landed the same day the cheap-key trio (DeepSeek/Moonshot/Grok)
+first drained in step, so "GLM was in the mix and had the smallest tank" was
+a perfectly coherent — and wrong — story. A monitoring read that fits the
+day's pattern gets less scrutiny, not more. The deterministic guard exists
+precisely because narrative plausibility is not verification.
+
+*To watch.* Whether `suspect_zero` digests ever show up at all (the longer
+settles alone may absorb every placeholder case), and that GLM's genuinely
+LOW balance (<$10, draining with the trio) gets a top-up before this becomes
+a real `balance_empty`.
+
+*State at end of day.* GLM $9.09/available, state and report corrected by
+Marlow's own tick; only calm digest-level lows outstanding (DeepSeek $9.56,
+GLM $9.09).
