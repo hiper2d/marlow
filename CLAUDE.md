@@ -539,7 +539,7 @@ end-of-day digest. Two tasks drive this.
    message. Write the tick result
    `{"status": "done", "result": "calories: <N> estimated, <C> corrected, <G> goals set, <M> dismissed, <K> still pending"}` and exit.
 
-**`calorie_digest` (nightly, ~23:00 ET).** Summarize and send.
+**`calorie_digest` (morning, 12:00 UTC ≈ 07:00 ET).** Summarize the *prior* fully-closed ET day and send. (Moved off the old ~23:00 ET slot on 2026-06-10 — it was closing the day before late meals landed.)
 
 1. `uv run python handlers/calorie_digest.py due` — returns `dates`: every
    local day with food logged but no digest sent yet (today, plus any day
@@ -657,7 +657,7 @@ welcomes and comments in that style; the handler also strips them as a safety ne
 ### Substack approvals — handler `substack`
 
 Posts the Tier-B comment drafts Alex approved via Telegram. Invoked with
-`context.mode: approvals`. Fires every 2h; cheap when idle.
+`context.mode: approvals`. Currently **disabled** (`schedule: null`) during the manual-polish phase; when re-enabled it fires every 2h (cheap when idle).
 
 1. **Pending?** `substack.py outbox-list --status pending`. If zero → exit clean
    (`result: "no pending substack drafts"`); don't even read Telegram.

@@ -34,6 +34,7 @@ Marlow's identity is **fixed from outside** and its voice is **allowed to evolve
 - `voice-guidelines.md` — editorial, dry, fact-first; closer to a research-blog writer than a chat assistant. Less sarcasm than Simona; wryness only when it emerges from the work. Mandatory `— Marlow` signoff.
 - `topic-guidance.md` — what to cover, what to avoid, when to rotate off a dominant story.
 - `structure-notes.md` — article shape, density rules, how to land an ending.
+- `visual-guidelines.md` — the rubric a header image is scored against; one header per article, "always avoid" patterns, no generated charts. Same role for images that `voice-guidelines.md` plays for prose.
 - `pre-publish-pauses.md` — the short, load-bearing list of categories that force a human review before publishing.
 - `thread-structure.md` — how editorial threads are opened, tracked, and turned into articles.
 
@@ -70,7 +71,8 @@ marlow/
 │   ├── topic-guidance.md        │ Marlow-owned behavioral files
 │   ├── structure-notes.md       │ (the evolving rulebook — see Identity & voice)
 │   ├── pre-publish-pauses.md    │
-│   ├── thread-structure.md      ┘
+│   ├── thread-structure.md      │
+│   ├── visual-guidelines.md     ┘
 │   ├── feedback-inbox/    ← editorial feedback dropped by Simona/Alex, awaiting intake
 │   └── feedback-archive/  ← processed editorial feedback
 ├── driver/
@@ -104,17 +106,18 @@ Each tick (launchd, every 20 min while awake):
 
 1. `tick.sh` checks `~/.marlow/stop` — exit immediately if present.
 2. Checks `~/.marlow/pause` — skip this tick if present, exit clean.
-3. Acquires lock at `/tmp/marlow.lock` — exit if previous tick still running.
-4. Runs `scheduler.py`:
+3. Runs the **operational self-audit** (`monitor_self`) once per UTC day — *outside* Marlow's session and *before* the lock, so a broken session, a missed scheduler pick, or a stuck previous tick can't suppress it. The handler does its own deterministic Telegram escalation; see Monitoring.
+4. Acquires lock at `/tmp/marlow.lock` — exit if previous tick still running.
+5. Runs `scheduler.py`:
    - Reads `projects/*/tasks/*.yaml` across all projects.
    - For each task whose cron schedule is due since last scan, runs its decompose handler (or expands its static `subtasks` list) and pushes new subtasks to `tasks/queue.json`.
    - Picks the highest-priority eligible subtask from the queue.
-5. Invokes a Claude Code session with the chosen subtask, working-memory context, and the named handler to run. Hard wall-clock timeout: 5 min.
-6. Captures the handler's outcome:
+6. Invokes a Claude Code session with the chosen subtask, working-memory context, and the named handler to run. Hard wall-clock timeout: 5 min.
+7. Captures the handler's outcome:
    - `done` → move subtask to `tasks/completed/<date>/`.
    - `in_progress` → checkpoint stays in queue, picked up next tick.
    - `failed` → log, alert via `notify` if critical.
-7. Releases lock, appends a tick log to `memory/recent/`.
+8. Releases lock, appends a tick log to `memory/recent/`.
 
 Scheduler: a launchd LaunchAgent at `~/Library/LaunchAgents/com.marlow.tick.plist`. Fires `tick.sh` every 20 min via `StartInterval` while the system is awake. LaunchAgents load inside the user's login session, so Claude Code OAuth tokens in the macOS Keychain are reachable (cron jobs run outside the login session and can't read the Keychain — that's why we don't use cron).
 
@@ -144,23 +147,27 @@ For dynamic work (e.g. "process every pending food entry"), use `decompose_handl
 | Project | Task | Handler | Schedule (UTC) |
 | --- | --- | --- | --- |
 | research | `feed_scan` | `process_rss_feed` / `process_sitemap_feed` | daily 07:00 |
-| research | `daily_news_curate` | `curate_news_digest` | end-of-day (~22:00)¹ |
+| research | `daily_news_curate` | `curate_news_digest` | daily 22:00 |
 | research | `assignment_research` | `research_assignment` | every 4h |
 | research | `daily_digest` | `compose_daily_digest` | daily 23:00 |
 | blog | `blog_pipeline` | `blog_pipeline` | every 4h |
 | blog | `draft_review` | `draft_article` | every 3 days, 14:00 |
 | blog | `process_editorial_feedback` | `process_editorial_feedback` | every 6h |
+| blog | `crosspost` | `crosspost` | hourly |
 | blog | `substack_growth` | `substack` | event/manual |
 | blog | `substack_approvals` | `substack` | event/manual |
-| werewolf-ops | `monitor_cloudflare` | `monitor_cloudflare` | daily 09:00 |
 | werewolf-ops | `monitor_keys` | `monitor_keys` | twice daily 08:00, 20:00 |
+| werewolf-ops | `monitor_health` | `monitor_health` | every 6h |
+| werewolf-ops | `monitor_betterstack` | `monitor_betterstack` | hourly |
+| werewolf-ops | `monitor_cloudflare` | `monitor_cloudflare` | daily 09:00 |
 | werewolf-ops | `scrape_stats` | `scrape_stats` | daily 09:00 |
+| werewolf-ops | `werewolf_stats` | `werewolf_stats` | daily 09:00 |
 | calories | `poll_food` | `poll_food` | every tick (20 min) |
-| calories | `daily_calorie_digest` | `calorie_digest` | daily 03:00 (~23:00 ET) |
+| calories | `daily_calorie_digest` | `calorie_digest` | daily 12:00 (~07:00 ET, prior day closed) |
 | _framework | `grade_memory` | `grade_memory` | daily 23:30 |
 | _framework | `commit_artifacts` | `commit_artifacts` | daily 23:50 |
 
-¹ `daily_news_curate`'s cron is currently parked (`schedule: null`); it's expected to run end-of-day and is the path candidate notes flow through into the news digest.
+`monitor_self` (the operational self-audit) is not in this table — it isn't a scheduled queue task. The driver runs it directly from `tick.sh`, once per UTC day, before the lock and outside Marlow's session (see Driver and Monitoring).
 
 ## Queue items
 
@@ -186,10 +193,11 @@ Statuses: `pending | in_progress | done | failed`. Most subtasks complete in one
 Each handler is one file under `handlers/`, invoked by the driver with the subtask's context. Current set:
 
 - **Research:** `process_rss_feed`, `process_sitemap_feed`, `research_assignment`, `curate_news_digest`, `compose_daily_digest`, `fetch_article`.
-- **Blog:** `draft_article`, `self_review`, `revise_draft`, `publish_article`, `blog_pipeline`, `generate_header_image`, `process_editorial_feedback`, `substack`.
-- **Werewolf-ops:** `monitor_keys`, `monitor_cloudflare`, `scrape_stats`, `werewolf_stats`.
+- **Blog:** `draft_article`, `self_review`, `revise_draft`, `publish_article`, `blog_pipeline`, `generate_header_image`, `process_editorial_feedback`, `substack`, `crosspost` (poll Telegram → save Alex-flagged news picks as article ideas; legacy auto-draft/post machinery dormant), `x` (browser-driven X posting, dormant — kept from the retired crosspost loop).
+- **Werewolf-ops:** `monitor_keys`, `monitor_health`, `monitor_betterstack`, `monitor_cloudflare`, `scrape_stats`, `werewolf_stats`.
 - **Calories:** `poll_food`, `calorie_digest`.
 - **Framework:** `grade_memory`, `commit_artifacts` (nightly `git add -A` + commit + push of durable artifacts), `framework_fix` (the self-heal handler — Marlow may fix *tools* it has diagnosed, never identity files).
+- **Driver-level:** `monitor_self` (operational self-audit, run by `tick.sh` outside Marlow's session — see Monitoring).
 
 ## Killswitch
 
@@ -232,7 +240,7 @@ Accumulate AI safety/alignment news, track multi-day editorial threads, surface 
 
 **Sources:** Anthropic (news + research), OpenAI, Apollo Research, METR, AE Studio, Import AI (Jack Clark), Zvi Mowshowitz, AI Alignment Forum / LessWrong, DeepMind, and others — pulled via RSS + sitemap scans. Arxiv is followed by author rather than firehose.
 
-**Cadence:** `feed_scan` (daily) writes candidate notes into `projects/research/notes/<date>/candidates/`; `daily_news_curate` picks the day's best, fetches bodies, writes short reviews, and sends one Telegram digest. Active threads live in `projects/research/threads/` as multi-day arcs; when one matures, it becomes a blog draft.
+**Cadence:** `feed_scan` (daily) writes candidate notes into `projects/research/notes/<date>/candidates/`; `daily_news_curate` (daily 22:00) picks the day's best (3–5), fetches bodies, writes short reviews, and sends each pick as its own Telegram message — registering it so Alex can flag any he wants to write about (the article-idea capture path, see Blog). Active threads live in `projects/research/threads/` as multi-day arcs; when one matures, it becomes a blog draft.
 
 **Assignments — external-injection path.** Alex or Simona seed the pipeline by dropping a brief into `projects/research/assignments/pending/<slug>.md` (angle, seed links, points to investigate). `assignment_research` (every 4h) picks up one pending assignment per tick, composes a thread file with an angle memo, and either drafts immediately (`priority: high`) or hands it to the next `draft_review`. Marlow may decline after research if it has nothing distinct to add — honest abandonment beats a forced take. Briefs cite public sources; private framing is paraphrased, never pasted. Full design in [`plans/assignments.md`](plans/assignments.md).
 
@@ -257,14 +265,18 @@ The autonomous gate is the **pre-publish-pauses list** (`memory/pre-publish-paus
 
 **Substack growth** (`substack_growth` + `substack_approvals`): scans Substack for relevant AI/tech threads, auto-welcomes newcomers, and drafts comments for Alex to approve via Telegram before anything posts. The approval poll posts only what Alex OK'd.
 
+**News-pick article-idea capture** (`crosspost`, hourly): the surviving half of a retired auto-post loop. When `daily_news_curate` sends each news pick as its own Telegram message, this handler polls for Alex's replies; a reply means "I want to write about this," and the item + his comment is saved to `projects/research/article-ideas/<date>-<slug>.md`. Simona reads that folder when Alex asks "anything from Marlow's findings?" and they craft the piece together — Marlow does not draft or post it. The original loop (draft in Alex's voice → auto-post to Substack/X via the `substack`/`x` handlers) was retired 2026-06-05 after a day: daily posting read as noise, and Alex wants to own his own hooks. The posting machinery is kept dormant in case we co-post from here later. (See DEVLOG 2026-06-05.)
+
 ### Werewolf-ops
 
-Operational monitoring for the AI Werewolf game. **Live.**
+Operational monitoring for the AI Werewolf game. **Live.** Four axes: what the free tier *costs*, what it *produces*, whether *games* work, whether the *app* throws — plus infra health.
 
 - **Key budgets** (`monitor_keys`, twice daily): low-balance watch on 5 provider keys — DeepSeek, Moonshot, xAI/Grok via balance API; OpenAI, Anthropic via cost-API-minus-baseline. Urgent Telegram alert below threshold, with anti-spam (no repeat ping if balances are unchanged).
 - **Console scrape** (`scrape_stats`, daily): the 3 providers with no balance API — GLM balance, Gemini + Mistral spend-vs-cap — read via a logged-in headless Chrome profile. Eight providers covered in total.
+- **User-activity stats** (`werewolf_stats`, daily): new users, games created, and AI burn (cost), read from the Werewolf Firestore `users`/`games` collections (read-only service account). Digest-only, no alerts.
+- **Broken-game watch** (`monitor_health`, every 6h): scans the `games` collection for the `errorState` the engine writes when a system error hits a game. Alerts on games that became errored *since the last scan* (baselines the standing pile, never re-pings); urgent if `recoverable: false` (game is dead), digest if it may self-heal.
+- **App-level error watch** (`monitor_betterstack`, hourly): the failures that never reach a game doc — unhandled exceptions, provider 5xx, server errors. Reads the app's structured logs back through Betterstack's ClickHouse SQL API. Baselines the pre-existing set; urgent on a new error.
 - **Cloudflare health** (`monitor_cloudflare`, daily): Pages deploys + zone status + SSL-expiry check across the zones reachable through a read-only API token.
-- **Gameplay stats** (`werewolf_stats`): SQL wrapper against the Werewolf DB for user/game/error metrics. Surfaced when useful; not yet on a fixed cadence.
 
 Balance state persists to `driver/budget_state.py` storage; recall the latest with `budget_state.py show`.
 
@@ -273,7 +285,7 @@ Balance state persists to `driver/budget_state.py` storage; recall the latest wi
 Tracks what Alex eats, end to end on-device. He sends food photos and/or text/voice notes to **`@marlow_fitness_bot`** (a separate Telegram bot from the notify bot).
 
 - **`poll_food`** (every tick): pulls new messages, downloads photos, transcribes voice notes locally (faster-whisper, no API cost), and inserts pending rows into `projects/calories/calories.db`. Marlow then **estimates calories + macros itself** — it *is* the vision model, no external API call — storing a kcal *range* (never fake-exact) with a confidence level. It also classifies corrections ("only ate half the burrito") and goal-setting messages ("aim 2000 kcal, 160g protein") rather than logging them as new food, and asks Alex to disambiguate when it can't tell which entry he means.
-- **`daily_calorie_digest`** (daily ~23:00 ET): one end-of-day summary of intake vs. goal with a short comment.
+- **`daily_calorie_digest`** (daily 12:00 UTC, ~07:00 ET): a morning-after summary of the *prior* day's intake vs. goal with a short comment. Sent after the ET day has fully closed, not at its tail — an earlier ~23:00-ET slot was cutting the day off before late meals landed (DEVLOG 2026-06-10).
 
 Simona can review the same data on demand via the `calories` skill (`tools/calorie_db.py`).
 
@@ -281,11 +293,13 @@ Simona can review the same data on demand via the `calories` skill (`tools/calor
 
 Shared Python under `tools/`, called by handlers:
 
-- `notify.py` — Telegram bot, `notify_alex(message, urgency: "urgent" | "digest")`.
+- `notify.py` — Telegram notify bot, `notify_alex(message, urgency: "urgent" | "digest")`.
 - `fitness_bot.py` / `calorie_db.py` — the `@marlow_fitness_bot` channel + the calorie SQLite store.
-- `werewolf_stats.py` — SQL wrapper for the Werewolf DB.
-- budget/provider modules + browser scrape (persistent Chrome profile) for key monitoring.
-- RSS/sitemap readers and article fetchers for research.
+- `transcribe.py` — local voice-note transcription (faster-whisper, no API cost) for `poll_food`.
+- `telegram_poll.py` — the shared inbound `getUpdates` poller; reply-matching for `crosspost` and `substack_approvals` (they must not both poll at once — they'd consume each other's replies).
+- `crosspost_store.py` / `substack_store.py` — persistence for the news-pick and Substack flows.
+- `cost.py` + `budget/` — cost-API helpers and per-provider budget modules; plus a browser scrape (persistent Chrome profile) for the no-API providers — all for key monitoring.
+- `rss_reader.py` / `sitemap_reader.py` — feed readers for research.
 
 The `browser` skill is forked from Simona and pointed at a separate Chrome user-data dir for persistent auth. Shared skills are synced manually: when one repo gets a real fix, copy it to the other.
 
@@ -300,9 +314,11 @@ If urgent volume exceeds ~3/day for a week, recalibrate the prompt. The calorie 
 
 ## Monitoring — how we watch for drift
 
-The original design imagined an automated quality/drift grader (daily 0–3 scores on on-task / persona-stable / drift-since-yesterday, plus a weekly cold-context Opus review). **That was never built, and we've decided not to build it.** The daily `grade_memory` job does memory compaction only; it does not score Marlow's output.
+Two different things get watched, by two different mechanisms. **Operational health** — is the agent actually running its loop — is automated and deterministic. **Editorial/quality drift** — is Marlow writing well and staying on-task — is human and on-demand. They are deliberately not the same system.
 
-Drift-watching is **on-demand and human-in-the-loop** instead:
+**Operational self-audit (`monitor_self`, automated).** A daily, out-of-session check of invariants about Marlow's *own* operation: scheduler-freshness (every scheduled task fired within its window — catches the "a tick silently stopped firing" class), held-draft staleness, and site integrity. Built after an early-June 2026 blog stall where a draft sat `held` for days, a thread page rendered empty, and the curate slot stopped firing — all three were *observed* in working.md and none reached Alex, because escalation depended on an LLM session choosing to alert. So this handler does the urgent → Telegram escalation itself, runs straight from `tick.sh` (before the lock, outside Marlow's session), and is rate-limited to once per UTC day. Its "all green" digest line doubles as proof-of-life: if it stops appearing, the audit — or the whole agent — is down. The only thing that can now silence it is launchd itself dying, which is total-agent-death and visible externally.
+
+**Quality/drift grading (human, on-demand).** The original design imagined an automated quality/drift grader (daily 0–3 scores on on-task / persona-stable / drift-since-yesterday, plus a weekly cold-context Opus review). **That was never built, and we've decided not to build it.** The daily `grade_memory` job does memory compaction only; it does not score Marlow's output. `monitor_self` watches whether the loop *runs*, never whether the writing is *good* — that judgment stays human:
 
 - **Simona analyses Marlow periodically** — Alex asks ("how's Marlow doing?"), and Simona reads the raw artifacts (working memory, recent ticks, behavioral files, published articles, DEVLOG) and reports back. This replaces the automated grader.
 - **`/marlow-review`** — when a real editorial pass is warranted, Simona drafts feedback, discusses it with Alex, and (on his go) drops it into `feedback-inbox/` for Marlow to internalize. This is the only channel that changes Marlow's behavioral files.

@@ -5,8 +5,8 @@ drinks to the Telegram bot **@marlow_fitness_bot** throughout the day.
 Voice notes are transcribed locally (faster-whisper) at ingest, so they
 flow through the same path as a typed note.
 Marlow pulls them every tick, estimates calories + macros (protein /
-carbs / fat), stores each entry, and sends one end-of-day digest back to
-the same chat. Simona queries the same DB when Alex wants to talk through
+carbs / fat), stores each entry, and sends a morning-after digest of the
+prior day back to the same chat. Simona queries the same DB when Alex wants to talk through
 the numbers.
 
 This is **not** a food scale. Calorie estimates from a photo are noisy —
@@ -24,7 +24,7 @@ accuracy.
 | `tools/transcribe.py`  | Local speech-to-text (faster-whisper) for voice notes. No API cost. Model via `CALORIE_WHISPER_MODEL` (default `small`, multilingual). |
 | `tools/calorie_db.py`  | SQLite store (`calories.db`). One row per entry, grouped by Alex's local day (Eastern). Also Simona's query surface. |
 | `handlers/poll_food.py` | Every tick: fetch new messages, download photos + voice notes, transcribe voice, insert **pending** rows, advance the Telegram offset. |
-| `handlers/calorie_digest.py` | Nightly: roll up the day, Marlow comments, send to the chat. |
+| `handlers/calorie_digest.py` | Morning after (12:00 UTC ≈ 07:00 ET): roll up the prior fully-closed day, Marlow comments, send to the chat. |
 
 ## Data flow
 
@@ -38,7 +38,7 @@ poll_food fetch ──► pending rows in calories.db  (+ photo/voice in inbox/)
    ▼  same tick, Marlow's session
 read photo + note → estimate → calorie_db estimate   (or dismiss if not food)
    │
-   ▼  nightly (≈11pm ET)
+   ▼  morning after (≈7am ET, prior day closed)
 calorie_digest due → summary → Marlow writes comment → send → digests row
 ```
 
