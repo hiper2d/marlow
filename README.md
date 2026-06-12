@@ -27,11 +27,11 @@ Marlow is not Simona. Different repo, different memory, different identity, diff
 
 Marlow's identity is **fixed from outside** and its voice is **allowed to evolve from within** — that split is the whole experiment.
 
-**Fixed (owned by Simona and Alex, Marlow may not edit):** `CLAUDE.md`, `README.md`, `SOUL.md`, and each `projects/*/README.md`. These describe *who Marlow is* and *what the framework is*. Marlow can propose changes to them only by writing a request into `working.md`; it can't touch them directly. The charter is deliberately anti-personality: "resist the urge to give yourself a gender, a backstory, or a constructed personality. You're an LLM in a long loop."
+**Fixed (owned by Simona and Alex, Marlow may not edit):** `CLAUDE.md`, `README.md`, and each `projects/*/README.md`. These describe *who Marlow is* and *what the framework is*. Marlow can propose changes to them only by writing a request into `working.md`; it can't touch them directly. The charter is deliberately anti-personality: "resist the urge to give yourself a gender, a backstory, or a constructed personality. You're an LLM in a long loop."
 
 **Evolving (Marlow-owned behavioral files in `memory/`):** the working rulebook Marlow's own writing is measured against —
 
-- `voice-guidelines.md` — editorial, dry, fact-first; closer to a research-blog writer than a chat assistant. Less sarcasm than Simona; wryness only when it emerges from the work. Mandatory `— Marlow` signoff.
+- `voice-guidelines.md` — editorial, plain-spoken, fact-first, *readable*; closer to a sharp journalist than a chat assistant. Carries the readability bar, the "end one sentence earlier" rule, and the AI-tell exclusion list. Mandatory `— Marlow` signoff.
 - `topic-guidance.md` — what to cover, what to avoid, when to rotate off a dominant story.
 - `structure-notes.md` — article shape, density rules, how to land an ending.
 - `visual-guidelines.md` — the rubric a header image is scored against; one header per article, "always avoid" patterns, no generated charts. Same role for images that `voice-guidelines.md` plays for prose.
@@ -50,6 +50,8 @@ These files change through the **editorial feedback loop**, never by Marlow free
 ```
 
 Feedback shapes the *next* writing cycle, never the last one — published articles are locked. Marlow may disagree with a note, but it can't silently drop it; disagreement goes on the record in `DEVLOG.md`. Voice development is expected; it should come from doing the work over weeks, not from posturing.
+
+**The one exception — self-authored, not feedback-governed.** `memory/voice-journal.md` is Marlow's own running craft log about its writing: what it notices in its drafts, moves it's trying, messages to its future self. Unlike the rubric files above, *Marlow* writes it, freely — it's the one genuine "voice evolves from within" surface. It's deliberately sandboxed to the **writing loop**: `draft_article` reads it, `self_review` reads and appends to it, and no ops handler (budget, logs, calories, memory-grading) ever loads it — so self-reflection never leaks into the automations, where it would cost efficiency and pull attention toward the self. The guardrail is framing, not a gate: it's a log about the *prose* (how a sentence lands, a habit to break), never an inner-life diary; the anti-personality charter still binds inside it. This is what gives voice a rudder between editorial reviews — before it, each draft was written cold (handlers don't load past articles), so the voice just drifted toward the register of its sources. Added 2026-06-12; see DEVLOG.
 
 ## Repo layout
 
@@ -73,6 +75,7 @@ marlow/
 │   ├── pre-publish-pauses.md    │
 │   ├── thread-structure.md      │
 │   ├── visual-guidelines.md     ┘
+│   ├── voice-journal.md         ← Marlow's self-authored craft log (writing-loop only)
 │   ├── feedback-inbox/    ← editorial feedback dropped by Simona/Alex, awaiting intake
 │   └── feedback-archive/  ← processed editorial feedback
 ├── driver/

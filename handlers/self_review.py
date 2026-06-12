@@ -22,7 +22,9 @@ CLI:
         → JSON: drafts whose frontmatter has status:draft AND no sibling
           <slug>.self-review.md.
     python handlers/self_review.py materials --slug <slug>
-        → JSON: draft body + the four behavioral files as the rubric.
+        → JSON: draft body + the behavioral files as the rubric + the
+          voice journal (read for context; the session appends a craft
+          observation to it after writing the verdict).
 """
 
 from __future__ import annotations
@@ -37,6 +39,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DRAFTS = REPO_ROOT / "projects" / "blog" / "drafts"
 MEMORY = REPO_ROOT / "memory"
 THREADS = REPO_ROOT / "projects" / "research" / "threads"
+VOICE_JOURNAL = MEMORY / "voice-journal.md"
 
 BEHAVIORAL_FILES = {
     "voice_guidelines": MEMORY / "voice-guidelines.md",
@@ -113,6 +116,8 @@ def materials(slug: str) -> dict:
         "draft_body": draft_body,
         "review_target": str((DRAFTS / f"{slug}.self-review.md").relative_to(REPO_ROOT)),
         "rubric": rubric,
+        "voice_journal": _read(VOICE_JOURNAL),
+        "voice_journal_path": str(VOICE_JOURNAL.relative_to(REPO_ROOT)),
         "verdict_options": ["ship", "revise", "hold-for-alex"],
     }
 
