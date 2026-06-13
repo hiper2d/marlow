@@ -10,6 +10,8 @@ Targets covered:
     status, age of last success.
   - Cloudflare Zones (werewolf domain, etc.) — zone status, DNS records,
     SSL/TLS certificate state.
+  - Web Analytics (RUM) blog traffic — page views + visits per blog site,
+    via the GraphQL Analytics API. Informational only (no alert thresholds).
 
 Reads `C_F` from `os.environ`. Fails clean if missing.
 
@@ -29,7 +31,7 @@ import argparse
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
@@ -41,6 +43,7 @@ from driver.env_loader import import_plist_env  # noqa: E402
 import_plist_env()
 
 API = "https://api.cloudflare.com/client/v4"
+GRAPHQL = "https://api.cloudflare.com/client/v4/graphql"
 
 # Alert thresholds (default — tune via editorial feedback later).
 PAGES_STALE_HOURS = 48          # alert if last success older AND no in-progress build
@@ -48,6 +51,21 @@ SSL_EXPIRING_DAYS = 14          # alert if any cert expires within this window
 DOMAIN_NO_AUTORENEW_URGENT_DAYS = 60   # if auto-renew off, urgent this far ahead
 DOMAIN_AUTORENEW_DIGEST_DAYS = 30      # reminder when auto-renew will fire soon
 DOMAIN_AUTORENEW_URGENT_DAYS = 7       # urgent if expires this close AND renew hasn't fired
+
+# Web Analytics (RUM) blog traffic — informational, NOT alerting. Cloudflare's
+# RUM beacon ("visits" = sessions, "page views" = loads; privacy-first, no
+# uniques). The site-info list API needs a broader scope than this read-only
+# token has, so the site tags are pinned here (mint them in the dashboard:
+# Web Analytics → site → the edit-URL tag, NOT the beacon token). The account
+# tag is auto-discovered from the token.
+TRAFFIC_WINDOW_DAYS = 7         # trailing complete days to summarise
+# This read-only token can't list /accounts (no account-list scope), so the
+# GraphQL accountTag is pinned. Stable per Cloudflare account.
+ACCOUNT_TAG = "b2c651ce4c11bae72bcc5954ad69fe46"
+BLOG_SITES = [
+    {"label": "azelianouski.dev", "site_tag": "20514d8585a244c4b9cc191dfa10fa8a"},
+    {"label": "marlow blog",      "site_tag": "a73d3e44c4cf4fac8f2a906bc4568570"},
+]
 
 
 def _now_utc() -> datetime:
@@ -138,6 +156,102 @@ def _list_worker_deployments(account_id: str, script_name: str) -> list[dict]:
 
 def _list_registrar_domains(account_id: str) -> list[dict]:
     return _request(f"/accounts/{account_id}/registrar/domains", {"per_page": 50})["result"]
+
+
+def _graphql(query: str, variables: dict) -> dict:
+    """POST against the Cloudflare GraphQL Analytics API. Returns `data`."""
+    token = _token()
+    if not token:
+        raise RuntimeError("C_F not in environment")
+    resp = requests.post(
+        GRAPHQL,
+        headers={"Authorization": f"Bearer {token}"},
+        json={"query": query, "variables": variables},
+        timeout=30,
+    )
+    resp.raise_for_status()
+    payload = resp.json()
+    if payload.get("errors"):
+        raise RuntimeError(f"GraphQL errors: {payload['errors']}")
+    return payload.get("data") or {}
+
+
+_RUM_QUERY = """
+query($a: String!, $t: String!, $s: Date!, $u: Date!) {
+  viewer {
+    accounts(filter: {accountTag: $a}) {
+      rumPageloadEventsAdaptiveGroups(
+        limit: 100,
+        filter: {siteTag: $t, date_geq: $s, date_leq: $u},
+        orderBy: [date_ASC]
+      ) {
+        count
+        sum { visits }
+        dimensions { date }
+      }
+    }
+  }
+}
+"""
+
+
+def _rum_rows(account_tag: str, site_tag: str, since, until) -> list[dict]:
+    """Daily page views (count) + visits for one Web Analytics site."""
+    data = _graphql(_RUM_QUERY, {
+        "a": account_tag,
+        "t": site_tag,
+        "s": since.isoformat(),
+        "u": until.isoformat(),
+    })
+    accounts = data.get("viewer", {}).get("accounts", [])
+    groups = accounts[0]["rumPageloadEventsAdaptiveGroups"] if accounts else []
+    return [
+        {
+            "date": g["dimensions"]["date"],
+            "page_views": g.get("count", 0),
+            "visits": (g.get("sum") or {}).get("visits", 0),
+        }
+        for g in groups
+    ]
+
+
+def check_traffic() -> dict:
+    """Web Analytics RUM traffic for the configured blog sites.
+
+    Informational, not alerting: returns yesterday's page views + visits and a
+    trailing-window total per site. `visits` is Cloudflare's session-ish metric
+    (privacy-first, no per-person uniques). Best-effort — its own `ok` flag, so
+    a missing Analytics scope never fails the rest of the Cloudflare report.
+    """
+    if not _token():
+        return {"ok": False, "error": "C_F not in environment"}
+    today = _now_utc().date()
+    yesterday = today - timedelta(days=1)
+    since = today - timedelta(days=TRAFFIC_WINDOW_DAYS)
+    out_sites = []
+    try:
+        for site in BLOG_SITES:
+            rows = _rum_rows(ACCOUNT_TAG, site["site_tag"], since, today)
+            complete = [r for r in rows if r["date"] <= yesterday.isoformat()]
+            y = next((r for r in rows if r["date"] == yesterday.isoformat()), None)
+            win_views = sum(r["page_views"] for r in complete)
+            win_visits = sum(r["visits"] for r in complete)
+            out_sites.append({
+                "label": site["label"],
+                "site_tag": site["site_tag"],
+                "yesterday": {
+                    "date": yesterday.isoformat(),
+                    "page_views": y["page_views"] if y else 0,
+                    "visits": y["visits"] if y else 0,
+                },
+                "window_days": TRAFFIC_WINDOW_DAYS,
+                "window_totals": {"page_views": win_views, "visits": win_visits},
+                "avg_daily_visits": round(win_visits / TRAFFIC_WINDOW_DAYS, 1),
+                "daily": rows,
+            })
+    except (requests.RequestException, RuntimeError) as e:
+        return {"ok": False, "error": str(e), "partial": out_sites}
+    return {"ok": True, "sites": out_sites}
 
 
 def check_pages() -> dict:
@@ -414,6 +528,7 @@ def report() -> dict:
     zones = check_zones()
     workers = check_workers()
     registrar = check_registrar()
+    traffic = check_traffic()  # informational; never gates all_ok
     issues = []
     all_ok = pages.get("ok") and zones.get("ok") and workers.get("ok") and registrar.get("ok")
     if all_ok:
@@ -425,6 +540,7 @@ def report() -> dict:
         "zones": zones,
         "workers": workers,
         "registrar": registrar,
+        "traffic": traffic,
         "issues": issues,
         "any_urgent": any(i["severity"] == "urgent" for i in issues),
     }
@@ -454,6 +570,12 @@ def cmd_check_registrar(args):
     sys.exit(0 if result.get("ok") else 1)
 
 
+def cmd_check_traffic(args):
+    result = check_traffic()
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    sys.exit(0 if result.get("ok") else 1)
+
+
 def cmd_report(args):
     result = report()
     print(json.dumps(result, indent=2, ensure_ascii=False))
@@ -467,6 +589,7 @@ def main():
     sub.add_parser("check-zones", help="All zones + status + DNS records + SSL packs")
     sub.add_parser("check-workers", help="All Workers scripts + latest deployment per script")
     sub.add_parser("check-registrar", help="All registered domains + expiry + auto-renew state")
+    sub.add_parser("check-traffic", help="Web Analytics page views + visits per blog site (informational)")
     sub.add_parser("report", help="Combined snapshot + derived issues per alert thresholds")
     args = parser.parse_args()
     if args.cmd == "check-pages":
@@ -477,6 +600,8 @@ def main():
         cmd_check_workers(args)
     elif args.cmd == "check-registrar":
         cmd_check_registrar(args)
+    elif args.cmd == "check-traffic":
+        cmd_check_traffic(args)
     elif args.cmd == "report":
         cmd_report(args)
 

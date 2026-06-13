@@ -279,7 +279,7 @@ Operational monitoring for the AI Werewolf game. **Live.** Four axes: what the f
 - **User-activity stats** (`werewolf_stats`, daily): new users, games created, and AI burn (cost), read from the Werewolf Firestore `users`/`games` collections (read-only service account). Digest-only, no alerts.
 - **Broken-game watch** (`monitor_health`, every 6h): scans the `games` collection for the `errorState` the engine writes when a system error hits a game. Alerts on games that became errored *since the last scan* (baselines the standing pile, never re-pings); urgent if `recoverable: false` (game is dead), digest if it may self-heal.
 - **App-level error watch** (`monitor_betterstack`, hourly): the failures that never reach a game doc — unhandled exceptions, provider 5xx, server errors. Reads the app's structured logs back through Betterstack's ClickHouse SQL API. Baselines the pre-existing set; urgent on a new error.
-- **Cloudflare health** (`monitor_cloudflare`, daily): Pages deploys + zone status + SSL-expiry check across the zones reachable through a read-only API token.
+- **Cloudflare health** (`monitor_cloudflare`, daily): Pages deploys + zone status + SSL-expiry check across the zones reachable through a read-only API token, plus blog traffic (Web Analytics page views + visits per blog site, informational) folded into the digest.
 
 Balance state persists to `driver/budget_state.py` storage; recall the latest with `budget_state.py show`.
 

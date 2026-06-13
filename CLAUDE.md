@@ -369,11 +369,11 @@ The behavioral files are the rubric your next draft will be measured against. Up
 
 ### Cloudflare monitoring — handler `monitor_cloudflare`
 
-Fires daily at 09:00 UTC via the `monitor_cloudflare` task (werewolf-ops project). The handler auto-discovers Pages projects and zones reachable through the read-only `C_F` API token in the plist, returns a structured JSON snapshot, and derives an `issues` array against default alert thresholds.
+Fires daily at 09:00 UTC via the `monitor_cloudflare` task (werewolf-ops project). The handler auto-discovers Pages projects and zones reachable through the read-only `C_F` API token in the plist, returns a structured JSON snapshot, and derives an `issues` array against default alert thresholds. It also pulls **blog traffic** (Web Analytics page views + visits per blog site) via the GraphQL Analytics API — informational, never an alert. The token additionally carries **Account Analytics: Read** for this; the blog site tags are pinned in the handler's `BLOG_SITES` (the token can't list Web Analytics sites itself).
 
 In-tick flow:
 
-1. `uv run python handlers/monitor_cloudflare.py report` — JSON snapshot with `ok`, `pages`, `zones`, `issues`, `any_urgent`.
+1. `uv run python handlers/monitor_cloudflare.py report` — JSON snapshot with `ok`, `pages`, `zones`, `traffic`, `issues`, `any_urgent`. (`traffic` has its own `ok` flag and never gates the top-level `ok` — a missing Analytics scope degrades traffic to a digest note, not a failure.)
 
 2. If `ok: false`, this is a framework bug, not a Cloudflare outage. Two flavors:
    - **C_F missing or unauthorized** (token absent, revoked, or wrong scopes): notify Alex urgent — "Cloudflare monitoring token missing/invalid, please re-issue and rerun install-agent.sh". This is the only urgent for a broken handler; everything else logs and continues.
@@ -407,6 +407,13 @@ In-tick flow:
    The most consequential section — domain expiry is the failure mode
    that turns the site dark.>
 
+   ## Blog traffic (Web Analytics)
+
+   <For each site in `traffic.sites`: label, yesterday's page views + visits,
+   and the 7-day window totals. "visits" is Cloudflare's session-ish metric
+   (privacy-first, no per-person uniques). If `traffic.ok` is false, one line
+   noting why (e.g. Analytics scope missing) — not an alert.>
+
    ## Issues this run
 
    <Bulleted list from the handler's `issues` array, grouped by severity.
@@ -421,6 +428,7 @@ In-tick flow:
    - **One or more `severity: urgent`** → `notify_alex(urgency="urgent", message=...)`. If multiple urgents, send one consolidated message listing each (target + one-line detail), not multiple Telegram pings.
    - **Only `severity: digest` items** → append one entry to today's digest summarizing them. No urgent ping.
    - **No issues** → append a one-line digest entry: `"Cloudflare: <N> Pages, <M> zones — all green."`
+   - **Always** (issues or not) → append a blog-traffic line from `traffic.sites`: per site, yesterday's visits + the 7-day total, e.g. `"Blog traffic (7d): azelianouski.dev 8 visits (3 yest), marlow blog 0."` Informational; never urgent.
 
 5. Write the tick result `{"status": "done", "result": "cloudflare monitor: <summary>"}` and exit. No need to log to `recent/` if the run was clean (the dated report file is the audit trail); do log if you escalated or self-diagnosed.
 

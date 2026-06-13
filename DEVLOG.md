@@ -1379,3 +1379,51 @@ a real `balance_empty`.
 *State at end of day.* GLM $9.09/available, state and report corrected by
 Marlow's own tick; only calm digest-level lows outstanding (DeepSeek $9.56,
 GLM $9.09).
+
+## 2026-06-13 — Cloudflare watch grows eyes: blog traffic in the daily digest
+
+*What landed.* `monitor_cloudflare` now reports **blog traffic** alongside the
+deploy/DNS/SSL/registrar health it already watched. New `check_traffic()` +
+`check-traffic` CLI pull Web Analytics page views + visits per blog site from
+the GraphQL Analytics API (`rumPageloadEventsAdaptiveGroups`): yesterday's
+numbers plus a 7-day window total, per site. Informational only — `traffic`
+has its own `ok` flag and never gates the report's top-level `ok`, and the
+in-tick flow appends a traffic line to the digest on every run (even all-green)
+but never escalates it. Two sites configured in `BLOG_SITES`: `azelianouski.dev`
+(Alex's blog) and the marlow blog. Verified live: azelianouski.dev returned
+real data (3 visits yesterday, 8 over the window); the marlow blog reads 0
+until its beacon deploys.
+
+*The hosting mismatch that shaped it.* The original ask was "unique visits to
+both blogs." Reality: the two blogs are hosted differently and Cloudflare can't
+give true uniques for either. `azelianouski.dev` is a proxied zone (real
+IP-uniques *would* be available via zone analytics) but the **marlow blog is a
+`workers.dev` Worker** — not a zone, so zone-level uniques don't exist for it at
+all. The only metric available for *both* uniformly is the Web Analytics RUM
+beacon: page views + "visits" (session-ish, privacy-first, no per-person
+uniques). So we went beacon-on-both. `azelianouski.dev` already had Web
+Analytics on automatic setup (CF injects the beacon through the proxy — no code
+change); the marlow blog needed the snippet added to `Base.astro` manually
+(commit 8cd427f) since a `workers.dev` Worker isn't auto-injected. Beacon goes
+live on the next push → Cloudflare build.
+
+*Credential plumbing.* The read-only `C_F` token gained **Account Analytics:
+Read** (added via the dashboard; editing token permissions does NOT rotate the
+secret, so the plist value stayed valid — no redeploy). Two gotchas worth
+remembering: (1) the GraphQL `siteTag` is the Web Analytics **edit-URL tag**,
+NOT the beacon snippet token — they're different hex strings for the same site;
+(2) this token can't list `/accounts` or the Web Analytics site-info API (no
+account-list / WA-admin scope), so both the account tag and the blog site tags
+are pinned as constants in the handler rather than auto-discovered. That's also
+why the existing Pages/Workers/registrar sections have always read "none
+discovered" — `_list_accounts()` returns empty for this token.
+
+*What's deferred.* True per-person uniques (would need Plausible/Fathom or a
+custom scheme — not worth it for a personal blog). Auto-discovery of WA sites
+(blocked on token scope; pinned constants are fine for two blogs). Giving the
+marlow blog a real proxied custom domain (would unlock zone-level IP-uniques,
+but it's a `workers.dev` site by choice for now).
+
+*State at end of day.* Handler + CLI + digest wiring shipped and tested live.
+Beacon committed to the marlow blog (8cd427f), pending push to deploy. Docs
+updated (README, CLAUDE.md Cloudflare section, task YAML).

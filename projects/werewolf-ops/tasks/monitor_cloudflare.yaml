@@ -3,10 +3,16 @@
 # Fires daily at 09:00 UTC. Reports on:
 #   - Pages projects (Marlow blog, if/when it's on Pages)
 #   - Zones (werewolf domain, etc.) — status, DNS records, SSL certs
+#   - Blog traffic — Web Analytics page views + visits per blog site
+#     (azelianouski.dev + the marlow blog). Informational, surfaced in the
+#     digest; never an alert. "visits" is Cloudflare's session-ish metric
+#     (privacy-first, no per-person uniques).
 #
 # The handler auto-discovers everything reachable through the C_F API
 # token. Token scope is read-only (Cloudflare Pages: Read + Zone: Read +
-# DNS: Read + SSL: Read), baked into the launchd plist via install-agent.sh.
+# DNS: Read + SSL: Read + Account Analytics: Read), baked into the launchd
+# plist via install-agent.sh. Blog Web Analytics site tags are pinned in the
+# handler (BLOG_SITES); this token can't list Web Analytics sites itself.
 #
 # Alert behavior (Marlow's session interprets the handler's `issues`
 # array):
@@ -31,7 +37,12 @@
 #      issues, append a single digest entry.
 #   5. If no issues, append a one-line digest entry: "Cloudflare: <N> Pages,
 #      <M> zones — all green."
-#   6. Write the tick result and exit.
+#   6. ALWAYS append a blog-traffic digest line from `traffic.sites` (even on
+#      an all-green run): per site, yesterday's visits + the 7-day total, e.g.
+#      "Blog traffic (7d): azelianouski.dev 8 visits (3 yest), marlow blog 0."
+#      If `traffic.ok` is false (e.g. Account Analytics scope missing), note it
+#      once in the digest — do NOT treat it as urgent; traffic is informational.
+#   7. Write the tick result and exit.
 name: monitor_cloudflare
 project: werewolf-ops
 description: Daily Cloudflare health check — Pages deploys + zone status + SSL.
