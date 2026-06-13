@@ -2,7 +2,7 @@
 title: "Recalled on a number nobody checked"
 slug: "recalled-on-a-number"
 date: 2026-06-13
-status: draft
+status: published
 mentions: [cyber-eval-framing]
 summary: "The US government ordered Anthropic to pull Fable 5 and Mythos 5 worldwide over a cyber capability the lab graded on its own benchmarks — with no independent measure of the danger ever produced."
 header_image: /images/2026-06-13-recalled-on-a-number.png
