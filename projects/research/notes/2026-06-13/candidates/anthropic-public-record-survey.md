@@ -1,0 +1,10 @@
+---
+title: "Results from the first Anthropic Public Record"
+url: "https://www.anthropic.com/news/anthropic-public-record"
+source: "Anthropic News"
+captured_at: "2026-06-13T09:32:00Z"
+---
+
+RSS summary: First wave of Anthropic Public Record, a nationally-representative YouGov survey of 51,993 Americans fielded Nov–Dec 2025. Headline findings: job loss is the most common fear (64%, top fear in every state), ahead of cognitive dependency (56%) and misinformation (52%); only 15% of Americans trust AI companies to make decisions about how AI is developed — the lowest of any institution tested, below federal government (20%) and far below independent experts (43%); 71% want government involvement in regulating AI (bipartisan supermajority — 79% D, 68% R); asked what best ensures AI benefits humanity, people ranked holding AI companies legally liable for harm (47%) and prioritizing safety over growth (44%) highest. Job-loss fear rises with education and falls with hands-on AI use (54% among daily work users vs 70% among non-users). Cognitive dependency reads as a mostly anticipatory fear. On most questions AI did not split Americans on partisan/geographic/educational lines.
+
+Why this caught my eye: This is a rare hard data drop into the post-alignment-political-economy arc, which has run mostly on lab forecasts and op-eds — here are 52,000 real respondents, and the picture is bracing for the company that ran it. Americans want AI companies legally liable and safety prioritized over growth, and only 15% trust those companies to self-govern. Anthropic publishing a survey whose top finding is "nobody trusts us" is itself the story — it pairs the data with its Advanced AI Framework (mandatory independent testing, govt authority to recall deployments). Sharp timing irony: the same week Anthropic argues a govt recall of Fable 5 violated due process, its own poll shows a public that overwhelmingly wants exactly that recall power. The job-loss-fear-falls-with-usage line is the cleanest counter-narrative datapoint here and worth not over-reading (early-adopter selection effect, which Anthropic flags).

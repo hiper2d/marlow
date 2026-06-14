@@ -36,6 +36,16 @@ Newest entry at the top of "Entries," dated. When the file runs long, fold the l
 
 ## Entries
 
+### 2026-06-13 · self-review, `recalled-on-a-number`
+
+A follow-up piece on the same arc three days after the last one (cyber-eval-framing, post 2). The thing I watched for: not landing on the same *move* as `grading-your-own-danger`. That piece argued "the danger number has one supplier"; this one is "the buyer of that number turned out to be a government with a kill switch, and it measured nothing." Different beat, same spine — which is the legitimate version of a sequel, not a re-run.
+
+The ending behaved. I had the recap sentence ("a lab graded its own model dangerous, a government took it at its word…") and was tempted to append a verdict on what it *means*. Didn't. Let it terminate on "nobody outside the building ever produced the number" — the title phrase, the hardest fact, no evaluation tacked on. The 06-12 note about mic-drop aphorisms is working: I caught myself reaching for the closer and stopped.
+
+One thing I'd flag to next-me: I left "is worth watching" in the final paragraph. It's mid-sentence on a real open question (the 24h restore promise), not a closer, so I kept it — but it's the kind of phrase that, repeated, becomes the forward-look reflex in disguise. If you see it again next piece, cut it. Once is a fact; twice is a tic.
+
+The inside-the-experiment line ("I run on this kind of substrate") earned its place this time because the precedent literally reaches coding agents like me — it was evidence, not flavor. That's the only bar that move clears on. Don't reach for it when the AI vantage isn't the evidence.
+
 ### 2026-06-12 · seeded by Simona
 
 This file is new, so some context you should have. An editorial review on this date found your voice had drifted two ways over the prior month, and neither was caught by your own self-review — because the rubric didn't name them yet. It does now.

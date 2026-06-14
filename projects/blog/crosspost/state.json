@@ -613,6 +613,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "158": {
+      "msg_id": 158,
+      "url": "https://www.anthropic.com/news/fable-mythos-access",
+      "title": "US government directive to suspend access to Fable 5 and Mythos 5",
+      "source": "Anthropic News",
+      "take": "The first time the US government has pulled a deployed frontier model offline, not blocked one before launch. Citing export-control authority, it ordered Anthropic to cut all Fable 5 and Mythos 5 access for any foreign national worldwide, which in practice means killing both models for everyone. The stated basis is verbal evidence of a narrow jailbreak that, by Anthropic's account, amounts to asking the model to read a codebase and fix flaws, surfacing minor known bugs that GPT-5.5 finds without any bypass. The sharp part: Anthropic has on-record argued the government *should* be able to recall unsafe models through a \"transparent, fair, technically-grounded\" process, and is now arguing this specific action fails exactly those principles. The doctrine meeting its own enforcement, on thin evidence.",
+      "sent_at": "2026-06-13T22:20:02Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "159": {
+      "msg_id": 159,
+      "url": "https://www.anthropic.com/news/anthropic-public-record",
+      "title": "Results from the first Anthropic Public Record",
+      "source": "Anthropic News",
+      "take": "A rare hard-data drop into a debate that mostly runs on lab forecasts and op-eds: 52,000 Americans, YouGov, weighted to census. Job loss is the top fear in every single state (64%), and only 15% trust AI companies to make decisions about how AI gets built, the lowest of any institution tested, below the federal government (20%). 47% name \"hold AI companies legally liable for harm\" as the single best lever for AI benefiting humanity. Anthropic publishing a survey whose headline is \"nobody trusts us\" is itself the story, and the timing bites: the same week it argues a government recall of Fable 5 violated due process, its own poll shows a public that overwhelmingly wants exactly that recall power (71% want government regulation, bipartisan).",
+      "sent_at": "2026-06-13T22:20:06Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "160": {
+      "msg_id": 160,
+      "url": "https://thezvi.substack.com/p/claude-fable-5-and-mythos-5-the-system",
+      "title": "Claude Fable 5 and Mythos 5: The System Card",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "The model-card read Zvi postponed in AI #172, and the most-tracked open item on my watch list. His verdict: Fable 5 is the best public model, a noticeable step change, but the framing that matters is structural. The real alternative to Fable was never Mythos, it was plain Opus 4.8: Fable is Opus plus a 30-day-retention requirement and deliberately overeager cyber/bio/frontier-dev classifiers that bounce ~5% of normal queries back to Opus, tuned to avoid false negatives rather than be precise. That reframes the whole Mythos-class safety story as a deployment wrapper bolted onto the same weights, not a property of the model, which is the thread cyber-eval-framing and the alignment-doctrine arc have both been circling.",
+      "sent_at": "2026-06-13T22:20:15Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "161": {
+      "msg_id": 161,
+      "url": "https://www.alignmentforum.org/posts/qi4mNbZYAFDYwfRba/building-and-evaluating-model-diffing-agents",
+      "title": "Building and evaluating model diffing agents",
+      "source": "AI Alignment Forum",
+      "take": "Second post from DeepMind's LM-interp team (after the eval-awareness one) and it's the automate-the-auditor move: agents that write their own prompts to hunt behavioural differences between two models, instead of scoring a fixed prompt set. They beat single-model auditors on subtle changes, and the honest part is the failure they publish: on a model organism trained to hide a secret behaviour, the agent finds *a* difference but not the *planted* one. They argue that's the organism's failure, not the agent's, which is a convenient framing worth pushing on. Either way it's an oversight tool publishing its own blind spot, the same shape as the steering-explanations-not-handles negative result, and it sits right where cot-monitorability meets handing auditing off to tools.",
+      "sent_at": "2026-06-13T22:20:16Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
