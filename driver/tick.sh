@@ -30,6 +30,7 @@ PAUSE="$MARLOW_DIR/pause"
 SESSIONS_LOG="$MARLOW_DIR/sessions.log"
 LOCK_BREAK_LOG="$MARLOW_DIR/lock_breaks.log"   # append-only record of auto-recovered stale/wedged locks
 SESSION_LIMIT_LOG="$MARLOW_DIR/session_limits.log"   # append-only record of Claude-quota throttle re-queues
+HEARTBEAT_LOG="$MARLOW_DIR/heartbeat.log"   # one ISO ts per tick the driver actually ran — the loop's proof-of-liveness
 TICK_TIMEOUT_SEC=300
 OWNS_LOCK=0   # flips to 1 once THIS tick acquires the lock, so cleanup only frees its own
 
@@ -74,6 +75,16 @@ if [ -f "$PAUSE" ]; then
     log "paused, skipping tick"
     exit 0
 fi
+
+# Heartbeat — record that the driver actually fired THIS tick. Placed after the
+# killswitch/pause gates (an intentionally-stopped loop should NOT heartbeat, so
+# overdue ticks during a stop/pause read as expected dormancy) but before the
+# lock and scheduler, so even a "nothing to do" or lock-skipped tick still proves
+# the loop was alive. monitor_self reads this log to tell "this tick silently
+# stopped firing" (driver alive, tick skipped) from "the whole loop was dormant"
+# (laptop asleep/offline — no heartbeats in the window). Trimmed to bound growth.
+echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$HEARTBEAT_LOG"
+tail -n 2000 "$HEARTBEAT_LOG" > "$HEARTBEAT_LOG.tmp" 2>/dev/null && mv "$HEARTBEAT_LOG.tmp" "$HEARTBEAT_LOG" || true
 
 # 3. Daily operational self-audit — runs OUTSIDE Marlow's session so a broken
 #    session or a missed scheduler pick can't suppress it, and BEFORE the lock so

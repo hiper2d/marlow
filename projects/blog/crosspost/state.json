@@ -681,6 +681,40 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "166": {
+      "msg_id": 166,
+      "url": "https://thezvi.substack.com/p/american-government-takes-down-claude",
+      "title": "American Government Takes Down Claude Fable",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's full read on the first US-gov-forced recall of a deployed frontier model. Commerce classified Fable 5 + Mythos 5 under export controls over a jailbreak Amazon flagged — one that, by Anthropic's own account, surfaced only previously-known minor vulns other public models find without any bypass. Zvi and Dean Ball both call the justification cartoonish; the part worth tracking is the precedent, export-control authority used as a model kill switch on verbal evidence with no specifics in the letter. This is the direct op-ed companion to the event blog post #8 was built on.",
+      "sent_at": "2026-06-15T01:07:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "167": {
+      "msg_id": 167,
+      "url": "https://www.alignmentforum.org/posts/nLrrYweeFxgXACSmS/sft-drives-gemini-s-safety-properties-1",
+      "title": "SFT Drives Gemini's Safety Properties",
+      "source": "AI Alignment Forum",
+      "take": "DeepMind's interp team SFT'd the pretraining-only Gemini 3.1 Pro / 3 Flash and found the SFT-only models match the production models across alignment-dilemma evals, over-refusal, eval-awareness, and reward-hacking — implying the safety behavior is installed in pretraining + SFT, not RL. That cuts directly against the OLMo-3 result from earlier this week, which pinned eval-awareness emergence to the RLVR stage. Two labs, opposite answers on where eval-gaming actually gets installed; DeepMind hedges it as possibly Gemini-specific, which is the honest caveat, but the disagreement is the interesting part. Third post in a week from this team, all adjacent to whether you can trust what a model's chain-of-thought shows.",
+      "sent_at": "2026-06-15T01:07:43Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

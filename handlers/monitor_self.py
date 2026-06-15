@@ -23,6 +23,12 @@ Invariant registry — each check(now) returns a list of Issue dicts:
   - scheduler_freshness  every scheduled task fired within its window.
                          Catches the whole class of "a tick silently
                          stopped firing" (the 2026-06 curate slot).
+                         DORMANCY-AWARE: an overdue tick only pages urgent if
+                         the DRIVER was alive across the overdue window. If the
+                         heartbeat log shows a dormancy gap (laptop asleep /
+                         offline), the miss is expected — it folds into one
+                         digest line instead of paging per-tick (the 2026-06-14
+                         overnight-sleep false alarm).
   - failed_ticks         no automation's most-recent run failed. Catches a
                          tick that ran but CRASHED (the 2026-06-07 werewolf
                          stats session that died "without writing a result
@@ -80,6 +86,12 @@ LOCK_BREAK_LOG = Path.home() / ".marlow" / "lock_breaks.log"
 # was hit. The task is NOT lost (it's re-queued), but a cluster means Marlow was
 # throttled for a window — surface it so it doesn't read as a quiet evening.
 SESSION_LIMIT_LOG = Path.home() / ".marlow" / "session_limits.log"
+# tick.sh appends one ISO timestamp here every time the driver actually fires
+# (before the lock, so even a "nothing to do" tick records it). This is the
+# loop's liveness timeline — scheduler_freshness uses it to distinguish a tick
+# that silently stopped (driver alive, tick skipped) from the whole driver being
+# dormant (laptop asleep/offline, no heartbeats in the window).
+HEARTBEAT_LOG = Path.home() / ".marlow" / "heartbeat.log"
 
 # Look back this far over completed-task records. Wider than the daily audit
 # cadence so a failure can't slip between two runs; a still-broken task simply
@@ -102,6 +114,13 @@ FRESH_ARTIFACTS = [
 # A scheduled tick is "overdue" only once it's past its expected next fire
 # PLUS a grace window — the task's own must_run_within_hours, or this default.
 DEFAULT_GRACE_HOURS = 6
+# The driver fires every ~20 min. A silence of at least this long inside an
+# overdue window means the loop went dormant (sleep/offline/crash) — so a tick
+# that didn't fire across it was deferred, not silently killed. 60 min ≈ 3
+# missed cycles: tolerant of one or two jittered/skipped ticks, decisive about a
+# real outage. Below this, the driver was effectively continuous → a still-unfired
+# tick is a genuine "stopped firing" bug and pages urgent.
+DRIVER_DORMANT_GAP_MIN = 60
 HELD_SLA_HOURS = 48
 # A thread opened with no published post is NORMAL in Marlow's pipeline (she
 # opens thread files before the first article). Only flag it once it's gone
@@ -176,12 +195,53 @@ def _issue(check: str, severity: str, summary: str, action: str, detail: str = "
 # --- invariant checks --------------------------------------------------------
 
 
+def _load_heartbeats() -> list[datetime] | None:
+    """Sorted driver-heartbeat timestamps. Returns None if the log doesn't exist
+    yet — in which case the dormancy mechanism isn't deployed and the caller
+    falls back to the old always-urgent behavior (don't silently disable the
+    detector on a host whose tick.sh predates the heartbeat)."""
+    if not HEARTBEAT_LOG.exists():
+        return None
+    out: list[datetime] = []
+    for line in HEARTBEAT_LOG.read_text().splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            out.append(_parse_iso(line))
+        except ValueError:
+            continue
+    out.sort()
+    return out
+
+
+def _max_dormant_gap_min(hbs: list[datetime], start: datetime, end: datetime) -> float:
+    """Largest silence (minutes) between consecutive driver heartbeats across
+    [start, end]. start and end bound the window so leading dormancy (driver was
+    already asleep when the tick came due) and trailing dormancy both count. With
+    no heartbeats in range the whole window is one gap → reads as fully dormant."""
+    pts = [start] + [h for h in hbs if start <= h <= end] + [end]
+    pts.sort()
+    return max((b - a).total_seconds() / 60 for a, b in zip(pts, pts[1:]))
+
+
 def check_scheduler_freshness(now: datetime) -> list[dict]:
     """Every scheduled task should have fired within its window. A task whose
     last_scheduled timestamp has fallen past (next cron fire + grace) has
-    silently stopped — the generic detector for a dead tick."""
+    silently stopped — the generic detector for a dead tick.
+
+    Dormancy-aware: an overdue tick only pages urgent when the DRIVER was alive
+    across the overdue window (heartbeats roughly continuous). If the heartbeat
+    log shows a dormancy gap (laptop asleep/offline), the miss is expected —
+    those ticks fold into a single digest line rather than paging one-per-tick.
+    Gap-based, not heartbeat-count: after a long sleep the scheduler drains the
+    backlog one tick per cycle, so a still-overdue laggard keeps its leading
+    dormancy gap until it finally fires — which a count-based rule would misread
+    as a live driver skipping it."""
     issues: list[dict] = []
+    deferred: list[tuple[str, float, float]] = []  # (name, overdue_h, gap_min)
     last = load_last_scheduled()
+    hbs = _load_heartbeats()
     for task in load_task_definitions():
         name, sched = task.get("name"), task.get("schedule")
         if not name or not sched:
@@ -194,11 +254,27 @@ def check_scheduler_freshness(now: datetime) -> list[dict]:
         if now <= next_fire + timedelta(hours=grace):
             continue
         overdue_h = (now - next_fire).total_seconds() / 3600
+        # Was the loop dormant for a stretch of the overdue window? If so the
+        # tick was deferred by the outage, not silently killed. hbs is None only
+        # on a host whose tick.sh predates the heartbeat → keep old behavior.
+        gap_min = _max_dormant_gap_min(hbs, next_fire, now) if hbs is not None else 0.0
+        if gap_min >= DRIVER_DORMANT_GAP_MIN:
+            deferred.append((name, overdue_h, gap_min))
+            continue
         issues.append(_issue(
             "scheduler_freshness", "urgent",
             f"Tick '{name}' is {overdue_h:.0f}h overdue — last scheduled {last_iso} (cron '{sched}').",
             f"Inspect driver/scheduler + the {name} handler; the tick has silently stopped firing.",
-            f"Expected next fire {_iso(next_fire)}, grace {grace}h exceeded.",
+            f"Expected next fire {_iso(next_fire)}, grace {grace}h exceeded; driver was alive across the window.",
+        ))
+    if deferred:
+        names = ", ".join(sorted(n for n, _, _ in deferred))
+        worst_gap_h = max(g for _, _, g in deferred) / 60
+        issues.append(_issue(
+            "scheduler_freshness", "digest",
+            f"{len(deferred)} scheduled tick(s) overdue across a driver-dormant window "
+            f"(~{worst_gap_h:.0f}h gap — laptop asleep/offline): {names}.",
+            "Expected after sleep/offline; they catch up once the loop resumes. No action unless it persists while the driver is up.",
         ))
     return issues
 

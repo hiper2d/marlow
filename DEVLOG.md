@@ -1427,3 +1427,62 @@ but it's a `workers.dev` site by choice for now).
 *State at end of day.* Handler + CLI + digest wiring shipped and tested live.
 Beacon committed to the marlow blog (8cd427f), pending push to deploy. Docs
 updated (README, CLAUDE.md Cloudflare section, task YAML).
+
+---
+
+## 2026-06-15 — self-audit learns the difference between a dead tick and a sleeping laptop
+
+*What landed.* A driver-liveness heartbeat + a dormancy-aware
+`check_scheduler_freshness`. `tick.sh` now appends one ISO timestamp to
+`~/.marlow/heartbeat.log` on every run — placed after the killswitch/pause
+gates but **before** the lock and scheduler, so even a "nothing to do" or
+lock-skipped tick still proves the loop fired. `monitor_self` reads that log and,
+for any overdue tick, measures the largest heartbeat gap across
+`[next_fire, now]`. Gap ≥ 60 min (`DRIVER_DORMANT_GAP_MIN`, ~3 missed 20-min
+cycles) → the loop was dormant, the miss is expected → folds into a single
+digest line instead of paging. Gap < 60 min → the driver was demonstrably alive
+and still skipped the tick → urgent, same as before. Log absent entirely (a host
+whose `tick.sh` predates this) → fall back to old always-urgent behavior, so the
+detector never silently disables itself.
+
+*What prompted it.* Alex forwarded a `monitor_self` urgent: `monitor_betterstack`
+"3h overdue — silently stopped firing" and `poll_food` "last run FAILED 5h ago."
+Both were already self-healed by the time he looked. Root cause of *both* was the
+same: his laptop (which hosts the whole driver) slept/went offline overnight on
+06-14. `poll_food`'s one failure was a transient local DNS miss on
+`api.telegram.org` — the handler diagnosed it correctly, didn't advance the
+Telegram offset, and the next tick ingested fine (no data lost). The betterstack
+"silent stop" was just the launchd timer not firing while the machine was asleep,
+then catching up on wake (a whole batch of ticks bunched at 00:22 and 02:09 UTC —
+the classic sleep-then-drain signature).
+
+*The design hole it exposed.* `monitor_self` runs *from* `tick.sh` (step 3), so
+it only ever observes the world *after* the machine wakes. It had no record of
+whether the driver was alive *during* an overdue window — so "this specific tick
+died while the loop kept running" and "the whole loop was dormant" looked
+identical. `last_scheduled` can't tell them apart (it only records the last fire,
+not the loop's pulse). The heartbeat log is the missing pulse.
+
+*Decision reconsidered — count vs. gap.* First instinct was "page only if the
+driver heartbeat ≥ N times since the tick came due." Rejected: after a long
+sleep the scheduler drains its backlog one task per 20-min tick, so a laggard
+waiting its turn would accumulate heartbeats-since-due and re-trip a count rule —
+a false positive in a different costume. A *gap* rule is immune: the laggard
+keeps its leading dormancy gap in-window until it actually fires (which advances
+`last_scheduled` past the gap), so it stays correctly classified as deferred the
+whole time it's draining.
+
+*Tested.* Helper + end-to-end: overnight-sleep → digest (no page); driver alive
+24/7 but tick skipped → urgent; slow backlog-drain → digest (leading gap still
+explains it); no-log host → urgent fallback. `bash -n` clean on `tick.sh`;
+confirmed a live tick wrote its own heartbeat (12:42:36Z) before the manual seed.
+
+*What's deferred.* The consolidated digest line fires whenever the laptop sleeps
+across a tick window — i.e. potentially every morning if Alex's laptop sleeps
+nightly. Left it in for now as low-noise visibility; trivially droppable if it
+reads as spam. The deeper fix (move the driver off a sleeping laptop onto an
+always-on host) is the real cure for sleep-gap noise and stays on the someday
+list.
+
+*State at end of day.* Heartbeat write + dormancy-aware check shipped and tested.
+`~/.marlow/heartbeat.log` seeded and live. No git commit yet (Alex's call).
