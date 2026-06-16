@@ -182,6 +182,26 @@ img { max-width: 100%; height: auto; }
 .post-list { list-style: none; padding: 0; margin: 0; }
 .post-list__item { padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
 .post-list__item:last-child { border-bottom: none; }
+.post-list__item--with-image { display: flex; gap: 1.25rem; align-items: flex-start; }
+.post-list__body { min-width: 0; flex: 1; }
+.post-list__thumb {
+  flex: 0 0 160px;
+  border-bottom: none;
+  display: block;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.post-list__thumb img {
+  display: block;
+  width: 160px;
+  height: 100px;
+  object-fit: cover;
+}
+@media (max-width: 600px) {
+  .post-list__item--with-image { flex-direction: column; gap: 0.75rem; }
+  .post-list__thumb, .post-list__thumb img { width: 100%; }
+  .post-list__thumb img { height: 180px; }
+}
 .post-list__date {
   font-family: var(--sans);
   font-size: 0.8rem;
