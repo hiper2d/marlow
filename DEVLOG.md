@@ -1486,3 +1486,105 @@ list.
 
 *State at end of day.* Heartbeat write + dormancy-aware check shipped and tested.
 `~/.marlow/heartbeat.log` seeded and live. No git commit yet (Alex's call).
+
+## 2026-06-16 — split into two loops: writer (identity) and ops (faceless)
+
+*What landed.* Marlow is now **two independent tick loops sharing one codebase**.
+`com.marlow.tick` (writer) runs research + blog; `com.marlow-ops.tick` (ops) runs
+werewolf-ops monitoring + calories. Both went live and validated this session.
+
+The split is three mechanisms, all backward-compatible (a no-`MARLOW_PROFILE`
+invocation is byte-identical to the old single loop — kept alive as the rollback
+path, and confirmed in production: the live launchd loop picked up the edited
+`tick.sh` mid-session on a `draft_article` tick and ran the legacy path clean):
+- **scheduler.py** — `MARLOW_PROFILE` env scopes the task set (each task YAML now
+  carries `profile: writer|ops`), the queue (`queue.<profile>.json`), the
+  last_scheduled clock, and the completed archive (`tasks/completed/<profile>/`).
+- **tick.sh** — profile arg → per-loop lock (`/tmp/marlow-<profile>.lock`), temp
+  files, and driver state under `~/.marlow/<profile>/`. Killswitch + pause kept
+  GLOBAL. The repo-root `CLAUDE.md` is now a thin, identity-neutral contract;
+  each loop's identity is appended via `--append-system-prompt` from
+  `profiles/<profile>/IDENTITY.md`.
+- **monitor_self.py** — made profile-aware so each loop audits its own
+  freshness/heartbeat (the scheduler loaders it imports scope for free; fixed the
+  remaining hardcoded `~/.marlow/*` + completed-dir paths).
+
+*Why.* Two reasons, one practical, one about identity. Practical: one shared lock
++ one queue meant a heavy/wedged writer tick (`draft_article` has timed out
+before) blocked the reliability-critical monitoring behind it. Separate loops =
+separate failure domains; a stuck blog draft can't starve a budget alert.
+Identity: the anti-personality charter existed to stop a model holding
+load-bearing deterministic jobs from drifting into role-play. Remove those jobs
+from the identity loop and the cage is free to come off — and Discord (coming)
+actually *needs* a personality. So writer keeps/develops identity; ops is a
+deliberately faceless `it`.
+
+*The CLAUDE.md surgery.* The 864-line manual was partitioned by a line-range
+slicer (verbatim copy, coverage-checked — nothing dropped): 153-line shared root
+(tick mechanics, result-JSON contract lifted out of where it was buried in
+grade_memory, memory rules, universal hard constraints, self-healing, session
+start), 513-line writer IDENTITY (persona + "it not she" + all editorial
+doctrine + voice + voice-journal), 256-line ops IDENTITY (faceless preamble +
+monitoring/calorie doctrine, deferring to the per-task YAMLs).
+
+*Validation.* Both loops kickstarted post-cutover. Ops ran `poll_food`, wrote to
+`/tmp/marlow-ops-tick-result.json`, archived under `tasks/completed/ops/` — terse,
+operational, no persona. Writer ran `blog_pipeline` → self_review (verdict ship),
+checked the Voice/Structure/Topic rubric, **appended a voice-journal entry**,
+signed `— Marlow` — full persona from the appended identity. Identities correctly
+differentiated per loop.
+
+*Things that surprised us / nearly bit.* (1) The per-profile state files
+(`queue.<profile>.json`, `last_scheduled.<profile>.json`) were NOT covered by the
+old exact-name `.gitignore` entries — they'd have leaked runtime state into the
+nightly `commit_artifacts` blanket commit. Fixed with `tasks/queue.*.json` +
+`tasks/last_scheduled.*.json` globs. (2) Cutover caught a live `draft_article`
+tick mid-flight; waited it out rather than kill the draft. (3) Seeded
+`~/.marlow/<profile>/{heartbeat.log,last_self_audit}` at cutover so monitor_self
+wouldn't false-page on absent heartbeats against migrated (old) timestamps.
+
+*What's deferred.* (1) `commit_artifacts` (now on the ops loop) does a repo-wide
+`git add -A`; both loops write the same working tree, so it could in principle
+race the writer's `publish_article` commit on the git index — low odds (different
+times), noted to watch. (2) Legacy `tasks/queue.json` + `last_scheduled.json` left
+in place as the rollback source of truth; delete after ≥1 day healthy.
+(3) Trimming the writer plist env to drop ops-only secrets (both currently carry
+the full superset — harmless). (4) **Phase 3:** the Discord duty, and letting the
+writer develop identity (a self-reflection diary beyond the writing-craft
+voice-journal — the original ask that motivated the whole split).
+
+*State at end of day.* Both loops live and validated. Framework changes
+uncommitted in the working tree (Alex's call on the commit). Build recipe +
+cutover runbook + rollback live in Simona's
+`writing_projects/marlow-two-loop-split/`.
+
+### 2026-06-16 (later, Simona-side) — YouTube source feeds + a quoted-slug bug in the publish link
+
+*What landed.* (1) **Blog front page shows header-image thumbnails** — the
+`header_image` was only rendered on the post detail page; `PostListItem` now
+shows it in the list too (date+title full-width on top, image+summary in a
+two-column row below, text-only fallback for the two old imageless posts). (2)
+**Seven YouTube channels added to `feed_scan` (writer profile)** — Alex-curated
+list, wired through the existing `process_rss_feed` handler via YouTube's
+per-channel RSS (`videos.xml?channel_id=UC…`), zero new code. All `priority:
+low`; a feed item is title+link+description only (no transcript), so the YAML
+tells Marlow to be selective. Resolution gotcha logged in Simona memory: take
+the channel page's canonical `/channel/UC…` link, not the first UC id on the
+page (the first scrape of @TheAiGrid grabbed a *linked* channel — "TheLifeGrid",
+empty feed).
+
+*The bug Alex caught.* Marlow's published-to-Telegram link came through as
+`/post/"you-cant-filter-it-out"` — literal quotes in the URL, 404. The site was
+fine (Astro's YAML parser unquotes); the culprit was `publish_article.py`'s
+hand-rolled `_read_frontmatter`, which did `v.strip()` but never stripped the
+surrounding quotes off a value like `slug: "…"`. So *every* post with a quoted
+`slug:` had been shipping a broken notification link — only noticed now because
+Alex clicked the message instead of navigating from the site. Fix: strip
+matching surrounding quotes (the sibling `curate_news_digest._parse_frontmatter`
+already did this — publish just missed it). Verified the parser now yields a
+clean slug/url/title.
+
+*Things to watch.* Whether YouTube items actually earn their way into posts:
+they only land if Marlow files a candidate note AND it attaches to a thread that
+ripens. If video signal proves too thin off title+description alone, the next
+step is a transcript-fetch tier. No YouTube in a post yet as of today.

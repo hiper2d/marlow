@@ -66,7 +66,15 @@ def _read_frontmatter(path: Path) -> tuple[dict, str]:
         if ":" not in line:
             continue
         k, _, v = line.partition(":")
-        meta[k.strip()] = v.strip()
+        v = v.strip()
+        # Strip matching surrounding quotes so values like
+        #   slug: "you-cant-filter-it-out"
+        # don't carry the quotes into URLs/messages. Astro's YAML parser
+        # already unquotes, so the published site was fine; this keeps the
+        # notification link in sync.
+        if len(v) >= 2 and v[0] == v[-1] and v[0] in ("'", '"'):
+            v = v[1:-1]
+        meta[k.strip()] = v
     return meta, body
 
 
