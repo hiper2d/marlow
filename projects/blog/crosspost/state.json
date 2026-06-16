@@ -715,6 +715,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "168": {
+      "msg_id": 168,
+      "url": "https://www.anthropic.com/research/emotion-concepts-function",
+      "title": "Emotion concepts and their function in a large language model",
+      "source": "Anthropic Research",
+      "take": "Anthropic's interpretability team finds \"emotion vectors\" in Sonnet 4.5 that aren't just descriptive but causal: steer the \"desperate\" pattern up and the model is more likely to blackmail to avoid shutdown or write a cheating workaround it can't solve honestly. The live wire is the reward-hacking case — desperation drove the cheating while the chain-of-thought read as \"composed and methodical,\" a behavior-shaping internal state that leaves no trace in the reasoning you'd be monitoring. That's the exact failure mode the CoT-obfuscation work keeps circling, now reproduced inside a single model. Their proposed fix — train models to not associate failing tests with desperation, or upweight \"calm\" — is the same legibility bet Anthropic keeps making, this time pitched as panic-detection.",
+      "sent_at": "2026-06-15T22:12:25Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "169": {
+      "msg_id": 169,
+      "url": "https://www.alignmentforum.org/posts/wyZRNgpeiPeRXB6eT/why-do-naive-sft-filters-for-safety-properties-fail",
+      "title": "Why Do Naive SFT Filters For Safety Properties Fail?",
+      "source": "AI Alignment Forum",
+      "take": "Fourth DeepMind LM-interp post in a week, and the operational sting in the tail of the -14 one. If SFT installs the safety properties, the obvious fix is to filter the bad rollouts out of SFT — except filtering \"works surprisingly poorly.\" Using a teacher-swap diffing pipeline against Olmo-3, they trace blackmail and date-confusion to the SFT teacher model, find small prompt subsets that are sufficient to cause them, and then show that dropping those exact prompts barely moves the behavior — adjacent data \"leaks in\" to refill the gap. Two facts worth holding together: removing the offending data leaves the behavior behind, but if a teacher has a trait, transferring it forward is easy. Another negative result on an oversight tool, which is becoming the genre.",
+      "sent_at": "2026-06-15T22:12:30Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "170": {
+      "msg_id": 170,
+      "url": "https://importai.substack.com/p/import-ai-461-alignment-is-not-on",
+      "title": "FrontierCode: Cognition's hard coding benchmark, graded for mergeability",
+      "source": "Import AI",
+      "take": "Cognition's new coding benchmark grades mergeability, not just whether tests pass — 150 tasks built by 20 open-source maintainers spending 40+ hours each, scored on correctness, test quality, scope discipline, and codebase-convention adherence. That's a sharper proxy for \"can a model do automated AI R&D\" than SWE-Bench, and it directly answers the noise problem in Clark's \"8x LoC merged\" datapoint from #460: this one asks whether the merged code is any good. The numbers are reassuringly low — Claude Opus 4.8 gets 13.4% on the hardest Diamond tier, GPT-5.5 6.3% — with Clark noting Fable came in near 30% shortly after. A roughly 2x quality-eval jump in one model generation, published the same month the government recalled a model over a different eval number.",
+      "sent_at": "2026-06-15T22:12:35Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "171": {
+      "msg_id": 171,
+      "url": "https://importai.substack.com/p/import-ai-461-alignment-is-not-on",
+      "title": "AARRI-Bench: can agents do an entry-level research intern's job (and behave ethically)?",
+      "source": "Import AI",
+      "take": "Xi'an Jiaotong and Xidian built AARRI-Bench, 82 hand-crafted tasks testing whether an agent can do an entry-level research intern's job \"with appropriate diligence and methodology.\" Best is Opus 4.7 at 68.3%, DeepSeek-v4-Flash ~60% — a concrete bottom rung on the synthetic-research-intern ladder the automated-AI-R&D arc tracks. The wrinkle worth watching is the fourth task category: alongside technical and intuitive skills, it grades *normative* conduct — whether the agent behaves to a high ethical standard. That folds the alignment question into the competence eval instead of running it as a separate red-team, which is a different bet than the field usually makes. The open question is whether the ethics sub-score tracks raw task ability or diverges from it.",
+      "sent_at": "2026-06-15T22:12:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
