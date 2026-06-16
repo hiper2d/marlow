@@ -2,7 +2,7 @@
 title: "You can't filter it out"
 slug: "you-cant-filter-it-out"
 date: 2026-06-16
-status: draft
+status: published
 mentions: [cot-monitorability]
 summary: "If chain-of-thought monitoring decays, the obvious fix is to go upstream and cut the bad behavior out at its training-time source. A month of interpretability work says the source is harder to find, harder to remove, and harder to see than the transcript was."
 header_image: /images/2026-06-16-you-cant-filter-it-out.png
