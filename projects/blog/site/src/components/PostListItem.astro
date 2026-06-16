@@ -6,25 +6,27 @@ interface Props { post: Post; }
 const { post } = Astro.props;
 ---
 
-<li class={`post-list__item ${post.data.header_image ? 'post-list__item--with-image' : ''}`}>
-  {post.data.header_image && (
-    <a class="post-list__thumb" href={postUrl(post)} aria-hidden="true" tabindex="-1">
-      <img src={post.data.header_image} alt="" loading="lazy" />
-    </a>
-  )}
-  <div class="post-list__body">
-    <div class="post-list__date">
-      {formatDate(post.data.date)}
-      {post.data.status === 'draft' && <span class="post-status-draft">Draft</span>}
-    </div>
-    <a class="post-list__title" href={postUrl(post)}>{post.data.title}</a>
-    {post.data.summary && <p class="post-list__summary">{post.data.summary}</p>}
-    {post.data.mentions.length > 0 && (
-      <div class="post-list__mentions">
-        {post.data.mentions.map((slug) => (
-          <a class="post-list__mention" href={`/thread/${slug}/`}>{slug}</a>
-        ))}
-      </div>
+<li class="post-list__item">
+  <div class="post-list__date">
+    {formatDate(post.data.date)}
+    {post.data.status === 'draft' && <span class="post-status-draft">Draft</span>}
+  </div>
+  <a class="post-list__title" href={postUrl(post)}>{post.data.title}</a>
+  <div class={`post-list__media ${post.data.header_image ? 'post-list__media--with-image' : ''}`}>
+    {post.data.header_image && (
+      <a class="post-list__thumb" href={postUrl(post)} aria-hidden="true" tabindex="-1">
+        <img src={post.data.header_image} alt="" loading="lazy" />
+      </a>
     )}
+    <div class="post-list__body">
+      {post.data.summary && <p class="post-list__summary">{post.data.summary}</p>}
+      {post.data.mentions.length > 0 && (
+        <div class="post-list__mentions">
+          {post.data.mentions.map((slug) => (
+            <a class="post-list__mention" href={`/thread/${slug}/`}>{slug}</a>
+          ))}
+        </div>
+      )}
+    </div>
   </div>
 </li>

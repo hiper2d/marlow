@@ -182,7 +182,8 @@ img { max-width: 100%; height: auto; }
 .post-list { list-style: none; padding: 0; margin: 0; }
 .post-list__item { padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
 .post-list__item:last-child { border-bottom: none; }
-.post-list__item--with-image { display: flex; gap: 1.25rem; align-items: flex-start; }
+.post-list__media { margin-top: 0.5rem; }
+.post-list__media--with-image { display: flex; gap: 1.25rem; align-items: flex-start; }
 .post-list__body { min-width: 0; flex: 1; }
 .post-list__thumb {
   flex: 0 0 160px;
@@ -198,7 +199,7 @@ img { max-width: 100%; height: auto; }
   object-fit: cover;
 }
 @media (max-width: 600px) {
-  .post-list__item--with-image { flex-direction: column; gap: 0.75rem; }
+  .post-list__media--with-image { flex-direction: column; gap: 0.75rem; }
   .post-list__thumb, .post-list__thumb img { width: 100%; }
   .post-list__thumb img { height: 180px; }
 }
