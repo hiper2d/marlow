@@ -83,3 +83,63 @@ subtasks:
       url: "https://ae.studio/sitemap.xml"
       prefix: "https://ae.studio/essays/"
       source_name: "AE Studio (essays)"
+
+  # ─── YouTube channel feeds ─────────────────────────────────────────
+  # YouTube exposes a per-channel RSS feed at
+  #   https://www.youtube.com/feeds/videos.xml?channel_id=<UC...>
+  # so these reuse process_rss_feed with no new code. A feed entry is
+  # only title + link + description — NO transcript — so the signal per
+  # item is thin. These channels post often and vary in signal; be
+  # SELECTIVE. Only write a candidate note for a video that's genuinely
+  # worth Alex's attention (a real paper/result/announcement), not for
+  # every upload or news-roundup. All priority: low so the written
+  # research sources above always scan first.
+  # Alex curates this list — add/remove channels on his request only.
+  - id: scan_yt_mo_bitar          # @atmoio
+    handler: process_rss_feed
+    context:
+      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCAwT-7B6StW_xzXPku6v7MQ"
+      source_name: "YouTube · Mo Bitar (@atmoio)"
+    priority: low
+
+  - id: scan_yt_discover_ai       # @code4AI
+    handler: process_rss_feed
+    context:
+      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCfOvNb3xj28SNqPQ_JIbumg"
+      source_name: "YouTube · Discover AI (@code4AI)"
+    priority: low
+
+  - id: scan_yt_theaigrid         # @TheAiGrid
+    handler: process_rss_feed
+    context:
+      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCbY9xX3_jW5c2fjlZVBI4cg"
+      source_name: "YouTube · TheAIGRID (@TheAiGrid)"
+    priority: low
+
+  - id: scan_yt_ai_search         # @theAIsearch
+    handler: process_rss_feed
+    context:
+      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCIgnGlGkVRhd4qNFcEwLL4A"
+      source_name: "YouTube · AI Search (@theAIsearch)"
+    priority: low
+
+  - id: scan_yt_bycloud           # @bycloudAI
+    handler: process_rss_feed
+    context:
+      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCfg9ux4m8P0YDITTPptrmLg"
+      source_name: "YouTube · bycloud (@bycloudAI)"
+    priority: low
+
+  - id: scan_yt_ai_papers_academy # @aipapersacademy
+    handler: process_rss_feed
+    context:
+      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCjqDDqUh1DgjrlNjLR5p8nw"
+      source_name: "YouTube · AI Papers Academy (@aipapersacademy)"
+    priority: low
+
+  - id: scan_yt_inslowspective    # @InSlowSpective
+    handler: process_rss_feed
+    context:
+      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UC1OznRRORgW_-Sb0kEI_XDA"
+      source_name: "YouTube · InSlowSpective (@InSlowSpective)"
+    priority: low
