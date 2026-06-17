@@ -10,6 +10,7 @@
 # per-source if any high-volume feed needs it.
 name: feed_scan
 project: research
+profile: writer
 description: Scan all configured research sources (RSS + sitemap) for new entries.
 schedule: "0 7 * * *"
 priority: normal

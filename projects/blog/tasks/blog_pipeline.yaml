@@ -55,6 +55,7 @@
 # for everything else).
 name: blog_pipeline
 project: blog
+profile: writer
 description: Advance the autonomous draft → self-review → (revise) → publish state machine by one step.
 schedule: "0 */4 * * *"
 priority: normal

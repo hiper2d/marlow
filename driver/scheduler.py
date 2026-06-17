@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from dataclasses import dataclass, asdict, field
 from datetime import datetime, timezone
@@ -30,9 +31,22 @@ from croniter import croniter
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TASKS_GLOB = str(REPO_ROOT / "projects" / "*" / "tasks" / "*.yaml")
-QUEUE_PATH = REPO_ROOT / "tasks" / "queue.json"
-LAST_SCHEDULED_PATH = REPO_ROOT / "tasks" / "last_scheduled.json"
-COMPLETED_DIR = REPO_ROOT / "tasks" / "completed"
+
+# Profile scoping. Two loops (writer / ops) share this codebase but must never
+# share a queue, a last_scheduled clock, or a task set. MARLOW_PROFILE selects
+# which. When UNSET we fall back to the legacy single-loop behavior — shared
+# filenames, no task filtering — so the pre-split loop runs byte-identically
+# until cutover. A task YAML with no `profile:` defaults to "writer".
+PROFILE = os.environ.get("MARLOW_PROFILE") or None
+
+if PROFILE:
+    QUEUE_PATH = REPO_ROOT / "tasks" / f"queue.{PROFILE}.json"
+    LAST_SCHEDULED_PATH = REPO_ROOT / "tasks" / f"last_scheduled.{PROFILE}.json"
+    COMPLETED_DIR = REPO_ROOT / "tasks" / "completed" / PROFILE
+else:
+    QUEUE_PATH = REPO_ROOT / "tasks" / "queue.json"
+    LAST_SCHEDULED_PATH = REPO_ROOT / "tasks" / "last_scheduled.json"
+    COMPLETED_DIR = REPO_ROOT / "tasks" / "completed"
 
 PRIORITY_ORDER = {"high": 0, "normal": 1, "low": 2}
 
@@ -99,6 +113,10 @@ def load_task_definitions() -> list[dict]:
         with open(path) as f:
             data = yaml.safe_load(f)
             if not data:
+                continue
+            # Profile filter. Unset PROFILE (legacy) loads everything; a set
+            # profile loads only its own tasks (untagged YAML defaults to writer).
+            if PROFILE and data.get("profile", "writer") != PROFILE:
                 continue
             data["_source"] = path
             defs.append(data)

@@ -17,6 +17,7 @@
 # they need a shared inbound dispatcher.
 name: crosspost
 project: blog
+profile: writer
 description: Poll Telegram and save the news picks Alex flags into the article-ideas folder for Simona.
 schedule: "0 * * * *"
 priority: normal

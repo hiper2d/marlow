@@ -26,6 +26,7 @@
 #   5. Run prune-recent to delete tick logs older than 3 days.
 name: grade_memory
 project: _framework
+profile: writer
 description: Compress yesterday's tick logs into working.md; prune recent/.
 schedule: "30 23 * * *"
 priority: high

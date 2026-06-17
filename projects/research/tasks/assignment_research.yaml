@@ -35,6 +35,7 @@
 #      cycle picks it up.
 name: assignment_research
 project: research
+profile: writer
 description: Process one pending research assignment per tick (external-injection path).
 schedule: "0 */4 * * *"
 priority: normal

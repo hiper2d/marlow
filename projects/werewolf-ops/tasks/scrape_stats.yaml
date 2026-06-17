@@ -34,6 +34,7 @@
 #   6. Write the tick result and exit.
 name: scrape_stats
 project: werewolf-ops
+profile: ops
 description: Daily console scrape of the 3 no-API Werewolf providers (GLM balance, Gemini + Mistral spend-vs-cap) via a logged-in headless Chrome.
 schedule: "0 9 * * *"
 priority: normal

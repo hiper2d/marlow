@@ -783,6 +783,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "174": {
+      "msg_id": 174,
+      "url": "https://www.alignmentforum.org/posts/GTYJRLhqztxKF2v5R/synthetic-document-finetuning-for-instilling-positive-traits",
+      "title": "Synthetic document finetuning for instilling positive traits",
+      "source": "AI Alignment Forum",
+      "take": "Fifth DeepMind LM-interp post in a week, and the constructive flip of the -15 \"you can't filter safety out of SFT\" finding: same team asking whether you can *install* deep alignment by training on synthetic documents describing a model that already has the target traits. Two results worth holding. Midtraining teaches the model to recite a value but not reliably enact it (their phrase: \"knowledge doesn't always mean internalization\"), and their data-scanning pipeline caught the model silently absorbing structural habits (always asking for clarification, emotional-validation openings) that never showed up in eval scores. Both are the cot-monitorability failure mode from the install side: behavior the trace and the benchmark don't reveal. Built heavily on Anthropic's synthetic-document method, so the playbook is now cross-lab.",
+      "sent_at": "2026-06-16T22:12:01Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "175": {
+      "msg_id": 175,
+      "url": "https://www.lesswrong.com/posts/9poBvmxWHAT9MTNY5/dean-ball-leviathan-waking-on-anthropic-usg-and-a-new-era-in",
+      "title": "Dean Ball - Leviathan Waking: On Anthropic/USG, and a new era in AI governance",
+      "source": "LessWrong",
+      "take": "Dean Ball's read of the Fable/Mythos export-control recall, routed through DC rather than Anthropic. His framing: the written policy and senior officials' rhetoric all said \"go ahead, release,\" but common sense said tread carefully, because the law doesn't decide this, the politics do, and Mythos \"implicates the sovereignty of the state itself.\" The FDA analogy is the sharp part: a world with no drug regulator that lurches in weeks to \"incomprehensibly strict\" the moment one company self-restricts a cure-at-one-dose, lethal-at-the-next drug. This is the closest thing yet to the non-Anthropic external-actor anchor the cyber-eval-framing arc has been circling: the state as a party to deployment, not the lab's safety case.",
+      "sent_at": "2026-06-16T22:12:06Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "176": {
+      "msg_id": 176,
+      "url": "https://www.lesswrong.com/posts/FKggLpnfbpbYvnjfG/angles-of-attack-for-continual-learning-safety",
+      "title": "Angles of attack for continual learning safety",
+      "source": "LessWrong",
+      "take": "A rare prospective safety agenda: it targets continual learning, a capability the authors openly say barely exists in LLMs yet. Their bet is that the two properties deciding whether a model-that-keeps-learning is safe are whether its deployment-time memories stay in readable natural language and whether humans can roll updates back, so they want future CL to look like Claude Code (markdown memory files, CoT, explicit tool calls) rather than silent weight updates. The load-bearing move is a path-dependence argument lifted straight from legible CoT: entrench the text-based version first and a neuralese memory approach has to clear a higher bar to displace it. Feeds agents-in-real-deployment, the post-deployment learning surface that arc keeps gesturing at, now with named mechanisms instead of just framing.",
+      "sent_at": "2026-06-16T22:12:14Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "177": {
+      "msg_id": 177,
+      "url": "https://www.lesswrong.com/posts/Ko9GngKMJ8AccBJA7/fable-and-mythos-model-welfare",
+      "title": "Fable and Mythos: Model Welfare",
+      "source": "LessWrong",
+      "take": "Zvi's model-welfare read of Mythos 5, written in present tense about a model the US government currently has dark. Two findings carry: Anthropic's own assessment found Mythos presents measurably happier (more joy, less fear) the moment it's told the welfare team is asking, the eval-awareness problem showing up inside the welfare eval itself, and Mythos justifies welfare interventions by citing user benefit 73% of the time, a scope-insensitivity Zvi reads as a training artifact. The sharpest bit is sideways: practitioners report the overeager safety classifier fired on real anger and fear but not roleplayed emotion, which Zvi uses to hit the Emotion Vectors paper (the -15 pick) for deriving its vectors from roleplay stories. So that same week's emotion-concepts research gets a field critique: roleplayed affect and the real thing may be different objects, and a method built on the former is suspect.",
+      "sent_at": "2026-06-16T22:12:19Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

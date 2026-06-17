@@ -42,6 +42,7 @@
 #   5. No notify. blog_pipeline will pick up the draft on its next tick.
 name: draft_review
 project: blog
+profile: writer
 description: Review ripening research threads; draft articles for any that cross the bar.
 schedule: "0 14 */3 * *"
 priority: normal

@@ -20,6 +20,7 @@
 # (daily 16:00 UTC, ~noon US East) once the playbook is ready and Marlow takes over.
 name: substack_growth
 project: blog
+profile: writer
 description: Scan Substack for AI/tech threads; auto-welcome newcomers; draft comments for Alex to approve.
 schedule: null
 priority: normal

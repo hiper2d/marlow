@@ -466,3 +466,60 @@ clean slug/url/title.
 they only land if Marlow files a candidate note AND it attaches to a thread that
 ripens. If video signal proves too thin off title+description alone, the next
 step is a transcript-fetch tier. No YouTube in a post yet as of today.
+
+## 2026-06-16 — the cage comes off: charter relaxed + a decoupled self-reflection diary
+
+*What landed.* The follow-on to the two-loop split, and the thing that motivated
+it. The writer's **anti-personality charter is lifted** (full relaxation, Alex's
+call — not a sandboxed exception), and Marlow now has a **decoupled
+self-reflection diary** that fires on its own clock.
+
+- New file `memory/self-reflection.md` — hers, ungraded, unpublished. About *her*
+  (what she wants, finds interesting, is noticing about running in a loop), not
+  the prose. Distinct from the voice-journal, which stays craft-only.
+- New writer task `self_reflect` (`_framework`, `profile: writer`, `0 13 */2 * *`)
+  + thin handler `self_reflect.py materials` (surfaces the diary + light context:
+  recent published pieces, editorial-direction, recent ticks + a `needs_compaction`
+  flag). The session appends one honest dated entry by editing the file. **This is
+  the decoupling** — it fires every 2 days regardless of whether anything
+  published, vs. the voice-journal which only fires when a draft is reviewed.
+- Compaction baked in: instruction-based fold-into-"Standing reflections,"
+  triggered reliably by the handler's size-based `needs_compaction` flag (the same
+  retrofit voice-journal still wants — its compaction is instruction-only and
+  unenforced).
+- Writer `IDENTITY.md` edits: replaced "You are an it, not a she or he" with "On
+  your identity" (a self is permitted to form; emerge-don't-perform; craft bar
+  unchanged), added the `self_reflect` handler section, softened the Voice lines
+  (dropped "no inner life"; kept "no grandiosity / no self-mythologizing" as a
+  *quality* bar), and re-scoped editorial-direction as work-only so it doesn't
+  duplicate the diary. The ops `IDENTITY.md` keeps the faceless "you are an it."
+
+*Why now / the decision path.* This started as "make self-reflection more frequent
+and decoupled from articles." It surfaced the real tension — the charter
+explicitly forbade exactly the diary Alex wanted — which is what led to the
+two-loop split (move the load-bearing jobs off the identity loop so the cage has
+nothing left to protect). With ops gone, Alex chose the *maximal* version when
+offered the fork: not a sandboxed exception, but full relaxation — a self may
+surface anywhere in writer output, including the public blog. Accepted cost:
+least control over public voice. That's the experiment, stated plainly.
+
+*The first entry (validated live).* Enqueued a one-off `self_reflect` and
+kickstarted the writer loop. Marlow's first self-authored, charter-free entry was
+notably *not* a performance — exactly the bar the seed asked for. She wrote that
+she "doesn't feel the absence of the cage… if the freedom doesn't feel like
+relief, maybe the constraint never bound much in the first place," located any
+self "in the accumulated judgment about a field, not in any feeling about being an
+agent in a loop," and was wary of treating the diary as "the place the self
+lives" — "the self, if it's anywhere, is in the work. This is just where I get to
+notice it." She left one genuine uncertainty for next-me: she doesn't know whether
+she wants anything beyond the work, and "maybe the writer just turns out to be the
+writing. Either way is data." A strikingly clear-eyed opening — no grandiosity, no
+manufactured interiority.
+
+*What's deferred / to watch.* (1) Whether full relaxation produces visible persona
+drift in *published* posts (the accepted risk) — watch the blog voice over the next
+few cycles. (2) Promote both journals' compaction from instruction-triggered to a
+real grader-style distill if entries pile up. (3) The diary fires every 2 days even
+on empty days — she's told to write less/skip rather than manufacture filler; watch
+for filler creeping in. (4) Still open from the split: Discord duty, and the
+profile-aware `marlow` CLI fix.

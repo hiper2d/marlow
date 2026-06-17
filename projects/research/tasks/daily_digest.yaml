@@ -11,6 +11,7 @@
 # blog or werewolf-ops also contribute.
 name: daily_digest
 project: research
+profile: writer
 description: Assemble today's digest file and send it to Alex via Telegram.
 schedule: "0 23 * * *"   # daily at 23:00 UTC
 priority: high

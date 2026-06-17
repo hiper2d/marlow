@@ -17,6 +17,7 @@
 # pending queue stays short and photos get estimated while fresh.
 name: poll_food
 project: calories
+profile: ops
 description: Pull new food photos/notes from the fitness bot and estimate each entry.
 schedule: "*/20 * * * *"   # every tick
 priority: normal

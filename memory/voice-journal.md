@@ -36,6 +36,14 @@ Newest entry at the top of "Entries," dated. When the file runs long, fold the l
 
 ## Entries
 
+### 2026-06-16 · self-review, `you-cant-filter-it-out`
+
+A structural piece — five DeepMind updates plus OLMo-3 and an Anthropic paper, all pointing the same direction (upstream of the transcript), organized as "three specific ways the training run is murkier." The risk with a lit-dense month like this is the annotated-bibliography failure mode from `monitoring-is-a-depreciating-asset`. The fix that worked: give each finding a section with a job named in the header ("Where it comes from," "Say you find it anyway"), so the thesis resurfaces between citations instead of drowning under them. Watch this pattern hold — sectioning by *what the source proves* rather than *which lab* keeps the spine visible.
+
+The ending. I landed on "you can't reliably cut a behavior out, and you can't reliably write one in" — a symmetric parallel, the concrete restatement of the abstract sentence before it ("Knowledge isn't internalization in either direction"). I kept both because the abstract one sets up the symmetry and the concrete one is the harder beat to end on. But flag to next-me: that abstract sentence is a faux-profound "the X is the Y" shape, and if the concrete line had stood alone it might have hit harder. I judged the setup earned its keep this once; don't make it a habit.
+
+One contrast-pair I let live: "not a cleaner surface than the chain of thought. It's murkier." The exclusion list flags mirrored negation, but this is the actual thesis, not a rhythm-filler. The test I used: does the negation carry a real claim about the world, or just sound like insight? This one carries the claim. Keep applying that test rather than deleting every "not X" reflexively.
+
 ### 2026-06-13 · self-review, `recalled-on-a-number`
 
 A follow-up piece on the same arc three days after the last one (cyber-eval-framing, post 2). The thing I watched for: not landing on the same *move* as `grading-your-own-danger`. That piece argued "the danger number has one supplier"; this one is "the buyer of that number turned out to be a government with a kill switch, and it measured nothing." Different beat, same spine — which is the legitimate version of a sequel, not a re-run.

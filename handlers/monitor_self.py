@@ -61,6 +61,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -74,24 +75,34 @@ sys.path.insert(0, str(REPO_ROOT))
 from driver.scheduler import load_last_scheduled, load_task_definitions  # noqa: E402
 from tools.notify import notify_alex  # noqa: E402
 
+# Profile scoping. When run from a split loop, MARLOW_PROFILE is exported by
+# tick.sh before this audit runs. The scheduler loaders we import
+# (load_last_scheduled, load_task_definitions) already scope themselves off it,
+# so scheduler_freshness is profile-aware for free. These path constants must
+# match too: tick.sh writes each loop's driver state under ~/.marlow/<profile>/
+# and the scheduler archives completed subtasks under tasks/completed/<profile>/.
+# Unset profile → `/ ""` is a no-op join, i.e. the legacy global paths.
+_PROFILE = os.environ.get("MARLOW_PROFILE") or ""
+_MARLOW_DIR = Path.home() / ".marlow" / _PROFILE
+
 DRAFTS_DIR = REPO_ROOT / "projects" / "blog" / "drafts"
 THREADS_DIR = REPO_ROOT / "projects" / "research" / "threads"
 PUBLISHED_DIR = REPO_ROOT / "projects" / "blog" / "published"
-COMPLETED_DIR = REPO_ROOT / "tasks" / "completed"
+COMPLETED_DIR = REPO_ROOT / "tasks" / "completed" / _PROFILE
 REPORT_DIR = REPO_ROOT / "projects" / "_framework" / "reports" / "self-audit"
 # tick.sh appends here whenever it auto-recovers a stale/wedged tick lock. A
 # break self-heals, but it means a prior tick died hard — worth surfacing.
-LOCK_BREAK_LOG = Path.home() / ".marlow" / "lock_breaks.log"
+LOCK_BREAK_LOG = _MARLOW_DIR / "lock_breaks.log"
 # tick.sh appends here when it re-queues a task because the Claude session limit
 # was hit. The task is NOT lost (it's re-queued), but a cluster means Marlow was
 # throttled for a window — surface it so it doesn't read as a quiet evening.
-SESSION_LIMIT_LOG = Path.home() / ".marlow" / "session_limits.log"
+SESSION_LIMIT_LOG = _MARLOW_DIR / "session_limits.log"
 # tick.sh appends one ISO timestamp here every time the driver actually fires
 # (before the lock, so even a "nothing to do" tick records it). This is the
 # loop's liveness timeline — scheduler_freshness uses it to distinguish a tick
 # that silently stopped (driver alive, tick skipped) from the whole driver being
 # dormant (laptop asleep/offline, no heartbeats in the window).
-HEARTBEAT_LOG = Path.home() / ".marlow" / "heartbeat.log"
+HEARTBEAT_LOG = _MARLOW_DIR / "heartbeat.log"
 
 # Look back this far over completed-task records. Wider than the daily audit
 # cadence so a failure can't slip between two runs; a still-broken task simply

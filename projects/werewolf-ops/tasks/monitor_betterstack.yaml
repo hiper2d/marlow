@@ -48,6 +48,7 @@
 #   6. Write the tick result and exit.
 name: monitor_betterstack
 project: werewolf-ops
+profile: ops
 description: Hourly app-level error watch — queries Betterstack (ClickHouse SQL API) for new error/warn log lines from the Werewolf app, alerts urgent on a new error. Baselines the pre-existing set; never re-pings.
 schedule: "0 * * * *"
 priority: normal

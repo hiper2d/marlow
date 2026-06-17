@@ -41,6 +41,7 @@
 #   6. Write the tick result and exit.
 name: monitor_health
 project: werewolf-ops
+profile: ops
 description: Every-6h broken-game watch — scans the Werewolf games collection for errorState, alerts on newly-broken games (urgent if unrecoverable). Baselines the pre-existing error pile; never re-pings unchanged.
 schedule: "0 */6 * * *"
 priority: normal

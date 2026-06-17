@@ -18,15 +18,32 @@ set -euo pipefail
 export PATH="$HOME/.local/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$PATH"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-LOCK_FILE="/tmp/marlow.lock"
-LOCK_SKIPS="/tmp/marlow.lock.skips"   # consecutive blocked-tick counter (staleness signal, not time)
+
+# Profile. "" = legacy single-loop (pre-split, byte-identical behavior).
+# "writer"/"ops" = one of the two split loops: own queue/lock/temp/heartbeat,
+# its identity appended to the session, MARLOW_PROFILE exported so scheduler.py
+# scopes state + task set. Each split loop must be fully independent so a wedged
+# writer tick can't block the ops loop.
+PROFILE="${1:-}"
+if [ -n "$PROFILE" ]; then
+    export MARLOW_PROFILE="$PROFILE"
+    SUFFIX="-$PROFILE"
+    MARLOW_DIR="$HOME/.marlow/$PROFILE"
+    IDENTITY_FILE="$REPO_ROOT/profiles/$PROFILE/IDENTITY.md"
+else
+    SUFFIX=""
+    MARLOW_DIR="$HOME/.marlow"
+    IDENTITY_FILE=""
+fi
+
+LOCK_FILE="/tmp/marlow${SUFFIX}.lock"
+LOCK_SKIPS="/tmp/marlow${SUFFIX}.lock.skips"   # consecutive blocked-tick counter (staleness signal, not time)
 MAX_LOCK_SKIPS=3                       # force-break the lock after this many blocked AWAKE ticks
-SUBTASK_FILE="/tmp/marlow-subtask.json"
-RESULT_FILE="/tmp/marlow-tick-result.json"
-STREAM_FILE="/tmp/marlow-tick-stream.jsonl"
-MARLOW_DIR="$HOME/.marlow"
-KILLSWITCH="$MARLOW_DIR/stop"
-PAUSE="$MARLOW_DIR/pause"
+SUBTASK_FILE="/tmp/marlow${SUFFIX}-subtask.json"
+RESULT_FILE="/tmp/marlow${SUFFIX}-tick-result.json"
+STREAM_FILE="/tmp/marlow${SUFFIX}-tick-stream.jsonl"
+KILLSWITCH="$HOME/.marlow/stop"   # killswitch + pause are GLOBAL (one stop halts both loops)
+PAUSE="$HOME/.marlow/pause"
 SESSIONS_LOG="$MARLOW_DIR/sessions.log"
 LOCK_BREAK_LOG="$MARLOW_DIR/lock_breaks.log"   # append-only record of auto-recovered stale/wedged locks
 SESSION_LIMIT_LOG="$MARLOW_DIR/session_limits.log"   # append-only record of Claude-quota throttle re-queues
@@ -168,12 +185,22 @@ echo "$SUBTASK_JSON" > "$SUBTASK_FILE"
 rm -f "$RESULT_FILE"
 
 # 6. Invoke Claude Code (Marlow's session)
-PROMPT="A subtask is queued for you in $SUBTASK_FILE. Read it, execute the named handler per the contract in CLAUDE.md, write any editorial outputs to the appropriate project directory, then write your outcome JSON to $RESULT_FILE before exiting."
+PROMPT="A subtask is queued for you in $SUBTASK_FILE. Read it, execute the named handler per your operating contract (CLAUDE.md plus your appended profile), write any outputs to the appropriate project directory, then write your outcome JSON to $RESULT_FILE before exiting."
+
+# Per-profile identity. The repo-root CLAUDE.md is the shared, identity-neutral
+# contract (auto-loaded by every session). When a profile is active we append
+# its IDENTITY.md so writer gets the full persona and ops gets the lean faceless
+# prompt. Legacy (no profile) appends nothing — CLAUDE.md alone, as before.
+# bash 3.2-safe empty-array expansion (macOS /bin/bash) via ${arr[@]+...}.
+IDENTITY_ARGS=()
+if [ -n "$IDENTITY_FILE" ] && [ -f "$IDENTITY_FILE" ]; then
+    IDENTITY_ARGS=(--append-system-prompt "$(cat "$IDENTITY_FILE")")
+fi
 
 # Stream raw JSONL to a temp file so cost.py can extract usage/cost after.
 # Stderr still goes to SESSIONS_LOG for crash diagnostics.
 rm -f "$STREAM_FILE"
-if run_with_timeout "$TICK_TIMEOUT" claude -p --output-format stream-json --verbose "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
+if run_with_timeout "$TICK_TIMEOUT" claude -p --output-format stream-json --verbose ${IDENTITY_ARGS[@]+"${IDENTITY_ARGS[@]}"} "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
     log "session exited cleanly"
     SESSION_OK=1
 else

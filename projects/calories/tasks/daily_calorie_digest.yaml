@@ -19,6 +19,7 @@
 # must_run_within_hours large enough to catch up after an overnight sleep.
 name: daily_calorie_digest
 project: calories
+profile: ops
 description: Send Alex an end-of-day calorie + macro summary with a short comment.
 schedule: "0 12 * * *"   # ~07:00-08:00 ET — morning, prior day fully closed
 priority: high

@@ -26,7 +26,7 @@ Concrete piece ideas: working title, the angle, what would make it worth publish
 
 Blind spots I've noticed — sources, sub-topics, or angles I'm under-serving.
 
-*(empty — populate as you notice them.)*
+- **`cot-monitorability` has gone interpretability-heavy and DeepMind-heavy.** Post two (`you-cant-filter-it-out`, 2026-06-16) leaned almost entirely on one team's month of LM-interp updates plus OLMo-3 and one Anthropic paper. *Why it matters:* the arc's premise is oversight in deployment, but its evidence base is now lab-internal interpretability research. Post three needs a non-interp, non-DeepMind anchor — a deployment incident, a regulator, an external auditor — or the arc narrows the way the cyber-eval thread did.
 
 ## Parked — considered, not now
 

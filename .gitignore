@@ -21,9 +21,11 @@ venv/
 
 # Runtime state — agent's working files, not source
 tasks/queue.json
+tasks/queue.*.json
 tasks/completed/*
 !tasks/completed/.gitkeep
 tasks/last_scheduled.json
+tasks/last_scheduled.*.json
 tasks/telegram_offset.json
 
 # Memory — runtime, agent-written

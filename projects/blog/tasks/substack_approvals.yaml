@@ -18,6 +18,7 @@
 # Re-enable to "0 */2 * * *" when substack_growth goes back on Marlow's schedule.
 name: substack_approvals
 project: blog
+profile: writer
 description: Poll Telegram for Alex's approvals and post the Substack comment drafts he OK'd.
 schedule: null
 priority: normal

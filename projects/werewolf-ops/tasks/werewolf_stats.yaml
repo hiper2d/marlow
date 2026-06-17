@@ -63,6 +63,7 @@
 # explicit threshold here rather than letting the report turn noisy.
 name: werewolf_stats
 project: werewolf-ops
+profile: ops
 description: Daily Werewolf user-activity snapshot — new users, games created, and AI burn (cost) — from Firestore users/games collections. Digest-only, no alerts.
 schedule: "0 9 * * *"
 priority: normal

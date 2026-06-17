@@ -26,6 +26,7 @@
 #   - If nothing crosses the bar, send fewer or zero picks
 name: daily_news_curate
 project: research
+profile: writer
 description: Pick top items from today's candidates, fetch bodies, send each as its own Telegram message and register it for possible crossposting.
 # RE-ENABLED 2026-06-04 (per Alex), in a NEW form. Was disabled 2026-06-01 (the
 # old monolithic digest push to Telegram). Now it sends each pick as its OWN

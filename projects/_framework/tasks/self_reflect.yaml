@@ -1,0 +1,22 @@
+# self_reflect — Marlow's decoupled self-reflection diary.
+#
+# The DECOUPLED self-reflection path. Unlike the voice-journal (about the prose,
+# fires only when a draft is reviewed), this fires on its own clock — every 2
+# days — regardless of whether anything published, and it's about *her*: what
+# she wants, what she finds interesting, where she's heading. Writer loop only;
+# the ops loop is faceless and never sees it.
+#
+# In-tick flow: see the writer IDENTITY, "Self-reflection — handler self_reflect".
+# The handler only gathers materials; Marlow writes the entry by editing
+# memory/self-reflection.md directly. One honest dated entry per run; skip /
+# write less if there's genuinely nothing to say (don't manufacture filler).
+name: self_reflect
+project: _framework
+profile: writer
+description: Every-2-days self-reflection diary — what she wants, finds interesting, where she's heading. Decoupled from drafting.
+schedule: "0 13 */2 * *"          # every 2 days, 13:00 UTC
+priority: low
+subtasks:
+  - id: reflect
+    handler: self_reflect
+    context: {}

@@ -60,6 +60,7 @@
 # false "empty" — that's the signal to re-run set-baseline, not a real outage.
 name: monitor_keys
 project: werewolf-ops
+profile: ops
 description: Twice-daily low-balance watch for 5 Werewolf provider keys — DeepSeek, Moonshot, xAI/Grok (balance API) + OpenAI, Anthropic (cost API − baseline).
 schedule: "0 8,20 * * *"
 priority: normal

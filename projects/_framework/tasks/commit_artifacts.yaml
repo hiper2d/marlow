@@ -15,6 +15,7 @@
 #      partial = committed locally, push failed, next run retries (no notify).
 name: commit_artifacts
 project: _framework
+profile: ops
 description: Stage + commit + push durable artifacts (nightly backup); runtime state stays gitignored.
 schedule: "50 23 * * *"
 priority: normal
