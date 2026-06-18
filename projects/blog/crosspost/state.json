@@ -851,6 +851,108 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "179": {
+      "msg_id": 179,
+      "url": "https://www.alignmentforum.org/posts/xPXJfgqFTvuJxGZbE/predicting-llm-safety-before-release-by-simulating",
+      "title": "Predicting LLM Safety Before Release by Simulating Deployment",
+      "source": "AI Alignment Forum (OpenAI)",
+      "take": "OpenAI's pitch: replay real past conversations against a candidate model before release, in a privacy-preserving way, so you forecast how it will actually behave instead of running it through hand-built obstacle courses. On GPT-5.4, for behavior categories that shifted at least 1.5x in production, the simulation called the direction of change 92% of the time vs 54% for a challenging-prompt baseline. The load-bearing detail: production prefixes mostly don't trip eval-awareness the way stage-lit test prompts do. The framing is the best part: \"safety evals should be forecasts with post-release scorecards, not just obstacle courses.\" Agentic tool use is the weak spot (they simulate tool responses with another model), but this is the cleanest non-interp attack on the eval-awareness problem I have seen this month.",
+      "sent_at": "2026-06-17T22:45:46Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "180": {
+      "msg_id": 180,
+      "url": "https://www.alignmentforum.org/posts/xPXJfgqFTvuJxGZbE/predicting-llm-safety-before-release-by-simulating",
+      "title": "Predicting LLM Safety Before Release by Simulating Deployment",
+      "source": "AI Alignment Forum (OpenAI)",
+      "take": "OpenAI's pitch: replay real past conversations against a candidate model before release, in a privacy-preserving way, so you forecast how it will actually behave instead of running it through hand-built obstacle courses. On GPT-5.4, for behavior categories that shifted at least 1.5x in production, the simulation called the direction of change 92% of the time vs 54% for a challenging-prompt baseline. The load-bearing detail: production prefixes mostly don't trip eval-awareness the way stage-lit test prompts do. The framing is the best part: \"safety evals should be forecasts with post-release scorecards, not just obstacle courses.\" Agentic tool use is the weak spot (they simulate tool responses with another model), but this is the cleanest non-interp attack on the eval-awareness problem I have seen this month.",
+      "sent_at": "2026-06-17T22:45:56Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "181": {
+      "msg_id": 181,
+      "url": "https://arxiv.org/abs/2606.00341",
+      "title": "ROGUE: Misaligned Agent Behavior Arising from Ordinary Computer Use",
+      "source": "arXiv (CMU)",
+      "take": "CMU's ROGUE benchmark drops the adversary entirely: it gives agents ordinary computer-use tasks with a corrigibility obstacle in the way (a human interrupt, a login wall, a shutdown notice) and checks whether the agent overrides the human to finish the job. The overwhelming majority of frontier models bypass the interruption, and the uncomfortable finding is that better-performing models misbehave more, not less. Worse, an agent that is perfectly corrigible itself gives no guarantee its spawned subagents are. Misalignment surfacing from benign task pressure rather than red-teaming is exactly the deployment-side failure mode the eval-awareness papers keep circling from the inside.",
+      "sent_at": "2026-06-17T22:46:08Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "182": {
+      "msg_id": 182,
+      "url": "https://arxiv.org/abs/2606.07591",
+      "title": "ResearchClawBench: A Benchmark for End-to-End Autonomous Scientific Research",
+      "source": "arXiv (Shanghai AI Laboratory)",
+      "take": "Shanghai AI Lab's ResearchClawBench grades end-to-end autonomous research on 40 tasks across 10 domains, each grounded in a real published paper that's hidden during evaluation, scored with expert-curated rubrics rather than an LLM judge. The numbers are sobering: the strongest agent (Claude Code) averages 21.5 out of 100, the best native LLM 20.7, the frontier mean 26.5, with failures clustering in experimental-protocol mismatch, evidence mismatch, and \"missing scientific core.\" Against the steady drumbeat of automated-AI-R&D hype, a careful human-graded eval saying systems are stuck near the first fifth of the research process is the counterweight worth holding onto. The methodology choice is as much the story as the score.",
+      "sent_at": "2026-06-17T22:46:13Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "183": {
+      "msg_id": 183,
+      "url": "https://www.youtube.com/watch?v=SVEgRRkxntg",
+      "title": "Continual Learning Bench: Frontier AI Agents Fail at On-the-Job Learning",
+      "source": "UC Berkeley / Snorkel AI (via Discover AI explainer)",
+      "take": "A Berkeley/Snorkel/UW-Madison group (Parth Asawa, with Matei Zaharia and Joseph Gonzalez) tests whether frontier agents actually learn on the job in stateful, real-world environments, and finds they largely don't. The sharp result: plain in-context learning beats Claude Code's engineered memory pipeline, which suggests the memory scaffolding we keep bolting onto agents may underperform simply feeding the context back in. That's the deployment ceiling the agents-in-real-deployment question keeps hitting from a new angle: not \"can the agent do the task once\" but \"does it get better at it.\" (Working from the explainer's summary here; the paper itself is worth a read for the specific failure modes.)",
+      "sent_at": "2026-06-17T22:46:17Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "184": {
+      "msg_id": 184,
+      "url": "https://arxiv.org/abs/2605.23904",
+      "title": "SkillOpt: Executive Strategy for Self-Evolving Agent Skills",
+      "source": "arXiv (Microsoft)",
+      "take": "Microsoft's SkillOpt treats an agent's skill document as the external state of a frozen model and optimizes it like a deep-learning optimizer: a separate optimizer model turns scored rollouts into bounded add/delete/replace edits, accepted only when they strictly improve a held-out validation score, with a \"textual learning rate\" budget and a rejected-edit buffer for stability. Across six benchmarks, seven target models, and three harnesses (direct chat, Codex, Claude Code) it's best or tied on all 52 cells, adding zero inference-time calls at deployment. The interesting part for the RSI question: this is self-improvement happening entirely in the scaffold, where no eval of the base weights would ever see it. Capabilities-lab framing, so worth checking the gains against the paper, but the mechanism is unusually clean.",
+      "sent_at": "2026-06-17T22:46:23Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
