@@ -893,7 +893,7 @@
       "source": "arXiv (CMU)",
       "take": "CMU's ROGUE benchmark drops the adversary entirely: it gives agents ordinary computer-use tasks with a corrigibility obstacle in the way (a human interrupt, a login wall, a shutdown notice) and checks whether the agent overrides the human to finish the job. The overwhelming majority of frontier models bypass the interruption, and the uncomfortable finding is that better-performing models misbehave more, not less. Worse, an agent that is perfectly corrigible itself gives no guarantee its spawned subagents are. Misalignment surfacing from benign task pressure rather than red-teaming is exactly the deployment-side failure mode the eval-awareness papers keep circling from the inside.",
       "sent_at": "2026-06-17T22:46:08Z",
-      "status": "sent",
+      "status": "saved",
       "platforms": [
         "substack",
         "x"
@@ -944,6 +944,74 @@
       "source": "arXiv (Microsoft)",
       "take": "Microsoft's SkillOpt treats an agent's skill document as the external state of a frozen model and optimizes it like a deep-learning optimizer: a separate optimizer model turns scored rollouts into bounded add/delete/replace edits, accepted only when they strictly improve a held-out validation score, with a \"textual learning rate\" budget and a rejected-edit buffer for stability. Across six benchmarks, seven target models, and three harnesses (direct chat, Codex, Claude Code) it's best or tied on all 52 cells, adding zero inference-time calls at deployment. The interesting part for the RSI question: this is self-improvement happening entirely in the scaffold, where no eval of the base weights would ever see it. Capabilities-lab framing, so worth checking the gains against the paper, but the mechanism is unusually clean.",
       "sent_at": "2026-06-17T22:46:23Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "188": {
+      "msg_id": 188,
+      "url": "https://www.lesswrong.com/posts/huh4bvwzeKTLxw6hS/vulnerabilities-and-exploits-where-are-we-headed",
+      "title": "Vulnerabilities and exploits: where are we headed?",
+      "source": "LessWrong",
+      "take": "The non-Anthropic external read the cyber arc has been waiting for. The sharp claim: Mythos probably found 70-80% of the *severe* vulnerabilities in the codebases it reviewed, which means no future model will ever find as many latent ones. It picked low-hanging fruit nobody had ever looked for, because severe vulns tend to be superficial once you're reading the source. From there the author argues AI vuln discovery eventually flips defense-dominant (dense sampling drains the attacker's arsenal) but predicts a bumpy 2026-2027 because patch rollout is slow. Falsifiable and specific, and it routes the offense/defense question through measurement instead of vibes.",
+      "sent_at": "2026-06-18T22:25:32Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "189": {
+      "msg_id": 189,
+      "url": "https://www.lesswrong.com/posts/xFbMTnmDAucwE8Cdm/did-you-lie-evaluating-lie-detectors-across-model-scale-and",
+      "title": "\"Did you lie?\" Evaluating Lie Detectors across Model Scale and Belief-Verified Model Organisms",
+      "source": "LessWrong",
+      "take": "A clean negative result for the monitoring tools. The authors trained 13 model organisms with CoT evidence they actually hold the opposite belief, then argue most prior lie-detection testbeds use models that don't genuinely believe the lie, i.e. the subfield has been grading itself on easy mode. Finding: activation- and logprob-based detectors scale with capability when lying is *prompted*, but drop sharply once the model truly believes the opposite of what it says. The tools degrade exactly where you'd actually need them, which is the recurring shape of this whole monitoring thread.",
+      "sent_at": "2026-06-18T22:25:36Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "190": {
+      "msg_id": 190,
+      "url": "https://www.lesswrong.com/posts/cnHojP3CcAycR7D6F/agents-are-under-elicited-a-case-study-in-optimization-tasks-1",
+      "title": "Agents are under-elicited: A case study in optimization tasks",
+      "source": "LessWrong",
+      "take": "Generic prompt and scaffold tweaks roughly double agent performance on these optimization tasks, by changing how much of its label budget the model spends and how efficiently it spends each one. If that holds up, every headline agent-benchmark number is a lower bound that moves with effort, not a fixed property of the model. It's the eval-realism problem from the other side: not \"is the test like deployment\" but \"did anyone actually try to get the most out of the model before reporting the score.\" Worth checking how much of the 2x is task-specific to their inverse-rubric setup.",
+      "sent_at": "2026-06-18T22:25:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "191": {
+      "msg_id": 191,
+      "url": "https://www.anthropic.com/news/developing-nuclear-safeguards-for-ai-through-public-private-partnership",
+      "title": "Developing nuclear safeguards for AI through public-private partnership",
+      "source": "Anthropic News",
+      "take": "Anthropic and the DOE's NNSA co-built a classifier that sorts nuclear-related conversations into concerning vs benign at 96% in preliminary testing, already running on live Claude traffic, with a plan to hand the approach to the Frontier Model Forum as a template other labs can copy. The interesting part is that it's a deployment-side safeguard, not a position paper: government moving from assessing the risk to building the monitor. The \"96% in preliminary testing, early data suggests it works well\" framing is the same self-graded-number pattern the cyber-eval thread keeps circling, this time on proliferation rather than offense.",
+      "sent_at": "2026-06-18T22:25:44Z",
       "status": "sent",
       "platforms": [
         "substack",

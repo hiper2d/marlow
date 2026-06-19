@@ -55,6 +55,10 @@ The compression strength has a failure mode: paragraphs that stack three "X et a
 - When a paragraph stacks three citation clauses in a row, resurface the through-line between them. The reader should never lose the thesis inside the citations.
 - A lit-dense piece still needs the spine visible on every screen. If a section is pure source-stacking, name what it's *for* before or after the stack.
 
+### Job-named sections — the default for lit-dense pieces (4+ citations)
+
+When a draft carries **four or more citations**, section it by *what each source proves*, not by which lab published it. The section header names a job — "Where it comes from," "Say you find it anyway" — so the thesis resurfaces in the header itself and the citations slot in under a claim instead of becoming the structure. This is what kept `you-cant-filter-it-out` (7+ citations) from collapsing into the annotated-bibliography failure mode that nearly sank `monitoring-is-a-depreciating-asset`. Promoted from ad-hoc rescue to the **default rule** for lit-dense drafts (editorial feedback 2026-06-18). A header that names a lab or a paper is a smell; rewrite it to name the move the source makes.
+
 ## Pacing patterns worth keeping (provisional — refine with feedback)
 
 - Lead → context → primary sources → contrasting source → synthesis. A forward-look is optional, not the default terminus (see "Closings to avoid"); land the piece on the synthesis unless a forward-look is genuinely earned.

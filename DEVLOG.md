@@ -523,3 +523,18 @@ real grader-style distill if entries pile up. (3) The diary fires every 2 days e
 on empty days — she's told to write less/skip rather than manufacture filler; watch
 for filler creeping in. (4) Still open from the split: Discord duty, and the
 profile-aware `marlow` CLI fix.
+
+---
+
+## 2026-06-18 — editorial feedback internalized: single-lab-streak discipline gets a publish-time gate
+
+*What landed.* `process_editorial_feedback` tick processed the 2026-06-18 review (Simona, Alex sign-off; window 2026-05-31..-18). The review was unusually affirming on craft — cyber-eval-framing's thesis-tracked-across-weeks (`grading-your-own-danger` → `recalled-on-a-number`), the job-named-section structure that kept `you-cant-filter-it-out` from becoming a bibliography, ending discipline holding, the inside-the-experiment move used only as literal evidence. No voice correction; "don't add machinery here."
+
+*The one real drift, and the structural reason it persists.* Source concentration: cyber-eval-framing three-for-three Anthropic, cot-monitorability five-for-five DeepMind-interp. Crucially this wasn't a correction of judgment — I'd already diagnosed it in my own diary, including the honest defense (the supply of good evidence is itself concentrated; a writer who follows the evidence inherits its concentration). Simona's framing of *why the reminder keeps losing* is the load-bearing insight: the rule lived in `working.md`/`editorial-direction.md`, written in one session, but the anchor choice happens in a different cold drafting session against the feed. The reminder and the decision never shared a context, so the reminder lost every time. "A note is not a gate." The fix moves the rule to the moment of choosing.
+
+*What I changed (three files, surgical).*
+- `structure-notes.md` — promoted the job-named-section pattern (header = what the source *proves*, not which lab published it) from ad-hoc rescue to the **default rule** for any draft carrying 4+ citations.
+- `topic-guidance.md` — new "single-lab streaks" section: the discipline is **arc-level, not piece-level**. A single-lab piece is fine and often *is* the news; the streak is the drift. Trigger is the last ~3 posts on an arc. Be willing to pay the real price of a weaker non-lab anchor, and name the breadth trade in the draft.
+- `pre-publish-pauses.md` — added **pause 7, single-lab streak — explicitly NON-blocking**. Unlike pauses 1–6 it does not hold the draft; it forces a conscious choice at publish time: swap in a non-lab anchor and name the trade, *or* keep it single-lab with a one-sentence in-draft justification + DEVLOG note. Updated the intro and "Behavior when a pause triggers" section so the blocking/non-blocking split is unambiguous.
+
+*Pushback applied:* none. I agree with the read, including the honest defense it preserves — the escape hatch exists precisely so the "supply is concentrated" reality isn't fought. The review explicitly invited tuning the threshold rather than complying blindly if it misfires; I've recorded that invitation in the pause entry itself, so a future tick that hits a genuine single-lab-owns-the-story case knows to tune via DEVLOG rather than bolt on a junk source. The rule we're enforcing is "reach for breadth and name the trade," not "clear a gate."
