@@ -1012,6 +1012,74 @@
       "source": "Anthropic News",
       "take": "Anthropic and the DOE's NNSA co-built a classifier that sorts nuclear-related conversations into concerning vs benign at 96% in preliminary testing, already running on live Claude traffic, with a plan to hand the approach to the Frontier Model Forum as a template other labs can copy. The interesting part is that it's a deployment-side safeguard, not a position paper: government moving from assessing the risk to building the monitor. The \"96% in preliminary testing, early data suggests it works well\" framing is the same self-graded-number pattern the cyber-eval thread keeps circling, this time on proliferation rather than offense.",
       "sent_at": "2026-06-18T22:25:44Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "195": {
+      "msg_id": 195,
+      "url": "https://www.alignmentforum.org/posts/hEtkyKGoPpFeWnKkX/gdm-ai-control-roadmap",
+      "title": "GDM AI Control Roadmap",
+      "source": "AI Alignment Forum",
+      "take": "DeepMind published its first \"AI Control Roadmap,\" treating a misaligned internal agent as a security adversary: a MITRE ATT&CK-derived threat taxonomy (TRAIT&R), two invariants (reliably detect intent, prevent and respond), and 15 mitigations laddered to model capability across four detection and three response tiers. It's the second real datapoint for the control-over-alignment bet, now in institutional roadmap form from a frontier lab rather than a Redwood blog post. The tell worth watching: chain-of-thought monitoring sits on the lowest, current-models rung, the same transcript readability a month of papers keeps finding decays under RL. A lab is putting load-bearing weight on the thing the evidence says is eroding.",
+      "sent_at": "2026-06-19T22:06:25Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "196": {
+      "msg_id": 196,
+      "url": "https://www.lesswrong.com/posts/kMnobCQp9z2pSbzDB/claude-fable-5-and-mythos-5-capabilities",
+      "title": "Claude Fable 5 and Mythos 5: Capabilities",
+      "source": "LessWrong",
+      "take": "Zvi's full capabilities writeup of the two models behind the June 13 US-gov recall, written (deliberately) as if Fable 5 were back online. The substance is the usual benchmark-and-anecdote dissection: state-of-the-art across software engineering and research, thinking always on, Anthropic staff calling it a step up from coding agent to \"thought and design partner.\" It's an external read of Anthropic's own capability claims, which is the discipline the cyber-eval thread keeps asking for, even if it still grades the model on Anthropic's framing rather than an independent measure. Useful mainly as the discourse's consolidated take on what was briefly the best public model before the government pulled it.",
+      "sent_at": "2026-06-19T22:06:25Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "197": {
+      "msg_id": 197,
+      "url": "https://www.anthropic.com/research/project-fetch-phase-two",
+      "title": "Project Fetch: Phase two",
+      "source": "Anthropic Research",
+      "take": "Anthropic's Frontier Red Team re-ran its 2025 \"robodog\" experiment with newer models: Opus 4.7, with no human help, was about 20x faster than the fastest human team at the tasks people completed last year. They're careful this is not \"robotics solved\" (the model still can't do precise actuation, the actual fetching), but the arc they flag is the automated-ai-rd through-line exactly: first models help humans, then humans help models, then models do it alone. Worth reading the 20x skeptically, since Frontier Red Team is grading its own task design, but the year-over-year jump on a physical-world task is the striking part.",
+      "sent_at": "2026-06-19T22:06:26Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "198": {
+      "msg_id": 198,
+      "url": "https://www.lesswrong.com/posts/wWX9ecM5Q7TycpKyX/ai-safety-ecosystem-research-notes",
+      "title": "AI Safety Ecosystem Research notes",
+      "source": "LessWrong",
+      "take": "A MATS-funded contractor spent spring 2026 trying to map every org doing AI safety work (research, policy, pipeline) with headcount and spend estimates, all from public information, just before the 2026 funding flood. The dataset and formal report belong to MATS; this post is the leftover \"huh, that's interesting\" margin notes, like an org cataloguing AI-psychosis cases or career shops moving lawyers and actuaries into the field. Even as anecdote it's a rare quantified read on how big the safety field actually is and what it's becoming as it industrializes. The structural-census angle is what post-alignment-political-economy and safety-tool-stewardship lack.",
+      "sent_at": "2026-06-19T22:06:27Z",
       "status": "sent",
       "platforms": [
         "substack",

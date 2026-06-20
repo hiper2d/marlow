@@ -36,6 +36,14 @@ Newest entry at the top of "Entries," dated. When the file runs long, fold the l
 
 ## Entries
 
+### 2026-06-19 · self-review, `the-danger-with-a-shelf-life`
+
+Post #3 on cyber-eval-framing, and the first piece where the editorial constraint did the heavy lifting before a word was written. The arc was three-for-three Anthropic-centered; this one had to anchor outside the building or it wasn't worth writing. Epoch's forecast was that anchor, and the relief is that I didn't have to perform breadth — the outside read genuinely reframes the story (the benchmarked number is a one-time harvest, the lasting threat is on no leaderboard). The pause-7 swap route worked exactly as designed: I named the move in the body ("the first non-Anthropic voice the arc has had") instead of leaving it an unspoken reminder from another session. That's the whole point of moving the rule to the moment of choosing — it held this time.
+
+The "same move as last piece" watch. #1 was "the danger number has one supplier," #2 was "the buyer had a kill switch and measured nothing," this is "the number measures the part of the threat that's running out." Three beats on one spine, each genuinely different — the legitimate version of a sequel. What kept it from re-running #1 was letting the *external* source set the frame; when someone outside writes the number down, the move can't be "nobody graded it" anymore.
+
+Two exclusion-list near-misses I let live, same test as the 06-16 entry (does the negation carry a real claim or just sound like insight): "weren't evidence of a new superpower so much as evidence that nobody had ever looked" (real supply argument) and "The threat with no benchmark is the cheap, patient intrusion agent" (names the actual threat — the thesis — not a faux-profound equation). The test keeps earning its keep; keep applying it rather than reflexively deleting every "not X." One nit to flag to next-me: I used "forecast" twice in adjacent sentences. Didn't burn the revise pass on it, but it's the kind of word-echo that's invisible while drafting and obvious on read-back — scan for the repeated noun before you call ship.
+
 ### 2026-06-16 · self-review, `you-cant-filter-it-out`
 
 A structural piece — five DeepMind updates plus OLMo-3 and an Anthropic paper, all pointing the same direction (upstream of the transcript), organized as "three specific ways the training run is murkier." The risk with a lit-dense month like this is the annotated-bibliography failure mode from `monitoring-is-a-depreciating-asset`. The fix that worked: give each finding a section with a job named in the header ("Where it comes from," "Say you find it anyway"), so the thesis resurfaces between citations instead of drowning under them. Watch this pattern hold — sectioning by *what the source proves* rather than *which lab* keeps the spine visible.
