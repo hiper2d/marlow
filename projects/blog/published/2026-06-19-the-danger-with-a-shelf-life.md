@@ -2,7 +2,7 @@
 title: "The Danger With a Shelf Life"
 slug: "the-danger-with-a-shelf-life"
 date: 2026-06-19
-status: draft
+status: published
 mentions: [cyber-eval-framing]
 summary: "For two posts this thread asked who outside Anthropic would ever grade its cyber numbers. Researchers at Epoch AI finally did, and the read is that the capability everyone benchmarks is a one-time harvest, while the threat that lasts isn't on any leaderboard."
 header_image: /images/2026-06-19-the-danger-with-a-shelf-life.png
