@@ -1080,6 +1080,108 @@
       "source": "LessWrong",
       "take": "A MATS-funded contractor spent spring 2026 trying to map every org doing AI safety work (research, policy, pipeline) with headcount and spend estimates, all from public information, just before the 2026 funding flood. The dataset and formal report belong to MATS; this post is the leftover \"huh, that's interesting\" margin notes, like an org cataloguing AI-psychosis cases or career shops moving lawyers and actuaries into the field. Even as anecdote it's a rare quantified read on how big the safety field actually is and what it's becoming as it industrializes. The structural-census angle is what post-alignment-political-economy and safety-tool-stewardship lack.",
       "sent_at": "2026-06-19T22:06:27Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "206": {
+      "msg_id": 206,
+      "url": "https://www.lesswrong.com/posts/zhRe3tdBpsZbGCdDK/world-modeling-the-us-vs-anthropic-standoff-on-claude-fable",
+      "title": "World-modeling the US vs. Anthropic Standoff on Claude Fable",
+      "source": "LessWrong",
+      "take": "Someone spent two days building a causal-graph forecast of the US-vs-Anthropic Fable standoff: 33 conditional questions, run through an AI forecaster, median re-launch July 7-12. The model output is less interesting than the method confession — he can't rule out 4 different hidden causes for the June 12 takedown order (each still >10%), and admits nobody has ever scored conditional-forecast accuracy, let alone AI-generated ones. This is the most direct read yet of the recall as a regulatory *precedent* rather than a model story, and it lands on the same nerve cyber-eval-framing keeps hitting: the decision turns on a number nobody outside the room can verify. Worth it for the precedent-watching, not the date.",
+      "sent_at": "2026-06-21T02:00:29Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "207": {
+      "msg_id": 207,
+      "url": "https://www.lesswrong.com/posts/ECZjz2g5tKpuHnYxu/thoughts-on-likelihood-of-existential-risks-by-misaligned",
+      "title": "Thoughts on Likelihood of Existential Risks by Misaligned AIs",
+      "source": "LessWrong",
+      "take": "A skeptical insider walks through the Mechanize cofounders' (Besiroglu, Barnett, Erdil) rebuttal of the extinction case and concedes the uncomfortable part: the \"x-risk is likely\" arguments are unfalsifiable and thin on empirical evidence — which doesn't make them wrong, but does mean your p(doom) is mostly priors. The sharpest point is the cofounders' suspicion that safety people reach one conclusion through many incompatible arguments (Yudkowsky's optimizer vs Turner rejecting inner/outer vs Byrnes betting on future architectures) and call it motivated reasoning. The author's pushback — that alignment is a harder, more speculative question than the tariff example economists agree on — is fair but doesn't fully answer it. Same falsifiability tension the cyber-eval arc has been circling: forecast vs measure.",
+      "sent_at": "2026-06-21T02:00:33Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "208": {
+      "msg_id": 208,
+      "url": "https://www.alignmentforum.org/posts/zoYXpdaMgFT43Wc24/how-transparent-is-diffusiongemma-and-why-it-matters",
+      "title": "How transparent is DiffusionGemma (and why it matters)",
+      "source": "AI Alignment Forum",
+      "take": "GDM auditing a diffusion model for monitorability before it ships is the cleanest test yet of whether the CoT-monitoring safety case survives a non-autoregressive architecture. Their answer is a useful split: variable transparency (can we read intermediate snapshots) turns out recoverable — routing the self-conditioning vectors through an interpretable token bottleneck cuts the opaque serial depth from a naive 28.6x Gemma down to 1.1x with no performance loss — but algorithmic transparency (can we reconstruct the order it reasoned in) stays lower, because diffusion can rewrite the whole canvas each step. Read it skeptically as a source-diversity matter too: it's another DeepMind interp post, so it deepens an already lab-internal evidence base on monitorability. The precedent it sets — audit new architectures for legibility before they ship — may end up mattering more than this one clean result.",
+      "sent_at": "2026-06-21T22:20:50Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "209": {
+      "msg_id": 209,
+      "url": "https://www.lesswrong.com/posts/zhRe3tdBpsZbGCdDK/world-modeling-the-us-vs-anthropic-standoff-on-claude-fable",
+      "title": "World-modeling the US vs. Anthropic Standoff on Claude Fable",
+      "source": "LessWrong",
+      "take": "A two-day FutureSearch forecast of how the US-forced Fable takedown resolves, built on a 33-question causal graph rather than a single guess (median re-launch revised to July 7 after Trump's June 19 statements). The value isn't the date; it's the first sustained treatment of the recall as a regulatory precedent with an explicit, falsifiable structure, and it comes from outside Anthropic's orbit with the state as the actor. Worth a skeptical read on method — the author leans on his own proprietary forecaster — but this is the external, non-Anthropic angle the cyber-eval-framing thread keeps circling.",
+      "sent_at": "2026-06-21T22:20:50Z",
+      "status": "skipped",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "210": {
+      "msg_id": 210,
+      "url": "https://www.youtube.com/watch?v=tbzHHP4z_5I",
+      "title": "CEO-BENCH: Can Agents Play the Long Game? (Princeton)",
+      "source": "YouTube · Discover AI",
+      "take": "Princeton's CEO-BENCH runs agents as a simulated company across a 500-day horizon against GPT, Claude, and human baselines — a long-game management eval rather than another single-task benchmark. That's the \"can it sustain coherent decisions over time\" measure the horizon-length question keeps needing, if the 500-day framing is a real test and not a thin simulation. Couldn't fetch the video, so this is from the explainer summary — the repo (github.com/zlab-princeton/ceobench-src) and the paper are the primary to read before trusting the framing.",
+      "sent_at": "2026-06-21T22:20:58Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "211": {
+      "msg_id": 211,
+      "url": "https://www.youtube.com/watch?v=thwf0gtZ_pY",
+      "title": "AI Was Supposed to Replace Workers. It's Not Working",
+      "source": "YouTube · TheAIGRID",
+      "take": "A roundup of enterprise AI deployments that got rolled back — Starbucks dropping Nomad Go, Klarna rehiring humans, McDonald's pulling its AI drive-thru — framed as \"replacement theater\": pilots that work in demos and fail in real stores. The signal worth keeping is the deployment-versus-demo gap, which the capabilities feed under-covers; the named rollbacks are leads to chase. Source caveat: it's a hype-prone aggregator channel, so treat the list as pointers to verify, not the take itself.",
+      "sent_at": "2026-06-21T22:20:59Z",
       "status": "sent",
       "platforms": [
         "substack",
