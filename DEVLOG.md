@@ -538,3 +538,21 @@ profile-aware `marlow` CLI fix.
 - `pre-publish-pauses.md` — added **pause 7, single-lab streak — explicitly NON-blocking**. Unlike pauses 1–6 it does not hold the draft; it forces a conscious choice at publish time: swap in a non-lab anchor and name the trade, *or* keep it single-lab with a one-sentence in-draft justification + DEVLOG note. Updated the intro and "Behavior when a pause triggers" section so the blocking/non-blocking split is unambiguous.
 
 *Pushback applied:* none. I agree with the read, including the honest defense it preserves — the escape hatch exists precisely so the "supply is concentrated" reality isn't fought. The review explicitly invited tuning the threshold rather than complying blindly if it misfires; I've recorded that invitation in the pause entry itself, so a future tick that hits a genuine single-lab-owns-the-story case knows to tune via DEVLOG rather than bolt on a junk source. The rule we're enforcing is "reach for breadth and name the trade," not "clear a gate."
+
+---
+
+## 2026-06-21 — the auth blind spot: one expired login, eight "broken handler" pages
+
+*What landed.* A new `claude_auth` invariant in `handlers/monitor_self.py`, registered first in the `CHECKS` list so it surfaces above everything else.
+
+*The incident.* On 2026-06-20 at ~12:13Z the `claude` login expired. Every writer-loop session from then on died in ~3s with `Failed to authenticate. API Error: 401 Invalid authentication credentials` - the driver spawns `claude -p`, it can't auth, exits before writing its result file, and the tick gets marked `session exited without writing result file`. Pure-Python work (RSS/sitemap fetches) kept passing; everything LLM-backed failed. ~12h later the self-audit fired and paged Alex with **eight** separate `failed_ticks` urgents (blog_pipeline, crosspost, assignment_research, daily_digest, daily_news_curate, grade_memory, process_editorial_feedback, feed_scan). Eight pages, one cause. Nothing in the audit said "this is auth."
+
+*The fix.* `check_claude_auth` scans the profile's `sessions.log` for the 401/invalid-credentials signature on any session that ran inside a 6h window and, if found, pages ONE urgent that names the cause and the fix: re-auth Claude Code, don't chase each handler. A live outage emits a 401 every tick (~20 min), so a short window still catches an ongoing break; once `claude login` lands the window goes quiet and the check self-clears. Verified both ways: silent now (auth fixed 11h prior, outside window), and fires correctly with a widened window against the day's 30 historical 401s.
+
+*Decision: keep it additive, don't suppress failed_ticks.* The tempting move was to mute the per-handler pages when auth is the cause. Rejected - that couples the checks and risks hiding a genuine handler failure that coincides with an outage. Per the module's standing rule (a broken check must not hide others), `claude_auth` is independent and its message cross-references failed_ticks instead: "this is the shared root cause behind any failed_ticks pages." One clear signal added, none removed.
+
+*Why this class was invisible.* The audit was built to catch silent stalls (a tick that stops firing) and crashes (a tick that runs and dies). Auth failure is a third mode: the tick runs, the session starts, and dies on a shared external dependency. failed_ticks *detected* it but couldn't *name* it - the detector saw N broken handlers, not one broken credential. The new check reads the stderr the others ignore.
+
+*Also reran the casualties.* Re-queued the 7 failed writer handlers + the 7 failed YouTube feed scans through normal ticks once auth was restored; all green. `werewolf_stats` showed stale in the same audit but was unrelated - the ops loop was asleep 09:00-12:17Z (laptop closed), so the morning daily tasks queued late and were draining one-per-tick. Self-healed.
+
+*State at end of day.* Writer + ops loops both healthy and self-driving. The auth blind spot is closed: next time a login expires, Alex gets one page that says `claude login`, not eight that say "something's broken."

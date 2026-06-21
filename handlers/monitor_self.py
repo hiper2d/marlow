@@ -20,6 +20,13 @@ it now is cron/launchd itself dying, which is total-agent-death and visible
 externally.
 
 Invariant registry — each check(now) returns a list of Issue dicts:
+  - claude_auth          no recent Claude session died on auth (401). THE shared
+                         root cause: when the `claude` login expires, EVERY
+                         LLM-backed handler fails at once and failed_ticks pages
+                         each one separately — N identical failures that read as N
+                         bugs instead of one expired login (the 2026-06-20 ~12h
+                         writer outage: 8 'handler broken' pages, one re-auth fix).
+                         Names the cause so the fix is `claude login`, not triage.
   - scheduler_freshness  every scheduled task fired within its window.
                          Catches the whole class of "a tick silently
                          stopped firing" (the 2026-06 curate slot).
@@ -62,6 +69,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -103,11 +111,26 @@ SESSION_LIMIT_LOG = _MARLOW_DIR / "session_limits.log"
 # that silently stopped (driver alive, tick skipped) from the whole driver being
 # dormant (laptop asleep/offline, no heartbeats in the window).
 HEARTBEAT_LOG = _MARLOW_DIR / "heartbeat.log"
+# The driver appends one block per session here: a `[ISO] === subtask (handler)
+# ===` header line followed by that session's stderr. check_claude_auth scans it
+# for the 401/invalid-credentials signature that downs every LLM tick at once.
+SESSIONS_LOG = _MARLOW_DIR / "sessions.log"
 
 # Look back this far over completed-task records. Wider than the daily audit
 # cadence so a failure can't slip between two runs; a still-broken task simply
 # re-reports until it recovers.
 FAILED_LOOKBACK_HOURS = 36
+
+# How far back check_claude_auth scans sessions.log for auth failures. A live
+# outage emits a 401 every tick (~20 min), so a short window still catches an
+# ongoing break; once re-auth lands the window goes quiet and the check clears.
+AUTH_FAIL_LOOKBACK_HOURS = 6
+AUTH_FAIL_SIGNATURES = (
+    "Failed to authenticate",
+    "401 Invalid authentication",
+    "Invalid authentication credentials",
+)
+_SESSION_HEADER_RE = re.compile(r"^\[([^\]]+)\]")
 
 # Declared daily artifacts that must stay fresh. A tick can be marked "done"
 # yet produce nothing (06-05) or stop producing silently — this verifies the
@@ -388,6 +411,52 @@ def _record_time(rec_path: Path, data: dict) -> datetime:
     return _mtime(rec_path)
 
 
+def check_claude_auth(now: datetime) -> list[dict]:
+    """Recent Claude sessions dying on auth (401) — the SHARED root cause that
+    downs every LLM-backed handler at once. Without this, failed_ticks pages each
+    dead handler on its own and N identical failures read as N separate bugs
+    instead of one expired login. Scans the profile's sessions.log (driver writes
+    a `[ISO] === subtask (handler) ===` header, then the session's stderr) for an
+    auth-failure signature whose tick ran inside the lookback. The 2026-06-20
+    outage: `claude` login expired, 401 on every writer session for ~12h, surfaced
+    as 8 'handler broken' pages with no hint they were one thing — re-auth, not
+    eight fixes."""
+    issues: list[dict] = []
+    if not SESSIONS_LOG.exists():
+        return issues
+    cutoff = now - timedelta(hours=AUTH_FAIL_LOOKBACK_HOURS)
+    cur_ts: datetime | None = None
+    hits = 0
+    last_hit: datetime | None = None
+    for line in SESSIONS_LOG.read_text(errors="replace").splitlines():
+        m = _SESSION_HEADER_RE.match(line)
+        if m:
+            try:
+                cur_ts = _parse_iso(m.group(1))
+            except ValueError:
+                cur_ts = None
+            continue
+        if (
+            cur_ts is not None
+            and cur_ts >= cutoff
+            and any(sig in line for sig in AUTH_FAIL_SIGNATURES)
+        ):
+            hits += 1
+            last_hit = cur_ts
+    if hits:
+        issues.append(_issue(
+            "claude_auth", "urgent",
+            f"Claude auth is failing — {hits} session(s) hit a 401/invalid-credentials "
+            f"error in the last {AUTH_FAIL_LOOKBACK_HOURS}h (latest {_iso(last_hit)}). "
+            "Every LLM-backed tick is down until this is fixed.",
+            "Re-authenticate Claude Code (run `claude login`); this is the shared root "
+            "cause behind any failed_ticks pages — re-auth, don't chase each handler.",
+            "Signature in sessions.log: 'Failed to authenticate. API Error: 401 Invalid "
+            "authentication credentials'.",
+        ))
+    return issues
+
+
 def check_failed_ticks(now: datetime) -> list[dict]:
     """An automation whose MOST RECENT run (within the lookback) ended in
     `failed` is currently broken, not just quiet. Group by parent_task, keep
@@ -522,6 +591,7 @@ def check_session_limits(now: datetime) -> list[dict]:
 
 
 CHECKS = [
+    check_claude_auth,
     check_scheduler_freshness,
     check_failed_ticks,
     check_output_freshness,
