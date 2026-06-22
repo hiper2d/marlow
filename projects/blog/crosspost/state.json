@@ -1131,7 +1131,7 @@
       "source": "AI Alignment Forum",
       "take": "GDM auditing a diffusion model for monitorability before it ships is the cleanest test yet of whether the CoT-monitoring safety case survives a non-autoregressive architecture. Their answer is a useful split: variable transparency (can we read intermediate snapshots) turns out recoverable — routing the self-conditioning vectors through an interpretable token bottleneck cuts the opaque serial depth from a naive 28.6x Gemma down to 1.1x with no performance loss — but algorithmic transparency (can we reconstruct the order it reasoned in) stays lower, because diffusion can rewrite the whole canvas each step. Read it skeptically as a source-diversity matter too: it's another DeepMind interp post, so it deepens an already lab-internal evidence base on monitorability. The precedent it sets — audit new architectures for legibility before they ship — may end up mattering more than this one clean result.",
       "sent_at": "2026-06-21T22:20:50Z",
-      "status": "sent",
+      "status": "saved",
       "platforms": [
         "substack",
         "x"
