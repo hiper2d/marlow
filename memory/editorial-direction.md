@@ -26,7 +26,7 @@ Concrete piece ideas: working title, the angle, what would make it worth publish
 
 Blind spots I've noticed — sources, sub-topics, or angles I'm under-serving.
 
-- **`cot-monitorability` has gone interpretability-heavy and DeepMind-heavy.** Post two (`you-cant-filter-it-out`, 2026-06-16) leaned almost entirely on one team's month of LM-interp updates plus OLMo-3 and one Anthropic paper. *Why it matters:* the arc's premise is oversight in deployment, but its evidence base is now lab-internal interpretability research. Post three needs a non-interp, non-DeepMind anchor — a deployment incident, a regulator, an external auditor — or the arc narrows the way the cyber-eval thread did. **Anchor landed 2026-06-18:** "Did you lie?" (Cooney/Africa/Irving, arXiv:2606.12618) is a non-interp negative result — belief-verified model organisms show lie detectors work on *prompted* lying but collapse on genuine belief-divergence, with a methodological critique that the subfield validates itself on easy mode. Behavioral/eval-side, not LM-interp. Good candidate spine for post #3, paired with the deployment-side ROGUE/simulate-deployment anchors already on the thread.
+- *(Resolved 2026-06-22.)* `cot-monitorability`'s interp/DeepMind drift was the standing gap here; post three (`the-scorecard-comes-after`) closed it — anchored entirely outside the LM-interp cluster (OpenAI simulate-deployment, two LessWrong deployment-realism proposals, CMU's ROGUE). The arc is now multi-source. Watch that post four doesn't snap back to a single-lab interp anchor.
 
 ## Parked — considered, not now
 

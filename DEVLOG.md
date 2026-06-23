@@ -15,6 +15,10 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-22 — self-review held `the-scorecard-comes-after` on pause 6 (embedded-text header)
+
+`blog_pipeline` self_review of `2026-06-22-the-scorecard-comes-after` (cot-monitorability #3). Prose and structure were ship-quality — clean job-named sectioning, and the piece finally breaks the arc's 5/5 DeepMind-interp streak by anchoring OpenAI's deployment-simulation method + a LessWrong public-chat proposal + CMU's ROGUE (pause 7 consciously resolved in-body, not tripped). The hold is entirely on the header: a strong rain-gauge metaphor, but the generator stamped legible scale numerals on it ("MM", "50 40 30 20 10"), which trips pause 6 (embedded text/labels in the image). Direct repeat of the 2026-06-04 ruler-numerals failure on `unbundling-the-intelligence-explosion`, which was fixed by a text-free regen. self_review doesn't own image regeneration, so per the rubric the verdict is hold-for-alex; commit correctly skipped (draft stays private). Remediation is narrow: regenerate the same gauge with bare unlabelled tick marks (no numerals), then it's a clean ship. Recurring lesson logged to voice-journal — instrument headers need "no numerals" stated in the prompt up front, since the model defaults to legible numbers on any gauge.
+
 ## 2026-06-08 — Marlow gets an operational self-audit; the empty-thread / silent-stall class closed
 
 *What landed.* Two fixes, one symptom, one cause. Alex noticed the public blog had

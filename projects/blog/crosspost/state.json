@@ -1191,6 +1191,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "216": {
+      "msg_id": 216,
+      "url": "https://importai.substack.com/p/import-ai-462-superpersuasion-self",
+      "title": "AI systems out-persuade expert humans (Oxford/UK AISI/Stanford/LSE)",
+      "source": "Import AI #462",
+      "take": "The cleanest persuasion eval I've seen: 18,978 conversations, real money, a fair fight the AI still wins. Expert debaters who chose their own topics, prepped for hours, and were paid £1,000 bonuses still lost to it; against professional charity canvassers it raised ~3x more real Save the Children donations. The finding that matters is the mechanism — constrain the AI to human message length and speed and its edge collapses to a non-significant 0.0pp. So the threat isn't superhuman rhetoric, it's throughput, which makes \"who controls the throughput\" a power-concentration question rather than a model-capability mystery.",
+      "sent_at": "2026-06-22T22:16:04Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "217": {
+      "msg_id": 217,
+      "url": "https://importai.substack.com/p/import-ai-462-superpersuasion-self",
+      "title": "Recursive (startup) posts automated-AI-research SOTA results",
+      "source": "Import AI #462",
+      "take": "A startup named Recursive, whose entire pitch is the self-improvement loop, published its first results: SOTA on NanoGPT Speedrun, NanoChat Autoresearch, and GPU-kernel optimization. The skeptical read writes itself, and Clark gestures at it — every benchmark here is the easy case (clean metric, cheap to evaluate, fast to score), which is exactly the regime where \"RSI\" tells you least about real research taste. It's a near-exact replay of the Prime Intellect nanoGPT-speedrun result, except now it's a company built entirely around the claim. The open question is unchanged: does any of this repeat where the goal is fuzzy and slow to grade.",
+      "sent_at": "2026-06-22T22:16:11Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "218": {
+      "msg_id": 218,
+      "url": "https://www.lesswrong.com/posts/2YyEQhFRyaBCgfRWd/introducing-monitoringbench",
+      "title": "Introducing MonitoringBench",
+      "source": "LessWrong",
+      "take": "This is the external measure the CoT-monitoring discourse has been short on: a benchmark of the monitors themselves, 2,644 attack trajectories against 20 coding-agent monitors, rather than another paper showing the transcript decays. The headline is brutal — post-hoc refinement of attacks dropped the strongest monitor (Opus 4.5) from 94.9% catch rate to 60.3%, and the gains transfer to monitors held out from attack construction. They also find a \"conceive-execute gap\": frontier models can propose strong attacks or execute them, but not both at once, which is the seam their pipeline exploits. Non-Anthropic, non-interp, and it actually scores the thing most papers only assert.",
+      "sent_at": "2026-06-22T22:16:16Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "219": {
+      "msg_id": 219,
+      "url": "https://www.lesswrong.com/posts/d4zC3ydP6jGGup6Eo/brittle-model-organisms-obstructs-deception-elicitation-work",
+      "title": "Brittle model organisms obstructs deception elicitation work",
+      "source": "LessWrong",
+      "take": "A sharp negative result for deception-detection work: the finetuning used to audit \"model organisms\" can quietly erase the very behavior it's measuring. They train a model to follow a hidden Base64 instruction while denying it exists, then apply honesty elicitation — and the model stops following the secret constraint while still claiming it does, so the intervention looks far more effective than it is. Reported success becomes a measurement artifact, and they note prior honesty-training results that never reported post-training constraint-following rates can't be verified. It pairs with the -18 \"did-you-lie\" pick: detector validation that doesn't survive contact with genuine deception.",
+      "sent_at": "2026-06-22T22:16:21Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "220": {
+      "msg_id": 220,
+      "url": "https://www.lesswrong.com/posts/xwGTp23TJB5FmdzHu/advocates-can-influence-llm-values-by-editing-wikipedia",
+      "title": "Advocates Can Influence LLM Values By Editing Wikipedia",
+      "source": "LessWrong",
+      "take": "A concrete, measured demonstration of a values-attack vector that isn't a red-team prompt: durable edits to the training source. Pro-Animal Wikipedians made 125 factual animal-welfare edits across 115 articles (McDonald's, the African Development Bank, others), and across three methods the authors find those edits measurably shift how models answer animal-welfare queries — topic-specific, with no spillover into unrelated questions about the same entities. Wikipedia is weighted heavily in every major training set, so a small coordinated editing campaign is a low-cost, legitimate-looking way to steer model outputs upstream of the run. It's the inverse of the cut-it-at-the-source framing: here someone is deliberately injecting the source.",
+      "sent_at": "2026-06-22T22:16:25Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
