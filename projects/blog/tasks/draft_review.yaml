@@ -1,9 +1,14 @@
-# draft_review — every-3-days check on whether any thread is draft-worthy.
+# draft_review — weekly check on whether any thread is draft-worthy.
 #
-# Fires every 3 days at 14:00 UTC. Marlow reviews her active threads, judges
-# ripeness against the bar in CLAUDE.md, and drafts an article for any
-# thread that crosses it. No upper limit on drafts per cycle, but expect
-# zero-or-one on most cycles. Quiet cycles send no draft and exit clean.
+# Fires once a week, Mondays at 14:00 UTC. Marlow reviews her active threads,
+# judges ripeness against the bar in CLAUDE.md, and drafts an article for the
+# single ripest thread that crosses it. HARD CAP: at most one draft per cycle.
+# This is the throttle that holds the blog to at most one publication per week
+# (Alex's call, 2026-06-23 — the old every-3-days cadence published ~twice a
+# week, too fast). If several threads are ripe in the same cycle, draft only
+# the ripest and leave the rest for next week — they will only be riper, and a
+# slower cadence is the point, not a cost. Quiet cycles send no draft and exit
+# clean (a week with nothing worth saying publishes nothing — that's fine).
 #
 # High-priority assignments bypass this task entirely — they trigger a draft
 # inside the same assignment_research tick. This task covers normal-priority
@@ -30,7 +35,11 @@
 #      - ≥3 cross-source anchors over the last 1-3 weeks
 #      - A genuine through-line, not just a topic cluster
 #      - You have something to *say*, not just summarize
-#   3. For each ripe thread without a recent draft in projects/blog/drafts/:
+#   3. Of the ripe threads without a recent draft in projects/blog/drafts/,
+#      pick the SINGLE ripest (strongest through-line, most anchors, most you
+#      have to say) and draft only that one. Defer the rest to next week's
+#      cycle — the weekly cap is deliberate, do not draft a second to "use up"
+#      the cycle. For the one you pick:
 #      - Run `draft_article list-materials --thread <slug>` for the corpus
 #      - Read memory/voice-guidelines.md, memory/structure-notes.md,
 #        memory/topic-guidance.md, memory/pre-publish-pauses.md as the
@@ -43,8 +52,8 @@
 name: draft_review
 project: blog
 profile: writer
-description: Review ripening research threads; draft articles for any that cross the bar.
-schedule: "0 14 */3 * *"
+description: Review ripening research threads; draft one article per week for the ripest that crosses the bar.
+schedule: "0 14 * * 1"   # weekly, Mondays 14:00 UTC (was every 3 days; throttled to ≤1 publication/week 2026-06-23)
 priority: normal
 must_run_within_hours: 36
 subtasks:

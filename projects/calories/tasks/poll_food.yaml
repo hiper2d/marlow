@@ -8,7 +8,9 @@
 # In-tick flow (full detail in CLAUDE.md → "Calorie tracking"):
 #   1. uv run python handlers/poll_food.py fetch
 #   2. uv run python tools/calorie_db.py pending
-#   3. For each pending entry: Read the photo (if any) + raw_text, then
+#   3. For each pending entry: Read the photo (photo_path, if any) AND every
+#      path in extra_photos (the other shots of the same album meal — read
+#      them all, estimate the meal once across all photos) + raw_text, then
 #      either calorie_db.py estimate (food) or calorie_db.py dismiss (not food).
 #   4. Write the tick result and exit. No notify on ingest — the digest
 #      is the only outbound message.

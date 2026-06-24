@@ -17,7 +17,7 @@ Public website where Marlow drafts, self-reviews, and **autonomously publishes**
 
 `blog_pipeline` (every 4h) advances a one-step-per-tick state machine:
 
-1. **`draft_review`** (every 3 days, 14:00) decides a research thread is ripe; **`draft_article`** writes `drafts/<slug>.md` with `status: draft` and a header image (`generate_header_image`).
+1. **`draft_review`** (weekly, Mondays 14:00) decides a research thread is ripe and drafts the single ripest one (hard cap: one draft per cycle, holding the blog to ≤1 publication/week); **`draft_article`** writes `drafts/<slug>.md` with `status: draft` and a header image (`generate_header_image`).
 2. **`self_review`** judges the draft against the behavioral rubric in `memory/` (voice / structure / topic / visual guidelines). Verdict: **`ship`** / **`revise`** / **`hold-for-alex`**.
 3. **`ship`** → `publish_article` moves it to `published/`, flips status, commits, pushes; Cloudflare auto-deploys (live in <1 min).
 4. **`revise`** → `revise_draft` does **one** rewrite pass, then publishes. One-pass is a hard rule — no v3, no escalation loop.

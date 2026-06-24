@@ -79,6 +79,7 @@ def fetch() -> dict:
 
     new_pending: list[int] = []
     skipped = 0
+    grouped = 0  # extra album photos folded into an existing meal entry
     max_update_id = offset - 1 if offset is not None else None
 
     for upd in updates:
@@ -96,6 +97,13 @@ def fetch() -> dict:
 
         ts_utc = datetime.fromtimestamp(message["date"], tz=timezone.utc)
         day_dir = INBOX_DIR / ts_utc.astimezone(calorie_db.LOCAL_TZ).date().isoformat()
+
+        # Telegram album key (shared across the photos of one multi-photo
+        # send). str() because the Bot API hands it back as a string id but
+        # we don't want to trust the type.
+        media_group_id = message.get("media_group_id")
+        if media_group_id is not None:
+            media_group_id = str(media_group_id)
 
         photo_rel = None
         if photo_file_id:
@@ -135,6 +143,27 @@ def fetch() -> dict:
         else:
             source = "text"
 
+        # Album fold: a later photo of a multi-photo send arrives as its own
+        # update sharing media_group_id. If we've already ingested a member
+        # of this album AND this message is a pure extra photo (no note of
+        # its own, no audio), attach the photo to that entry instead of
+        # creating a second one — otherwise the one meal gets counted twice.
+        # A member carrying its own text is kept as its own entry so Alex's
+        # note is never dropped.
+        if (
+            media_group_id is not None
+            and photo_rel
+            and not note
+            and not audio_rel
+        ):
+            group_entry = calorie_db.find_group_entry(media_group_id)
+            if group_entry is not None:
+                calorie_db.attach_group_photo(
+                    entry_id=group_entry["id"], photo_path=photo_rel
+                )
+                grouped += 1
+                continue
+
         entry_id = calorie_db.add_pending(
             update_id=update_id,
             ts_utc=ts_utc,
@@ -142,6 +171,7 @@ def fetch() -> dict:
             photo_path=photo_rel,
             audio_path=audio_rel,
             source=source,
+            media_group_id=media_group_id,
         )
         if entry_id is not None:
             new_pending.append(entry_id)
@@ -157,6 +187,7 @@ def fetch() -> dict:
         "fetched": len(updates),
         "new_pending": len(new_pending),
         "skipped_duplicates": skipped,
+        "grouped_album_photos": grouped,
         "pending_ids": new_pending,
     }
 

@@ -154,6 +154,18 @@ def init_db() -> None:
             # JSON array of prior states, appended each time an already-
             # estimated entry is corrected. Keeps history honest.
             conn.execute("ALTER TABLE entries ADD COLUMN amendments TEXT")
+        if "media_group_id" not in cols:
+            # Telegram album key. Every photo in a multi-photo send shares
+            # this id but arrives as its own update (own update_id), so it's
+            # the only way to tell "these are one meal" from "two meals."
+            # Used to fold album photos into one entry instead of double-
+            # counting the meal.
+            conn.execute("ALTER TABLE entries ADD COLUMN media_group_id TEXT")
+        if "extra_photos" not in cols:
+            # JSON array of extra photo paths folded in from the same album.
+            # photo_path stays the primary image; these are the rest, so the
+            # estimate step can see every angle of the one meal.
+            conn.execute("ALTER TABLE entries ADD COLUMN extra_photos TEXT")
 
 
 def add_pending(
@@ -164,6 +176,7 @@ def add_pending(
     photo_path: str | None,
     source: str,
     audio_path: str | None = None,
+    media_group_id: str | None = None,
 ) -> int | None:
     """Insert a pending entry (no estimate yet). Returns the row id, or
     None if this update_id was already ingested (dedupe)."""
@@ -172,8 +185,8 @@ def add_pending(
             """
             INSERT OR IGNORE INTO entries
                 (update_id, ts_utc, local_date, raw_text, photo_path,
-                 audio_path, source, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+                 audio_path, source, media_group_id, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
             """,
             (
                 update_id,
@@ -183,10 +196,47 @@ def add_pending(
                 photo_path,
                 audio_path,
                 source,
+                media_group_id,
                 _now_utc().isoformat(timespec="seconds"),
             ),
         )
         return cur.lastrowid if cur.rowcount else None
+
+
+def find_group_entry(media_group_id: str) -> dict | None:
+    """Return the most recent entry already ingested for this Telegram album
+    (media_group_id), or None. Used by poll_food to fold a later album photo
+    into the first entry instead of creating a second one for the same meal."""
+    if not media_group_id:
+        return None
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM entries WHERE media_group_id = ? "
+            "ORDER BY id DESC LIMIT 1",
+            (media_group_id,),
+        ).fetchone()
+    return _row_to_dict(row) if row else None
+
+
+def attach_group_photo(*, entry_id: int, photo_path: str) -> bool:
+    """Append a photo path to an existing entry's extra_photos list (the
+    other shots of a single album meal). Idempotent: a path already present
+    is not added twice. Returns True if the photo was newly attached."""
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT extra_photos FROM entries WHERE id = ?", (entry_id,)
+        ).fetchone()
+        if row is None:
+            return False
+        existing = json.loads(row["extra_photos"]) if row["extra_photos"] else []
+        if photo_path in existing:
+            return False
+        existing.append(photo_path)
+        conn.execute(
+            "UPDATE entries SET extra_photos = ? WHERE id = ?",
+            (json.dumps(existing), entry_id),
+        )
+        return True
 
 
 def fill_estimate(

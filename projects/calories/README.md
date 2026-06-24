@@ -23,7 +23,7 @@ accuracy.
 | `tools/fitness_bot.py` | Telegram client for @marlow_fitness_bot (receive + send). Sole `getUpdates` consumer for this bot. |
 | `tools/transcribe.py`  | Local speech-to-text (faster-whisper) for voice notes. No API cost. Model via `CALORIE_WHISPER_MODEL` (default `small`, multilingual). |
 | `tools/calorie_db.py`  | SQLite store (`calories.db`). One row per entry, grouped by Alex's local day (Eastern). Also Simona's query surface. |
-| `handlers/poll_food.py` | Every tick: fetch new messages, download photos + voice notes, transcribe voice, insert **pending** rows, advance the Telegram offset. |
+| `handlers/poll_food.py` | Every tick: fetch new messages, download photos + voice notes, transcribe voice, insert **pending** rows, advance the Telegram offset. Photos of one multi-photo send (shared Telegram `media_group_id`) fold into a single entry (`extra_photos`) so an album of one meal isn't counted twice. |
 | `handlers/calorie_digest.py` | Morning after (12:00 UTC ≈ 07:00 ET): roll up the prior fully-closed day, Marlow comments, send to the chat. |
 
 ## Data flow
@@ -36,7 +36,8 @@ poll_food fetch ──► pending rows in calories.db  (+ photo/voice in inbox/)
    │                 (voice notes transcribed locally → raw_text)
    │
    ▼  same tick, Marlow's session
-read photo + note → estimate → calorie_db estimate   (or dismiss if not food)
+read photo(s) + note → estimate → calorie_db estimate (or dismiss if not food)
+   (photo_path + every path in extra_photos = the one meal, all angles)
    │
    ▼  morning after (≈7am ET, prior day closed)
 calorie_digest due → summary → Marlow writes comment → send → digests row

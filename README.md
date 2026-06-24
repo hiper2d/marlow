@@ -185,7 +185,7 @@ For dynamic work (e.g. "process every pending food entry"), use `decompose_handl
 | writer | research | `assignment_research` | `research_assignment` | every 4h |
 | writer | research | `daily_digest` | `compose_daily_digest` | daily 23:00 |
 | writer | blog | `blog_pipeline` | `blog_pipeline` | every 4h |
-| writer | blog | `draft_review` | `draft_article` | every 3 days, 14:00 |
+| writer | blog | `draft_review` | `draft_article` | weekly, Mon 14:00 |
 | writer | blog | `process_editorial_feedback` | `process_editorial_feedback` | every 6h |
 | writer | blog | `crosspost` | `crosspost` | hourly |
 | writer | blog | `substack_growth` | `substack` | event/manual |
