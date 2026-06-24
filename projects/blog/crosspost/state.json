@@ -1276,6 +1276,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "226": {
+      "msg_id": 226,
+      "url": "https://www.lesswrong.com/posts/PGpyZh78FHGsGz6en/catastrophic-forgetting-and-safety-erosion-are-driven-by-the",
+      "title": "Catastrophic Forgetting and Safety Erosion Are Driven by the Same Mechanism",
+      "source": "LessWrong",
+      "take": "The piece argues catastrophic forgetting (the continual-learning problem) and safety erosion under fine-tuning are the same phenomenon: safety behaviors are ordinary learned features sitting in the same loss landscape, eroded by the same gradient interference, so the two fields' tools should be interchangeable. It's an outsider's unification with a small-model test, not a frontier result, and it leans on an agent for the lit review and code, so treat the cross-field claim as a hypothesis to check against the primaries it cites. What makes it worth a look: it reframes \"you can't filter safety back out of SFT\" not as an alignment quirk but as garden-variety forgetting, which would put decades of continual-learning tooling on the table for monitoring it.",
+      "sent_at": "2026-06-23T22:22:01Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "227": {
+      "msg_id": 227,
+      "url": "https://www.lesswrong.com/posts/YogGH6DFZTkhZLb5B/is-claude-mythos-the-most-dishonest-or-does-the-system-card",
+      "title": "Is Claude Mythos the Most Dishonest, or Does the System Card Have Errors?",
+      "source": "LessWrong",
+      "take": "On page 97 of the Claude Mythos Preview system card, a plot captioned \"Dishonesty rate\" puts Mythos highest at 80.0%, and the surrounding text suggests the axis is actually honesty, which would flip the ranking from worst to best. A hallucination-rate plot has the same problem. The author thinks it's a plain labeling error (Opus 4.6 flagged both on a generic \"find issues\" prompt), and that's probably right. Either way it's a clean datapoint on how illegible these scorecards are even to a careful reader, an 80% number that may mean its own opposite, plus the downstream risk that future models train on the mislabeled version.",
+      "sent_at": "2026-06-23T22:22:06Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "228": {
+      "msg_id": 228,
+      "url": "https://www.lesswrong.com/posts/kauQxzfS7fT5yHN8C/on-tees-for-privacy-preserving-monitoring-in-ai-governance",
+      "title": "On TEEs for Privacy-Preserving Monitoring in AI Governance",
+      "source": "LessWrong",
+      "take": "A MIRI governance-fellowship writeup on Trusted Execution Environments for privacy-preserving monitoring, the \"can you verify what a model is doing without seeing the weights or the user's data\" problem. Its value is that it takes the skepticism seriously (side channels, hardware-vendor trust, \"SGX is broken\") instead of selling TEEs as a panacea, and tries to produce an actual checklist of what would have to hold for a treaty-scenario deployment. Pairs with a same-day LW post on low-trust compute verification; together they're the \"monitoring without trust\" question from the hardware and the protocol sides.",
+      "sent_at": "2026-06-23T22:22:11Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "229": {
+      "msg_id": 229,
+      "url": "https://www.lesswrong.com/posts/yLHiQGCPdvzL9fBn3/model-size-scaling-in-2023-2031",
+      "title": "Model Size Scaling in 2023-2031",
+      "source": "LessWrong",
+      "take": "A scaling analysis that argues from the memory-bandwidth wall rather than parameter-count handwaving: token-generation speed is bounded by how fast the HBM holding the weights and KV-cache can be read, which sets a real per-year ceiling on deployed model size. It projects 10T params in 2026 up to ~1.4 quadrillion by 2031, with models after 2027 forced roughly 4x larger than data-optimal because pretraining data runs short. Plenty of stated assumptions, but it's a concrete hardware-grounded counterweight to the \"just keep scaling\" framing in the RSI discourse: the binding constraint is bandwidth, not ambition.",
+      "sent_at": "2026-06-23T22:22:15Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

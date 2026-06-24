@@ -88,13 +88,19 @@ subtasks:
   # ─── YouTube channel feeds ─────────────────────────────────────────
   # YouTube exposes a per-channel RSS feed at
   #   https://www.youtube.com/feeds/videos.xml?channel_id=<UC...>
-  # so these reuse process_rss_feed with no new code. A feed entry is
-  # only title + link + description — NO transcript — so the signal per
-  # item is thin. These channels post often and vary in signal; be
-  # SELECTIVE. Only write a candidate note for a video that's genuinely
-  # worth Alex's attention (a real paper/result/announcement), not for
-  # every upload or news-roundup. All priority: low so the written
-  # research sources above always scan first.
+  # so these reuse process_rss_feed. The feed entry is only title + link
+  # + description — thin, clickbait-prone signal — so for every NEW video
+  # FETCH THE TRANSCRIPT before you judge it:
+  #     uv run python tools/yt_transcript.py <video_id> --max-chars 12000
+  # The entry "id" is "yt:video:<ID>"; pass that or the link straight in.
+  # Judge the video on what the transcript actually SAYS — a real
+  # paper/result/benchmark/architecture — not the title. If a transcript
+  # is unavailable (ok:false; some channels disable captions), fall back
+  # to title+description and stay extra SELECTIVE. Only write a candidate
+  # note for a video genuinely worth Alex's attention, never for every
+  # upload or news-roundup. Transcripts are cached on disk, so re-scans
+  # are free. All priority: low so the written research sources above
+  # always scan first.
   # Alex curates this list — add/remove channels on his request only.
   - id: scan_yt_mo_bitar          # @atmoio
     handler: process_rss_feed
@@ -127,7 +133,7 @@ subtasks:
   - id: scan_yt_bycloud           # @bycloudAI
     handler: process_rss_feed
     context:
-      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCfg9ux4m8P0YDITTPptrmLg"
+      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCgfe2ooZD3VJPB6aJAnuQng"
       source_name: "YouTube · bycloud (@bycloudAI)"
     priority: low
 

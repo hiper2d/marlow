@@ -12,6 +12,7 @@ dependencies = [
     "trafilatura>=2.0.0",
     "firebase-admin>=7.4.0",
     "faster-whisper>=1.2.1",
+    "youtube-transcript-api>=1.0.0",
 ]
 
 [project.scripts]

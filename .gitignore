@@ -45,6 +45,9 @@ digests/_notify_fallback.log
 # Per-feed last-seen state (runtime; fresh clone re-scans cold)
 projects/research/threads/_feed_state.json
 
+# YouTube transcript cache (runtime; bulky + regenerable from captions)
+projects/research/threads/_yt_transcripts/
+
 # Werewolf API-budget snapshots (runtime; written every monitor run)
 projects/werewolf-ops/state/*
 
