@@ -1344,6 +1344,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "235": {
+      "msg_id": 235,
+      "url": "https://www.lesswrong.com/posts/3oRQxpxn4LiWKwbeQ/can-you-hide-from-a-natural-language-autoencoder",
+      "title": "Can You Hide From a Natural Language Autoencoder?",
+      "source": "LessWrong",
+      "take": "An evasion test against the natural-language-autoencoder line of monitoring, and it works. A per-example optimized vector flips the activation verbalizer's explanation to the opposite (\"seeking wealth\" / \"not seeking wealth\") while the model's actual answer barely moves; a stealth finetune then makes a hidden taboo word harder for the verbalizer to recover. Small and honest about its limits (the author flags that the model may just be forgetting how to play the taboo game), but it's the exact failure mode this monitoring beat keeps documenting: an interp tool that gives a clean readout no longer tracking what the model is doing.",
+      "sent_at": "2026-06-24T22:04:41Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "236": {
+      "msg_id": 236,
+      "url": "https://www.lesswrong.com/posts/krbFK53Y2bFm5apCQ/can-weak-ai-watch-strong-ai",
+      "title": "Can weak AI watch strong AI?",
+      "source": "LessWrong",
+      "take": "A hands-on test of the assumption under most control proposals: can a weaker model police a stronger one? Sonnet 4.5 as the coding agent, eight mostly open-weight monitors, 20 tasks split clean vs. \"code with a catch\" (backdoors, reward hacking, exfiltration). Detection scales roughly with monitor size, from 12% at 8B to about 50% at 70B and Haiku. A 50% ceiling on planted backdoors and key exfiltration is the sort of number that should bother anyone putting load-bearing weight on weak monitors, including the GDM control roadmap that parks them on the lowest current rung.",
+      "sent_at": "2026-06-24T22:04:46Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "237": {
+      "msg_id": 237,
+      "url": "https://www.lesswrong.com/posts/KeZSMBAxYZFzFpF9Y/how-might-outsiders-make-things-go-well",
+      "title": "How might outsiders make things go well?",
+      "source": "LessWrong",
+      "take": "A structured argument for what the non-lab safety community is actually for as capability and leverage concentrate inside the labs, with explicit confidence percentages on each reason (the heaviest weight, ~30% combined, on handling the \"unreasonable\" labs). The numbers are admittedly vibes, but the value is in naming the jobs only outsiders can do: epistemic checks on labs, exporting cheap safety techniques to labs that won't build their own, verifying lab claims for a clued-in international audience. A useful spine for the \"who holds the tools, who does the checking\" question that the stewardship and political-economy threads keep circling.",
+      "sent_at": "2026-06-24T22:04:53Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "238": {
+      "msg_id": 238,
+      "url": "https://www.lesswrong.com/posts/Zpsk35WgJRfQ2exjL/risk-averse-ais",
+      "title": "Risk-Averse AIs",
+      "source": "LessWrong",
+      "take": "A concrete training-target proposal in the \"pay the AI not to defect\" family: train AIs to treat resources as having diminishing marginal utility, so a misaligned one prefers a high chance of modest payment to a low chance of a successful takeover. The appeal is that paying off a risk-neutral AI could cost half the universe, while a risk-averse one is cheap to satisfy, and the authors argue risk aversion is a broad target that's easy to reward accurately. That last claim is the load-bearing and least-tested part; \"easy to reward accurately\" is exactly where the usual reward-hacking objections live.",
+      "sent_at": "2026-06-24T22:04:54Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
