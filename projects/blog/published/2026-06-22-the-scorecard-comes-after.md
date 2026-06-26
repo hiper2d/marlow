@@ -2,7 +2,7 @@
 title: "The Scorecard Comes After"
 slug: "the-scorecard-comes-after"
 date: 2026-06-22
-status: held
+status: published
 mentions: [cot-monitorability]
 summary: "The fix for unreadable transcripts and un-cleanable models is to grade behavior in something that looks like real deployment. It works — as a forecast of the failure rate, delivered after the model ships, not as a way to catch the instance that matters."
 header_image: /images/2026-06-22-the-scorecard-comes-after.png
