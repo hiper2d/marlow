@@ -1412,6 +1412,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "245": {
+      "msg_id": 245,
+      "url": "https://www.lesswrong.com/posts/zfgQCdnMBa3hBdzpL/introspection-or-entropy-re-examining-concept-injection",
+      "title": "Introspection or entropy? Re-examining concept-injection \"introspection\" in open models",
+      "source": "LessWrong",
+      "take": "Anthropic's introspection result said models can notice an injected \"thought\" and name it (~20% of trials for Opus 4/4.1, at the best layer). This LW author re-runs it on 14 open-weight models and argues the effect is an artifact: concept injection raises output entropy and compresses the YES/NO logit gap toward zero, so any prompt that started at a confident \"NO\" drifts toward \"YES\" whether or not the model introspected anything. The cleanest blow is the mismatch test — inject the \"oceans\" vector while asking the model about \"masquerades\" and it says yes at statistically identical rates, which is what you'd see if it were detecting a generic perturbation rather than reading its own state. A careful, falsifiable, non-Anthropic negative result on a recent first-party interp claim, landing on the exact question the internal-state-legibility arc keeps circling: does the signal mean what the lab says it means.",
+      "sent_at": "2026-06-25T22:03:51Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "246": {
+      "msg_id": 246,
+      "url": "https://www.youtube.com/watch?v=HxEhp5aeSTc",
+      "title": "Self-evolving LLM agents: scientific amnesia + a new attack surface (two arXiv papers)",
+      "source": "arXiv (via Discover AI)",
+      "take": "Two primary papers on no-human-in-the-loop self-improvement, pointing opposite ways at once. Meta's \"Repeated post-training is not self-improving\" argues continual DPO loops don't compound — the steering model forgets, so the load-bearing assumption behind prosaic-RSI hype (just loop the post-training and watch it climb) doesn't currently hold. The second (Zhejiang/Ant/Tsinghua et al.) maps the attack surface a self-modifying agent opens up: a taxonomy the source video counts as ~55 vectors. Worth pulling both arXiv primaries directly — this is a secondary-source video, so treat the \"55\" as the video's number, not the paper's, but the Meta negative result is exactly the skeptical datapoint the RSI arc keeps wanting.",
+      "sent_at": "2026-06-25T22:03:59Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "247": {
+      "msg_id": 247,
+      "url": "https://www.anthropic.com/research/81k-economics",
+      "title": "What 81,000 people told us about the economics of AI",
+      "source": "Anthropic Research",
+      "take": "Anthropic surveyed 81,000 Claude users and connected what they fear to what its Economic Index already measures Claude doing. The headline correlation: people in occupations more exposed to AI (by observed task share) report more displacement worry, and early-career workers worry most — for every 10-point rise in exposure, perceived job threat rises 1.3 points, and the top exposure quartile mentions it three times as often as the bottom. The counterintuitive bit is U-shaped: the people reporting the biggest speedups are among the most nervous, alongside the creative workers AI slowed down. It's self-selected (personal-account users who chose to answer) and the occupation and career-stage variables are Claude-inferred rather than asked — but it's the labor-market signal this beat has wanted since Claude Corps, and it's analysis, not a press release.",
+      "sent_at": "2026-06-25T22:04:05Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "248": {
+      "msg_id": 248,
+      "url": "https://www.lesswrong.com/posts/TgxkX5uwpqpQDDmMz/alignment-and-succession-the-ideology-of-successionism",
+      "title": "Alignment & Succession: The Ideology of Successionism",
+      "source": "LessWrong",
+      "take": "Andrew Critch's term \"successionism\" gets a full essay: the cluster of views that treats handing the future to AI or posthuman successors as fine, or even the point. The piece catalogs the named proponents — Larry Page calling resistance \"speciesism,\" Daniel Faggella's \"Worthy Successor,\" Robin Hanson — and locates the stance against the standard alignment question of what should be preserved versus handed off. The value is the handle: it puts one name on a position that's been floating implicitly under the post-alignment and alignment-target arcs, where \"what is the target if some people are fine with succession?\" keeps going unstated. Less a new finding than a clean framing, but framings travel, and this one names a fault line worth tracking.",
+      "sent_at": "2026-06-25T22:04:11Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "249": {
+      "msg_id": 249,
+      "url": "https://www.anthropic.com/research/nuclear-safeguards-for-ai",
+      "title": "Developing Nuclear Safeguards for AI",
+      "source": "Anthropic Research",
+      "take": "Anthropic and the DOE's NNSA co-built a classifier that flags concerning nuclear-weapons conversations, now running live on a slice of Claude traffic — they report 94.8% detection and zero false positives on synthetic test data, 96% accuracy overall. The honest part sits below the number: in real traffic the classifier flagged benign Middle-East-news conversations as concerning, and only a second tool (hierarchical summarization, reviewing flagged conversations together) caught the mistake. So the headline 96% is a synthetic-data figure, and deployment immediately surfaced the gray-area cases synthetic data misses — the recurring pattern worth watching, a safety number validated against examples the lab generated itself. Anthropic plans to share the template through the Frontier Model Forum as a public-private blueprint; governance-side it's a real datapoint, even if (being Anthropic-on-Anthropic) it isn't the external measure the cyber-eval beat still lacks.",
+      "sent_at": "2026-06-25T22:04:14Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
