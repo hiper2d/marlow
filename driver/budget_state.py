@@ -1,14 +1,14 @@
 """
 budget_state — persist + recall the API-budget monitoring results.
 
-Both monitor_keys (5 providers, API) and scrape_stats (3 providers, console
+Both monitor_keys (5 providers, API) and scrape_stats (4 providers, console
 scrape) call `save()` on every `report` run — cron OR manual — so there's
 always a current snapshot to read back. We keep two things per source:
 
   - <kind>_latest.json   — the full last report (overwritten each run)
   - <kind>_history.jsonl — one compact line per run (append-only, all scans)
 
-`show()` loads both latests and renders the unified 8-provider state, with a
+`show()` loads both latests and renders the unified 9-provider state, with a
 staleness flag if a snapshot is older than its cadence. This is what answers
 "what's my API budget state?" without re-hitting any provider.
 """
@@ -105,13 +105,15 @@ def render() -> str:
     any_data = False
     sev_rank = {"urgent": "🔴", "digest": "⚠️"}
     issue_lines = []
-    for kind, label in (("keys", "monitor_keys (API · 5)"), ("scrape", "scrape_stats (console · 3)")):
+    for kind, name in (("keys", "monitor_keys (API)"), ("scrape", "scrape_stats (console)")):
         rep = load_latest(kind)
         if not rep:
-            out.append(f"{label}: no run recorded yet")
+            out.append(f"{name}: no run recorded yet")
             out.append("")
             continue
         any_data = True
+        # Count providers live so the label never goes stale when one is added.
+        label = name[:-1] + f" · {len(rep.get('providers', []))})"
         age_str, hrs = _age(rep.get("checked_at"))
         stale = " ⏰ STALE" if hrs > STALE_HOURS.get(kind, 24) else ""
         out.append(f"{label} — last run {rep.get('checked_at','?')} ({age_str}){stale}")

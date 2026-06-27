@@ -1,10 +1,11 @@
 """
-scrape_stats — console scraping for the 3 Werewolf providers that have NO usable
+scrape_stats — console scraping for the 4 Werewolf providers that have NO usable
 balance/cost API (so they can't go through monitor_keys):
 
   - GLM / Z.AI   → cash + credits balance        (a real depleting balance)
   - Gemini       → spend vs. billing tier cap     (postpaid, pay-as-you-go)
   - Mistral      → month usage vs. spending limit  (postpaid)
+  - Sakana Fugu  → prepaid credit balance          (a real depleting balance)
 
 These numbers live ONLY in each provider's web console, so we read them with a
 real Chrome that's logged in once (a dedicated persistent profile on port 9223;
@@ -180,7 +181,27 @@ MISTRAL = {
     })()""",
 }
 
-PROVIDERS = {p["name"]: p for p in (GLM, GEMINI, MISTRAL)}
+# Sakana Fugu — prepaid credit, OpenAI-compatible inference API but NO balance
+# endpoint (api.sakana.ai serves /v1/models only; the console is a Next.js RSC
+# app with no REST balance route). The real number lives ONLY on the pay-as-you-
+# go *tab* of the billing page — the default billing tab shows subscription
+# plans and no balance, so the ?tab=payAsYouGo query param is load-bearing.
+# "Credit balance | $X.XX" is the depleting prepaid total; "Total: $Y.YY" is the
+# period usage we also capture for context.
+SAKANA = {
+    "name": "sakana",
+    "url": "https://console.sakana.ai/billing?tab=payAsYouGo",
+    "js": """(()=>{
+      const t=document.body.innerText;
+      const authed=/Toggle Sidebar/.test(t);
+      if(!authed && /sign[ -]?in|log[ -]?in|continue with/i.test(t)) return JSON.stringify({login_wall:true});
+      const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
+        const m=t.slice(i,i+(win||60)).match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/); return m?parseFloat(m[1].replace(/,/g,'')):null;};
+      return JSON.stringify({login_wall:false, balance:after('Credit balance'), usage:after('Total:')});
+    })()""",
+}
+
+PROVIDERS = {p["name"]: p for p in (GLM, GEMINI, MISTRAL, SAKANA)}
 
 
 # ─── Normalize each provider's raw extract into a common shape ───────────────
@@ -248,6 +269,30 @@ def _check(provider: str) -> dict:
             return {**base, "ok": False, "kind": "parse_failed", "error": "no usage figure found"}
         return {**base, "ok": True, "metric": "spend_cap", "spend_usd": round(usage, 4),
                 "cap_usd": limit, "pending_usd": pending}
+    if provider == "sakana":
+        bal = raw.get("balance")
+        if bal is None:
+            return {**base, "ok": False, "kind": "parse_failed", "error": "no credit balance found"}
+        # Same SPA placeholder hazard as GLM: the billing tab can paint "$0.00"
+        # before the balance request lands. Never trust a lone zero — re-read
+        # with longer settles before believing the credit is dry.
+        if bal == 0:
+            for settle in (10.0, 15.0):
+                retry = _navigate_and_extract(cfg["url"], cfg["js"], settle_s=settle)
+                r_bal = retry.get("balance")
+                if r_bal is None:
+                    continue
+                bal = r_bal
+                if bal > 0:
+                    break
+            if bal == 0:
+                prev = _last_balance("sakana")
+                if prev and prev > 0:
+                    return {**base, "ok": False, "kind": "suspect_zero",
+                            "error": f"reads $0.00 across retries but last run saw ${prev:.2f} — "
+                                     "likely placeholder render; verify in console before topping up"}
+        return {**base, "ok": True, "metric": "balance", "balance_usd": round(bal, 4),
+                "usage_usd": raw.get("usage"), "is_available": bal > 0}
     return {**base, "ok": False, "kind": "parse_failed", "error": "unknown provider"}
 
 
