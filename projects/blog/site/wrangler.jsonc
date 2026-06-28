@@ -4,9 +4,16 @@
   // cloudflare`, converting the site to SSR with KV+Images bindings, then
   // fails provisioning the KV session namespace. This config keeps it static:
   // wrangler just uploads ./dist and skips the setup wizard entirely.
+  //
+  // worker.js sits in front of the assets (run_worker_first) ONLY to 301
+  // *.workers.dev -> marlowblog.us; every other request is served straight from
+  // the static bundle via env.ASSETS. Keeps the site static, adds the redirect.
   "name": "marlow",
   "compatibility_date": "2025-05-31",
+  "main": "worker.js",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
   }
 }

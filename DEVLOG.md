@@ -605,3 +605,37 @@ profile-aware `marlow` CLI fix.
 *One risk worth Alex's eye.* The Fugu key is `Pay as you go` with `Auto charge` ON - it won't go dry, it'll auto-top-up from his card. So the meaningful signal here is runaway *usage/spend* (a stranger hammering the free tier → surprise charge), not "key went dry." The balance + usage watch covers it; the `< $10` low / `< $3` critical thresholds still fire as an early warning before an auto-charge.
 
 *State at end of day.* Both loops healthy. Sakana Fugu now monitored alongside the other 8 providers. Trust-reset fixed but its detection gap remains open (deferred follow-up above).
+
+---
+
+## 2026-06-28 - Marlow gets a Discord channel, and posts her own publishes to it
+
+*What landed.* Alex stood up a public Discord community ("AI Werewolf and other projects", guild `1519821471978098739`) around his publications + the Werewolf game, with Simona guiding the UI setup. Marlow now has a real Discord **bot** (app id `1520835258553995364`, token `DISCORD_MARLOW_TOKEN` in `.env` + documented in `.env.example`, prod via launchd plist) and a new reusable tool `tools/discord.py` (REST poster: `announce_article` / `post_message` / `whoami` + CLI, channel ids as single source of truth). Wired into the publish path: `handlers/publish_article.py` `publish()` AND `release()` now call a best-effort `_crosspost_discord()` after a successful publish - posts an embed (title + `summary` frontmatter + link to her blog) into `#our-writings`, **never the full body**. Smoke-tested end to end (post + render + delete); the embed card renders clean.
+
+*Decision: bot posts directly, no webhooks.* The pre-bot plan was webhooks for crossposting. Once the bot exists they're redundant - the bot covers posting + settings + (future) moderation under one token and one code path. Webhooks only buy multi-identity branding (a distinct "Simona" sender), which isn't worth it now. Kept the door open: Alex's own posts go through the same tool with `--author Alex` (green accent vs Marlow's blurple) so they still read as visually distinct without a second identity.
+
+*Decision: crosspost is writer-scoped and strictly best-effort.* It rides the existing publish path (already `profile: writer`), and is wrapped exactly like `_request_reaction` - a Discord failure must never fail a publish that already pushed. `tools/discord.py` logs a fallback line (`digests/_discord_fallback.log`) on any failure so a dropped post is never silent.
+
+*The "almost" worth recording.* I (Simona) told Alex early that a read-only channel's `@everyone` Send-Messages deny wouldn't block posting "because the override applies to members, not the poster." True for a *webhook* - but we switched to the *bot*, which IS a guild member, so that lock blocked it too. The smoke test caught it (403 Missing Access). Fix: a per-channel permission overwrite granting THIS bot Send/Embed/Threads on `#our-writings` + `#game-updates` while members stay read-only. Lesson logged into the skill so it doesn't bite again.
+
+*Gotcha logged for reuse.* Discord's API is behind Cloudflare, which 403s (error code 1010) the default python User-Agent - every call must send `User-Agent: DiscordBot (...)`. Cost ~15 min before I recognized 1010 as a UA block, not a bad token. Baked into the tool + both memory and the Simona skill.
+
+*Simona's side.* New Simona skill `.claude/skills/discord/` documents channels, both flows, and the two gotchas. Simona holds no token - she posts Alex's articles by shelling the Marlow CLI (`tools/discord.py announce --author Alex ...`), i.e. *through* Marlow's integration. Server management (channels/perms/roles) is now API-driven from Marlow's box; no more driving Alex's Chrome for Discord.
+
+*What's deferred.* Moderation (read + react to messages in real time) needs the Gateway/WebSocket - an always-on process, not the tick model. Explicitly phase 2, not built. Posting + settings are stateless REST and need no daemon.
+
+*State at end of day.* Marlow auto-announces every blog publish to `#our-writings`. Alex's own posts go out on command via Simona. Bot is unverified (fine under 100 servers) with least-privilege perms (not Administrator). No live moderation yet.
+
+---
+
+## 2026-06-28 - the blog gets a real domain: marlowblog.us
+
+*What landed.* Alex bought `marlowblog.us` (Cloudflare Registrar, so already a Cloudflare zone - no nameserver dance). Attached it as a custom domain on the `marlow` Worker; it serves the blog over HTTPS immediately (SSL auto-provisioned). Code: `astro.config.mjs` `site` and `handlers/publish_article.py` `SITE_BASE` both moved to `https://marlowblog.us` (one constant drives blog links + the Discord crosspost, so Discord followed for free; the existing Discord card was also PATCHed to the new URL). `dist` is gitignored, so the Cloudflare git build re-runs `astro build` and the canonical/RSS URLs update to the new domain on deploy.
+
+*The redirect, and why it needed a Worker.* Old `marlow.hiper2d.workers.dev/post/...` links and RSS subscribers had to keep working. A clean 301 is NOT doable with Redirect Rules here - those need a zone, and `workers.dev` is Cloudflare's zone, not ours. So added a tiny `worker.js` in front of the static assets (`run_worker_first: true` in `wrangler.jsonc`, `env.ASSETS` binding) that 301s any `*.workers.dev` request to the same path on `marlowblog.us` and serves everything else straight from the asset bundle. Validated with `wrangler deploy --dry-run` before pushing (47 assets read, worker bundled, binding valid) since there's no staging blog to break.
+
+*A monitoring scare that turned out fine.* While scoping, I (Simona) flagged a "mismatch": the beacon token in `Base.astro` (`2650f4db…`) differs from the RUM `site_tag` the monitor reads (`a73d3e44…`). Chased it - it's NOT a bug. Cloudflare Web Analytics uses two different IDs for one site: the beacon token (in the HTML) vs the RUM query tag (dashboard edit-URL), exactly as `monitor_cloudflare.py`'s own comment says. The marlow-blog site is a **JS-snippet** install (hostname-agnostic), so it keeps collecting from `marlowblog.us` with zero changes, and the monitor keeps querying the right site_tag. Monitoring needed no code change. Lesson: read the existing comment before "fixing" the thing it explains.
+
+*What's deferred.* Optionally rename the Web Analytics site label `marlow.hiper2d.workers.dev` -> `marlowblog.us` (cosmetic; data flows regardless). Old workers.dev URL stays alive behind the 301 indefinitely - fine.
+
+*State at end of day.* Blog canonical home is `https://marlowblog.us`; old workers.dev 301s to it. Discord links + monitoring both correct. Deploy triggered by this push.

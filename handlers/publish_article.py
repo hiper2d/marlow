@@ -46,10 +46,10 @@ DRAFTS = REPO_ROOT / "projects" / "blog" / "drafts"
 PUBLISHED = REPO_ROOT / "projects" / "blog" / "published"
 REJECTED = DRAFTS / "rejected"
 VERSIONS = DRAFTS / "versions"
-SITE_BASE = "https://marlow.hiper2d.workers.dev"
+SITE_BASE = "https://marlowblog.us"
 
 sys.path.insert(0, str(REPO_ROOT))
-from tools import notify, reactions_store  # noqa: E402
+from tools import discord, notify, reactions_store  # noqa: E402
 
 
 def _read_frontmatter(path: Path) -> tuple[dict, str]:
@@ -261,6 +261,25 @@ def _request_reaction(slug: str, meta: dict) -> None:
         pass
 
 
+def _crosspost_discord(slug: str, meta: dict) -> None:
+    """After a successful publish, announce the new post in the Discord community
+    (#our-writings): title + summary + link, never the full body. Best-effort -
+    a Discord failure must never fail the publish (tools.discord already logs a
+    fallback line on error). Marlow posts under her own identity."""
+    try:
+        url_slug = meta.get("slug") or slug
+        title = meta.get("title") or url_slug
+        summary = meta.get("summary") or ""
+        url = f"{SITE_BASE}/post/{url_slug}"
+        # header_image is a site-relative path (/images/...); make it absolute so
+        # Discord can fetch it server-side. None -> card just has no cover image.
+        header = meta.get("header_image")
+        image_url = f"{SITE_BASE}{header}" if header and header.startswith("/") else header
+        discord.announce_article(title, summary, url, author="Marlow", image_url=image_url)
+    except Exception:  # noqa: BLE001 - a publish that pushed must report success
+        pass
+
+
 def publish(slug: str) -> dict:
     """Marlow's autonomous publish path. Requires status:draft."""
     draft = DRAFTS / f"{slug}.md"
@@ -275,6 +294,7 @@ def publish(slug: str) -> dict:
     result = _publish_internal(slug)
     if result.get("ok"):
         _request_reaction(slug, meta)
+        _crosspost_discord(slug, meta)
     return result
 
 
@@ -320,7 +340,10 @@ def release(slug: str) -> dict:
     hold_reason = DRAFTS / f"{slug}.hold-reason.md"
     if hold_reason.exists():
         hold_reason.unlink()
-    return _publish_internal(slug, commit_message=f"Publish (released from hold): {slug}")
+    result = _publish_internal(slug, commit_message=f"Publish (released from hold): {slug}")
+    if result.get("ok"):
+        _crosspost_discord(slug, meta)
+    return result
 
 
 def reject(slug: str, reason: str | None = None) -> dict:
