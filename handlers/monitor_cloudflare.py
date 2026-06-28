@@ -109,7 +109,11 @@ def _list_accounts() -> list[dict]:
 
 
 def _list_pages_projects(account_id: str) -> list[dict]:
-    return _request(f"/accounts/{account_id}/pages/projects", {"per_page": 50})["result"]
+    # NOTE: the Pages projects endpoint rejects a `per_page` param (400 code
+    # 8000024 "Invalid list options") - unlike the zones/registrar endpoints.
+    # Call it bare. (The blog is a Worker, not a Pages project, so this is
+    # typically empty anyway; the bare call returns cleanly instead of erroring.)
+    return _request(f"/accounts/{account_id}/pages/projects")["result"]
 
 
 def _latest_deployment(account_id: str, project_name: str) -> dict | None:
