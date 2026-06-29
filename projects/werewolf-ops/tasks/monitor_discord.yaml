@@ -1,0 +1,76 @@
+# monitor_discord - community activity + behavior watch for the Discord server.
+#
+# The fifth werewolf-ops monitor, and the first that watches PEOPLE not infra.
+# Polls the conversational channels (general, general-discussion, ai-news) for
+# messages new since the last scan, computes activity stats, and flags the obvious
+# bad-behavior shapes deterministically. YOU (the session) then read the new
+# messages and judge tone - the rude/hostile/pestering behavior rules can't catch.
+#
+# Fires every 6 hours (00/06/12/18 UTC). Cheap: a handful of REST calls against a
+# small, mostly-quiet server. Catches bad behavior within ~6h, which Alex confirmed
+# is enough (no real-time gateway needed).
+#
+# Reading other users' message content over REST needs the privileged Message
+# Content intent (Developer Portal -> Bot -> Privileged Gateway Intents). If it is
+# off, the handler emits a `content_intent_off` issue - relay it so Alex enables it.
+# Until then the watch can count volume/mentions but is blind to tone.
+#
+# In-tick flow:
+#   1. `uv run python handlers/monitor_discord.py report`. JSON with: server counts,
+#      per-channel new counts, new_messages, top_authors, `sample` (recent member
+#      messages), deterministic `issues`, `any_urgent`, and `last_message_ids`.
+#
+#   2. If `ok: false` (token missing/invalid, or every channel errored) treat as a
+#      framework bug: if it's the DISCORD_MARLOW_TOKEN missing/unauthorized, notify
+#      Alex urgent ("Discord monitor token missing/invalid"); otherwise record a
+#      diagnosis via framework_fix and exit clean. A partial error (some channels
+#      ok) is not a failure - note it in the report and continue.
+#
+#   3. If `baselined: true` and no new messages, this is a first-sight run - it just
+#      recorded cursors. Append the handler's `digest` line and exit. Do NOT judge
+#      or alert on a baseline.
+#
+#   4. JUDGMENT PASS (this is the point of the task). Read `sample` - the actual new
+#      member messages. Judge for behavior the heuristics miss: rudeness, hostility,
+#      harassment, targeting a specific person, scams/phishing, off-topic derailing,
+#      or someone clearly pestering others. Be fair - heated debate or a strong
+#      opinion is NOT bad behavior; personal attacks, slurs, and pile-ons are.
+#      Combine your read with the handler's `issues`.
+#
+#   5. ALERTING:
+#      - Genuinely bad behavior (your judgment OR any `severity: urgent` issue:
+#        firehose volume, repeated spam, a scam) -> `notify_alex(urgency="urgent")`.
+#        ONE consolidated message: what happened, who, which channel, a quote. This
+#        is the "ping me when someone misbehaves" path - don't sit on it for the
+#        daily digest.
+#      - Routine activity + mild `digest` flags (someone just chatty, a few links)
+#        -> append ONE block to today's digest via
+#        `uv run python handlers/monitor_discord.py digest` piped to `notify --digest`
+#        (or compose your own from the report). The daily digest bundles it. A fully
+#        quiet window (no new messages) prints nothing -> no digest line, no ping.
+#      - Borderline: prefer digest + a clear note over an urgent ping. Alex tunes
+#        thresholds from what he sees; false-quiet is cheaper than false-alarm here.
+#
+#   6. Write the report to projects/werewolf-ops/reports/discord/<YYYY-MM-DD>.md
+#      (`monitor_discord.py show` renders the current scan). Terse - it accrues as a
+#      history. If you flagged behavior, add a short paragraph naming it and your
+#      reasoning, so the audit trail shows WHY you pinged (or chose not to).
+#
+#   7. Write the tick result `{"status":"done","result":"discord: <summary>", "notify": <block or null>}`
+#      and exit. Put the urgent message in the `notify` block (urgency "urgent") when
+#      step 5 calls for an immediate ping; leave it null when you only appended a
+#      digest line.
+#
+# Thresholds and the monitored-channel list live in handlers/monitor_discord.py
+# (VOLUME_*, REPEAT_*, LINK_FLOOD, MENTION_FLOOD, MONITORED). Tune there.
+name: monitor_discord
+project: werewolf-ops
+profile: ops
+description: Every-6h Discord community watch - polls conversational channels for new messages, computes activity stats, flags spam/volume floods deterministically, and reads new messages to judge rude/hostile behavior. Bad behavior pings Alex urgent; routine activity rolls into the daily digest.
+schedule: "0 */6 * * *"
+priority: normal
+must_run_within_hours: 4
+subtasks:
+  - id: scan_discord
+    handler: monitor_discord
+    context: {}

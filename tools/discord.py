@@ -168,6 +168,68 @@ def announce_article(
     return post_message(channel, content=url, embeds=[embed])
 
 
+def get_channel_messages(channel: str, after: str | None = None, limit: int = 100) -> dict:
+    """Fetch one page of messages from a channel, newest-first. Returns
+    {ok, messages, detail}.
+
+    `channel` is a friendly name or raw id. `after` is a message-id cursor: only
+    messages newer than it are returned (used to poll just what's new since the
+    last scan). `limit` caps the page at <=100 (Discord's max). The caller paginates
+    by advancing `after` to the newest id it has seen.
+
+    Reading OTHER users' message `content` over REST requires the bot to have the
+    privileged Message Content intent enabled (Developer Portal -> Bot -> Privileged
+    Gateway Intents). Without it, content/attachments come back empty for messages
+    the bot didn't author. The monitor handler detects that case and flags it.
+    """
+    token = _token()
+    if not token:
+        return {"ok": False, "messages": [], "detail": "missing DISCORD_MARLOW_TOKEN in .env"}
+    cid = _resolve_channel(channel)
+    params: dict = {"limit": min(max(int(limit), 1), 100)}
+    if after:
+        params["after"] = after
+    try:
+        resp = requests.get(
+            f"{API_BASE}/channels/{cid}/messages",
+            headers=_headers(token),
+            params=params,
+            timeout=HTTP_TIMEOUT,
+        )
+        if resp.status_code != 200:
+            return {"ok": False, "messages": [], "detail": f"discord returned {resp.status_code}: {resp.text[:200]}"}
+        return {"ok": True, "messages": resp.json(), "detail": f"fetched {len(resp.json())}"}
+    except (requests.RequestException, ValueError) as e:
+        return {"ok": False, "messages": [], "detail": f"discord request failed: {e}"}
+
+
+def get_guild_counts() -> dict:
+    """Approximate member + online counts for the server. Returns
+    {ok, member_count, presence_count, detail}. Cheap, one call; the counts are
+    Discord's own approximations (fine for a trend stat)."""
+    token = _token()
+    if not token:
+        return {"ok": False, "member_count": None, "presence_count": None, "detail": "missing DISCORD_MARLOW_TOKEN in .env"}
+    try:
+        resp = requests.get(
+            f"{API_BASE}/guilds/{GUILD_ID}",
+            headers=_headers(token),
+            params={"with_counts": "true"},
+            timeout=HTTP_TIMEOUT,
+        )
+        if resp.status_code != 200:
+            return {"ok": False, "member_count": None, "presence_count": None, "detail": f"discord returned {resp.status_code}: {resp.text[:200]}"}
+        d = resp.json()
+        return {
+            "ok": True,
+            "member_count": d.get("approximate_member_count"),
+            "presence_count": d.get("approximate_presence_count"),
+            "detail": "ok",
+        }
+    except (requests.RequestException, ValueError) as e:
+        return {"ok": False, "member_count": None, "presence_count": None, "detail": f"discord request failed: {e}"}
+
+
 def whoami() -> dict:
     """Sanity check: confirm the token authenticates and report the bot identity."""
     token = _token()

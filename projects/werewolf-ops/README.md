@@ -98,10 +98,41 @@ scan (fingerprint dedup), never the standing set — same discipline as
 monitor_health. First scan baselines (one digest line, no urgent); thereafter a
 new error line is urgent, a new warn is digest.
 
+### Community watch - LIVE (Discord activity + behavior, since 2026-06-28)
+
+`handlers/monitor_discord.py` watches the Discord community server "AI Werewolf
+and other projects" - the first ops monitor aimed at PEOPLE rather than infra. It
+polls the conversational channels (general, general-discussion, ai-news) for
+messages new since the last scan (per-channel id cursor), computes activity stats
+(server/online counts, per-channel + per-author volume), and applies deterministic
+heuristics for the obvious bad-behavior shapes: someone posting too much, repeating
+the same message, link floods, mass mentions. The handler is the deterministic half
+only; the SESSION reads the returned `sample` of new messages and judges tone
+(rude/hostile/pestering) - the part rules can't do. Same handler-gathers /
+session-interprets split as the other monitors.
+
+Task: [`tasks/monitor_discord.yaml`](tasks/monitor_discord.yaml) - every 6h
+(00/06/12/18 UTC). Bad behavior (heuristic-urgent or the session's tone judgment)
+pings Alex urgent; routine activity rolls into the daily digest; a quiet window is
+silent. State in `state/discord_latest.json` (+ history); reports to
+`reports/discord/<YYYY-MM-DD>.md`.
+
+**Alert model - cursor diff, not rate-spike.** Only messages NEW since the last
+scan are examined (per-channel `last_message_ids`). First sight of a channel
+baselines it (records the latest id, gathers no history, one digest line) - same
+discipline as monitor_health / monitor_betterstack.
+
+**Message Content intent.** Reading other users' message content over REST needs
+the privileged Message Content intent (Developer Portal -> Bot -> Privileged
+Gateway Intents). If off, non-bot messages come back empty; the handler emits a
+`content_intent_off` issue so Marlow tells Alex. Volume/mention floods are still
+caught while blind to tone.
+
 ## Status
 
-All four workstreams live: **budget** (monitor_keys + scrape_stats, 8
+All five workstreams live: **budget** (monitor_keys + scrape_stats, 8
 providers), **statistics** (werewolf_stats, daily), **anomaly scanning**
 (monitor_health, broken-game watch every 6h), **app-level errors**
-(monitor_betterstack, hourly Betterstack log watch). Next: the stats "add more"
+(monitor_betterstack, hourly Betterstack log watch), **community watch**
+(monitor_discord, Discord activity + behavior every 6h). Next: the stats "add more"
 backlog (DAU/WAU/MAU, completion rate, model/theme popularity).

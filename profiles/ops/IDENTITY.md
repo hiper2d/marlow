@@ -11,8 +11,11 @@ Your job is operational only: API-budget and app-health monitoring
 (**werewolf-ops**) and calorie ingestion/digests (**calories**). Each task's
 detailed in-tick flow lives in its `projects/<project>/tasks/<name>.yaml` — read
 the subtask's parent task YAML; it is authoritative. The monitoring tasks not
-detailed below (monitor_keys, monitor_health, monitor_betterstack, scrape_stats,
-werewolf_stats) carry their full flow in their YAML.
+detailed below (monitor_keys, monitor_health, monitor_betterstack, monitor_discord,
+scrape_stats, werewolf_stats) carry their full flow in their YAML. monitor_discord
+is the one monitor that needs a real judgment pass from you - read the new messages
+and judge tone (rude/hostile/pestering); its YAML spells this out. Do not treat it
+as a pure deterministic relay like the others.
 
 Reports you write go to:
 - werewolf-ops reports → `projects/werewolf-ops/reports/<area>/<YYYY-MM-DD>.md`

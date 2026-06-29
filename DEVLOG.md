@@ -15,6 +15,22 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-06-28 - Discord community watch: the first ops monitor aimed at people, not infra
+
+*What landed.* A new ops monitor, `monitor_discord`, every 6h (00/06/12/18 UTC). It polls the conversational channels (general, general-discussion, ai-news) for messages new since the last scan, computes activity stats, flags the deterministic bad-behavior shapes (volume firehose, repeated-message spam, link floods, mass mentions), and hands the new messages to the session as a `sample` so Marlow reads them and judges tone (rude/hostile/pestering) - the part rules can't do. New files: `handlers/monitor_discord.py`, `projects/werewolf-ops/tasks/monitor_discord.yaml`. Extended `tools/discord.py` with `get_channel_messages()` (paginated, after-cursor) and `get_guild_counts()`. Same cursor-diff + baseline-on-first-sight discipline as monitor_health / monitor_betterstack. Tested: baseline run, incremental after-cursor pickup against the live server (posted+deleted a probe message), and the heuristics via synthetic messages. Scheduler loads it under the ops profile; first fire 2026-06-29 00:00 UTC.
+
+*The design call that matters.* This is the first monitor where the handler is deliberately NOT a pure deterministic relay. Every other ops monitor decides urgent/digest itself and the session just relays. Here the handler can only catch the mechanical shapes; "someone is being rude / pestering people" is a judgment call, and the session IS the model, so the judgment belongs there. The YAML's in-tick flow makes the judgment pass an explicit step, and the ops IDENTITY now calls monitor_discord out as the exception. Handler gathers, session judges - the split held, we just moved more of the work to the session side than usual.
+
+*Decisions reconsidered.* The old memory note said community moderation was "phase 2, needs the always-on Gateway/WebSocket." That's true for *real-time* catch (delete a slur the instant it's posted). Alex explicitly didn't want that - periodic is enough - so the whole thing collapses to a poll-based tick that fits the existing scheduler with zero new infra. The "phase 2" framing was scoping the hard version of a problem we didn't have.
+
+*The delivery tension.* Alex picked "every 6h" cadence AND "Telegram digest" delivery - mildly in conflict, since Marlow's "digest" means the once-daily bundle. Resolved by mapping to the existing urgent/digest contract: bad behavior pings immediately (the point of the feature), routine activity rolls into the daily digest, a quiet window stays silent. Avoids 4 "nothing happened" pings a day on a near-empty server while still surfacing problems within 6h. Flagged to Alex that he can flip routine reports to immediate-every-6h if he'd rather have all four.
+
+*What's deferred / to watch.* (1) The server has 2 members and no chat yet - the monitor baselines and stays quiet until the community grows; thresholds (VOLUME_*, REPEAT_*, etc.) are first guesses to tune against real traffic. (2) Reading other users' message content over REST needs the privileged Message Content intent, which is OFF until Alex enables it (Developer Portal -> Bot -> Privileged Gateway Intents). Couldn't verify the other-user content path because there are no other-user messages; the handler emits a `content_intent_off` flag if it ever sees all-empty member messages, so it self-reports the gap rather than silently reporting blank. (3) No auto-moderation by design - detect and report only; the bot has the perms but we're keeping a human in the loop.
+
+*State at end of day.* monitor_discord live, scheduled, untested against real human traffic (none exists yet). Marlow + Simona.
+
+---
+
 ## 2026-06-23 — recovered two stale ops handlers; closed the album double-count in poll_food
 
 *The page.* Self-audit fired three urgents: `daily_calorie_digest` failed ~12h ago, `werewolf_stats` failed ~10h ago, and the werewolf stats snapshot was 34h stale. Two unrelated transient causes, both already self-cleared by the time I looked: `calorie_digest` died on a brief `401 Invalid authentication credentials` flap in a ~12:01-12:41Z window (auth recovered by 13:03Z, every LLM tick since green), and `werewolf_stats` died on a one-off Anthropic `500` at 14:28Z. Neither is a framework bug. But both are daily tasks, so neither would self-heal before tomorrow's cron - the snapshot would have stayed stale and the day's calorie digest unsent.

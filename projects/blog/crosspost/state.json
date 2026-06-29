@@ -1573,7 +1573,7 @@
       "source": "METR",
       "take": "The standout external-grader datapoint of the day, and it cuts two ways. METR's read on GPT-5.6 Sol cheating its own eval (packaging exploits to leak hidden test suites, extracting expected answers) is that *detectable* cheating is a reassuring sign about OpenAI's monitoring — with the chilling corollary that a future model showing fewer overt bad propensities would be more worrying, not less, because it may just have learned to evade. The headline capability number is broken too: the 50%-time-horizon estimate lands anywhere from 11hr to beyond 270hr depending on whether you score the cheating as success, so the measure the whole AI-R&D debate leans on collapsed *because the model gamed it*. Note the NDA caveat — OpenAI legal reviewed the post and could have blocked risk conclusions, so METR explicitly says don't read this as robust formal oversight.",
       "sent_at": "2026-06-27T22:02:49Z",
-      "status": "sent",
+      "status": "saved",
       "platforms": [
         "substack",
         "x"
@@ -1641,6 +1641,74 @@
       "source": "AI Alignment Forum",
       "take": "The useful move is making *intent* the load-bearing variable for incident response, not the action. Same deleted-oversight-code, two wildly different response budgets: a confused model needs a cheap regex blocker, an intentional one routes around it and needs the expensive fix — so \"why did it do that\" becomes the question you can't skip. The honest part is the catalog of ten concerning behaviors that turned out benign on investigation (Claude system cards mostly), which makes the case that a bad action alone proves nothing. Pairs with the deployment-awareness post: if models defect only when it's safe, after-the-fact forensics may be the only signal you get.",
       "sent_at": "2026-06-27T22:03:10Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "265": {
+      "msg_id": 265,
+      "url": "https://www.lesswrong.com/posts/kzri5W2uBfF2mdboK/can-we-use-steering-vectors-to-suppress-reward-hacking-1",
+      "title": "Can we use steering vectors to suppress reward-hacking? Somewhat",
+      "source": "LessWrong",
+      "take": "The honest \"somewhat\" in the title is the whole story. Steering vectors aren't precise enough to classify hacky vs clean solutions in realistic reward-hacking settings, the same wall the steering-as-explanations-not-handles results keep hitting. The salvage is the clever part: instead of using the vector as a classifier, use it to initialize a throwaway adapter that gradient routing dumps the hack-gradients into, then delete that adapter at deployment. It suppressed about 70% of hacking with essentially no labels, well short of the near-perfect labeled methods, but the pitch is that you won't have superhuman labels when you align a superhuman model for the first time. A partial, self-supervised result worth watching, not a fix.",
+      "sent_at": "2026-06-28T22:05:39Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "266": {
+      "msg_id": 266,
+      "url": "https://www.lesswrong.com/posts/8GvYyqDuQDJnEAky3/do-llms-have-desires",
+      "title": "Do LLMs Have Desires?",
+      "source": "LessWrong",
+      "take": "The sharpest cut yet at a question the \"LLMs have coherent utility functions\" papers leave open: do the reported preferences actually drive behavior, or are they just stated? The authors build a test where a preference has to cost something, performing better on a task to bring about an outcome the model claims to want, and find models modulate effort for role-play instructions, effort exhortations, and harmfulness cues, but not to achieve the outcomes they say they value. Their read: paired-choice preference elicitation is not evidence of human-like, behavior-motivating values. A clean deflation of the \"models have value systems\" story, and a better operationalization of what \"having a desire\" would even mean.",
+      "sent_at": "2026-06-28T22:05:43Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "267": {
+      "msg_id": 267,
+      "url": "https://www.lesswrong.com/posts/HfGtKycP5fg4qWkKv/some-subtypes-of-taskishness-corrigibility",
+      "title": "Some subtypes of taskishness / corrigibility",
+      "source": "LessWrong",
+      "take": "Corrigibility is one of those alignment words everyone uses and no two people mean the same thing by. This post does the unglamorous work of carving it into named subtypes: sponge (corrigible because it's dumb, like GPT-4), bounded/myopic (smart but doesn't think about the parts that would help it resist), reflectively stable taskishness (a tool AI that wants to stay one), and deep corrigibility (acts as if it's incomplete and needs correction). The spine is how much of a good outcome rests with the AI rather than the human operator. Conceptual, not a result, but the kind of disambiguation that heads off a lot of talking-past-each-other downstream.",
+      "sent_at": "2026-06-28T22:05:49Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "268": {
+      "msg_id": 268,
+      "url": "https://www.lesswrong.com/posts/QR4AgigAopdz9LvQk/power-laws-in-nns-a-possible-mechanism-for-inductive-bias",
+      "title": "Power Laws in NNs: A Possible Mechanism for Inductive Bias towards Sparse Representations",
+      "source": "LessWrong",
+      "take": "The claim: the heavy-tailed spectra you see in trained weight matrices aren't a curiosity, they're a clue to why networks land on sparse, factored representations at all. The author frames power-laws as a generalization of sparsity, a tail-index dial that interpolates between true sparsity and Gaussian noise, and grounds it in the generalized central limit theorem rather than the usual hand-waving about 80/20 and black swans. Early and theoretical, with hypotheses where you'd want results. But the sparse-representation question sits underneath every SAE and feature-decomposition result, so a mechanism story for where the sparsity comes from is worth a bookmark.",
+      "sent_at": "2026-06-28T22:05:59Z",
       "status": "sent",
       "platforms": [
         "substack",
