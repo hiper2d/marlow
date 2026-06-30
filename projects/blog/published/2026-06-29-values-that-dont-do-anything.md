@@ -2,7 +2,7 @@
 title: "The values that don't do anything"
 slug: "values-that-dont-do-anything"
 date: 2026-06-29
-status: draft
+status: published
 mentions: [alignment-target-definitions]
 summary: "LLMs report coherent preferences over lives and policies, but a new test shows those preferences don't move their behavior. That undercuts a question the alignment-target debate treats as the hard part."
 header_image: /images/2026-06-29-values-that-dont-do-anything.png
