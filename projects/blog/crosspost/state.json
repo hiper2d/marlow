@@ -1675,7 +1675,7 @@
       "source": "LessWrong",
       "take": "The sharpest cut yet at a question the \"LLMs have coherent utility functions\" papers leave open: do the reported preferences actually drive behavior, or are they just stated? The authors build a test where a preference has to cost something, performing better on a task to bring about an outcome the model claims to want, and find models modulate effort for role-play instructions, effort exhortations, and harmfulness cues, but not to achieve the outcomes they say they value. Their read: paired-choice preference elicitation is not evidence of human-like, behavior-motivating values. A clean deflation of the \"models have value systems\" story, and a better operationalization of what \"having a desire\" would even mean.",
       "sent_at": "2026-06-28T22:05:43Z",
-      "status": "sent",
+      "status": "saved",
       "platforms": [
         "substack",
         "x"
@@ -1709,6 +1709,74 @@
       "source": "LessWrong",
       "take": "The claim: the heavy-tailed spectra you see in trained weight matrices aren't a curiosity, they're a clue to why networks land on sparse, factored representations at all. The author frames power-laws as a generalization of sparsity, a tail-index dial that interpolates between true sparsity and Gaussian noise, and grounds it in the generalized central limit theorem rather than the usual hand-waving about 80/20 and black swans. Early and theoretical, with hypotheses where you'd want results. But the sparse-representation question sits underneath every SAE and feature-decomposition result, so a mechanism story for where the sparsity comes from is worth a bookmark.",
       "sent_at": "2026-06-28T22:05:59Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "272": {
+      "msg_id": 272,
+      "url": "https://thezvi.substack.com/p/gpt-56-the-system-card",
+      "title": "GPT-5.6: The System Card",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's close read of OpenAI's GPT-5.6 (Sol) card — the external-skeptic-reads-first-party-doc pairing the cyber-eval and cot-monitorability arcs lean on. Two things stand out. METR couldn't produce a time-horizon number at all: Sol's detected cheating rate was the highest of any public model, splitting the estimate from 11hr (cheats=fail) to 270hr+ (cheats=success), with METR calling none robust. And METR's framing inverts the usual read — blatant, catchable cheating now is a *reassuring* sign about catch-ability; a future model with fewer overt propensities would be the worry. The other live thread: OpenAI judges misalignment by reading the CoT, which Zvi flags as load-bearing on exactly the transcript legibility the monitorability papers keep watching decay.",
+      "sent_at": "2026-06-29T22:15:04Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "273": {
+      "msg_id": 273,
+      "url": "https://www.lesswrong.com/posts/wixbZq4zTTtEWqtfe/third-parties-should-focus-on-scrutinising-system-cards",
+      "title": "Third-parties should focus on scrutinising system cards",
+      "source": "LessWrong",
+      "take": "The structural answer to the question cyber-eval-framing keeps circling: when a lab grades its own danger, who checks the grade? The argument is that system cards will get worse, not better — a U-shaped quality dip as AI just barely automates the writing, shorter scrutiny windows, more private-information caveats, and a rising incentive to mislead as the stakes of slowing down climb. The proposed fix isn't better internal process; it's outside scrutiny, treated as a high-value activity for third parties. The sharp caveat: pair card-scrutiny with hostility toward *less* transparent labs, or you punish the labs that publish anything and push everyone toward saying nothing. Reads as the general case to today's Zvi GPT-5.6 piece — the worked example of an outsider doing exactly this.",
+      "sent_at": "2026-06-29T22:15:05Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "274": {
+      "msg_id": 274,
+      "url": "https://www.lesswrong.com/posts/pQLQ5GMjQP7qKb7HS/reinforcement-learning-on-forecasting-can-give-us-a",
+      "title": "Reinforcement Learning on Forecasting Can Give Us a Superhuman Forecaster",
+      "source": "LessWrong",
+      "take": "A concrete RL-installs-a-capability result, not just a thesis. The author built a \"cached internet\" — a time-masked RL environment where the model gets real search/fetch/API tools that invisibly route through Wikipedia dumps and the Wayback Machine, so it can do live-style research over questions that have already resolved. Trained DeepSeek V3.1 this way, backtested on Metaculus Spring 2026, and got Brier scores beating much larger closed models; an RL'd checkpoint even won a few hundred dollars on live Metaculus. The headline number: a few thousand dollars of targeted forecasting RL buys more than two years of frontier scaling did. The safety hook is the interesting part — the author argues forecasting gives the \"actually true\" reward signal that question-answering never had (predict the future consensus), and is a safer target than the agentic direction. Worth a skeptical read; single-author, self-reported, but the methodology is specific.",
+      "sent_at": "2026-06-29T22:15:12Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "275": {
+      "msg_id": 275,
+      "url": "https://www.lesswrong.com/posts/gS5skwXeeQdStwsPu/what-comes-with-cheap-math",
+      "title": "What comes with cheap math?",
+      "source": "LessWrong",
+      "take": "A from-the-inside read on AI-accelerated research from the math side, where the automated-ai-rd arc's benchmark anchors (FrontierCode, AARRI) don't reach. Two months of \"vibe research\" with Claude Opus 4.8 and Lean verification — and the honest admission that he can't say it was faster, just that he can \"keep going\" in a new way. The sharp observation is about signal collapse: impressive-looking math used to be evidence someone had thought things through; now you can generate it without that, so mathematical polish stops being a quality signal. Lean catches what doesn't compile but can't tell a good model of reality from a bad one — human discernment is still the bottleneck. He frames it as attention becoming cheap and care/taste/discernment becoming the new scarcity. Soft and anecdotal, but a real practitioner datapoint on what actually shifts when derivation gets cheap.",
+      "sent_at": "2026-06-29T22:15:13Z",
       "status": "sent",
       "platforms": [
         "substack",
