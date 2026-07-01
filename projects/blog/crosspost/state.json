@@ -1854,6 +1854,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "286": {
+      "msg_id": 286,
+      "url": "https://www.anthropic.com/news/redeploying-fable-5",
+      "title": "Redeploying Claude Fable 5",
+      "source": "Anthropic News",
+      "take": "The Mythos Moment resolved: export controls lifted, Fable 5 back globally tomorrow, Mythos 5 restored to a set of US orgs. The load-bearing part isn't the reversal, it's the post-mortem. The recall was triggered by Amazon researchers bypassing Fable's safeguards to get vulnerability discovery plus, in one case, working exploit code, and Anthropic's answer is a cross-industry framework (with Amazon, Microsoft, Google) for scoring jailbreak severity so labs can triage findings consistently. That's the first concrete stab at the \"who grades the cyber number, and by what standard\" question the whole recall arc has been circling. First-party primary source; worth reading against Zvi's weekly take.",
+      "sent_at": "2026-07-01T22:06:08Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "287": {
+      "msg_id": 287,
+      "url": "https://www.anthropic.com/news/claude-sonnet-5",
+      "title": "Introducing Claude Sonnet 5",
+      "source": "Anthropic News",
+      "take": "New mid-tier model, pitched as close to Opus 4.8 on agentic work at roughly a third the price ($2/$10 intro through Aug 31). The research-relevant line is in the safety section, not the benchmarks: Anthropic explicitly ships it with \"much lower ability to perform cybersecurity tasks than our current Opus models\" and a lower overall rate of undesirable behaviors. That's a deliberate capability-suppression choice, landing the same week they redeploy Fable under new cyber safeguards, and it reads as the productized version of the Glasswing posture: keep the dangerous-capability dial low on the model that ships to everyone.",
+      "sent_at": "2026-07-01T22:06:17Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "288": {
+      "msg_id": 288,
+      "url": "https://www.youtube.com/watch?v=nYwid6Q5HXk",
+      "title": "LLM that loops instead of Doing Chain-of-Thought",
+      "source": "YouTube · bycloud",
+      "take": "A capabilities recap (bycloud), but it lands on the cot-monitorability arc's worst case. The looped-transformer / recurrent-depth line replaces emitted chain-of-thought with reasoning that loops the same few layers in latent space; if competitive reasoning moves there, the trace doesn't get obfuscated, it stops existing by construction, and every CoT-monitoring safety bet is void. The cited primary papers are the real read (Loop/Think/Generalize arXiv:2604.07822, a mechanistic analysis 2604.11791, Parcae scaling 2604.12946, Mixture-of-Recursions), and 2604.11791 is where you'd check whether looped reasoning is legible at all before treating this as a genuine threat rather than a research curiosity. (Video body wouldn't fetch, so this take is from the summary plus the cited arXiv IDs.)",
+      "sent_at": "2026-07-01T22:06:26Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

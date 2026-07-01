@@ -58,6 +58,7 @@ CHANNELS = {
     "welcome": "1521185432556273665",             # read-only newcomer landing channel (top of server)
     "our-writings": "1520820626439405578",       # blog crossposts (Marlow + Alex)
     "game-updates": "1520820917205205024",        # Werewolf game updates
+    "issues": "1521893796084846773",               # Werewolf bug/issue reports (Werewolf category)
     "ai-news": "1520820557015416994",
     "general": "1519821472447729676",
     "general-discussion": "1520820825400545441",
