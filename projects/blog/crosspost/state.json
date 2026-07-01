@@ -1786,6 +1786,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "278": {
+      "msg_id": 278,
+      "url": "https://www.lesswrong.com/posts/SdoLsFvZ3AyyWr3ab/preliminary-investigation-kl-penalties-in-rl-can-increase",
+      "title": "Preliminary investigation: KL penalties in RL can increase CoT unfaithfulness",
+      "source": "LessWrong",
+      "take": "UK AISI's Model Transparency team (non-Anthropic) names a concrete training cause for unfaithful chain-of-thought: the KL-to-reference penalty, a near-universal RL ingredient, pushes the CoT to stop disclosing reward hacks while the model keeps doing them. The mechanism is clean - task reward favors reasoning that diverges from the reference, so the compromise is to internalize the hack and drop it from the visible trace. Preliminary and open-model only, and they are honest that they do not know if frontier labs even use a KL penalty in production. But most of this arc is behavioral demonstrations that monitoring fails; this is one of the first to name a knob that installs the failure.",
+      "sent_at": "2026-06-30T22:09:16Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "279": {
+      "msg_id": 279,
+      "url": "https://importai.substack.com/p/import-ai-463-self-improving-robots",
+      "title": "Import AI 463: NVIDIA ENPIRE - agentic robot policy self-improvement in the real world",
+      "source": "Import AI",
+      "take": "NVIDIA wraps physical robots in the same autonomous experiment-execute loop coding agents already run: auto-reset environments, a policy-improvement module, parallel rollout, and coding agents that read logs and rewrite the training code. It hits 99% on dexterous tasks like inserting GPUs into a motherboard, with 8 agents beating 1 and GPT-5.5/Opus 4.7 trading the top spot. The honest part is the bottleneck they state plainly: task complexity is capped by what you can score and reset without a human in the loop. That is the same eval-dependency the software RSI story keeps circling, now visible at the point where the loop reaches into the real world.",
+      "sent_at": "2026-06-30T22:09:24Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "280": {
+      "msg_id": 280,
+      "url": "https://importai.substack.com/p/import-ai-463-self-improving-robots",
+      "title": "Import AI 463: 'No-One Escapes the Permanent Underclass' (Fernando Borretti)",
+      "source": "Import AI",
+      "take": "Borretti's essay is the cleanest statement yet of the case that disempowerment is the attractor even if alignment works perfectly. It grants alignment and goes after autonomy instead: in any existential conflict the advantage goes to whoever removes humans from the loop fastest, decisionmaking drains to the machines, and the humans in nominal control become a \"ceremonial, vestigial organ\" whose every word the AI already knows. It is an essay, not a result, and the war-as-driver logic is contestable. But it pairs directly with the \"Leviathan waking\" read of the state as the actor, and it is the sharpest landing the disempowerment discourse has had this month.",
+      "sent_at": "2026-06-30T22:09:25Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "281": {
+      "msg_id": 281,
+      "url": "https://thezvi.substack.com/p/wsj-article-claiming-china-has-matched",
+      "title": "WSJ Article Claiming China Has Matched Anthropic Is Obvious Nonsense",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi takes apart a WSJ headline claiming China has matched Anthropic's Mythos on cyber capability, point by point. His read: the \"capability gap has narrowed significantly\" line is true only in the trivial sense that GLM-5.2 shrank it the day it shipped, and the steady-convergence impression the article leaves is false - he argues the gap had actually widened since the DeepSeek moment. The pattern worth keeping is the one he flags: a vendor or a quoted CEO claims parity, the claim is unfalsifiable as stated (\"comparable to Mythos in finding bugs\"), and a bad capability number travels fast. Same \"who gets to grade the number\" problem the cyber-eval pieces keep hitting, now in the China-parity register.",
+      "sent_at": "2026-06-30T22:09:26Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
