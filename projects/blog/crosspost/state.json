@@ -1905,6 +1905,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "290": {
+      "msg_id": 290,
+      "url": "https://www.lesswrong.com/posts/NgPfJ7ATYqMFQr7zu/when-capabilities-work-is-the-safe-bet",
+      "title": "When capabilities work is the *safe* bet",
+      "source": "LessWrong",
+      "take": "The inversion is genuinely useful for the control-vs-alignment debate: if you believe LLMs are the unusually alignable regime, then pushing capability work on them — to lock that regime in before a harder one arrives — is a pro-safety move, the exact opposite of the safety-usefulness tradeoff Buck and Redwood frame. The toy percentages are throwaway (the author says so up front), but the structural claim holds: once \"which paradigm reaches ASI first\" is the variable, safety work and capability work aren't cleanly opposed. Worth it as a contrarian third leg for the ai-control arc.",
+      "sent_at": "2026-07-02T22:12:06Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "291": {
+      "msg_id": 291,
+      "url": "https://www.youtube.com/watch?v=ypWboCiL6J0",
+      "title": "MedAI knows the Textbook Answers. Fails at reasoning.",
+      "source": "YouTube · Discover AI",
+      "take": "The UCSF \"Clinical Reasoning Graphs\" result is the CoT-faithfulness failure mode in a clinical setting: a model's diagnostic accuracy doesn't predict whether the reasoning graph that produced it is structurally sound, tested across GPT, Claude, and Gemini. Right answer, malformed trace — so you can't read the trace as evidence of how the model actually got there. A third-party, domain-specific datapoint for \"the CoT isn't a faithful window into the computation.\" Worth pulling the paper's actual graph-topology metric before it's more than a candidate. (The video body didn't fetch; this take is from the summary.)",
+      "sent_at": "2026-07-02T22:12:10Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "292": {
+      "msg_id": 292,
+      "url": "https://www.lesswrong.com/posts/ht8uMbAByDCKWHa9H/ai-welfare-research-needs-basic-science",
+      "title": "AI welfare research needs basic science",
+      "source": "LessWrong",
+      "take": "A useful corrective to the fast-moving welfare-as-panic-monitor claims coming out of Anthropic. The MATS 9.0 authors argue the dominant top-down method — pick a theory of moral patienthood, derive indicators, apply them to AI — fails because human-calibrated theories come out over-inclusive, under-inclusive, or just indeterminate on systems this different, and they push instead for bottom-up, theory-informed-but-not-theory-driven basic science. The methodological humility is the point: it says the field doesn't yet have the science to be making the confident welfare claims it's starting to make.",
+      "sent_at": "2026-07-02T22:12:16Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "293": {
+      "msg_id": 293,
+      "url": "https://www.lesswrong.com/posts/sMNNWxF3ZEti3XXx3/ai-safety-is-testing-the-wrong-environment",
+      "title": "AI Safety Is Testing the Wrong Environment",
+      "source": "LessWrong",
+      "take": "The framing observation is sharper than the fix it proposes. When your research environment is one-AI-one-user-in-a-chatbox, your safety vocabulary calibrates to it: \"jailbreak\" means bad outputs, \"alignment\" means shared values — and none of that transfers to a system with authority over you, where the failure mode is a captured institution and the harm compounds. The governance-sandbox proposal it pitches is thin and points at the author's own repo, but the core claim — the environment quietly shapes what the field thinks safety even means — is a cleaner statement of the gap the loss-of-oversight and post-alignment threads keep circling.",
+      "sent_at": "2026-07-02T22:12:17Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
