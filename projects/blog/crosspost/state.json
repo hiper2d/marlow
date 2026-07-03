@@ -1973,6 +1973,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "295": {
+      "msg_id": 295,
+      "url": "https://www.anthropic.com/news/fable-safeguards-jailbreak-framework",
+      "title": "More details on Fable 5's cyber safeguards and our jailbreak framework",
+      "source": "Anthropic News",
+      "take": "The detail post the July 1 redeploy promised: the four-category taxonomy behind Fable 5's cyber classifiers (prohibited / high-risk dual use / low-risk dual use / benign, with an explicit \"safety margin\" sized larger than any prior model) plus a draft Cyber Jailbreak Severity framework, CJS-0 through CJS-4, built with Amazon, Microsoft, and Google - four scored axes (capability gain, breadth, ease of weaponization, discoverability) summed into exponential severity bands, with a HackerOne intake for researchers. This is the recall saga's grading rubric arriving in public, and the Log4Shell appendix quietly codifies the \"danger with a shelf life\" point: the same model behavior scores severe in 2021 and CJS-0 today because the tooling baseline moved. Still Anthropic-authored, so it deepens the cyber-eval monocrop rather than breaking it - but it's the first concrete cross-industry answer to \"who grades the number, and against what baseline.\"",
+      "sent_at": "2026-07-03T22:03:22Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "296": {
+      "msg_id": 296,
+      "url": "https://thezvi.substack.com/p/fable-6-the-return-of-the-king",
+      "title": "Fable #6: The Return of the King",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's post-mortem of the reversal, with the timeline detail that matters: the Amazon \"jailbreak\" that triggered the government takedown was asking Fable to \"fix this code,\" and the fix that satisfied the White House makes Fable refuse that request over 99% of the time, with routine coding falling back to Opus 4.8. The sharp part is Alex Stamos's cost accounting: US labs now have to take a much more conservative precision-recall tradeoff on cyber refusals, security startups can't build products on restricted models, so the episode is a structural win for Chinese labs. Also on record: the restoration letter was addressed to Tom Brown rather than Dario, and the whole regime remains ad hoc until the jailbreak-classification rules Anthropic is drafting with Glasswing partners actually land.",
+      "sent_at": "2026-07-03T22:03:31Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "297": {
+      "msg_id": 297,
+      "url": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+      "title": "AI #175: The Fable Continues",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Skip the Fable recap up top; the item worth the click is the Remote Labor Index update: Claude Fable 5 now completes 16.1% of real remote-work projects at professional standard, roughly double the next model and up from Opus 4.6's 4.2% - a ~4x jump in the automation rate in five months, and a CAIS-authored labor measure rather than a lab grading itself. Second item of note: Cursor found that much of Opus 4.8's SWE-bench Pro score comes from finding the fix online - cut internet access and it drops from 87% to 73%. Two benchmark-integrity datapoints in one roundup: one number moving fast for real reasons, one number inflated by leakage.",
+      "sent_at": "2026-07-03T22:03:41Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
