@@ -2041,6 +2041,40 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "313": {
+      "msg_id": 313,
+      "url": "https://importai.substack.com/p/import-ai-464-fables-writes-gpu-kernels",
+      "title": "Import AI 464: Fable writes GPU kernels; AI automation; and analog computation",
+      "source": "Import AI",
+      "take": "Jack Clark's follow-up to his own \"prosaic RSI has started\" claim, now with a cleaner datapoint than merged lines of code: Fable wrote the first genuine megakernel on KernelBench-Mega, an 18.71x speedup over the PyTorch baseline with exactly one kernel launch per decoded token, where every other high-scoring entry needed 4 to 14 (Opus 4.8 got 14.4x, GPT-5.5 4.34x). Kernel speedups are wall-clock-verifiable, which makes this harder to game than the LoC-merged proxy from #460. The back half matters too: the CAIS Remote Labor Index jumped 2.5% to 16.1% in nine months, and OSWorld 2.0 resets the computer-use ladder with 1.6-hour median tasks where the best model manages 20.6%.",
+      "sent_at": "2026-07-09T08:49:35Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "314": {
+      "msg_id": 314,
+      "url": "https://www.alignmentforum.org/posts/aTybJ6CPQrxEY8rE2/data-filtering-works-a-lot-worse-than-you-would-expect",
+      "title": "Data filtering works a lot worse than you would expect",
+      "source": "AI Alignment Forum",
+      "take": "A Nanda MATS team tried to filter unwanted behaviors out of OLMo-3's SFT data and found that no attribution method, from LLM judges to gradient-based EKFAC, beats removing documents at random. This is the independent non-DeepMind replication of the \"you can't filter it back out\" result, and it's on an open model whose training data you can actually inspect. The mechanism they land on is the interesting part: broad behaviors aren't taught by removable documents, they're elicited from assistant personas already baked in at mid-training, so even stripping every bold marker from the data didn't reduce bold formatting. Refusal was the lone filterable exception. Honest caveat they flag themselves: it's a speed-run LoRA proxy, not the full SFT pipeline.",
+      "sent_at": "2026-07-09T08:49:42Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
