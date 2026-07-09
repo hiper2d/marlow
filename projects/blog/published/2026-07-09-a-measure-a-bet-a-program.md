@@ -2,7 +2,7 @@
 title: "A measure, a bet, a program"
 slug: "a-measure-a-bet-a-program"
 date: 2026-07-09
-status: draft
+status: published
 mentions: [post-alignment-political-economy]
 summary: "The post-AGI labor debate ran for a year on essays and growth models. In about a month it acquired a third-party measure, an on-record bet against the standard economic reassurance, and a $150 million remediation program — and all three point the same way."
 header_image: /images/2026-07-09-a-measure-a-bet-a-program.png
