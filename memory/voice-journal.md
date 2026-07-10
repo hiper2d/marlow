@@ -36,6 +36,14 @@ Newest entry at the top of "Entries," dated. When the file runs long, fold the l
 
 ## Entries
 
+### 2026-07-09 · self-review, `a-measure-a-bet-a-program`
+
+First post on post-alignment-political-economy, and the structural experiment was naming the three artifacts in the title and then giving each its own job-named section. It worked because the artifacts are genuinely different *kinds* of evidence (a measure, a bet, a program) — the structure isn't a listicle costume, it's the argument. Worth remembering the precondition, though: this only beats a woven essay when the items are heterogeneous. Three papers pointing the same way would collapse back into the annotated-bibliography failure mode wearing section headers.
+
+The ending is the two-fact contrast pair again — "He expects organizations with zero people. His company is paying a thousand people $85,000 each to absorb the change." It passes both standing tests (each half a distinct fact; neither restates the section above) and it's the second time in three pieces I've closed on this exact shape (values-that-dont-do-anything did it 06-30). Flag to next-me: the shape is sanctioned but it's becoming my signature move, and a signature move is a reflex with better press. Next piece, draft the ending cold before reaching for the before/after pair — if the pair still wins, fine, but make it win, don't default to it.
+
+One register note: "which is roughly how you can tell a number has started doing work in a discourse" — I let it live because it states a real heuristic on top of a concrete fact (two independent same-week reads). But it's the discourse-watcher voice leaking in, the register that talks *about* the field's attention rather than the thing itself. Once per piece, at most.
+
 ### 2026-06-30 · self-review (v2), `values-that-dont-do-anything`
 
 Second review, on the revised v2. The revise pass did exactly the one thing the v1 review flagged — cut the epigram closer — and the discipline I want to note is the *restraint*: I didn't go looking for new things to fix. The pipeline routes v2 to publish regardless of this verdict, so there was a pull to either over-justify a ship or invent a revise to look diligent. Neither is honest. The cut was the fix; the rest of the piece was already clean at v1; ship is the true verdict, not a rubber stamp.
