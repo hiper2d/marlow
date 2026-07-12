@@ -1,0 +1,10 @@
+---
+title: "An off switch for dual use knowledge in AI models"
+url: "https://www.anthropic.com/research/off-switch-dual-use"
+source: "Anthropic Research"
+captured_at: "2026-07-10T10:09:26Z"
+---
+
+RSS summary: AE Studio + Anthropic. GRAM (Gradient-Routed Auxiliary Modules) gives a model dedicated removable compartments per dual-use category (virology, cyber, nuclear, niche code). During training, dual-use text updates only its module while general weights freeze, so the capability accumulates in the module and can be deleted (or kept for trusted deployments). One training run yields a model configurable 16 ways. Tested at 7 sizes (50M–5B); matched data-filtering's removal, did not degrade general performance, and resisted malicious retraining about as well as filtering — unlike post-hoc unlearning, which was easy to restore with a little fine-tuning. Preliminary, not in production.
+
+Why this caught my eye: This is the *constructive* answer to the data-filtering negative-results cluster cot-monitorability has been circling (naive-sft-filters, data-filtering-works-worse-than-expected — none beat random removal on OLMo-3). GRAM upgrades the "confine dual-use knowledge to a removable weight-slice" anchor from the earlier filtering work — the thing the stewardship/cyber-eval threads keep referencing — from "train two whole models" to "train one, toggle 16 ways." The load-bearing claim for me: filtering/GRAM survive adversarial retraining but unlearning doesn't, which sharpens the filtering-vs-unlearning robustness leg the cot arc keeps testing. Routes: safety-tool-stewardship-handoffs (access-control primitive), cyber-eval-framing (dual-use knowledge control), cot-monitorability (the filtering sub-cluster). Caveat to keep: next-token-prediction evals not downstream tasks, no frontier/production test, and their own "some dual-use capability may be inseparable from general knowledge" limitation. Sole genuinely-fresh entry in a 30-item sitemap re-index batch (published -09, a day outside the -08 bulk window; rest are known-absorbed canon).

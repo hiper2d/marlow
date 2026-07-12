@@ -36,6 +36,45 @@ else
     IDENTITY_FILE=""
 fi
 
+# Agent + model switchboard (driver/agent.conf). Resolved here, before any queue
+# work, so a misconfigured backend fails fast without consuming a subtask.
+#   - Pins the model explicitly so ticks IGNORE the global Claude Code default:
+#     flipping the interactive default (e.g. to Fable) no longer drags autonomous
+#     ticks onto that model and burns quota.
+#   - Two tiers: writer/legacy -> heavy, ops -> light (cheap model for mechanical
+#     work). Var name is MARLOW_MODEL_<TIER>_<AGENT>, resolved by indirection.
+AGENT_CONF="$REPO_ROOT/driver/agent.conf"
+[ -f "$AGENT_CONF" ] && source "$AGENT_CONF"
+MARLOW_AGENT="${MARLOW_AGENT:-claude}"
+
+case "$PROFILE" in
+    ops) MARLOW_TIER="light" ;;
+    *)   MARLOW_TIER="heavy" ;;   # writer + legacy no-profile
+esac
+
+# Respect an explicit MARLOW_MODEL override (handy for one-off debugging);
+# otherwise resolve from the tier/agent matrix, with a hard fallback so a
+# missing/incomplete agent.conf can never crash the loop.
+if [ -z "${MARLOW_MODEL:-}" ]; then
+    _model_var="MARLOW_MODEL_$(echo "${MARLOW_TIER}_${MARLOW_AGENT}" | tr '[:lower:]' '[:upper:]')"
+    MARLOW_MODEL="${!_model_var:-}"
+    if [ -z "$MARLOW_MODEL" ]; then
+        case "$MARLOW_TIER" in
+            light) MARLOW_MODEL="claude-sonnet-5" ;;
+            *)     MARLOW_MODEL="claude-opus-4-8" ;;
+        esac
+    fi
+fi
+
+# Only the Claude backend is operational. Refuse any other backend up front so a
+# deliberate-but-premature flip (e.g. to codex before it's wired) does not pick,
+# stage, then fail a subtask. Queue is untouched. See agent.conf wiring notes.
+if [ "$MARLOW_AGENT" != "claude" ]; then
+    # log() is defined further down; use echo directly for this early exit.
+    echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] FATAL: MARLOW_AGENT='$MARLOW_AGENT' is not operational yet (only 'claude' works; codex needs a subscription + a Codex-shaped cost parser in tools/cost.py). Not ticking; queue untouched."
+    exit 0
+fi
+
 LOCK_FILE="/tmp/marlow${SUFFIX}.lock"
 LOCK_SKIPS="/tmp/marlow${SUFFIX}.lock.skips"   # consecutive blocked-tick counter (staleness signal, not time)
 MAX_LOCK_SKIPS=3                       # force-break the lock after this many blocked AWAKE ticks
@@ -200,7 +239,7 @@ fi
 # Stream raw JSONL to a temp file so cost.py can extract usage/cost after.
 # Stderr still goes to SESSIONS_LOG for crash diagnostics.
 rm -f "$STREAM_FILE"
-if run_with_timeout "$TICK_TIMEOUT" claude -p --output-format stream-json --verbose ${IDENTITY_ARGS[@]+"${IDENTITY_ARGS[@]}"} "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
+if run_with_timeout "$TICK_TIMEOUT" claude -p --model "$MARLOW_MODEL" --output-format stream-json --verbose ${IDENTITY_ARGS[@]+"${IDENTITY_ARGS[@]}"} "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
     log "session exited cleanly"
     SESSION_OK=1
 else
