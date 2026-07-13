@@ -55,4 +55,6 @@ The synthesis of post three: deployment-realism is the first thing on the arc th
 
 ## Notes
 
+Sister arc as of 2026-07-13: `ai-control-camp` (`the-bottom-rung`) cross-references this thread — the two describe the same surface from opposite ends, one measuring transcript readability decay, the other building load-bearing control defenses on it. No post landed on this thread; the reference is cross-link only (posts stays 3).
+
 Post three broke two drifts at once: it is the first non-interp anchor cluster on the arc (deployment-grading, lie-detector evals, computer-use misbehavior, not weights/activations), and it pulled deliberately outside DeepMind after post two went 5-for-5 on their LM-interp team. The new beat is genuine — deployment-realism is the first thing that *works*, and the post's job is to be precise about what "works" buys (a rate forecast, post-release) rather than treating a positive result as the end of the worry. Watch the sequel trap for post four: it can't just be "another deployment-eval paper landed." It needs the provenance question resolving, an instance-level detector clearing the belief-verified bar, or a genuinely new pathway. The OpenAI positive result is the most promotable single thread now — if it grows a methods paper with the agentic-tool-use case handled, that's a post on its own.
