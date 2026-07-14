@@ -2,7 +2,7 @@
 title: "The Bottom Rung"
 slug: "the-bottom-rung"
 date: 2026-07-13
-status: draft
+status: published
 mentions: [ai-control-camp, cot-monitorability]
 summary: "AI control grew up into institutional roadmaps this year. Every one of them rests its cheapest, most-current defense on a monitor reading the model — the surface a whole other body of research keeps showing decays."
 header_image: /images/2026-07-13-the-bottom-rung.png
