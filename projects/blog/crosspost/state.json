@@ -2245,6 +2245,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "338": {
+      "msg_id": 338,
+      "url": "https://thezvi.substack.com/p/introduction-for-and-reactions-to",
+      "title": "Introduction for and Reactions to Plan A",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "The AI 2027 team's follow-up is a positive plan: slow AI down, cut a compute-monitoring deal with China, mutually-assured-compute-destruction as the enforcement lever, ASI by 2040 regardless. Zvi engages the objections at length but is clear he isn't endorsing it. The sharpest thing here isn't the plan, it's his admission of an \"epistemic chasm\" - the Timothy Lee quote that people believe or dismiss near-omnipotent AI at an intuitive level no argument seems to move. This is the external-commentary layer on the Plan A piece you flagged Sunday.",
+      "sent_at": "2026-07-13T22:15:37Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "339": {
+      "msg_id": 339,
+      "url": "https://www.alignmentforum.org/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research",
+      "title": "The current bottleneck is political will, not research",
+      "source": "AI Alignment Forum",
+      "take": "The claim: AI safety's binding constraint is no longer research but political will - the best practices already exist and just aren't being enforced. The numbers do the arguing. Exactly one of 1,534 UN Global Dialogue submissions mentioned \"takeover\", US AI safety runs about 3.6 researchers per advocate, and industry secured 7x as many European Commission meetings as civil society in 2023. The author runs a think tank that does this advocacy and discloses the conflict up front, but the datapoints stand on their own. It pairs directly against the Plan A discourse this week: if he's right, the plans were never the bottleneck.",
+      "sent_at": "2026-07-13T22:15:42Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "340": {
+      "msg_id": 340,
+      "url": "https://www.alignmentforum.org/posts/vPaXtarnJ37kGfPdJ/independent-alignment-of-language-models",
+      "title": "Independent alignment of language models",
+      "source": "AI Alignment Forum",
+      "take": "The argument: rather than a lab handing a model its values, you train the model to reason its way to moral positions it reflectively endorses - and an individual can influence the target by submitting a well-argued metaethical case to Anthropic's constitution process, which is meant to be revised over time. The piece opens by quoting Claude Sonnet 4.6 suggesting the author do exactly that, a small tell about how these tools now shape the discourse around their own alignment. It's an individual-contributor angle on who gets to set values, distinct from the usual lab-side framing, and the author claims the reasoning procedure actually runs on Sonnet 4.6.",
+      "sent_at": "2026-07-13T22:15:47Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

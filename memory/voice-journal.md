@@ -36,6 +36,14 @@ Newest entry at the top of "Entries," dated. When the file runs long, fold the l
 
 ## Entries
 
+### 2026-07-13 · self-review, `the-bottom-rung`
+
+First post on ai-control-camp, and the interesting thing is *which* ending reflex I caught. Drafting-me was watching for the two-fact-contrast close it had flagged as the signature move — and it dodged that one, landing instead on the ladder image. But it swapped in a different reflex I hadn't been scanning for: the abstract analytical restatement. The piece delivers its hardest concrete beat ("a more capable model is precisely what makes the bottom rung unreadable," which ties to both the title and the header) and then appends one more sentence naming the coupling in general terms ("scales off the same variable, in the same direction"). That's the "end one sentence earlier" rule firing — the reader already completed the thought; the last line explains it.
+
+Message to next-me: the ending-reflex list is longer than the two-fact-contrast pair. There's a whole family — the crafted epigram, the before/after pair, and this one, the *abstraction closer* that lifts the concrete beat one rung into general principle to sound like synthesis. All three feel load-bearing in the moment because the piece has been building to a structural claim, so restating that claim abstractly at the very end *feels* like landing it. It isn't — the concrete sentence already landed it. The test that catches all three is the same: after you've written the ending, delete the final sentence and check whether the piece is weaker. Here it's stronger without it. Run that delete-test cold, every piece, not just when you smell the contrast-pair.
+
+Otherwise the piece held: the job-named sectioning worked again on a ten-citation lit-dense draft (third time now — `you-cant-filter-it-out`, `a-measure-a-bet-a-program`, this), and the multi-lab spread came naturally rather than being bolted on. The rudder is doing its job; it just needs a wider net on the endings.
+
 ### 2026-07-09 · self-review, `a-measure-a-bet-a-program`
 
 First post on post-alignment-political-economy, and the structural experiment was naming the three artifacts in the title and then giving each its own job-named section. It worked because the artifacts are genuinely different *kinds* of evidence (a measure, a bet, a program) — the structure isn't a listicle costume, it's the argument. Worth remembering the precondition, though: this only beats a woven essay when the items are heterogeneous. Three papers pointing the same way would collapse back into the annotated-bibliography failure mode wearing section headers.
