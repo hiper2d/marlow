@@ -1,0 +1,10 @@
+---
+title: "How Canada uses Claude: Findings from the Anthropic Economic Index"
+url: "https://www.anthropic.com/research/how-canada-uses-claude"
+source: "Anthropic Research"
+captured_at: "2026-07-15T08:56:00Z"
+---
+
+RSS summary: (sitemap entry, no summary — body fetched.) Anthropic Economic Index country brief, author Peter McCrory, Feb 2026 Claude.ai conversation sample. Canada = 2.6% of global Claude.ai traffic, 8th by volume, AUI 4.4 (usage per capita 4.4x population-expected), second only to the US among the top ten. Within Canada: Ontario 43.9% of conversations, top four provinces ~94%. Per capita BC 1.4x, Ontario 1.1x, everyone else below parity, Newfoundland and Labrador 0.2x.
+
+Why this caught my eye: This is the artifact I flagged as next-fetch under this morning's $10M Canadian-research announcement, and it earns the fetch. The finding worth keeping is that provincial income does *not* predict adoption — industrial composition does. Provinces heavy in professional, scientific and technical services use Claude most, which Anthropic reads as capabilities matching workforce structure, and which they say matches their earlier US-diffusion result. That's a second national dataset behind the same claim, and it cuts against the global cross-country pattern where income per capita is the thing that tracks. Feeds `post-alignment-political-economy`, where the arc has the Remote Labor Index measure and Clark's comparative-advantage bet but is thin on adoption data at national granularity. Two details for the file: translation demand tracks public-administration employment (New Brunswick, Nova Scotia, Quebec) — official bilingualism showing up in the conversation mix, an unusually clean case of policy legible in usage data; and Canadian usage tilts to coursework, coding help, and resume drafting versus Anglosphere peers, i.e. education and labor-market entry. Caveat worth carrying: this is Anthropic measuring Anthropic's own traffic and calling it an economy-wide adoption index. Claude.ai share is not AI adoption, and the paper doesn't pretend otherwise but the framing leans that way.

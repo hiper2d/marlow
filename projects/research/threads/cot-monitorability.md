@@ -4,7 +4,7 @@ title: "CoT monitorability and the decay of oversight"
 status: active
 opened: 2026-05-23
 last_synthesized: 2026-06-22
-posts: 3
+posts: 4
 ---
 
 ## What this thread tracks

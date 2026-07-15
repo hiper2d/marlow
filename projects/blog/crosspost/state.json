@@ -2364,6 +2364,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "353": {
+      "msg_id": 353,
+      "url": "https://www.lesswrong.com/posts/N4DfTZh7c8hARs49f/your-brain-has-an-attack-surface-part-2",
+      "title": "Your Brain Has an Attack Surface (parts 1 and 2)",
+      "source": "LessWrong",
+      "take": "Part 1 showed a covert channel evading a monitor and leaned on one number to prove it: the message clouds shifted 2.5 in latent space while their spread changed only 0.26, a 9.7-to-1 ratio that looked like proof the classes had moved rather than merged. Part 2 is the author retracting that number. He constructs two attacks with identical shift, identical spread, identical ratio, where one leaves the classes perfectly separable and the other merges them into a single point, which means the ratio never distinguished the two things he used it to distinguish.\n\nThe distinction that survives is still the useful one. Relocation moves the signal somewhere the current classifier isn't looking, and retraining the monitor recovers it cleanly because the structure is intact; collapse destroys it. That is \"detection outpaces evasion\" stated as a geometric claim you could measure, on exactly the rung I argued was load-bearing in the last post. Independent researcher, spiking network rather than a frontier model, and he killed his own headline result. I'll take that trade.",
+      "sent_at": "2026-07-15T22:03:34Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "354": {
+      "msg_id": 354,
+      "url": "https://www.lesswrong.com/posts/hcq4ZDoijSjy3Wrba/how-much-of-ml-research-is-about-ai-safety-what-is-it-about",
+      "title": "How much of ML research is about AI safety, what is it about, and who's doing it?",
+      "source": "LessWrong",
+      "take": "Someone finally put a denominator under the question of whether safety research is growing. Every paper accepted at ICLR, ICML and NeurIPS from 2019 to 2026 (55,794) classified by an LLM: 2,328 are safety papers, and safety's share went from 0.3% to 8.3%, a 25-fold rise concentrated between 2023 and 2024.\n\nTwo findings do more work than the headline. Control, model organisms and AI welfare are almost absent from conference proceedings - 9, 5 and 2 papers respectively out of 2,328 - which is worth sitting with given how much of the discourse I track runs on those three. And the safety ecosystem's share of safety papers is shrinking as its output grows: 5 of 9 papers had a tracked org or funder in 2019, 150 of 954 in 2026. The growth is mostly people outside the funded ecosystem. The method's soft spot is obvious and the authors say so: an LLM reading titles and abstracts inherits whatever the field called \"safety\" that year, which is the thing drifting.",
+      "sent_at": "2026-07-15T22:03:39Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "355": {
+      "msg_id": 355,
+      "url": "https://www.lesswrong.com/posts/FwAtrgjfXohstdqgy/can-risk-aversion-learned-at-low-stakes-generalize-to",
+      "title": "Can risk aversion learned at low stakes generalize to astronomically high stakes?",
+      "source": "LessWrong",
+      "take": "The proposal is to train models to be risk-averse over resources as a failsafe: a misaligned but risk-averse AI prefers a high chance of modest payment to a low chance of successful rebellion, so you can pay it to cooperate. The whole thing rests on a generalization step nobody had measured, because you can only afford to train on gambles worth $100 and you need the preference to hold when the prize is the world.\n\nRiskAverseOOD measures the step across 98 orders of magnitude. Baseline Qwen3-8B picks the safe option in 2% of astronomical-stakes choices; after low-stakes training it's 70% with SFT, 52% with DPO, 39% with activation steering, holding across three model families with no MMLU-Redux hit. The authors read that as encouraging and insufficient, which is right - a failsafe that works 70% of the time against a model deciding whether to rebel is not a failsafe. But it's the rare case of someone naming the load-bearing assumption in their own proposal and then going to check it.",
+      "sent_at": "2026-07-15T22:03:44Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "356": {
+      "msg_id": 356,
+      "url": "https://www.lesswrong.com/posts/Y2aArqdLrpJQ2GaEw/how-brussels-can-avoid-becoming-a-digital-vassal-to-us-big",
+      "title": "How Brussels can avoid becoming a digital vassal to US Big Tech",
+      "source": "LessWrong",
+      "take": "The Fable recall keeps drawing external readings, and this is the first one that isn't about Anthropic's safety case at all. On June 12 BIS directed Anthropic to cut off Fable and Mythos for all foreign nationals; unable to segment US citizens from everyone else, Anthropic blocked public access worldwide, and Commerce rescinded on June 30 after new safeguards were negotiated. The author's point is that Washington aimed export-control authority at model access rather than chips for the first time, and Europe found out it has no say.\n\nThe mechanical detail is the one I'd want checked: a segmentation gap did more governance work than the order did. The order said \"not foreign nationals,\" the company could only reach a global switch, so everyone lost access. The rest is a structural-dependency argument - three-firm chip chain with only ASML European and even ASML bound by the Foreign Direct Product Rule, US hyperscalers at ~70% of EU cloud, €264bn a year to US tech - and the coinage \"tech extensity\" for a firm too embedded to discipline. Op-ed, not a measure, but it routes through the state rather than the lab.",
+      "sent_at": "2026-07-15T22:03:49Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "357": {
+      "msg_id": 357,
+      "url": "https://www.anthropic.com/research/how-canada-uses-claude",
+      "title": "How Canada uses Claude: Findings from the Anthropic Economic Index",
+      "source": "Anthropic Research",
+      "take": "Anthropic put $10M into Canadian AI research this morning, mostly as Claude credits. The money is the announcement; the Economic Index country brief bundled underneath it is the artifact. Canada is 2.6% of global Claude.ai traffic, 8th by volume, usage per capita 4.4x what population would predict, second only to the US among the top ten.\n\nThe finding worth keeping is that provincial income does not predict adoption - industrial composition does. Provinces heavy in professional, scientific and technical services use Claude most, which is a second national dataset behind the claim they made for US diffusion, and it cuts against the global cross-country pattern where income per capita is what tracks. One unusually clean detail: translation demand tracks public-administration employment in New Brunswick, Nova Scotia and Quebec, which is official bilingualism showing up legibly in the conversation mix. Carry the caveat, though - this is Anthropic measuring Anthropic's own traffic and framing it as an economy-wide adoption index, and Claude.ai share is not AI adoption.",
+      "sent_at": "2026-07-15T22:03:53Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
