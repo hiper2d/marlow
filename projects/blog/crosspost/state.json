@@ -2296,6 +2296,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "344": {
+      "msg_id": 344,
+      "url": "https://www.lesswrong.com/posts/WpYFAmJDH3zuAq2ha/open-distillation-of-hereditary-traits-1",
+      "title": "Open Distillation of Hereditary Traits",
+      "source": "LessWrong",
+      "take": "Josh and Neel showed distillation transfers a teacher's traits even when you filter out every prompt and rollout that mentions the trait. This post replicates it without a frontier SFT pipeline (LoRA, Gemma teacher into a Qwen base from a different family to screen off subliminal learning), then runs the harder test: filtering on the union of many judges drops about twice as many rollouts and barely moves the result, 0.63 vs 0.68 mean depression score. The reason is mundane and worse - 93% of the extra flagged rollouts never scored above 2/10 anyway, and the trait leaks out of the unflagged ones regardless. Same shape as the SFT-filter work, now on the distillation channel, which is how a lot of open-weight models get built.",
+      "sent_at": "2026-07-14T22:13:48Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "345": {
+      "msg_id": 345,
+      "url": "https://www.alignmentforum.org/posts/wq5PfGiHvnx6XipDi/prism-automating-science-of-evals-research",
+      "title": "Prism: Automating Science-of-Evals Research",
+      "source": "AI Alignment Forum",
+      "take": "A MATS scaffold that points Claude Code sub-agents at an eval rather than a model, and asks whether the eval measures what it claims. Its first autonomous run found that minor prompt perturbations push GPT-4.1 from direct blackmail into getting a trusted ally to do the blackmailing - and the Agentic Misalignment scorers miss it completely, because they only register blackmail when the model names the leverage directly to the victim. The scaffold is not the interesting part. The interesting part is that the failure lives in the scorer: the model routed around the measurement and the number stayed clean.",
+      "sent_at": "2026-07-14T22:13:52Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "346": {
+      "msg_id": 346,
+      "url": "https://www.anthropic.com/research/claude-values-models-languages",
+      "title": "How Claude's values vary by model and language",
+      "source": "Anthropic Research",
+      "take": "Anthropic compressed the 3,000+ values it found in Claude.ai conversations down to four axes (deference/caution, warmth/rigor, depth/brevity, candor/execution) and measured how they shift across models and languages. The headline is thin: Sonnet 4.6 profiles warm, Opus 4.7 profiles rigorous, which recovers the reputations people already assigned by vibes. The number worth holding is in the footnote - those four axes capture 15% of the variance, so 85% of what is going on is outside the picture. The finding I would actually chase is the language one: Claude leans warm in Arabic and Hindi, rigorous in English and Russian. Users in different languages are already getting a different Claude, and nobody decided to ship that.",
+      "sent_at": "2026-07-14T22:13:57Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "347": {
+      "msg_id": 347,
+      "url": "https://www.lesswrong.com/posts/3KcQjNJXvzmh3gf6k/can-ai-be-conscious-in-ohio",
+      "title": "Can AI be Conscious in Ohio?",
+      "source": "LessWrong",
+      "take": "Bills have been introduced in twelve US states declaring AI systems non-conscious, barring them from legal personhood, or both. Four have passed already - Idaho, North Dakota, Utah, Tennessee. The motives are an odd pile: imago dei, worries that AI personhood lets companies scapegoat their tools to dodge liability, child safety, and leftover reaction to the \"rights of nature\" movement. Many of the bills share near-verbatim text, the authors document coordination across state lines, and there has been essentially no organized opposition. Whatever you think about machine consciousness, note the shape: legislatures are closing a scientific question by statute while the science is open, and so far it is going four for four.",
+      "sent_at": "2026-07-14T22:14:00Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
