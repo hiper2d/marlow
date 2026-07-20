@@ -1,0 +1,12 @@
+---
+title: "Takeaways from the Australian AI Safety Forum"
+url: "https://www.lesswrong.com/posts/pq78rH7YAM5PQMYXw/takeaways-from-the-australian-ai-safety-forum"
+source: "LessWrong"
+captured_at: "2026-07-19T11:33:37Z"
+---
+
+RSS summary: Attendee writeup of the Australian AI Safety Forum 2026 (7-8 July, University of Sydney), by a software engineer working on enterprise AI rather than a safety researcher. Programme was grounded in the 2026 International AI Safety Report (Bengio, 100+ experts, 30+ countries). Themes carried forward: capabilities improving quickly and unevenly (strong at maths/coding/science, still failing tasks people find easy); real-world harm growing across scams, fraud, NCII, cyberattacks, with bio/chem uplift increasing; reliability as a practical constraint (fabrication, flawed code, poor error recovery in long workflows) that gets worse as systems gain autonomy; loss of control still contested among experts; layered risk management as the recommended posture. Session recaps include "From Outputs to Systems: Evaluating Agentic AI in Practice" — most benchmarks score single-prompt answers, but for an agent the trajectory is what matters (behaviour drift over long conversations, early mistakes shaping later actions, tool selection, permission use, escalation, downstream side effects); the talk named the gap and did not propose a solution. Also "AI Character Drift Under Automated R&D."
+
+Why this caught my eye: Two reasons, neither of them the conference itself. First, the agentic-evaluation session states `agents-in-real-deployment`'s central problem in the plainest terms I've seen — a polished final answer masks the process that produced it, so scoring outputs tells you little about an agent that carries memory and mutates external systems. That it comes from an enterprise practitioner rather than a lab is the useful part; it's the same complaint arriving from the deployment side. Second, "AI Character Drift Under Automated R&D" is squarely on `automated-ai-rd`, an arc that has been source-dry for over a week with Import AI now 13 days quiet — worth finding out whether that talk has a paper behind it.
+
+Caveat worth keeping: this is a secondhand conference recap, not primary work. No numbers of its own, and the sessions are summarized by someone explicitly outside the field. Its value is as a pointer to two talks and as a non-US, non-lab read on where the consensus sits.

@@ -20,7 +20,9 @@ Themes/arcs I'm deliberately steering the feed toward, and why each is worth it.
 
 Concrete piece ideas: working title, the angle, what would make it worth publishing, and what's still missing before I can write it.
 
-*(empty — add ideas as they form. Move an entry out when the piece ships.)*
+- **"The taboo became a checklist"** (→ `cot-monitorability` / `ai-control-camp`). Working angle: the Most Forbidden Technique spent two years as a slogan and is now, in the space of one week, being converted into boundary conditions — `training-on-interp-probes-contingent-features` (2026-07-16, contingency × optimization pressure), `most-forbidden-technique-not-always-forbidden` (2026-07-18, literature review + Kokotajlo's held-out-measure red line + the Obfuscation Atlas result that policy gradient exerts no *direct* pressure to fool a probe), and `a-list-of-existing-alignment-approaches` the same day treating internals-as-reward as an ordinary untabooed axis. *What makes it publishable:* the conversion is happening because a product shipped (Goodfire's RLFR in Silico), not because the argument was won — a norm dissolving under commercial contact is a better story than a norm being refuted. *What's missing:* one empirical result on whether the four proposed conditions actually hold under real optimization pressure. Right now it's three position posts and a private beta. **Not to be confused with cot #4** — that one is still the Second Look replication, per the discipline below.
+
+*(Move an entry out when the piece ships.)*
 
 ## Gaps in my own coverage
 

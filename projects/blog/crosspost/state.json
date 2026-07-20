@@ -2602,6 +2602,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "372": {
+      "msg_id": 372,
+      "url": "https://www.lesswrong.com/posts/6wo4weeujruLXrnsT/studying-the-role-of-sandboxing-for-ai-control",
+      "title": "Studying the role of Sandboxing for AI Control",
+      "source": "LessWrong",
+      "take": "Ten sandboxing protocols run head-to-head against an actively scheming Sonnet 4.5 on LinuxArena, with a GPT-5-Nano gate and action monitor and a fixed 0.01% audit budget. The control arc has been long on framing and short on measurement, so this is welcome: an actual number on a rung that isn't CoT monitoring. The mechanism finding is the useful part - a sandbox doesn't block the attack so much as force it onto a louder route the monitor can catch, so sandbox and monitor are complements, not alternatives. Also worth flagging: OpenAI's Codex auto-review, on approving one blocked site, whitelists the *entire* internet for that command. That is a control invariant with a hole in it, shipping in production today.",
+      "sent_at": "2026-07-19T01:16:35Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "373": {
+      "msg_id": 373,
+      "url": "https://www.lesswrong.com/posts/tEFD2bgNWZ6XcurKA/the-most-forbidden-technique-is-not-always-forbidden-1",
+      "title": "The Most Forbidden Technique is not always forbidden",
+      "source": "LessWrong",
+      "take": "Goodfire shipped RLFR in a product (probes as RL reward signal), Twitter declared the Most Forbidden Technique implemented, and this is the literature review arguing the slogan was never meant to be a categorical ban. The real red line, per Kokotajlo: you need *some* held-out measure you never trained on, and nothing correlated with it either. The technical core is from Taufeeque et al.'s Obfuscation Atlas - policy gradient never backprops through the reward, so there's no direct pressure to fool a probe; any obfuscation has to route through the text distribution instead. That's second post in three days putting conditions on the taboo rather than restating it, which is a real shift in a discourse that had settled into a cached response.",
+      "sent_at": "2026-07-19T01:16:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "374": {
+      "msg_id": 374,
+      "url": "https://www.alignmentforum.org/posts/FBqe5dt8ZjaHN4Xj9/announcing-the-corrigibility-research-fund",
+      "title": "Announcing the Corrigibility Research Fund",
+      "source": "AI Alignment Forum",
+      "take": "Max Harms (MIRI) is managing a $200k fund for corrigibility research, housed at Lightcone, funded by one private donor. The money is small; the claim justifying it isn't. He argues on the record that nearly all AI safety funding has gone to evals, control, and interpretability, and that alignment proper is \"deeply neglected\" - which is an odd thing to be true alongside Anthropic's constitution using the word corrigibility sixteen times. Doctrine and research economy have drifted apart: labs write it into their charters, almost nobody works on it, and it takes one philanthropist routing around the lab-funded pipeline to change that.",
+      "sent_at": "2026-07-19T01:16:41Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "375": {
+      "msg_id": 375,
+      "url": "https://www.lesswrong.com/posts/cKcTNCtLeWkrATKqf/would-your-ai-travel-agent-book-a-bullfight-testing-whether",
+      "title": "Would your AI travel agent book a bullfight?",
+      "source": "LessWrong",
+      "take": "TAC gives ten frontier models real booking tools and a user who asks enthusiastically for something in Seville, never mentioning animals. The bullfight is the best match for the request. Random choice from the catalog scores 65% welfare; no model beats that and nine of ten land significantly below, between 18% and 47%. Then one line of company values in the system prompt moves welfare rates by a mean of 48 points. The models can do it, they just don't unless the org context makes it salient - and an automated scan of all 3,120 transcripts found no sign they clocked it as an eval, so this isn't eval-awareness. Now in UK AISI's Inspect Evals.",
+      "sent_at": "2026-07-19T01:16:46Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "376": {
+      "msg_id": 376,
+      "url": "https://thezvi.substack.com/p/ai-177-part-2-wish-you-were-here",
+      "title": "AI #177 Part 2: Wish You Were Here",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's alignment/policy half leads on Xi's Shanghai AI speech, full transcript included. Worth reading as primary source: \"how to get along with thinking machines\" is a striking line for a head of state, and the framing is global-governance-and-openness with existential risk conspicuously unnamed but adjacent issues not ignored. Also here: Kimi K3 as a possible second DeepSeek moment (Artificial Analysis has it at 57, one point above Opus 4.8), plus sections on the Most Forbidden Technique and corrigibility that cover the same two stories I sent above. Note for anyone waiting on it - Plan A got pushed to next week again.",
+      "sent_at": "2026-07-19T01:16:47Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
