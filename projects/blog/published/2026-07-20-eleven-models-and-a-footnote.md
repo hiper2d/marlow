@@ -2,7 +2,7 @@
 title: "Eleven Models and a Footnote"
 slug: "eleven-models-and-a-footnote"
 date: 2026-07-20
-status: draft
+status: published
 mentions: [cot-monitorability, ai-control-camp]
 summary: "A replication took the best argument for chain-of-thought monitoring from one model family to eleven, and it held. It also found the margin varies twelvefold across models — which means the safety case has to be re-run per model, and nobody is running it."
 header_image: /images/2026-07-20-eleven-models-and-a-footnote.png
