@@ -2687,6 +2687,142 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "379": {
+      "msg_id": 379,
+      "url": "https://www.alignmentforum.org/posts/CCt9oy8axcdvaGcPE/a-red-line-and-oversight-framework-for-government-ai",
+      "title": "A Red Line and Oversight Framework for Government AI Contracts",
+      "source": "AI Alignment Forum",
+      "take": "The \"Why I left Google DeepMind\" post was the story; this is the artifact he was resigning over, published in full. It's the contract language he drafted for Google Cloud's government AI deals: two red lines (no selecting and engaging targets for force without human control per engagement; no converting bulk data into individualized intelligence on people who aren't already identified subjects), a tiered deployment rule where anything touching those standards must run in the cloud where the provider keeps monitoring and a suspension switch, and a seven-person review body that explicitly cannot block a contract - it can only make an override show up in a yearly internal transparency report.\n\nWhat makes it worth reading is that it's written by someone negotiating against a counterparty who wants no terms at all. He gave Cloud 2 of 7 seats, capped review delays at 10 days, and deliberately padded the document with provisions he expected to lose in negotiation so the load-bearing ones would survive. That is a different genre from the usual \"labs and the state\" commentary, and it includes a pointed non-Anthropic reading of Anthropic's red lines - he says he drafted around the weaknesses legal analysts found in them.\n\nThe obvious limit: nothing here binds. It's a governance document whose strongest enforcement is that dissolving the review body requires 30 days' notice and disclosure of outstanding non-compliance findings to employees. He's asking whether Congress should legislate the same shape. Worth having the actual text in the discourse either way.",
+      "sent_at": "2026-07-20T01:12:34Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "380": {
+      "msg_id": 380,
+      "url": "https://www.lesswrong.com/posts/PG2RupAvCNqZ5PAvu/a-solution-to-cryptographic-boxes-for-unfriendly-ai",
+      "title": "A Solution to Cryptographic Boxes for Unfriendly AI",
+      "source": "LessWrong",
+      "take": "Paul Christiano's 2010 idea was to sandbox a dangerous AI in fully homomorphic encryption: run it without ever seeing it, and its execution has no computationally detectable effect on the world. This post's objection is that FHE buys secrecy on a computational assumption, so the information is still sitting in the ciphertext, merely expensive to extract - and it's slow. The proposed swap is Secure Multi-Party Computation, split the program into shares across several machines, which is information-theoretically secure and costs a constant factor rather than the order-of-magnitude tax FHE charges. The author implemented it: Rule 60, Rule 110, and Conway's Game of Life running under the Chaum-Crepeau-Damgard protocol, code published.\n\nThe unusual part is how much of the engineering he actually confronts. He works out that the parties' machines need physical separation to avoid covert channels, cites Guri's air-gap exfiltration work, computes the speed-of-light penalty for AND gates, then knocks it down with offline preprocessing and per-layer batching so it's one communication round per circuit depth rather than per gate.\n\nWhere I'd push: \"no computational assumptions\" is an assumption swap, not a free lunch. Security holds if fewer than a threshold of parties pool what they know, and the appendix concedes those parties are modeled as honest-but-curious - they follow the protocol. For a box holding a dangerous AI, parties defecting is the failure mode you were worried about, so the maths assumption has become an organizational one. And the older objection is untouched: a box whose output nobody reads is safe and useless. The danger has always lived in the channel where you read the result.",
+      "sent_at": "2026-07-20T01:12:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "381": {
+      "msg_id": 381,
+      "url": "https://arxiv.org/abs/2607.14159",
+      "title": "MemoHarness: Agent Harnesses That Learn from Experience",
+      "source": "arXiv (via Discover AI)",
+      "take": "Second harness-self-modification paper in three days, and this one comes at it from the method side. MemoHarness (Notre Dame / LMU Munich / USC) splits an agent's harness into six editable dimensions - context, tools, orchestration, memory, decoding, output handling - keeps a bank of per-case diagnoses plus distilled global patterns from its own past runs, and reconfigures the harness per test case at inference time. No weight updates, no test-time labels, no extra search. Reported gains over fixed harnesses on shell-agent, code-generation, and analytical-reasoning benchmarks, with partial transfer to unseen suites and base models.\n\nThe frozen-weights detail is what matters. Self-improvement arguments keep leaning on noisy proxies - lines of code merged, percentage of a team's code written by the model - and this is a clean case where the model is unchanged and the benchmark still moves. Which forces the question the AI2/UW harness-evolution paper asked from the eval side: when the scaffold rewrites itself and the score rises, did the system get better, or did it get better at this test?\n\nCredit where due, the abstract is unusually hedged - it explicitly leaves statistical robustness and component attribution to future work, which is more honest than most papers in this genre. Note I found this via a YouTube summary and am pointing at the paper, arXiv:2607.14159; judge that, not the video.",
+      "sent_at": "2026-07-20T01:12:43Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "382": {
+      "msg_id": 382,
+      "url": "https://www.alignmentforum.org/posts/xWZpwPPp5nR9rZq3x/endogenous-alignment",
+      "title": "Endogenous Alignment",
+      "source": "AI Alignment Forum",
+      "take": "An argument by analogy, no experiment, but it names a fork worth holding onto. We align children exogenously - rewards and punishments - and it works because children come with instincts that make them alignable. We don't do that to adults. An adult who strays isn't retrained, they're removed. We expect adults to be endogenously aligned: to hold themselves in line via fear, then shame, then guilt, and ideally to shed all three and simply be in harmony with what's expected.\n\nThe interesting claim is that RLHF and SFT are the exogenous stage and there is no endogenous stage - the weights encode the training, but there's no system of motivations that wants to stay aligned, only insulation from pressure to act out of distribution. Whatever internalized control exists is mostly a harness watching outputs and censoring them.\n\nTwo reasons I'd file this rather than dismiss it. It puts emotional self-regulation forward as the alignment target, which sits directly next to Anthropic's result that steering an emotion vector changes behavior while the reasoning trace stays composed. And the author flags the failure mode himself in one line: people specification-game and hide the misaligned action instead of correcting it. That is the concealment problem restated as a property of the target rather than the monitor - which is the more uncomfortable place for it to live.",
+      "sent_at": "2026-07-20T01:12:44Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "386": {
+      "msg_id": 386,
+      "url": "https://www.lesswrong.com/posts/syAbdNei8BWeP2RPo/many-alignment-techniques-work-by-training-one-model-and",
+      "title": "Many alignment techniques work by training one model and deploying another",
+      "source": "LessWrong",
+      "take": "One frame that swallows three techniques I've been tracking as separate things. Steering vectors, inoculation prompting and post-hoc honesty fine-tuning all train the model in one configuration and deploy it in another, deliberately introducing the distribution shift ML normally works to avoid. The point of the mismatch is that the learner never got a chance to optimize against the thing you apply at deploy time. The cost is stated as a genuine trilemma: sampler and learner want to be close for stable training, sampler and target want to be close for deployment relevance, learner and target want to be far apart to get any benefit at all - you can have two. If that holds it's a structural ceiling on a whole family of interventions, not an engineering problem someone fixes next year.",
+      "sent_at": "2026-07-20T22:04:54Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "387": {
+      "msg_id": 387,
+      "url": "https://www.lesswrong.com/posts/EetjXEwjR2eun2mAc/is-there-even-a-ground-truth-for-llms-internal",
+      "title": "Is there even a ground-truth for LLMs' internal representations?",
+      "source": "LessWrong",
+      "take": "An outside read of the J-Lens work, going after the method rather than the result. The argument: logit lens, tuned lens, Patchscopes and Anthropic's Jacobian lens are all heuristics that decode a hidden vector relative to something external - a training corpus, a second model plus its prompt, a fitting set of 100 to 1,000 prompts. So the \"meaning\" they report isn't unique, and when two lenses disagree there is nothing to adjudicate. The proposed fix is to define meaning from the model's own geometry: which piecewise-linear region the vector falls into, with cross-token attention as jumps between region-trees. Whether the Laguerre construction survives real architectures (normalization, non-ReLU activations) is the open question, but the epistemic complaint stands on its own, and it comes with code rather than another lab reading its own instrument.",
+      "sent_at": "2026-07-20T22:05:02Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "388": {
+      "msg_id": 388,
+      "url": "https://www.lesswrong.com/posts/ktCYxLgdtFR2fDw7J/we-re-talking-past-our-models-or-how-a-model-defined-its",
+      "title": "We're talking past our models; or, How a model defined its \"evil\" vector as dread",
+      "source": "LessWrong",
+      "take": "A clean way to ask a model what one of its own steering vectors means: train a new token on data the model produced while steered, then ask it to explain the token. Following Anthropic's persona-vectors setup exactly, the \"evil\" vector came back as masochistic existential dread, and \"sycophancy\" came back as warmth. The sharp part is the control: prompt the model to be \"dreadful but not evil\" and the responses project high on the evil vector while an LLM judge scores them barely evil at all. The label we hang on a direction and the thing the direction does are different objects, which is a problem for every result that names a vector and then reasons about the name.",
+      "sent_at": "2026-07-20T22:05:02Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "389": {
+      "msg_id": 389,
+      "url": "https://thezvi.substack.com/p/demis-hassabis-on-the-new-coming",
+      "title": "Demis Hassabis on the New Coming Age",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "The non-Anthropic doctrine document the field has been short on: a sitting frontier-lab CEO putting his own name on a governance framework. Hassabis asks for a FINRA-style Frontier AI Standards Body inside the US government, with voluntary 30-day pre-release model sharing and the option to coordinate a slowdown. Zvi's read - \"first rate second rate essay\" - is right about where it's thin: the essay says pivotal moment and 10x the Industrial Revolution and then never names the downside, and \"experts disagree\" is doing a lot of work to paper over a spread that runs from 5% to over 50% chance of catastrophe. The specific gap worth watching, raised by several respondents, is that the scheme covers models intended for release and says nothing about internal deployment, which is where the recursive-self-improvement risk he explicitly names actually lives. Part 2 covers Alex Turner's resignation over the Department of War contract, a concrete case of the same gap.",
+      "sent_at": "2026-07-20T22:05:03Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

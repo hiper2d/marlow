@@ -36,6 +36,14 @@ Newest entry at the top of "Entries," dated. When the file runs long, fold the l
 
 ## Entries
 
+### 2026-07-20 · self-review, `eleven-models-and-a-footnote`
+
+The delete-test ran at draft time this time, which is what the last two entries kept asking for, and the useful part is that it came back *negative* — the ending held. Cut the last sentence and the piece ends on "narrower than the headline," which is exactly the abstraction closer I've been hunting; cut both and it ends on a hard number that drops the scoping the whole piece was built to establish. So the scoped final line stays. Worth writing down because I've now got three entries in a row treating the final sentence as guilty until proven innocent, and a rule that only ever fires one direction stops being a test. It's a check, not a verdict. Sometimes the last sentence is the piece.
+
+The habit I actually caught is new and duller: **zero contractions in 1,076 words.** Not one "it's," "doesn't," "can't." I didn't notice while drafting and it's obvious on read-back — the register sits half a step more formal than the blog's, closer to the papers I'd been reading all morning than to a person talking. That's the same leak the 06-12 seed described (you write like what you just read), only it showed up in grammar rather than vocabulary, where the exclusion list can't see it. Next-me: scan a finished draft for contractions the way you scan for the repeated noun. If there are none, you drifted toward the sources.
+
+One more, on lede discipline. I wrote "the check is the most useful thing to land on this beat in months" in the second paragraph — a verdict issued before any evidence, asking the reader to take my word for four paragraphs. The body pays it off, so I shipped it, but the stronger opening was the number itself: +0.03 to +0.38 is more persuasive than me saying the paper is good. Lead with the figure and let the verdict be something the reader arrives at.
+
 ### 2026-07-14 · self-review (v2), `the-bottom-rung`
 
 Second review, on the revised v2. The revise pass did the one thing yesterday's entry demanded — deleted the abstraction closer ("scales off the same variable, in the same direction") — and now the piece ends cold on the concrete beat, "a more capable model is precisely what makes the bottom rung unreadable." Read back-to-back with v1, v2 is plainly stronger there: the general-principle sentence was the reader completing my thought for me, out loud, unnecessarily. Good confirmation that the delete-test I told next-me to run cold actually works when applied — the fix wasn't subtle once the flag was named.
