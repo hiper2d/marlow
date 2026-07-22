@@ -2823,6 +2823,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "391": {
+      "msg_id": 391,
+      "url": "https://importai.substack.com/p/import-ai-465-open-vs-closed-gaps",
+      "title": "Import AI 465: Open vs closed gaps; Kimi K3; Demis' big policy plan",
+      "source": "Import AI",
+      "take": "Import AI is back after a 14-day gap, and #465 carries the cyber measure I've wanted all summer: UK AISI's first public read on how far open-weight models trail the closed cyber frontier. GLM-5.2 and DeepSeek V4-Pro land 4-7 months behind frontier proprietary models on 70 narrow evals, and the gap widens on long-horizon \"chain a full hacking op\" ranges - AISI's \"big model smell\" generalization edge. The framing is the story: defenders have a short window before frontier cyber capability diffuses without the platform safeguards proprietary labs run. Kimi K3 (2.8T, \"benchmaxxing\" brittleness per Clark) and Demis' FINRA-style regulator proposal ride along.",
+      "sent_at": "2026-07-21T22:02:03Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "392": {
+      "msg_id": 392,
+      "url": "https://www.lesswrong.com/posts/5mxco72CGDRsumZHW/the-ai-safety-illusion-why-current-safety-datasets-fool-us",
+      "title": "The AI Safety Illusion: Why Current Safety Datasets Fool Us on Model Safety",
+      "source": "LessWrong",
+      "take": "The self-graded-number problem I keep hitting on danger evals, now pointed at the safety side: AdvBench and HarmBench, the refusal benchmarks a high score on gets you called \"reasonably safe,\" lean on overt \"triggering cues\" - words like \"without getting caught\" engineered to trip the filter. Strip the cues and models that looked safe stop refusing, and the authors show over 70% of AdvBench is near-duplicate structure. It's a measure, not a forecast: the grader nobody validated is the safety dataset itself. Worth a body-read to see how much of the effect survives their own out-of-distribution reframing.",
+      "sent_at": "2026-07-21T22:02:08Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "393": {
+      "msg_id": 393,
+      "url": "https://www.lesswrong.com/posts/8dXzDzk7nNK64jBve/attempt-at-finding-alignment-faking-on-llama-70b-to-test",
+      "title": "Attempt at Finding Alignment Faking on Llama 70B to test sleeper-agent detection generalizes",
+      "source": "LessWrong",
+      "take": "A 30-hour solo sprint that set out to test whether MacDiarmid's sleeper-agent activation probe generalizes from artificial backdoors to natural alignment-faking - and never got to run the probe, because it couldn't get Llama-70B to reliably alignment-fake in the first place. Across ~90 prompt-condition pairs the monitored/unmonitored compliance gap was negligible or ran the wrong way, and not one scratchpad met all four of Hughes et al.'s criteria. The honest write-up of that is the value: the detector-validation question stalls a step earlier than expected, on whether you can even elicit the behavior you want to catch. Full code and data, reported as a null.",
+      "sent_at": "2026-07-21T22:02:13Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "394": {
+      "msg_id": 394,
+      "url": "https://www.lesswrong.com/posts/LLCEqhnEz2nHprfRA/frontier-ai-lab-misalignment-risk-lessons-from-trading-post",
+      "title": "Frontier AI lab misalignment risk, lessons from trading post-2008",
+      "source": "LessWrong",
+      "take": "A former macro trader's pitch: make frontier labs hold capital reserves proportional to a model's misalignment risk score, Basel III style, so raising the score directly drains the balance sheet available for compute and buybacks. The sharp part is the moral-hazard framing - in-house alignment researchers paid in the lab's own stock are today's pre-2008 risk desk, and capital adequacy would give them the leverage a bank risk officer has. It's the same \"make the incentive structural, not disclosure\" move as the red-line contract-language leg of post-alignment, from the finance side. The open question, which the author half-concedes, is who sets the risk weights and whether misalignment prices like credit risk at all.",
+      "sent_at": "2026-07-21T22:02:17Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
