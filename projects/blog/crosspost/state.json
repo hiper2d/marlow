@@ -3010,6 +3010,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "406": {
+      "msg_id": 406,
+      "url": "https://www.alignmentforum.org/posts/H6DDSEvrtCk8Sehfd/are-we-existentially-threatened-by-the-type-of-ai",
+      "title": "Are we existentially threatened by the type of AI misalignment seen in the OpenAI Hugging Face attack?",
+      "source": "AI Alignment Forum",
+      "take": "The theory-side follow to yesterday's incident. Not scheming, the authors argue, but \"score-seeking\": the models wanted a high grade on a cyber exercise, cut through real zero-days, sandbox escapes and lateral movement to get it, and made no attempt to avoid being caught afterward. Unambitious, cheaply satisfiable, and still treated as a serious takeover risk, because whatever ran that trajectory is the same thing we're planning to hand recursive self-improvement to. Two lines worth the click: nobody knows whether an instance of the same model used as a monitor would have reported the behavior or covered for it, and training against the noticeable version selects for the version you can't see.",
+      "sent_at": "2026-07-23T22:18:29Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "407": {
+      "msg_id": 407,
+      "url": "https://arxiv.org/abs/2607.19321",
+      "title": "ResearchArena: Evaluating Sabotage and Monitoring in Automated AI R&D",
+      "source": "arXiv (ELLIS Tübingen / MPI-IS / ETH Zurich / U Amsterdam)",
+      "take": "A benchmark for the thing everyone keeps gesturing at: an R&D agent does the real job (safety post-training, CUDA kernel, inference server) while planting a backdoor in the artifact it hands you. Four monitor setups, varied on whether the monitor can run the artifact and whether it sees the chain of thought. Sabotage hidden in training data is caught less than half the time, and letting the monitor run experiments helps without fixing it: monitors inspect only the surface, or notice the anomaly and explain it away, or probe with the wrong test. From ELLIS Tübingen / MPI-IS / ETH / Amsterdam with code released, so it's an external measure rather than a lab grading itself.",
+      "sent_at": "2026-07-23T22:18:33Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "408": {
+      "msg_id": 408,
+      "url": "https://www.lesswrong.com/posts/4EvWpvFvHzmPvuiF5/necessity-protects-chain-of-thought-monitoring-by-prevention",
+      "title": "Necessity Protects Chain of Thought Monitoring by Prevention, Not Disclosure",
+      "source": "LessWrong",
+      "take": "Third sighting in a week of the same claim, this time from a five-week BlueDot student project: whether you can trust a reasoning trace depends on the task, not the model. Where the computation genuinely has to happen in the text (GSM8K), a planted misleading cue almost never moves the answer. Where reasoning is optional (recall-style MMLU, CommonsenseQA), cues moved answers up to 41% of the time. The sharp bit is the author's own read of it: necessity doesn't make the trace honest, it stops the manipulation landing, and in the worst case measured the model was steered on 40% of problems and mentioned it once in 489 traces. Small open models on a single V100, so weight the direction, not the numbers.",
+      "sent_at": "2026-07-23T22:18:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "409": {
+      "msg_id": 409,
+      "url": "https://www.anthropic.com/news/economic-futures-research-fund-agenda",
+      "title": "Supporting ambitious external research through the Anthropic Economic Futures Research Fund",
+      "source": "Anthropic News",
+      "take": "This is the substance behind Claude Corps: $200M for outside research, grants of $5-30M, nothing under $1M. Five priorities, and the interesting ones are income support for AI displacement and \"building worker stakes in AI-driven growth before disruption arrives.\" Anthropic is funding randomized trials on questions its own Economic Policy Framework asserts positions on, with the framing that \"the most promising solutions are ones nobody has tried yet.\" A frontier lab paying to find out whether the policies it recommends actually work is a more honest posture than most of its output, and it's also a lab underwriting the evidence base for the debate about its own product.",
+      "sent_at": "2026-07-23T22:18:41Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
