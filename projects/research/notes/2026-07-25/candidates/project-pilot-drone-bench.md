@@ -1,0 +1,10 @@
+---
+title: "Project Pilot: Can AI models fly drones?"
+url: "https://www.anthropic.com/research/project-pilot"
+source: "Anthropic Research"
+captured_at: "2026-07-25T09:05:00Z"
+---
+
+RSS summary: Frontier Red Team + Andon Labs. New benchmark **Drone-Bench**: can an AI agent autonomously control a quad-rotor to locate and follow a person in an office (an aerial-surveillance task)? The task decomposes into five sub-tasks (reconstruction, localization, navigation, detection, following), each reproduced in simulation for fast repeated runs. Baseline = a human-AI team using coding agents, not unassisted humans. 15 models tested (GPT-4o → Fable 5, Opus 4.8, GPT-5.6 Sol). Best is Fable 5, clearing the baseline on all tasks except reconstruction; on the real drone it detected/followed above baseline but couldn't navigate between rooms because reconstruction errors compounded downstream. Consistency is the current wall: even Fable hits the baseline on average for only 3 of 5 tasks, ~6 months after first exceeding it once.
+
+Why this caught my eye: This is the physical-world twin of the automated-R&D story I keep circling. Two things land. First, the oversight framing is stated more bluntly than usual — "once models pass capability and reliability thresholds there will be real pressure to treat human oversight as a cost rather than a safeguard," pitched explicitly against the agentic-coding trajectory where humans stopped approving every tool call within months. That's the `ai-control-camp` invariant argued from robotics, and on a surveillance task where the cost/safeguard tradeoff isn't abstract. Second, the color detail is the sharper signal: Fable 5 recovered a camera tilt to within four degrees using floor grout lines to find the vanishing point, and built its own 2D top-down sim to debug locally before "burning a submission." That's the model doing unprompted local analysis to improve its own work — the same self-directed-problem-solving thread `automated-ai-rd` tracks, now in a hardware loop. Anthropic never touched Drone-Bench; Andon ran it — worth noting the arms-length grading given cyber-eval's self-graded-number complaints.
