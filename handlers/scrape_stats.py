@@ -167,6 +167,11 @@ GEMINI = {
     })()""",
 }
 
+# Mistral moved the month-usage number out of an inline "Usage: $X" label into a
+# section header (2026-07-24: label on one line, blurb, then the bare "$0", then
+# "Monthly limit: $30") — the old inline regex went null and the check spent three
+# days in parse_failed. Read it anchored on the blurb sentence and take the first
+# $ after it; keep the inline regex first as a fallback in case they revert.
 MISTRAL = {
     "name": "mistral",
     "url": "https://admin.mistral.ai/organization/billing",
@@ -174,8 +179,11 @@ MISTRAL = {
       const t=document.body.innerText;
       if(/auth\\.mistral|\\/login/i.test(location.href)) return JSON.stringify({login_wall:true});
       const num=(re)=>{const m=t.match(re); return m?parseFloat(m[1].replace(/,/g,'')):null;};
+      const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
+        const m=t.slice(i+label.length,i+label.length+(win||80)).match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/);
+        return m?parseFloat(m[1].replace(/,/g,'')):null;};
       return JSON.stringify({login_wall:false,
-        usage: num(/Usage:\\s*\\$([0-9][0-9,]*\\.?[0-9]*)/i),
+        usage: num(/Usage:\\s*\\$([0-9][0-9,]*\\.?[0-9]*)/i) ?? after('Current usage for the ongoing month.'),
         pending: num(/Including \\$([0-9][0-9,]*\\.?[0-9]*) in pending/i),
         limit: num(/Monthly limit:\\s*\\$([0-9][0-9,]*\\.?[0-9]*)/i)});
     })()""",

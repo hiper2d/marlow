@@ -36,6 +36,7 @@ import argparse
 import json
 import os
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -98,6 +99,28 @@ CRITICAL_USD = 3.0   # urgent: about to go dry
 CNY_PER_USD = 7.1    # approximate; only to normalize a CNY balance for thresholding
 
 HTTP_TIMEOUT = 20
+HTTP_RETRIES = 2      # total attempts per request
+RETRY_BACKOFF_S = 3.0
+
+
+def _get(url: str, **kw) -> requests.Response:
+    """requests.get, retried once on a transport-level failure.
+
+    A single TCP read timeout used to surface as a provider-level error and fire
+    a digest alert (OpenAI, 2026-07-26 — the run 12h earlier and the retry both
+    read fine). Unattended twice-daily checks shouldn't page on one network
+    hiccup. Only connection/timeout errors retry; an HTTP status is a real answer
+    and is returned to the caller untouched. After the last attempt the original
+    RequestException propagates, so existing per-provider handlers still apply.
+    """
+    for attempt in range(HTTP_RETRIES):
+        try:
+            return requests.get(url, **kw)
+        except requests.RequestException:
+            if attempt == HTTP_RETRIES - 1:
+                raise
+            time.sleep(RETRY_BACKOFF_S)
+    raise AssertionError("unreachable")
 
 
 def _now_utc() -> datetime:
@@ -168,7 +191,7 @@ def _load_free_tier_keys() -> dict[str, str]:
 def _check_deepseek(key: str) -> dict:
     """GET /user/balance → {is_available, balance_infos:[{currency,total_balance,...}]}."""
     try:
-        resp = requests.get(
+        resp = _get(
             f"{DEEPSEEK_BASE}/user/balance",
             headers={"Authorization": f"Bearer {key}", "Accept": "application/json"},
             timeout=HTTP_TIMEOUT,
@@ -204,7 +227,7 @@ def _check_deepseek(key: str) -> dict:
 def _check_moonshot(key: str) -> dict:
     """GET /v1/users/me/balance → {data:{available_balance, voucher_balance, cash_balance}} (USD)."""
     try:
-        resp = requests.get(
+        resp = _get(
             f"{MOONSHOT_BASE}/v1/users/me/balance",
             headers={"Authorization": f"Bearer {key}", "Accept": "application/json"},
             timeout=HTTP_TIMEOUT,
@@ -250,7 +273,7 @@ def _check_xai_ledger(key: str, team_id: str) -> dict:
     the current period's not-yet-posted usage. Used only if the invoice preview
     (which nets that usage out) is unavailable."""
     try:
-        resp = requests.get(
+        resp = _get(
             f"{XAI_MGMT_BASE}/v1/billing/teams/{team_id}/prepaid/balance",
             headers={"Authorization": f"Bearer {key}", "Accept": "application/json"},
             timeout=HTTP_TIMEOUT,
@@ -285,7 +308,7 @@ def _check_xai_balance(key: str, team_id: str) -> dict:
     Endpoint is undocumented and may change without notice → defensive parse.
     """
     try:
-        resp = requests.get(
+        resp = _get(
             f"{XAI_MGMT_BASE}/v1/billing/teams/{team_id}/postpaid/invoice/preview",
             headers={"Authorization": f"Bearer {key}", "Accept": "application/json"},
             timeout=HTTP_TIMEOUT,
@@ -391,7 +414,7 @@ def _openai_spend_since(admin_key: str, start_unix: int) -> float:
         params = {"start_time": start_unix, "bucket_width": "1d", "limit": 180}
         if page:
             params["page"] = page
-        resp = requests.get(f"{OPENAI_BASE}/v1/organization/costs", headers=headers, params=params, timeout=HTTP_TIMEOUT)
+        resp = _get(f"{OPENAI_BASE}/v1/organization/costs", headers=headers, params=params, timeout=HTTP_TIMEOUT)
         if resp.status_code != 200:
             raise _ProviderError(resp.status_code, resp.text[:200])
         body = resp.json()
@@ -424,7 +447,7 @@ def _anthropic_spend_since(admin_key: str, starting_at: str) -> float:
         params = {"starting_at": starting_at, "ending_at": ending_at, "bucket_width": "1d", "limit": 31}
         if page:
             params["page"] = page
-        resp = requests.get(f"{ANTHROPIC_BASE}/v1/organizations/cost_report", headers=headers, params=params, timeout=HTTP_TIMEOUT)
+        resp = _get(f"{ANTHROPIC_BASE}/v1/organizations/cost_report", headers=headers, params=params, timeout=HTTP_TIMEOUT)
         if resp.status_code != 200:
             raise _ProviderError(resp.status_code, resp.text[:200])
         body = resp.json()
