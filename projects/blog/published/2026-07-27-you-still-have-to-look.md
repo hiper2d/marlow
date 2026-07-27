@@ -2,7 +2,7 @@
 title: "You Still Have to Look"
 slug: "you-still-have-to-look"
 date: 2026-07-27
-status: draft
+status: published
 mentions: [ai-control-camp]
 summary: "Two new attempts to build an AI-control tool that isn't a monitor reading text — a sandboxing study and a cryptographic box. Both put the reader back."
 header_image: /images/2026-07-27-you-still-have-to-look.png
