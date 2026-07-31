@@ -268,6 +268,22 @@ if [ "${SESSION_OK:-1}" = "0" ] && grep -qiE "hit your (session|usage) limit|ses
     exit 0
 fi
 
+# Transient upstream-API re-queue. Same reasoning as the session limit above:
+# an API 5xx (529 Overloaded, 500) means the model was unreachable, so the tick
+# was picked but never really ran. Marking it failed makes monitor_self escalate
+# "handler is broken" for what is actually an Anthropic capacity blip — that's
+# what woke Alex on 2026-07-29, when one ~2h 529 window failed three unrelated
+# ticks across both loops and every one of them self-healed on its next run.
+# Re-queue instead: a genuine sustained outage then surfaces as overdue ticks
+# (scheduler_freshness, digest), which is the accurate signal for upstream being
+# down, rather than failed_ticks (urgent) pointing at innocent handlers.
+if [ "${SESSION_OK:-1}" = "0" ] && grep -qiE "API Error: 5[0-9][0-9]|Overloaded|Internal server error" "$STREAM_FILE" 2>/dev/null; then
+    log "transient upstream API error — re-queueing $SUBTASK_ID (not consumed), exiting"
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) api-transient: re-queued $SUBTASK_ID ($SUBTASK_HANDLER)" >> "$SESSION_LIMIT_LOG"
+    uv run python driver/scheduler.py requeue "$SUBTASK_ID" --result "re-queued: transient upstream API error (not consumed)" || true
+    exit 0
+fi
+
 # 7. Record outcome
 if [ ! -f "$RESULT_FILE" ]; then
     log "WARNING: session did not write a result file — marking subtask failed"

@@ -35,6 +35,11 @@ def _compact(report: dict) -> dict:
         rows.append({
             "provider": p.get("provider"),
             "ok": p.get("ok"),
+            # Failure kind is on the tape so `failure_streak` can tell "same
+            # break, N runs running" from "a different thing broke today".
+            # Added 2026-07-30; rows written before that have no "kind" and the
+            # streak counter falls back to matching on ok:false alone.
+            "kind": p.get("kind") if not p.get("ok") else None,
             "balance_usd": p.get("balance_usd"),
             "spend_usd": p.get("spend_usd"),
             "cap_usd": p.get("cap_usd"),
@@ -61,6 +66,41 @@ def save(kind: str, report: dict) -> None:
             f.write(json.dumps(_compact(report), ensure_ascii=False) + "\n")
     except OSError:
         pass
+
+
+def failure_streak(kind: str, provider: str, failure_kind: str | None = None) -> int:
+    """How many of the most recent runs in a row `provider` has been failing.
+
+    Counts back from the newest history line and stops at the first run where
+    the provider read OK (or wasn't in the run at all). When `failure_kind` is
+    given, only runs failing the SAME way count — a parse_failed streak isn't
+    extended by an unrelated reauth. History rows written before 2026-07-30
+    carry no "kind"; those match any failure_kind rather than breaking a streak,
+    so the check works on the existing tape.
+
+    Returns PRIOR runs only — callers add the current run themselves. This is
+    what lets a permanently-broken check escalate instead of emitting the same
+    digest line forever (Mistral sat 3 days twice: 07-24 and 07-28).
+    """
+    try:
+        with (STATE_DIR / f"{kind}_history.jsonl").open() as f:
+            lines = f.readlines()
+    except OSError:
+        return 0
+    streak = 0
+    for line in reversed(lines):
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        match = next((p for p in row.get("providers", []) if p.get("provider") == provider), None)
+        if match is None or match.get("ok"):
+            break
+        row_kind = match.get("kind")
+        if failure_kind and row_kind and row_kind != failure_kind:
+            break
+        streak += 1
+    return streak
 
 
 def load_latest(kind: str) -> dict | None:

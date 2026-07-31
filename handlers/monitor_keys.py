@@ -96,6 +96,10 @@ TIER2_BASELINES = Path(
 # Alert thresholds in USD-equivalent (tune later via editorial feedback).
 LOW_USD = 10.0       # digest: top up soon
 CRITICAL_USD = 3.0   # urgent: about to go dry
+# Consecutive failed reads of the same provider before a digest issue escalates
+# to urgent. One failure is a network hiccup; a run of them means the provider
+# has been unmonitored for days and nobody noticed the repeated digest line.
+REPEAT_URGENT_RUNS = 3
 CNY_PER_USD = 7.1    # approximate; only to normalize a CNY balance for thresholding
 
 HTTP_TIMEOUT = 20
@@ -546,6 +550,7 @@ def check_moonshot() -> dict:
 
 
 def _derive_issues(providers: list[dict]) -> list[dict]:
+    from driver.budget_state import failure_streak
     issues: list[dict] = []
     for p in providers:
         name = p["provider"]
@@ -554,12 +559,21 @@ def _derive_issues(providers: list[dict]) -> list[dict]:
             # likely transient (network, 5xx) — surface as digest, not alarm.
             status = p.get("http_status")
             severity = "urgent" if status in (401, 403) else "digest"
+            detail = (f"could not read balance: {p.get('error', 'unknown')}"
+                      + (f" (HTTP {status})" if status else ""))
+            # "Likely transient" stops being a fair read once it has happened
+            # N runs in a row. At a twice-daily cadence that's ~1.5 days of a
+            # provider silently unmonitored, which is worth waking someone for.
+            runs = failure_streak("keys", name) + 1
+            if runs >= REPEAT_URGENT_RUNS:
+                severity = "urgent"
+                detail = f"{detail} ({runs} runs running — not transient, the check is broken)"
             issues.append({
                 "severity": severity,
                 "kind": "balance_check_failed",
                 "target": name,
-                "detail": f"could not read balance: {p.get('error', 'unknown')}"
-                          + (f" (HTTP {status})" if status else ""),
+                "detail": detail,
+                "failing_runs": runs,
             })
             continue
         usd = p.get("balance_usd", 0.0)

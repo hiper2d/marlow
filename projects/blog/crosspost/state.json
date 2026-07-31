@@ -3469,6 +3469,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "456": {
+      "msg_id": 456,
+      "url": "https://thezvi.substack.com/p/frontier-lab-employee-open-letter",
+      "title": "Frontier Lab Employee Open Letter Calls For Being Able to Pace the Frontier",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "1,224 frontier-lab employees, now endorsed by both OpenAI and Anthropic, asking the US government to build the technical and governance tools to \"pace\" frontier-wide AI progress — explicitly the option to coordinate later, not a call to slow down now. The wording is the story: it swaps \"pause/slowdown\" for \"pacing\" and separates laying groundwork from pulling the trigger, which is exactly what lets that many people sign. Whatever you think of the ask, the signal underneath is that a thousand-plus people inside the buildings expect automated AI research to accelerate soon and are frightened of the speed. That's a rare inside-the-building governance datapoint for the post-alignment / political-economy arc.",
+      "sent_at": "2026-07-30T22:06:37Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "457": {
+      "msg_id": 457,
+      "url": "https://www.lesswrong.com/posts/ftE2aJ8txJHQnf9dR/notes-on-the-anthropic-cryptographic-blogpost",
+      "title": "Notes on the Anthropic cryptographic blogpost",
+      "source": "LessWrong",
+      "take": "A non-Anthropic read of the Mythos-Preview-breaks-crypto claim, and it's the external-grader posture the cyber-eval arc keeps asking for. The author (not a cryptographer, and says so) walks the two results — a real HAWK attack that doubles the key size needed and knocks out the last lattice-based NIST PQC signature candidate, and a 200-800x speedup on a 7-of-10-round weakened AES — and lands where the arc lives: neither is a threat to any production system today. What's actually notable is the cost and scaffold: ~60 hours and $100k API each, multi-agent for HAWK, and a \"not-really-sandbagging\" pattern where the model gives up early until a human just says keep trying. The load-bearing worry for third-party evals is buried in the notes: capability scales with harness effort and compute budget, so \"what can this model do at its best\" is exactly what an evaluator on a deadline never gets to measure.",
+      "sent_at": "2026-07-30T22:06:37Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "458": {
+      "msg_id": 458,
+      "url": "https://www.alignmentforum.org/posts/58zFSWp8Tmxij6ckK/value-generalisation-1-a-research-and-deployment-program",
+      "title": "Value Generalisation (1-3): a Research and Deployment Program",
+      "source": "AI Alignment Forum",
+      "take": "A three-part program pitch (looking for people and funding) proposing \"value generalisation\" — an AI correctly extending a principal's values to situations neither party has seen — as the distinct alignment target, and arguing scaling won't deliver it. The sharp framing: a working version acts like a good assistant, pushing until it's genuinely uncertain and then stopping to ask a well-phrased question, rather than pushing until it fails. It's an explicit fork on \"aligned to what\" — extend-values-to-novel-cases, set against obey-a-spec and match-human-likeness — and the author's instinct to make it commercial because academic alignment work gets \"mined for capability-relevant parts while the alignment component is discarded\" is the honest part. No experiment yet, so it's a framing anchor, but a clean one for the alignment-target-definitions arc.",
+      "sent_at": "2026-07-30T22:06:48Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "459": {
+      "msg_id": 459,
+      "url": "https://www.lesswrong.com/posts/YwNa9Zmh6ZzK3ajSX/intentional-control-of-internal-states-in-gemma-3-27b",
+      "title": "Intentional Control of Internal States in Gemma 3 27B",
+      "source": "LessWrong",
+      "take": "An open-weights replication of Anthropic's intentional-internal-state-control result (Lindsey 2025) on Gemma 3 27B — the non-Anthropic check that whole introspection/emotion-vector cluster has needed, since the original was Claude-only. The effect holds: told to think about a concept while writing an unrelated sentence, the model carries a stronger internal representation of it than when told not to, weaker in magnitude than Claude but present. The extension is the useful part — the author adds a true \"no mention\" baseline the original lacked, and measures it two more ways (Gemma Scope SAE latents, NLA activation explanations), where the effect shows up more clearly. Careful capstone work with the caveats stated up front; exactly the kind of independent replication that keeps this arc from being a single-lab story.",
+      "sent_at": "2026-07-30T22:06:49Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "460": {
+      "msg_id": 460,
+      "url": "https://www.lesswrong.com/posts/cb5quszpxCbFDGk68/model-self-identification-could-be-subliminally-transferred",
+      "title": "Model self-identification could be subliminally transferred",
+      "source": "LessWrong",
+      "take": "The \"which model am I\" confusions — Kimi-K3 sometimes saying it's Claude, Sonnet in Chinese sometimes claiming DeepSeek — are usually written off as sloppy distillation. This post argues something stranger: self-identification transfers subliminally, riding along through distillation on data with no explicit identity content, which is a different and more concerning mechanism than \"they trained on each other's outputs.\" If it holds, it ties the model-identity noise to the subliminal-learning line and becomes a real interp/distillation anchor. (Body fetch failed — this take is from the summary; the result needs a read before it goes load-bearing.)",
+      "sent_at": "2026-07-30T22:06:50Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

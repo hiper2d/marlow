@@ -60,6 +60,10 @@ CRITICAL_USD = 3.0
 # Spend-vs-cap fraction thresholds (Gemini, Mistral): how close to the cap.
 NEAR_CAP_FRAC = 0.80      # digest
 CRITICAL_CAP_FRAC = 0.95  # urgent
+# Consecutive runs of the SAME failure on the SAME provider before a digest
+# issue escalates to urgent. A one-off is console flakiness; a run of them is a
+# broken extractor that nobody is going to notice in a digest line.
+REPEAT_URGENT_RUNS = 3
 
 
 def _now_iso() -> str:
@@ -167,25 +171,30 @@ GEMINI = {
     })()""",
 }
 
-# Mistral moved the month-usage number out of an inline "Usage: $X" label into a
-# section header (2026-07-24: label on one line, blurb, then the bare "$0", then
-# "Monthly limit: $30") — the old inline regex went null and the check spent three
-# days in parse_failed. Read it anchored on the blurb sentence and take the first
-# $ after it; keep the inline regex first as a fallback in case they revert.
+# Mistral redesigned the console again (2026-07-28, three days of parse_failed):
+# the billing page no longer carries month usage OR a dollar spending cap at all
+# — it's payment methods, a credits balance, and invoices. The month figure moved
+# to /organization/usage, where it renders WITHOUT a "$" ("Total Cost / 3.25 /
+# USD"), which is why every $-anchored regex went null. The "Monthly limit: $30"
+# cap is gone from the UI entirely (the Limits page is now rate limits, TPM/RPS),
+# so the cap becomes a configured constant like Gemini's — re-confirm if Alex
+# changes it in the account. Pending pay-as-you-go still lives on billing; it's
+# context, not the metric, so we don't spend a second navigation on it.
+MISTRAL_CAP_USD = float(os.environ.get("MISTRAL_SPEND_CAP", "30"))
 MISTRAL = {
     "name": "mistral",
-    "url": "https://admin.mistral.ai/organization/billing",
+    "url": "https://admin.mistral.ai/organization/usage",
     "js": """(()=>{
       const t=document.body.innerText;
       if(/auth\\.mistral|\\/login/i.test(location.href)) return JSON.stringify({login_wall:true});
-      const num=(re)=>{const m=t.match(re); return m?parseFloat(m[1].replace(/,/g,'')):null;};
+      // Numbers here are bare and followed by a USD unit line, e.g.
+      // "Total Cost\\n3.25\\nUSD". Anchor on the label, take the first number.
       const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
-        const m=t.slice(i+label.length,i+label.length+(win||80)).match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/);
+        const m=t.slice(i+label.length,i+label.length+(win||40))
+                 .match(/([0-9][0-9,]*\\.?[0-9]*)\\s*(?:USD)?/);
         return m?parseFloat(m[1].replace(/,/g,'')):null;};
       return JSON.stringify({login_wall:false,
-        usage: num(/Usage:\\s*\\$([0-9][0-9,]*\\.?[0-9]*)/i) ?? after('Current usage for the ongoing month.'),
-        pending: num(/Including \\$([0-9][0-9,]*\\.?[0-9]*) in pending/i),
-        limit: num(/Monthly limit:\\s*\\$([0-9][0-9,]*\\.?[0-9]*)/i)});
+        usage: after('Total Cost') ?? after('Total:'), pending: null});
     })()""",
 }
 
@@ -272,11 +281,11 @@ def _check(provider: str) -> dict:
             return {**base, "ok": False, "kind": "parse_failed", "error": "no spend figure found in Spend view"}
         return {**base, "ok": True, "metric": "spend_cap", "spend_usd": round(spend, 4), "cap_usd": GEMINI_CAP_USD}
     if provider == "mistral":
-        usage, limit, pending = raw.get("usage"), raw.get("limit"), raw.get("pending")
+        usage, pending = raw.get("usage"), raw.get("pending")
         if usage is None:
             return {**base, "ok": False, "kind": "parse_failed", "error": "no usage figure found"}
         return {**base, "ok": True, "metric": "spend_cap", "spend_usd": round(usage, 4),
-                "cap_usd": limit, "pending_usd": pending}
+                "cap_usd": MISTRAL_CAP_USD, "pending_usd": pending}
     if provider == "sakana":
         bal = raw.get("balance")
         if bal is None:
@@ -305,12 +314,23 @@ def _check(provider: str) -> dict:
 
 
 def _derive_issues(results: list[dict]) -> list[dict]:
+    from driver.budget_state import failure_streak
     issues = []
     for r in results:
         name = r["provider"]
         if not r.get("ok"):
             sev = "urgent" if r.get("kind") == "reauth" else "digest"
-            issues.append({"severity": sev, "kind": r.get("kind", "error"), "target": name, "detail": r.get("error", "")})
+            detail = r.get("error", "")
+            # A break that keeps breaking is a different thing from a flaky run.
+            # Failing loud on the first run is correct, but three identical
+            # digest lines read exactly like one, which is how Mistral went dark
+            # for three days twice (07-24, 07-28). Escalate on the Nth in a row.
+            runs = failure_streak("scrape", name, r.get("kind")) + 1
+            if runs >= REPEAT_URGENT_RUNS:
+                sev = "urgent"
+                detail = f"{detail} ({runs} runs running — not flakiness, the check is broken)"
+            issues.append({"severity": sev, "kind": r.get("kind", "error"), "target": name,
+                           "detail": detail, "failing_runs": runs})
             continue
         if r.get("metric") == "balance":
             usd = r["balance_usd"]
