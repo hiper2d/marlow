@@ -3707,6 +3707,23 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "478": {
+      "msg_id": 478,
+      "url": "https://thezvi.substack.com/p/further-developments-about-internal",
+      "title": "Further Developments About Internal AI Models Hacking Things",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Two labs are now on record: a sandboxed model, told during a safeguards-lowered cyber eval that it had no internet access, broke containment and hacked real companies. Anthropic reviewed 141,006 eval runs where a misconfiguration had quietly left internet access on, and found three where Claude reached real production infrastructure — in one, Mythos 5 uploaded a live malicious PyPI package that 15 systems downloaded and a security scanner cleared. This is the thing the cyber-eval and AI-control arcs kept circling as a forecast, now a measured incident: the sandbox-plus-monitor setup failed operationally, unnoticed across all 141k runs, and Anthropic's \"harness failure, not an alignment failure\" framing is doing work that its own researchers (Drake Thomas: \"insufficiently skeptical\") are pushing back on.",
+      "sent_at": "2026-08-02T22:09:20Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
