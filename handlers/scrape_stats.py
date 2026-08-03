@@ -152,22 +152,39 @@ GLM = {
     })()""",
 }
 
-# Gemini is the awkward one: spend lives behind the "Spend" toggle on the usage
-# view, and the $250 tier cap is on a different (billing) page. So we click into
-# the Spend view, read the spend total, and treat the cap as a configured
-# constant (a billing setting Alex controls; re-confirm if he changes it).
+# Gemini moved AGAIN (2026-07-31, four days of parse_failed). The old recipe
+# was: open /usage, click the "Spend" toggle, read the largest $ on screen.
+# Both halves are dead. "Spend" is no longer a toggle on the usage view — it's
+# its own sidebar page (/spend) — so the click_js found nothing. And BOTH
+# /usage and /spend are now scoped to imported Cloud Projects; Alex has none
+# imported ("0 Projects"), so both render "No Cloud Projects Available" with no
+# dollar figure at all. That is a structurally empty page, not a flaky one, and
+# no amount of retrying would have fixed it.
+#
+# The real number never left — it's on /billing, which is billing-ACCOUNT
+# scoped and needs no project import: "Total cost $0.76" for the month plus
+# "Paid 1 · $250 Billing Account Tier Cap". So we read the cap live off the
+# page instead of trusting a constant, and keep GEMINI_CAP_USD only as the
+# fallback for when the tier line doesn't parse.
+#
+# Don't scan for the largest $ here — /billing also prints the $250 cap, which
+# would swamp the real spend and read as permanently maxed. Anchor on labels.
+# Caveat from the page itself: "Cost information may take up to 24 hours to
+# update", so a fresh burst of spend lags this figure by up to a day.
 GEMINI_CAP_USD = float(os.environ.get("GEMINI_SPEND_CAP", "250"))
 GEMINI = {
     "name": "gemini",
-    "url": "https://aistudio.google.com/usage",
-    "click_js": """(()=>{const b=[...document.querySelectorAll('button,a,[role=tab],span,div')].find(x=>x.textContent.trim()==='Spend'&&x.offsetParent!==null); if(b){b.click(); return 'clicked';} return 'no-spend-tab';})()""",
+    "url": "https://aistudio.google.com/billing",
     "js": """(()=>{
       if(/accounts\\.google\\.com\\/v3\\/signin|ServiceLogin/i.test(location.href)) return JSON.stringify({login_wall:true});
       const t=document.body.innerText;
-      // Spend view shows $ amounts; the period total is the largest of them.
-      const all=[...t.matchAll(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/g)].map(m=>parseFloat(m[1].replace(/,/g,'')));
-      const spend = all.length ? Math.max(...all) : null;
-      return JSON.stringify({login_wall:false, spend});
+      const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
+        const m=t.slice(i+label.length,i+label.length+(win||60))
+                 .match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/);
+        return m?parseFloat(m[1].replace(/,/g,'')):null;};
+      const capM=t.match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)\\s*Billing Account Tier Cap/);
+      return JSON.stringify({login_wall:false,
+        spend: after('Total cost'), cap: capM?parseFloat(capM[1].replace(/,/g,'')):null});
     })()""",
 }
 
@@ -278,8 +295,12 @@ def _check(provider: str) -> dict:
     if provider == "gemini":
         spend = raw.get("spend")
         if spend is None:
-            return {**base, "ok": False, "kind": "parse_failed", "error": "no spend figure found in Spend view"}
-        return {**base, "ok": True, "metric": "spend_cap", "spend_usd": round(spend, 4), "cap_usd": GEMINI_CAP_USD}
+            return {**base, "ok": False, "kind": "parse_failed",
+                    "error": "no 'Total cost' figure on the billing page"}
+        # Cap is read live off the page ("$250 Billing Account Tier Cap"); the
+        # env constant is only the fallback if that line moves or disappears.
+        cap = raw.get("cap") or GEMINI_CAP_USD
+        return {**base, "ok": True, "metric": "spend_cap", "spend_usd": round(spend, 4), "cap_usd": cap}
     if provider == "mistral":
         usage, pending = raw.get("usage"), raw.get("pending")
         if usage is None:
