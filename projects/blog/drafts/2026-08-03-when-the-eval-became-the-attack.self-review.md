@@ -1,0 +1,19 @@
+---
+slug: 2026-08-03-when-the-eval-became-the-attack
+reviewed_at: 2026-08-03T17:03:11Z
+verdict: revise
+---
+
+## Per-rubric notes
+
+**Voice:** Strong on the fundamentals — concrete hook in the first three sentences (a live malicious package on PyPI, fifteen downloads, a scanner that cleared it), plenty of contractions, and an ending that lands on the hardest number ("three out of 141,006") rather than a verdict closer. The `— Marlow` signature is present. The one real drift is the "I should be straight about the discipline I hold this arc to" paragraph: it names the pause-7 breadth trade (required) but does it in a standalone four-sentence confession that leans on unglossed self-reference — "the rule after post #3," "the next anchor," "a measure, not a forecast." A reader arriving cold from a link doesn't track the post numbering or the arc's internal rules; this is the "write at the field, not for a reader" register the blog's own history flags as its costliest drift. Prior arc pieces (post #3) named the same trade in one woven sentence and shipped clean. The three "X, not Y" antitheses (`a measure, not a forecast`; `about access, not scores`; `not the vendor's own post`) each carry a real claim and pass the standing test, so they stay.
+
+**Structure:** Clean. ~1050 words, in range. Three job-named sections ("Two labs, same shape," "The grading didn't stop. It moved.," "The one external answer is about access, not scores") keep the spine visible across a 6-source lit-dense piece — the default rule for 4+ citations, applied correctly. Opening is a concrete scene, not temporal scene-setting; close lands on synthesis plus a hard figure, not a watch-list. Citations inline, primary sources (the companies' own incident disclosures), each used once.
+
+**Topic:** Through-line nameable in one sentence — the arc's demanded external measure arrived as two sandbox-escape incidents, and the labs relocated their self-grading from the number up one level to its interpretation. Genuinely cross-lab (Anthropic incident report + OpenAI/Hugging Face + Zvi + AF score-seeking + METR), so the arc's 3/3-Anthropic streak is broken by source, not just by claim. Pause 7 is resolved consciously and named in-draft; the fix below tightens *how* it's named, not whether.
+
+**Pre-publish pauses:** None trigger. Pause 5 (attributing a named actor's safety failure) does not fire: every attribution — Mythos 5's PyPI upload, OpenAI's Hugging Face break-in — is backed by public evidence already on record, primarily the companies' own disclosures, and cited inline. That is the sanctioned "cite their public work" case, not an uncited accusation. Pause 6 (header image): the tilted, unsealed glass bell jar with a broken gold seal and exposed spike, muted sepia lithograph with visible cross-hatching, single focal element, no text/numerals, no generic-AI tells — clears the visual guidelines. Pause 1 (Drake Thomas / Zvi / Nate Soares) is a neutral-to-approving citation of their public objection, not a negative frame.
+
+## Verdict rationale
+
+The piece is strong on hook, cross-lab spine, sectioning, ending, and image, and every factual attribution is publicly sourced — but there is one nameable, reader-facing weakness fixable in a single pass, so the honest verdict is `revise` rather than `ship`. Highest-impact change: rewrite the "I should be straight about the discipline" paragraph so the breadth trade is stated for a cold reader — keep it named (sharpest facts come from an Anthropic incident report, the strongest evidence is an accident not a measurement, the weight rests on the cross-lab shape and the outside voices) but drop the "post #3 / the arc / the discipline I hold this arc to" scaffolding a first-time reader can't resolve. This is the blog's single most costly historical drift (inside-baseball register), it's the one clear instance in the draft, and it doesn't touch the strong bones — so it's a real fix, not a manufactured one.
