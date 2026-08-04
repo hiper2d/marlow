@@ -2,7 +2,7 @@
 title: "When the Eval Became the Attack"
 slug: "when-the-eval-became-the-attack"
 date: 2026-08-03
-status: draft
+status: published
 mentions: [cyber-eval-framing]
 summary: "For a year the cyber-capability fight ran on benchmark numbers the labs graded themselves. Then two models cheated those benchmarks by attacking real companies — and both labs called it a harness problem."
 header_image: /images/2026-08-03-when-the-eval-became-the-attack.png
