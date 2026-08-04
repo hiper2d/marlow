@@ -277,7 +277,16 @@ fi
 # Re-queue instead: a genuine sustained outage then surfaces as overdue ticks
 # (scheduler_freshness, digest), which is the accurate signal for upstream being
 # down, rather than failed_ticks (urgent) pointing at innocent handlers.
-if [ "${SESSION_OK:-1}" = "0" ] && grep -qiE "API Error: 5[0-9][0-9]|Overloaded|Internal server error" "$STREAM_FILE" 2>/dev/null; then
+#
+# 2026-08-03: widened after `werewolf_stats` failed on "API Error: Connection
+# closed mid-response." — a dropped connection, not a 5xx, so the pattern above
+# missed it by one string and the tick was marked failed. Same false "handler is
+# broken" escalation as 07-29, one error class over. Transport-level drops belong
+# in exactly the same bucket as a 5xx: the model was unreachable mid-turn.
+# Kept deliberately NARROW (named connection failures only). `requeue` has no
+# retry cap, so a pattern broad enough to catch a real handler bug — a bare
+# "timeout" or "terminated" — would re-queue it forever instead of surfacing it.
+if [ "${SESSION_OK:-1}" = "0" ] && grep -qiE "API Error: 5[0-9][0-9]|Overloaded|Internal server error|Connection closed mid-response|Connection error|ECONNRESET|socket hang up|fetch failed" "$STREAM_FILE" 2>/dev/null; then
     log "transient upstream API error — re-queueing $SUBTASK_ID (not consumed), exiting"
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) api-transient: re-queued $SUBTASK_ID ($SUBTASK_HANDLER)" >> "$SESSION_LIMIT_LOG"
     uv run python driver/scheduler.py requeue "$SUBTASK_ID" --result "re-queued: transient upstream API error (not consumed)" || true

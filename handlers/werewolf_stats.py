@@ -214,11 +214,51 @@ def _prev_snapshot() -> dict | None:
         return None
 
 
+def _prev_day_baseline(now: datetime) -> tuple[str, float] | None:
+    """Last snapshot from a PREVIOUS UTC day: (checked_at, live_cost_usd).
+
+    Scans stats_history.jsonl newest-first and returns the first row dated
+    before today. Used for the day-over-day burn figure so that running
+    `report` more than once in a day cannot move the baseline.
+    """
+    today = now.strftime("%Y-%m-%d")
+    try:
+        lines = STATS_HISTORY.read_text().splitlines()
+    except OSError:
+        return None
+    for line in reversed(lines):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        at, live = row.get("checked_at"), row.get("live_cost_usd")
+        if not at or live is None or at[:10] >= today:
+            continue
+        return at, float(live)
+    return None
+
+
 def _daily_burn(prev: dict | None, live_cost: float, now: datetime) -> dict | None:
-    """True money-spent-since-last-snapshot = Δ live cumulative game cost.
+    """Δ live cumulative game cost, on TWO baselines.
+
+    `usd` / `hours` / `since` = since the previous snapshot, whenever that was.
+    `today_usd` / `today_since` = since the last snapshot of a PREVIOUS DAY,
+    i.e. the true money spent today.
+
+    Why both (2026-08-03): there was only the since-last-snapshot delta, and
+    `render_digest` labelled it "since yesterday". That is true only when
+    snapshots happen exactly once a day. Run `report` a second time and the
+    baseline resets, so the digest reports the sliver since the last run and
+    silently understates the day. It bit us today: four snapshots turned a
+    $2.33 day into a reported $0.93. The day figure must be anchored to a
+    calendar boundary, not to "whenever I last ran", or any manual/on-demand
+    run corrupts the number that gets reported.
 
     Honest about its caveats: a negative delta means games expired out of the
-    30d window between snapshots (their cost left the live set) — we floor at 0
+    30d window between snapshots (their cost left the live set) - we floor at 0
     and flag it rather than report negative spend.
     """
     if not prev:
@@ -232,13 +272,21 @@ def _daily_burn(prev: dict | None, live_cost: float, now: datetime) -> dict | No
     except ValueError:
         return None
     delta = round(live_cost - float(prev_live), 4)
-    return {
+    out = {
         "since": prev_at,
         "hours": round(hrs, 1),
         "usd": max(delta, 0.0),
         "raw_delta_usd": delta,
         "expired_games_suspected": delta < 0,
     }
+    base = _prev_day_baseline(now)
+    if base:
+        base_at, base_live = base
+        today_delta = round(live_cost - base_live, 4)
+        out["today_since"] = base_at
+        out["today_usd"] = max(today_delta, 0.0)
+        out["today_raw_delta_usd"] = today_delta
+    return out
 
 
 def _compact(report: dict) -> dict:
@@ -249,6 +297,7 @@ def _compact(report: dict) -> dict:
         "games_created_today": g.get("created", {}).get("today"),
         "live_cost_usd": g.get("live_cost_usd"),
         "daily_burn_usd": (report.get("daily_burn") or {}).get("usd"),
+        "daily_burn_today_usd": (report.get("daily_burn") or {}).get("today_usd"),
         "users_total": u.get("total"),
     }
 
@@ -320,9 +369,11 @@ def render(report: dict) -> str:
     b = report.get("daily_burn")
     if b:
         flag = "  ⚠ (some games expired out of window)" if b.get("expired_games_suspected") else ""
-        out.append(f"    spent since last snapshot ({b['hours']}h): ${b['usd']:.2f}{flag}")
+        if b.get("today_usd") is not None:
+            out.append(f"    spent today (vs last snapshot of a prior day): ${b['today_usd']:.2f}{flag}")
+        out.append(f"    spent since last snapshot ({b['hours']}h): ${b['usd']:.2f}")
     else:
-        out.append("    spent since last snapshot: n/a (first run — baseline set)")
+        out.append("    spent since last snapshot: n/a (first run - baseline set)")
     r = report.get("user_spend_mtd_usd") or report.get("revenue_mtd_usd") or {}
     if r:
         out.append(f"  User spend  ${r['total']:.2f} MTD ({r['period']}): "
@@ -355,28 +406,64 @@ DIGEST_LIST_CAP = 5
 
 
 def render_digest(report: dict) -> str:
-    """Compact, capped block for `notify --digest`. Header always; per-section
-    detail (new-user emails, game themes) only while small."""
+    """Compact block for `notify --digest`.
+
+    Rewritten 2026-08-03 on Alex's request: the old version was three lines
+    (counts + emails + game themes) and dropped everything he actually reads -
+    the 7d/30d trend, the cumulative burn, and each game's state and cost. He
+    was reading the fuller `show` output in chat and asking why Telegram
+    differed. Now the digest carries the same numbers as `show`; `show` stays
+    the wider terminal render.
+
+    Two deliberate omissions:
+    - The `paid` tier and `paid revenue` are NOT reported. The only paid user
+      is Alex himself, so "$0.00 revenue" is noise that reads as a problem
+      every single day. A paid count above 1 IS surfaced, loudly, because that
+      would be the first real paying user.
+    - Money is the day-anchored `today_usd`, never the since-last-snapshot
+      delta, so an extra manual run cannot shrink the reported day.
+    """
     if not report.get("ok"):
         return f"Werewolf stats: report failed ({report.get('error', 'unknown')})."
     u, g = report["users"], report["games"]
     date = (report.get("checked_at") or "")[:10]
-    new_n = u["new"]["today"]
-    games_n = g["created"]["today"]
-    b = report.get("daily_burn")
-    money = (f"${b['usd']:.2f} since yesterday" if b
-             else f"${g['created_cost_usd']['today']:.2f} today (baseline set)")
-    lines = [f"Werewolf — {date}: +{new_n} user{'s' * (new_n != 1)} "
-             f"({u['total']} total), {games_n} game{'s' * (games_n != 1)}, {money}"]
+    un, gn, cc = u["new"], g["created"], g["created_cost_usd"]
+    b = report.get("daily_burn") or {}
+
+    # Prefer the day-anchored figure; fall back only if there's no prior day.
+    if b.get("today_usd") is not None:
+        money = f"${b['today_usd']:.2f} today"
+    elif b.get("usd") is not None:
+        money = f"${b['usd']:.2f} in the last {b.get('hours', 0)}h"
+    else:
+        money = f"${cc['today']:.2f} today (baseline set)"
+    if b.get("expired_games_suspected"):
+        money += " (partial: games expired out of window)"
+
+    lines = [
+        f"Werewolf - {date}",
+        f"  Users  {u['total']} total  (+{un['today']} today · {un['7d']} 7d · {un['30d']} 30d)",
+        f"  Games  {g['total']} live  (+{gn['today']} today · {gn['7d']} 7d · {gn['30d']} 30d)",
+        f"  Burn   {money} · ${cc['7d']:.2f} 7d · ${g['live_cost_usd']:.2f} cumulative",
+    ]
+
+    paid = (u.get("tiers") or {}).get("paid") or 0
+    if paid > 1:
+        lines.append(f"  *** PAID USERS: {paid} - that is a real paying customer, not just Alex ***")
 
     emails = u.get("new_today_emails") or []
     if 0 < len(emails) <= DIGEST_LIST_CAP:
         lines.append("  new: " + ", ".join(emails))
+    elif emails:
+        lines.append(f"  new: {len(emails)} signups")
     tg = g.get("today_games") or []
     if 0 < len(tg) <= DIGEST_LIST_CAP:
-        lines.append("  games: " + ", ".join(
-            f"{gm['theme']} ({gm['owner']}{', new user' if gm['by_new_user'] else ''})"
-            for gm in tg))
+        for gm in tg:
+            tag = ", new user" if gm.get("by_new_user") else ""
+            lines.append(f"  game: {gm['theme']} ({gm['owner']}{tag}) · "
+                         f"{gm.get('state', '?')} · ${gm.get('cost_usd', 0):.2f}")
+    elif tg:
+        lines.append(f"  games: {len(tg)} started today")
     return "\n".join(lines)
 
 

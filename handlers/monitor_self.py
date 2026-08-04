@@ -463,7 +463,16 @@ def check_failed_ticks(now: datetime) -> list[dict]:
     the latest record per group, flag if it failed. Grouping dedupes retries —
     a failure that already recovered won't nag, but at the time it would page.
     This is the check that catches a tick that ran and crashed (06-07 werewolf
-    stats: 'session exited without writing result file')."""
+    stats: 'session exited without writing result file').
+
+    The `_ondemand` suffix is stripped when grouping (2026-08-03). `marlow run
+    <handler>` queues `parent_task=f"{handler}_ondemand"`, so a manual recovery
+    run landed in a DIFFERENT group than the scheduled task it was fixing and
+    the failed run stayed "latest" in its own group — the alert kept paging
+    urgent every audit until the next scheduled tick hours later. Since
+    `marlow run` is the sanctioned way to recover a broken automation, the one
+    action that fixes the problem could not clear the alarm. Same automation,
+    same group."""
     issues: list[dict] = []
     cutoff = now - timedelta(hours=FAILED_LOOKBACK_HOURS)
     latest: dict[str, tuple[datetime, dict]] = {}
@@ -472,6 +481,8 @@ def check_failed_ticks(now: datetime) -> list[dict]:
         if t < cutoff:
             continue
         key = data.get("parent_task") or data.get("handler") or data.get("id", "?")
+        if isinstance(key, str) and key.endswith("_ondemand"):
+            key = key[: -len("_ondemand")]
         if key not in latest or t > latest[key][0]:
             latest[key] = (t, data)
     for key, (t, data) in sorted(latest.items()):

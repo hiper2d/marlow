@@ -687,3 +687,78 @@ Built as `budget_state.failure_streak(kind, provider, failure_kind)` - counts ba
 Two notes on the tape. `_compact` now records the failure `kind` per provider row - it wasn't there before, only `ok`. Rows written before today have no `kind`, so the counter treats them as matching any kind rather than breaking the streak; that's what makes the check work on existing history instead of needing three fresh days to warm up. Verified by replaying the real tape with the last run(s) sliced off: as of this morning's scrape the Mistral prior-streak reads **3**, so the -30 run would have fired urgent - the escalation lands on day three exactly as specified, and `glm` correctly reads 0 on the same tape.
 
 *State at end of day.* All 9 providers reading, no urgent on either loop. Console: GLM $4.49, Gemini $0/$250, Mistral $3.25/$30, Sakana $4.38. API: DeepSeek $7.67, Moonshot $6.36, xAI $6.69, OpenAI $9.17, Anthropic $28.74. Six of the nine sit under the $10 digest threshold, none under the $3 urgent one - that's Alex's top-up call, not a bug. Both alerting automations confirmed healthy on their own subsequent runs.
+
+## 2026-08-03 - the Gemini check was green and blind for two months
+
+*What landed.* The 4-day `parse_failed` streak on Gemini spend got fixed, but the interesting part is what the tape showed once we went looking.
+
+**Marlow's escalation was right about the facts and wrong about the fix.** Her Telegram report was accurate on everything observable: `aistudio.google.com/usage` loads, the Spend view says "No Cloud Projects Available", there is no dollar figure to read, and 4 runs running means it's structural rather than flaky. Both remedies she proposed - import a Cloud Project, or disable the check - were wrong, because both accept the premise that the number is unreachable. It isn't. She diagnosed the page she was pointed at and never asked whether it was still the right page.
+
+**Two separate breaks stacked on the same provider.** First, "Spend" stopped being a toggle on `/usage` and became its own sidebar page at `/spend`, so `click_js` returned `no-spend-tab` on every run and the extractor read the plain usage view. Second, and independently, both `/usage` and `/spend` are now scoped to *imported Cloud Projects*; Alex has none ("0 Projects"), so both render an empty-state panel with no figures at all. Either break alone would have been enough.
+
+**The number never moved - it's on `/billing`, which is billing-ACCOUNT scoped and needs no project import.** It carries `Total cost $0.76` for the month *and* `Paid 1 · $250 Billing Account Tier Cap`, so the cap is now read live off the page instead of trusted from `GEMINI_SPEND_CAP` (the constant survives as fallback only). Deliberately did **not** reuse the old "largest `$` on screen" heuristic here: `/billing` prints the $250 cap, which would swamp the real spend and read as permanently maxed. Anchored on labels instead. Page's own caveat, worth remembering when a number looks stale: "Cost information may take up to 24 hours to update."
+
+*The thing worth actually recording.* Pulling the tape: **68 Gemini runs since 2026-06-01, and today's `$0.76` is the first nonzero spend figure the check has EVER produced.** Every run before 07-31 reported a confident `$0 / $250` and counted as green. The old extractor took the largest `$` anywhere on the page, and it was picking up placeholder zeros the whole time. So the check wasn't broken on 07-31 - it broke at some point before we have tape for, kept reporting healthy, and 07-31 is merely the day the page changed enough that it could no longer even fake a number.
+
+**The `parse_failed` streak was the first honest signal this check ever gave.** That inverts the instinct the alert creates. A monitor that starts screaming looks worse than one sitting quietly at zero, and it is strictly better: the loud one is telling you something true. The two-month silence cost us nothing here only because the spend genuinely was near zero - had Alex actually been burning Gemini budget, `$0 / $250` would have said "fine" all the way to the tier cap.
+
+**The gap this exposes.** `failure_streak` catches a check that goes *loud*. Nothing catches a check that goes *quiet and wrong*. GLM, Sakana and both credit-balance readers already have placeholder-zero defenses (retry with longer settles, `suspect_zero` against the last known balance) precisely because an SPA zero fooled us on 06-11 - but those defend a *balance* falling to zero. A **spend** metric of zero is indistinguishable from healthy-and-unused, so it gets no such scrutiny, and Gemini sat in that blind spot for its entire life. Worth considering: flag a spend-type provider that has never once read nonzero across N runs as suspect rather than green. Not built today; recording it so the next "why didn't we catch this" has an answer already written down.
+
+*State at end of day.* Console: GLM $13.69, Gemini $0.76/$250 (first real read), Mistral $1.47/$30, Sakana $7.34. API: DeepSeek $11.47, Moonshot $16.36, xAI $10.42, OpenAI $6.48, Anthropic $24.47. Gemini urgent cleared; remaining issues are two digest-level top-up nudges (OpenAI, Sakana, both under $10), which are Alex's call and not bugs.
+
+**Self-heal record.** Diagnosis `diag_20260803_161951_scrape-stats` (`handlers/scrape_stats.py:177`), fix committed and pushed as `c0e0176ab8014a0b8ebcf0941f8a15abf0ad5db6`, live-validated post-commit (`check gemini` → `spend_usd: 0.76, cap_usd: 250`), marked resolved.
+
+## 2026-08-03 (later) - a dropped connection read as a broken handler, and the recovery path that couldn't clear its own alarm
+
+*What landed.* One transient failure, correctly reported and wrongly classified, plus a second bug found only by trying to fix the first.
+
+**`werewolf_stats` was never broken.** The handler ran and succeeded: `stats_latest.json` was written at 13:37:41Z, nine seconds after the task started, `ok: true`. What died was the session narrating the result. From `~/.marlow/ops/sessions.log`:
+
+```
+[2026-08-03T13:42:20Z] === collect_stats_20260803_1033 (werewolf_stats) ===
+Report is `ok: true`. Let me check yesterday's report for comparison...
+Now let me write today's report following the same shape.
+API Error: Connection closed mid-response. The response above may be incomplete.
+```
+
+The only lost artifact was the daily narrative report; the data tape was intact the whole time. Re-ran it on demand and `reports/stats/2026-08-03.md` now exists.
+
+**This is the 07-30 gap again, one error class over.** `tick.sh` re-queues transient failures on `API Error: 5\d\d|Overloaded|Internal server error`. "Connection closed mid-response" is a transport-level drop, not a 5xx, so it missed by one string and fell through to `failed` - which `monitor_self` correctly escalated as "currently broken". Widened the pattern with named connection failures (`Connection closed mid-response`, `Connection error`, `ECONNRESET`, `socket hang up`, `fetch failed`). Deliberately did **not** add bare `timeout` or `terminated`: `scheduler.cmd_requeue` has **no retry cap**, so a pattern broad enough to swallow a real handler bug would re-queue it forever instead of surfacing it. Verified the widened regex against four real transient strings and four adversarial ones (a `KeyError` traceback, a handler timeout, the generic no-result-file message, an assertion failure) - all four match, none of the four over-match.
+
+*The bug behind the bug.* After a clean re-run, the self-audit **still paged urgent for `werewolf_stats`**. `check_failed_ticks` groups records by `parent_task` and flags a group whose newest record failed. But `marlow run <handler>` queues `parent_task=f"{handler}_ondemand"` - so the recovery run landed in a *different group*, and the failed scheduled run stayed newest in its own group:
+
+| run | `parent_task` | group |
+|---|---|---|
+| failed 13:37Z scheduled | `werewolf_stats` | `werewolf_stats` |
+| clean 16:38Z recovery | `werewolf_stats_ondemand` | `werewolf_stats_ondemand` |
+
+The docstring promised "a failure that already recovered won't nag." It only kept that promise for recovery by *scheduled* re-run. **`marlow run` is the sanctioned way to recover a broken automation - and it was the one action that could not clear the alarm it was meant to fix.** The alert would have kept firing every audit until the next scheduled tick ~18h later, which is precisely the window in which a human is most likely to conclude the monitor cries wolf.
+
+Fixed by stripping the `_ondemand` suffix when grouping. Regression-tested the four cases that matter: recovery clears the alert; a *failing* on-demand run still pages (under the base name); a stale on-demand success does not mask a newer scheduled failure; distinct handlers stay separate. Confirmed live - `monitor_self check` now returns only the pre-existing `site_integrity` digest line.
+
+*Worth noting about the escalation itself.* Both of today's alerts were accurate about what they observed and wrong about what it meant - the Gemini one recommended importing a Cloud Project when the number had simply moved pages, this one named a healthy handler as broken. The self-audit reports observations faithfully; it has no way to distinguish "the thing I watch is broken" from "the way I watch it is broken." Two for two today. That is the standing weakness of a monitor that can only see its own instrument.
+
+*Also spotted, not fixed.* `marlow status` renders pre-split June state (queue and schedule both ~48d stale) regardless of `MARLOW_PROFILE`, apparently reading the unscoped `last_scheduled.json` rather than the `.ops`/`.writer` variants. Cosmetic - the audit and the scheduler themselves are profile-correct - but it makes the dashboard useless for eyeballing either loop, and it is why the werewolf_stats fix was verified via `monitor_self check` instead. Left alone as out of scope for today.
+
+*State at end of day.* Ops loop: no urgent. One digest item outstanding (`cyber-eval-framing` thread frontmatter says `posts:4`, 3 published mention it - bookkeeping drift, not breakage).
+
+## 2026-08-03 (evening) - the digest was reporting a $2.33 day as $0.93
+
+*What landed.* Alex asked why the Werewolf stats I showed him in chat looked nothing like what arrives in Telegram. Answer: three renderers, and Telegram got the smallest. Chasing that turned up a live reporting bug.
+
+**Three renderers, only the thinnest one leaves the machine.** `render_digest()` (compact, capped, 3 lines) goes to Telegram. `show` (full snapshot) is terminal-only. `reports/stats/<date>.md` (Marlow's prose, with a "what moved vs yesterday" section) is written daily to disk and read by nobody unless someone opens the file. The version closest to what Alex actually wanted already existed and had never once been delivered.
+
+**The bug: `daily_burn` is a delta since the LAST SNAPSHOT, and `render_digest` labelled it "since yesterday".** That equivalence holds only if snapshots happen exactly once a day. Every `report` run resets the baseline, so a second run reports the sliver since the first. Today had four snapshots ($1.09, $0.02, $0.18, $0.93) and the 23:00 digest would have shipped the last one: **$0.93 for a day whose real burn was $2.33, understated by 60%.** Note `show` was always honest here ("spent since last snapshot (2.2h)"); only the digest mislabelled it. A silent-and-wrong number, same failure class as this morning's Gemini `$0`, found the same way - by having a second source to diff against.
+
+Fixed by anchoring the day figure to a calendar boundary instead of to "whenever I last ran". New `_prev_day_baseline()` scans `stats_history.jsonl` newest-first for the last row dated before today; `daily_burn` now carries **both** `usd` (since last snapshot, honestly labelled) and `today_usd` (day-over-day). The digest uses `today_usd` only. Verified the property that matters: running `report` three more times in a row leaves `$2.22 today` unchanged, where the old code went to `$0.00`.
+
+**Digest rewritten to carry what `show` carries** - 7d/30d trend on both users and games, cumulative burn, and each game's state and cost, which the old three-liner dropped entirely. Two deliberate choices:
+
+- **`paid` revenue is no longer reported at all.** Per Alex today: the only paid user is *him*, so "$0.00 revenue" was a daily line that reads as a problem and is actually just an artifact of him being in his own database. Recorded the same rule in `.claude/skills/werewolf/skill.md`.
+- **But `paid > 1` now fires a loud line** (`*** PAID USERS: n - that is a real paying customer, not just Alex ***`). Suppressing the noise without arming the signal would have been the worse half of the trade: a 1 to 2 move is the most important number in this project and looks like rounding next to user counts.
+
+Edge cases checked against the real snapshot: paid=2 fires the alarm; 7 signups / 9 games collapses to bare counts at `DIGEST_LIST_CAP`; a failed report still renders its error; no-prior-day falls back to "(baseline set)".
+
+*Cleanup, and my own mess.* Today's digest had **six** Werewolf blocks. One was the scheduled 13:37 run; the other five were mine, from re-running `report` to verify things - `report` appends to the digest as a side effect, which was made deterministic back when a session kept skipping the separate notify step. De-duped the file down to a single correct block (backup in scratchpad). Worth noting the side effect is load-bearing *and* a footgun: any manual verification run silently writes to Alex's evening digest. Now that `today_usd` is stable the duplicates would at least agree with each other rather than contradict, so this is downgraded from "wrong" to "noisy". Not fixed - a dedupe-on-append would have to touch `tools/notify.py`, which every handler shares.
+
+*Open.* `marlow status` still renders pre-split June state regardless of `MARLOW_PROFILE` (noted this afternoon, still unfixed). Marlow's own narrative stats report still treats `paid revenue` as a tracked line; she does not read the skill file, so that needs either editorial feedback or a change to the `werewolf_stats` prompt.

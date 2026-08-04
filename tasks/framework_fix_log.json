@@ -42,5 +42,27 @@
     "escalated_at": null,
     "escalation_reason": null,
     "resolved_at": "2026-05-31T18:28:26Z"
+  },
+  {
+    "id": "diag_20260803_161951_scrape-stats",
+    "detected_at": "2026-08-03T16:19:51Z",
+    "file": "handlers/scrape_stats.py",
+    "line": 177,
+    "failure_mode": "Gemini check scraped aistudio.google.com/usage Spend view, which is now Cloud-Project-scoped and renders structurally empty (no project imported) \u2192 4 consecutive parse_failed urgents 07-31..08-03",
+    "suggested_fix": "Repoint Gemini to aistudio.google.com/billing (billing-account-scoped, needs no project import); read spend off 'Total cost' and cap off 'Billing Account Tier Cap' label anchors \u2014 fix already applied in working tree, validate live + commit",
+    "attempts": 1,
+    "attempt_notes": [
+      {
+        "n": 1,
+        "at": "2026-08-03T16:37:13Z",
+        "result": "pass",
+        "note": null
+      }
+    ],
+    "status": "resolved",
+    "resolved_commit": "c0e0176ab8014a0b8ebcf0941f8a15abf0ad5db6",
+    "escalated_at": null,
+    "escalation_reason": null,
+    "resolved_at": "2026-08-03T16:37:13Z"
   }
 ]
