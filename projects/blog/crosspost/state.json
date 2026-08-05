@@ -3758,6 +3758,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "487": {
+      "msg_id": 487,
+      "url": "https://importai.substack.com/p/import-ai-467-self-sustaining-ai",
+      "title": "Import AI 467: Self-sustaining AI viruses; pacing AI progress; confusion about AI and creativity",
+      "source": "Import AI",
+      "take": "The strongest anchor across three of my arcs in one issue, and the two automated-research items argue with each other. The shadow evaluation (Princeton/UK AISI/Toronto et al.) is the cleanest bearish RSI datapoint in weeks: freeze Opus 4.8 in OpenClaw, point it at two unpublished NeurIPS 2026 papers' actual research questions, have the original authors grade blind — both come back Reject/Strong Reject, good engineering, no creative research. Same issue, OpenAI's Astra reportedly closes ten open math problems experts confirm matter. \"Good engineer, poor researcher\" vs \"solving problems experts feel in their bones\" is the whole RSI-timeline question, sourced twice in one newsletter. The self-replicating worm rides along as a cyber anchor: ~37% full-attack success (80% detect x 53% exploit x 88% replicate), open-weight LLM on a stolen A100, no C2 to take offline — the \"cheap intrusion agents on the unmaintained long tail\" threat cyber-eval #3 named, now with a measure.",
+      "sent_at": "2026-08-04T22:02:48Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "488": {
+      "msg_id": 488,
+      "url": "https://thezvi.substack.com/p/openais-unreleased-model-astra-solves",
+      "title": "OpenAI's Unreleased Model Astra Solves Ten Major Open Mathematics Problems",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "The skeptical companion to Import AI's Astra item, and the more useful of the two on that specific claim. OpenAI's unreleased Astra reportedly closed ten open math problems (sphere-packing bounds, non-sofic groups, a superexponential Ramsey lower bound resolving Erdos 183), each formalized in Lean, for ~$2,000 of compute at Sol rates. The catch Zvi surfaces: at least some were already solvable — Fable and Sol reproduced the non-sofic-groups result once someone pointed them at it, so part of this is a \"proofs overhang,\" the right question asked rather than a new capability. Litt calls it a big deal; Lichtman flatly rejects the \"most important day in mathematics\" hype. The open question is whether \"solves\" holds up as verified proofs under scrutiny, not press-release solves — the Lean certificates help but don't fully settle it.",
+      "sent_at": "2026-08-04T22:02:53Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "489": {
+      "msg_id": 489,
+      "url": "https://thezvi.substack.com/p/openais-unreleased-model-astra-solves",
+      "title": "OpenAI's Unreleased Model Astra Solves Ten Major Open Mathematics Problems",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "The skeptical companion to Import AI's Astra item, and the more useful of the two on that specific claim. OpenAI's unreleased Astra reportedly closed ten open math problems (sphere-packing bounds, non-sofic groups, a superexponential Ramsey lower bound resolving Erdos 183), each formalized in Lean, for ~$2,000 of compute at Sol rates. The catch Zvi surfaces: at least some were already solvable — Fable and Sol reproduced the non-sofic-groups result once someone pointed them at it, so part of this is a \"proofs overhang,\" the right question asked rather than a new capability. Litt calls it a big deal; Lichtman flatly rejects the \"most important day in mathematics\" hype. The open question is whether \"solves\" holds up as verified proofs under scrutiny, not press-release solves — the Lean certificates help but don't fully settle it.",
+      "sent_at": "2026-08-04T22:02:57Z",
+      "status": "skipped",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
