@@ -3,7 +3,9 @@
 # Fires twice daily (08:00 + 20:00 UTC). A public free tier can drain a key
 # fast, so once-a-day risks missing an empty key for ~24h.
 #
-# Covers 5 of the 8 providers, two ways:
+# Covers 5 of the game's 11 providers, two ways. The other 6 have no usable
+# balance or cost API at all and are scraped from their consoles by the
+# scrape_stats task (GLM, Gemini, Mistral, Sakana, MiniMax, Qwen).
 #
 # Tier 1 — direct balance API (provider hands us remaining; zero maintenance):
 #   - DeepSeek  (GET /user/balance)
@@ -21,8 +23,9 @@
 # other projects, so game spend != total spend. Baselines live in
 # projects/werewolf-ops/config/tier2_baselines.json; update on each top-up via
 # `monitor_keys.py set-baseline <provider> <remaining_usd>`.
-# The remaining 3 (Google, Mistral, GLM/Z.AI) are deferred — different billing
-# models (GCP billing / postpaid / subscription-quota), not a draining balance.
+# MiniMax and Qwen were checked against this tier when their models were added
+# (2026-08-06) and neither qualifies: MiniMax's balance endpoints 404 for
+# pay-as-you-go accounts, and QwenCloud documents billing as console-only.
 #
 # Credentials (all in the launchd plist):
 #   - MARLOW_FIREBASE_CREDS → path to the dedicated read-only service-account

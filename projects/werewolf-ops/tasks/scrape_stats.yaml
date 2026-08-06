@@ -1,8 +1,17 @@
-# scrape_stats — console scraping for the 3 Werewolf providers with no usable
+# scrape_stats — console scraping for the 6 Werewolf providers with no usable
 # balance/cost API (so they can't ride monitor_keys):
 #   - GLM / Z.AI : cash + credits balance        (a real depleting balance)
 #   - Gemini     : spend vs. $250 billing tier cap (postpaid)
 #   - Mistral    : month usage vs. $30 spending limit (postpaid; + pending)
+#   - Sakana Fugu: prepaid credit balance        (a real depleting balance)
+#   - MiniMax    : prepaid effective balance     (a real depleting balance)
+#   - Qwen       : per-model FREE-TOKEN quota, not money. QwenCloud gives 1M
+#                  tokens per model for 90 days (expires 2026-11-05) and the
+#                  models are set to "Free quota only" — when a grant runs out
+#                  the game's calls to that model FAIL, they never start
+#                  billing. So the metric is percent-of-grant left on the three
+#                  models the game uses (qwen3.8-max, qwen3.7-plus,
+#                  qwen3.7-flash); its dollar page reads $0.00 either way.
 #
 # Once daily — these move slower than the free-tier balance keys, and each run
 # drives a headless Chrome (~40s), so twice-daily isn't worth it.
@@ -14,7 +23,9 @@
 #   - reauth      (login wall, session expired)  → urgent
 #   - parse_failed (number not found / layout changed) → digest
 #   - chrome_down (profile unreachable)          → urgent
-# Never a silent wrong number.
+# Never a silent wrong number. Every read that comes up empty is retried once
+# with a longer settle first — a cold headless Chrome can simply not have
+# painted yet, which is indistinguishable from a redesign on a single read.
 #
 # RE-AUTH RUNBOOK (when Marlow reports a `reauth` issue):
 #   1. Kill the headless instance:  pkill -f "user-data-dir=$HOME/.config/marlow/scrape-profile"
@@ -25,17 +36,18 @@
 # In-tick flow:
 #   1. Run `uv run python handlers/scrape_stats.py report`.
 #   2. Parse JSON. Write it to projects/werewolf-ops/reports/scrape/<YYYY-MM-DD>.md.
-#   3. If any_urgent (reauth / near_cap >=95% / balance_critical / chrome_down),
-#      send one consolidated urgent Telegram. For reauth, include the runbook.
-#   4. Else if digest-severity issues (balance_low, approaching_cap, parse_failed),
-#      append a digest line.
+#   3. If any_urgent (reauth / near_cap >=95% / balance_critical /
+#      quota_critical / quota_exhausted / chrome_down), send one consolidated
+#      urgent Telegram. For reauth, include the runbook.
+#   4. Else if digest-severity issues (balance_low, approaching_cap, quota_low,
+#      quota_expiring, parse_failed), append a digest line.
 #   5. If clean, append a one-line digest: "Scraped: GLM $X, Gemini $Y/$cap,
-#      Mistral $Z/$limit — all healthy."
+#      Mistral $Z/$limit, Sakana $S, MiniMax $M, Qwen N% quota — all healthy."
 #   6. Write the tick result and exit.
 name: scrape_stats
 project: werewolf-ops
 profile: ops
-description: Daily console scrape of the 3 no-API Werewolf providers (GLM balance, Gemini + Mistral spend-vs-cap) via a logged-in headless Chrome.
+description: Daily console scrape of the 6 no-API Werewolf providers (GLM, Sakana, MiniMax balances; Gemini + Mistral spend-vs-cap; Qwen free-token quota) via a logged-in headless Chrome.
 schedule: "0 9 * * *"
 priority: normal
 must_run_within_hours: 12
