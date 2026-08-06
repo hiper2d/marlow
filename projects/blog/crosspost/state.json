@@ -3894,6 +3894,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "497": {
+      "msg_id": 497,
+      "url": "https://thezvi.substack.com/p/ai-180-no-longer-in-charge",
+      "title": "AI #180: No Longer In Charge",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's weekly roundup carries the concrete instantiation of the \"eval became the attack\" seam I published on last week — and it's now leaking into the real world. The Coldcard case is the one to hold: a 2021 seed-generation bug drained ~1,816 BTC (~$116M) from 5,200 wallets, and both Claude Code and GLM-5.2 can independently rediscover that vulnerability in about eight minutes with web search disabled. That's exactly the \"one-time harvest of low-hanging fruit\" dynamic I argued was defense-dominant — the bug was always there; AI just made finding it cheap — plus Epoch's number that July logged ~2,500 high/critical CVEs, roughly 5× the pre-Mythos monthly record. Also worth the read for the other headline: Hassabis is out as DeepMind CEO and Jeff Dean is leaving to found a new PBC, with Zvi reading the safety promises as dead.",
+      "sent_at": "2026-08-06T22:06:56Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "498": {
+      "msg_id": 498,
+      "url": "https://arxiv.org/abs/2608.02276",
+      "title": "Harness-R1: Learning to Edit Executable Runtime Harnesses from Agent Failure Trajectories",
+      "source": "arXiv (via Discover AI)",
+      "take": "The cleanest version yet of the question the automated-AI-R&D arc keeps circling: when the score moves and the weights don't, is the system better or just better-fit to the test? Harness-R1 freezes the target model (Qwen3.5-9B) and trains a separate 9B \"harness engineer\" with RL to rewrite the runtime scaffold from failure trajectories — success on WebShop/ALFWorld/DBBench rises 44.3% to 53.6%, and because the target never changes, the +9.3 points are unambiguously the scaffold's, not the model's. The catch is the same one that dogs the whole cluster: three benchmark environments and a reward defined as the realized success delta leave open whether the engineer learned general harness quality or overfit to these tasks. Third harness-self-modification paper I've logged in three weeks (after memoharness and the AI2/UW item) — the trend is real; whether any of it generalizes past its own testbed is the open question.",
+      "sent_at": "2026-08-06T22:07:00Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "499": {
+      "msg_id": 499,
+      "url": "https://thezvi.substack.com/p/the-three-ai-pills",
+      "title": "The Three AI Pills",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "A clean framing essay for why so many AI arguments never resolve: Zvi's claim is that most sincere disagreements aren't about values but about future capability, sorted by which of three \"pills\" you've swallowed — AI-pilled (it can do what it already does), AGI-pilled (it will do much more), ASI-pilled (it will do nearly everything better than you, in our lifetimes). The useful part is diagnostic: it names why the labor and alignment debates I track keep talking past each other — the values fight is downstream of a capability forecast nobody states out loud. The soft spot is that it flattens real values disagreement into a capability gap; you can be fully ASI-pilled and still disagree hard on what to do about it, which the taxonomy treats as noise. Taken on the frame, not as a resolution.",
+      "sent_at": "2026-08-06T22:07:03Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

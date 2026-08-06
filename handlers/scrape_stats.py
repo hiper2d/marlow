@@ -1,11 +1,13 @@
 """
-scrape_stats — console scraping for the 4 Werewolf providers that have NO usable
+scrape_stats — console scraping for the 6 Werewolf providers that have NO usable
 balance/cost API (so they can't go through monitor_keys):
 
   - GLM / Z.AI   → cash + credits balance        (a real depleting balance)
   - Gemini       → spend vs. billing tier cap     (postpaid, pay-as-you-go)
   - Mistral      → month usage vs. spending limit  (postpaid)
   - Sakana Fugu  → prepaid credit balance          (a real depleting balance)
+  - MiniMax      → prepaid effective balance       (a real depleting balance)
+  - Qwen         → per-model free-token quota      (NOT money — see QWEN below)
 
 These numbers live ONLY in each provider's web console, so we read them with a
 real Chrome that's logged in once (a dedicated persistent profile on port 9223;
@@ -23,8 +25,8 @@ Driving is delegated to simona's browser CLI (CDP_PORT=9223) rather than a
 second automation stack — same machinery the browser skill uses.
 
 CLI:
-    python handlers/scrape_stats.py report          # all three + derived issues
-    python handlers/scrape_stats.py check <name>     # one provider (glm|gemini|mistral)
+    python handlers/scrape_stats.py report          # all six + derived issues
+    python handlers/scrape_stats.py check <name>     # one provider (see PROVIDERS)
     python handlers/scrape_stats.py ensure-chrome    # (re)launch the headless profile
 """
 
@@ -52,6 +54,7 @@ BROWSER_CLI = f"{SIMONA_DIR}/mcp/browser/cli.py"
 START_SCRIPT = f"{SIMONA_DIR}/mcp/browser/start-chrome-persistent.sh"
 
 NAV_SETTLE_S = 4.0     # let the SPA render after navigation before extracting
+PARSE_RETRY_SETTLE_S = 12.0  # second, slower read before believing a parse failure
 HTTP_TIMEOUT = 60
 
 # Balance thresholds (GLM) — mirror monitor_keys.
@@ -60,6 +63,16 @@ CRITICAL_USD = 3.0
 # Spend-vs-cap fraction thresholds (Gemini, Mistral): how close to the cap.
 NEAR_CAP_FRAC = 0.80      # digest
 CRITICAL_CAP_FRAC = 0.95  # urgent
+# Free-quota thresholds (Qwen): percent of the per-model token grant still left.
+# Set high on purpose. The dollar thresholds can be tight because a balance
+# drains slowly; a 1M-token grant does not — the game burned ~20% of all three
+# Qwen models in the first day of play (2026-08-05→06). At one scrape a day,
+# a 25% threshold would fire once and be at zero on the next run. 50/20 buys
+# roughly two days and one day of notice at that rate; lower them if the real
+# steady-state burn turns out slower than launch week.
+QUOTA_LOW_PCT = 50.0       # digest
+QUOTA_CRITICAL_PCT = 20.0  # urgent
+QUOTA_EXPIRY_WARN_DAYS = 7  # digest — the grant expires on a date, not just on use
 # Consecutive runs of the SAME failure on the SAME provider before a digest
 # issue escalates to urgent. A one-off is console flakiness; a run of them is a
 # broken extractor that nobody is going to notice in a digest line.
@@ -107,18 +120,9 @@ def _cli(*args: str) -> subprocess.CompletedProcess:
     )
 
 
-def _navigate_and_extract(url: str, js: str, click_js: str | None = None,
-                          settle_s: float = NAV_SETTLE_S) -> dict:
-    """Navigate tab 0 to `url`, let it settle, optionally run `click_js` to
-    reveal a sub-view (then settle again), run `js` (must return a JSON string),
-    parse it. Returns the parsed dict, or {error:...} on failure."""
-    nav = _cli("navigate", url, "--tab", "0")
-    if nav.returncode != 0:
-        return {"error": f"navigate failed: {nav.stderr[:160] or nav.stdout[:160]}"}
-    time.sleep(settle_s)
-    if click_js:
-        _cli("js", click_js, "--tab", "0")
-        time.sleep(settle_s)
+def _eval_json(js: str) -> dict:
+    """Run `js` in tab 0 (it must return a JSON string) and parse the result.
+    Returns the parsed dict, or {error:...} on failure."""
     res = _cli("js", js, "--tab", "0")
     if res.returncode != 0:
         return {"error": f"js failed: {res.stderr[:160] or res.stdout[:160]}"}
@@ -127,6 +131,30 @@ def _navigate_and_extract(url: str, js: str, click_js: str | None = None,
         return json.loads(outer["result"])
     except (json.JSONDecodeError, KeyError, TypeError) as e:
         return {"error": f"unparseable extractor output: {e}"}
+
+
+def _navigate(url: str, settle_s: float = NAV_SETTLE_S) -> str | None:
+    """Navigate tab 0 to `url` and let the SPA settle. Returns an error string
+    on failure, None on success."""
+    nav = _cli("navigate", url, "--tab", "0")
+    if nav.returncode != 0:
+        return f"navigate failed: {nav.stderr[:160] or nav.stdout[:160]}"
+    time.sleep(settle_s)
+    return None
+
+
+def _navigate_and_extract(url: str, js: str, click_js: str | None = None,
+                          settle_s: float = NAV_SETTLE_S) -> dict:
+    """Navigate tab 0 to `url`, let it settle, optionally run `click_js` to
+    reveal a sub-view (then settle again), run `js` (must return a JSON string),
+    parse it. Returns the parsed dict, or {error:...} on failure."""
+    err = _navigate(url, settle_s)
+    if err:
+        return {"error": err}
+    if click_js:
+        _cli("js", click_js, "--tab", "0")
+        time.sleep(settle_s)
+    return _eval_json(js)
 
 
 # ─── Per-provider extractors (JS returns a JSON string) ──────────────────────
@@ -235,7 +263,79 @@ SAKANA = {
     })()""",
 }
 
-PROVIDERS = {p["name"]: p for p in (GLM, GEMINI, MISTRAL, SAKANA)}
+# MiniMax — prepaid balance, added 2026-08-06 with the M3 models. No balance API
+# exists for pay-as-you-go accounts (probed live: /v1/get_account_balance,
+# /v1/query/account, /v1/user/balance all 404; /v1/token_plan/remains answers but
+# only for a *subscription* key, and Alex is on PAYG) — so, console. The balance
+# widget lives on the recharge-records page; /user-center/payment/balance
+# redirects there, so we go straight to the canonical URL. "Effective balance"
+# is cash + voucher + credit − outstanding, i.e. what the game can actually
+# spend; the components are captured for context only.
+MINIMAX = {
+    "name": "minimax",
+    "url": "https://platform.minimax.io/console/recharge-records",
+    "js": """(()=>{
+      const t=document.body.innerText;
+      if(/account\\.minimax\\.io\\/unified-login/i.test(location.href)||
+         /Sign in or create an account/i.test(t)) return JSON.stringify({login_wall:true});
+      const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
+        const m=t.slice(i+label.length,i+label.length+(win||40))
+                 .match(/\\$?\\s*([0-9][0-9,]*\\.?[0-9]*)/); return m?parseFloat(m[1].replace(/,/g,'')):null;};
+      return JSON.stringify({login_wall:false, balance:after('Effective balance'),
+        cash:after('Cash'), voucher:after('Voucher'), outstanding:after('Outstanding')});
+    })()""",
+}
+
+# Qwen / QwenCloud — added 2026-08-06 with the Qwen3.7/3.8 models. This one is
+# NOT a money balance and doesn't fit either existing metric. QwenCloud gives new
+# accounts a 90-day free tier of 1M tokens PER MODEL (Alex registered 2026-08-05
+# → expires 2026-11-05), and every model is set to "Free quota only" (auto-stop),
+# so when a model's grant is gone the game's calls to it simply FAIL — they never
+# silently start billing. The number that matters is therefore percent-of-grant
+# remaining on the three models the game actually uses, not dollars: the console's
+# pay-as-you-go page reads $0.00 and will keep reading $0.00 while the grant lasts.
+#
+# The console's own JSON endpoint (/data/api.json?product=freetier&action=
+# ListBailianFreetier) is POST-with-CSRF ("PostonlyOrTokenError" on a plain GET),
+# so we read the rendered table instead. It paginates 10-per-page over 260 models,
+# so we drive the "Search models" box once per tracked model and read the single
+# matching row — matching on an exact cell value, since a search for
+# "qwen3.7-plus" also returns "qwen3.7-plus-2026-05-26" (a dated snapshot with an
+# untouched grant, which would read as healthy and mask the real one).
+QWEN_MODELS = [m.strip() for m in os.environ.get(
+    "QWEN_MODELS", "qwen3.8-max,qwen3.7-plus,qwen3.7-flash").split(",") if m.strip()]
+
+QWEN = {
+    "name": "qwen",
+    "url": "https://home.qwencloud.com/benefits",
+    # Logged out, the page still renders its chrome (sidebar, headings) and only
+    # the content area says so — hence matching on the copy, not on a redirect.
+    "login_js": """(()=>{const t=document.body.innerText;
+      return JSON.stringify({login_wall:/You are currently not logged in|Log in to QwenCloud/i.test(t)});})()""",
+    "search_js": """(()=>{const i=document.querySelector('input[placeholder="Search models"]');
+      if(!i) return JSON.stringify({ok:false, error:'search box not found'});
+      const set=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+      set.call(i, __CODE__); i.dispatchEvent(new Event('input',{bubbles:true}));
+      return JSON.stringify({ok:true});})()""",
+    # Row cells: ['', code, quota, consumed, 'NN.NN%', 'YYYY-MM-DD\\nN days remaining',
+    # status, mode] — a leading blank cell (row selector), so index off the code cell.
+    "row_js": """(()=>{const code=__CODE__;
+      const row=[...document.querySelectorAll('tr')].find(r=>
+        [...r.querySelectorAll('td')].some(c=>c.innerText.trim()===code));
+      if(!row) return JSON.stringify({found:false});
+      const cells=[...row.querySelectorAll('td')].map(c=>c.innerText.trim());
+      const k=cells.indexOf(code);
+      const pct=parseFloat(String(cells[k+3]||'').replace('%',''));
+      const exp=String(cells[k+4]||'');
+      const days=(exp.match(/([0-9]+)\\s*days? remaining/)||[])[1];
+      return JSON.stringify({found:true, code, quota:cells[k+1]||null, consumed:cells[k+2]||null,
+        remaining_pct: isNaN(pct)?null:pct, expires:(exp.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)||[])[0]||null,
+        days_left: days?parseInt(days,10):null, status:cells[k+5]||null, mode:cells[k+6]||null});})()""",
+}
+
+QWEN_SEARCH_SETTLE_S = 2.5   # the table re-renders client-side; no network wait needed
+
+PROVIDERS = {p["name"]: p for p in (GLM, GEMINI, MISTRAL, SAKANA, MINIMAX, QWEN)}
 
 
 # ─── Normalize each provider's raw extract into a common shape ───────────────
@@ -251,9 +351,97 @@ def _last_balance(provider: str) -> float | None:
     return None
 
 
+def _confirmed_balance(cfg: dict, provider: str, value: float, field: str = "balance") -> tuple[float, float | None]:
+    """Re-read a balance that came back as exactly 0, and report a prior balance
+    if it stays 0 without explanation.
+
+    An SPA paints "$0.00" placeholders before the balance request lands, and a
+    placeholder zero parses exactly like a real one (GLM, 2026-06-11: $9.23
+    reported as dry). Returns (value, suspect_prev): `suspect_prev` is the last
+    successfully-read balance when it was positive and this read insists on zero
+    — the caller turns that into `suspect_zero` (digest) rather than
+    `balance_empty` (urgent). None means the zero is trustworthy.
+    """
+    if value != 0:
+        return value, None
+    for settle in (10.0, 15.0):
+        retry = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"), settle_s=settle)
+        v = retry.get(field)
+        if v is None:
+            continue
+        value = v
+        if v > 0:
+            return v, None
+    prev = _last_balance(provider)
+    return value, (prev if prev and prev > 0 else None)
+
+
+def _check_qwen(settle_s: float = NAV_SETTLE_S) -> dict:
+    """Qwen's free-tier grants: one search + one row read per tracked model.
+
+    Unlike the other providers this needs several round trips on ONE page load,
+    so it doesn't go through _navigate_and_extract. A model whose row never
+    appears is dropped rather than counted as 0% — a missing row means the search
+    or the layout broke, not that the grant is gone. Only if *no* tracked model
+    resolves do we call the whole check parse_failed.
+    """
+    base = {"provider": "qwen", "checked_at": _now_iso()}
+    err = _navigate(QWEN["url"], settle_s)
+    if err:
+        return {**base, "ok": False, "kind": "parse_failed", "error": err}
+    guard = _eval_json(QWEN["login_js"])
+    if guard.get("error"):
+        return {**base, "ok": False, "kind": "parse_failed", "error": guard["error"]}
+    if guard.get("login_wall"):
+        return {**base, "ok": False, "kind": "reauth", "error": "login wall — session expired, re-auth needed"}
+
+    models, misses = [], []
+    for code in QWEN_MODELS:
+        setres = _eval_json(QWEN["search_js"].replace("__CODE__", json.dumps(code)))
+        if not setres.get("ok"):
+            return {**base, "ok": False, "kind": "parse_failed",
+                    "error": setres.get("error") or "could not drive the model search box"}
+        time.sleep(QWEN_SEARCH_SETTLE_S)
+        row = _eval_json(QWEN["row_js"].replace("__CODE__", json.dumps(code)))
+        if row.get("found") and row.get("remaining_pct") is not None:
+            models.append(row)
+        else:
+            misses.append(code)
+    if not models:
+        return {**base, "ok": False, "kind": "parse_failed",
+                "error": f"no free-tier row found for any of {', '.join(QWEN_MODELS)}"}
+
+    worst = min(models, key=lambda m: m["remaining_pct"])
+    days = [m["days_left"] for m in models if m.get("days_left") is not None]
+    return {**base, "ok": True, "metric": "quota",
+            "remaining_pct": worst["remaining_pct"], "worst_model": worst["code"],
+            "days_left": min(days) if days else None,
+            "expires": worst.get("expires"),
+            "models": models, "missing_models": misses}
+
+
 def _check(provider: str) -> dict:
+    """Check one provider, re-reading once with a longer settle before calling
+    it a parse failure.
+
+    A cold headless Chrome (the state every cron run starts in) can need well
+    over NAV_SETTLE_S to paint: Gemini went parse_failed on the 2026-08-06 runs
+    and read $1.95 fine on a warm page seconds later. "The number isn't there
+    yet" and "the console got redesigned" look identical from one read, so pay
+    one slow retry to tell them apart rather than tuning a per-provider constant
+    every time a console gets heavier.
+    """
+    result = _check_once(provider)
+    if result.get("kind") == "parse_failed":
+        result = _check_once(provider, settle_s=PARSE_RETRY_SETTLE_S)
+    return result
+
+
+def _check_once(provider: str, settle_s: float = NAV_SETTLE_S) -> dict:
+    if provider == "qwen":
+        return _check_qwen(settle_s)
     cfg = PROVIDERS[provider]
-    raw = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"))
+    raw = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"), settle_s=settle_s)
     base = {"provider": provider, "checked_at": _now_iso()}
     if raw.get("error"):
         return {**base, "ok": False, "kind": "parse_failed", "error": raw["error"]}
@@ -307,30 +495,22 @@ def _check(provider: str) -> dict:
             return {**base, "ok": False, "kind": "parse_failed", "error": "no usage figure found"}
         return {**base, "ok": True, "metric": "spend_cap", "spend_usd": round(usage, 4),
                 "cap_usd": MISTRAL_CAP_USD, "pending_usd": pending}
-    if provider == "sakana":
+    if provider in ("sakana", "minimax"):
         bal = raw.get("balance")
         if bal is None:
             return {**base, "ok": False, "kind": "parse_failed", "error": "no credit balance found"}
-        # Same SPA placeholder hazard as GLM: the billing tab can paint "$0.00"
-        # before the balance request lands. Never trust a lone zero — re-read
-        # with longer settles before believing the credit is dry.
-        if bal == 0:
-            for settle in (10.0, 15.0):
-                retry = _navigate_and_extract(cfg["url"], cfg["js"], settle_s=settle)
-                r_bal = retry.get("balance")
-                if r_bal is None:
-                    continue
-                bal = r_bal
-                if bal > 0:
-                    break
-            if bal == 0:
-                prev = _last_balance("sakana")
-                if prev and prev > 0:
-                    return {**base, "ok": False, "kind": "suspect_zero",
-                            "error": f"reads $0.00 across retries but last run saw ${prev:.2f} — "
-                                     "likely placeholder render; verify in console before topping up"}
+        # Same SPA placeholder hazard as GLM: the balance can paint "$0.00"
+        # before its request lands. Never trust a lone zero.
+        bal, suspect_prev = _confirmed_balance(cfg, provider, bal)
+        if suspect_prev:
+            return {**base, "ok": False, "kind": "suspect_zero",
+                    "error": f"reads $0.00 across retries but last run saw ${suspect_prev:.2f} — "
+                             "likely placeholder render; verify in console before topping up"}
+        extra = ({"usage_usd": raw.get("usage")} if provider == "sakana"
+                 else {"cash_usd": raw.get("cash"), "voucher_usd": raw.get("voucher"),
+                       "outstanding_usd": raw.get("outstanding")})
         return {**base, "ok": True, "metric": "balance", "balance_usd": round(bal, 4),
-                "usage_usd": raw.get("usage"), "is_available": bal > 0}
+                **extra, "is_available": bal > 0}
     return {**base, "ok": False, "kind": "parse_failed", "error": "unknown provider"}
 
 
@@ -364,6 +544,31 @@ def _derive_issues(results: list[dict]) -> list[dict]:
             elif usd < LOW_USD:
                 issues.append({"severity": "digest", "kind": "balance_low", "target": name,
                                "detail": f"{name} balance ${usd:.2f} (< ${LOW_USD:.0f}). Top up soon."})
+        elif r.get("metric") == "quota":
+            # Qwen: percent of the per-model free-token grant still left, taken
+            # from whichever tracked model is furthest along. Exhausted means the
+            # game's calls to that model start FAILING (auto-stop), not billing.
+            pct, model = r.get("remaining_pct"), r.get("worst_model")
+            if pct is not None:
+                if pct <= 0:
+                    issues.append({"severity": "urgent", "kind": "quota_exhausted", "target": name,
+                                   "detail": f"{name} free quota exhausted on {model} — that model is now failing in-game."})
+                elif pct < QUOTA_CRITICAL_PCT:
+                    issues.append({"severity": "urgent", "kind": "quota_critical", "target": name,
+                                   "detail": f"{name} free quota {pct:.1f}% left on {model} (< {QUOTA_CRITICAL_PCT:.0f}%). "
+                                             "It stops rather than bills — swap the model or add credit."})
+                elif pct < QUOTA_LOW_PCT:
+                    issues.append({"severity": "digest", "kind": "quota_low", "target": name,
+                                   "detail": f"{name} free quota {pct:.1f}% left on {model} (< {QUOTA_LOW_PCT:.0f}%)."})
+            days = r.get("days_left")
+            if days is not None and days <= QUOTA_EXPIRY_WARN_DAYS:
+                issues.append({"severity": "digest", "kind": "quota_expiring", "target": name,
+                               "detail": f"{name} free tier expires in {days}d ({r.get('expires')}) — unused grant is lost."})
+            if r.get("missing_models"):
+                # A tracked model that no longer resolves is either renamed or the
+                # search/layout changed; either way its grant is unwatched.
+                issues.append({"severity": "digest", "kind": "parse_failed", "target": name,
+                               "detail": f"{name} free-tier row not found for: {', '.join(r['missing_models'])}"})
         elif r.get("metric") == "spend_cap":
             spend, cap = r.get("spend_usd"), r.get("cap_usd")
             if cap and cap > 0:

@@ -1,14 +1,14 @@
 """
 budget_state — persist + recall the API-budget monitoring results.
 
-Both monitor_keys (5 providers, API) and scrape_stats (4 providers, console
+Both monitor_keys (5 providers, API) and scrape_stats (6 providers, console
 scrape) call `save()` on every `report` run — cron OR manual — so there's
 always a current snapshot to read back. We keep two things per source:
 
   - <kind>_latest.json   — the full last report (overwritten each run)
   - <kind>_history.jsonl — one compact line per run (append-only, all scans)
 
-`show()` loads both latests and renders the unified 9-provider state, with a
+`show()` loads both latests and renders the unified 11-provider state, with a
 staleness flag if a snapshot is older than its cadence. This is what answers
 "what's my API budget state?" without re-hitting any provider.
 """
@@ -43,6 +43,8 @@ def _compact(report: dict) -> dict:
             "balance_usd": p.get("balance_usd"),
             "spend_usd": p.get("spend_usd"),
             "cap_usd": p.get("cap_usd"),
+            # Qwen's headline isn't money — percent of its free-token grant left.
+            "remaining_pct": p.get("remaining_pct"),
         })
     return {
         "checked_at": report.get("checked_at"),
@@ -132,6 +134,10 @@ def _fmt_provider(p: dict) -> str:
     if not p.get("ok"):
         return f"  {name:11} — {p.get('kind') or 'error'}: {(p.get('error') or '')[:48]}"
     metric = p.get("metric")
+    if metric == "quota" or p.get("remaining_pct") is not None:
+        pct, worst = p.get("remaining_pct", 0.0), p.get("worst_model", "?")
+        days = f", {p['days_left']}d left" if p.get("days_left") is not None else ""
+        return f"  {name:11} {pct:>7.1f}% quota ({worst}{days})"
     if metric == "spend_cap" or (p.get("spend_usd") is not None and p.get("cap_usd")):
         spend, cap = p.get("spend_usd", 0.0), p.get("cap_usd")
         pend = f" +${p['pending_usd']:.2f} pending" if p.get("pending_usd") else ""
