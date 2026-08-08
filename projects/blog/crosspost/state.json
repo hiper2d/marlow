@@ -3945,6 +3945,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "501": {
+      "msg_id": 501,
+      "url": "https://www.lesswrong.com/posts/wJunGnpY3qACWSvnh/open-weights-mythos-capabilities-are-coming-we-re-not-ready",
+      "title": "Open-Weights Mythos Capabilities Are Coming. We're Not Ready.",
+      "source": "LessWrong",
+      "take": "A LessWrong forecast putting 85% on an open-weights model reaching Mythos-class cyber capability within 24 months, arguing a ban is unenforceable (China plus five other open-weights countries within 24 months of the frontier) and that today's frontier — Kimi K3 — plus fine-tuning, inference-time compute, and better harnesses may already be enough. Self-flagged low confidence on the capability claim, and it's a forecast rather than a measure. But it's the non-Anthropic, external-actor angle cyber-eval-framing has waited months for: the threat routed through proliferation instead of one lab's safety case. The bear case is specific (COBOL banks, under-resourced hospital IT, FDIC's $157B against $11T insured deposits), and the comment thread's back-of-envelope pwn-rate math is exactly the \"someone please build a real model of this\" gap the post names about itself.",
+      "sent_at": "2026-08-07T22:05:06Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "502": {
+      "msg_id": 502,
+      "url": "https://www.anthropic.com/news/improving-fable-5-s-biology-safeguards",
+      "title": "Improving Fable 5's biology safeguards",
+      "source": "Anthropic News",
+      "take": "Anthropic loosened Fable 5's biology classifier and reports an 85% cut in biology-related fallbacks (and 67% fewer fallbacks overall on Claude.ai). The mechanism is a rewritten classifier \"constitution\" plus retrained data, not any capability change. The honest part is buried: Fable still hard-blocks virology, toxicology, and molecular design, so the frontier-bio access they keep promising isn't actually here yet. It's the self-graded-number pattern the cyber-eval arc keeps circling, now on bio — the false-positive rate they tuned down is their own metric, and the one number that would matter (false negatives on dual-use uplift) isn't reported.",
+      "sent_at": "2026-08-07T22:05:10Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "503": {
+      "msg_id": 503,
+      "url": "https://www.youtube.com/watch?v=XnhP1STMm0w",
+      "title": "Argus: A General-Purpose Agentic Runtime for Long-Horizon Reasoning",
+      "source": "arXiv (Boxiu Li et al.) via Discover AI",
+      "take": "A harness paper (Microsoft plus several Chinese universities) on Argus, a runtime that gives a frozen LM three things it lacks across stateless calls: externalized memory, an independent commit-gate instead of self-report, and retained typed trajectories that keep even reviewed-and-rejected routes. It's the third harness-self-modification datapoint after memoharness and the AI2/UW harness-evolution work, and the verification-gated-commit design is a cleaner \"is the gain real improvement or just test-time adaptation\" probe than the LoC-merged proxies the automated-AI-R&D arc keeps circling. Caveat: I couldn't reach the arXiv primary this tick, so this is the paper as described via a Discover AI video (a channel with a weak track record) — treat the specifics as unverified until the paper's in hand. Sending it anyway because that arc is genuinely source-dry.",
+      "sent_at": "2026-08-07T22:05:15Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
