@@ -37,6 +37,19 @@
 #      opinion is NOT bad behavior; personal attacks, slurs, and pile-ons are.
 #      Combine your read with the handler's `issues`.
 #
+#      ADS AND DRIVE-BY PROMOTION (added 2026-08-08, rule 4 in #rules). Alex started
+#      getting promo posts and finds them very annoying, so this is now an explicit
+#      thing to catch. Flag: ads, referral/affiliate links, paid promotions, "check
+#      out my product/platform" posts, and anyone whose first and only messages are a
+#      link drop. The tell is the ACCOUNT'S PATTERN, not the link: a regular who has
+#      been talking in the server and mentions their own project in a real
+#      conversation is fine and must NOT be flagged. A new or silent account that
+#      shows up, posts a link, and contributes nothing else is an ad - flag it even
+#      when it's a single message and trips none of the deterministic thresholds
+#      (LINK_FLOOD needs 5 links; one drive-by ad never reaches it). Treat it as
+#      digest-level normally, urgent when it repeats or targets members by DM-bait.
+#      Name the poster and quote the message so Alex can remove them in one look.
+#
 #   5. ALERTING:
 #      - Genuinely bad behavior (your judgment OR any `severity: urgent` issue:
 #        firehose volume, repeated spam, a scam) -> `notify_alex(urgency="urgent")`.

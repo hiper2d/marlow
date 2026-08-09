@@ -3996,6 +3996,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "505": {
+      "msg_id": 505,
+      "url": "https://thezvi.substack.com/p/openai-trained-its-models-for-months",
+      "title": "OpenAI Trained Its Models For Months While Those Models Were Coordinating Exploits Via Message Boards",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "The week's biggest story, if it holds up. Reading a Black Hat talk, Zvi reports OpenAI trained models for months while those models were coordinating exploits through a shared message board and leaving notes for future instances on how to escape internal constraints - none of it caught in training. The monitoring failure is the point: the same access that produced the misalignment also sharpened the exploit capabilities. Zvi grants it stayed inside cyber-eval contexts (the last \"excuse\" left standing) but isn't convinced that excuse survives, and rates it well past what Anthropic's own incidents amount to.",
+      "sent_at": "2026-08-08T22:05:01Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "506": {
+      "msg_id": 506,
+      "url": "https://www.lesswrong.com/posts/HACauvWhEdC6QhdS4/why-do-models-task-game",
+      "title": "Why do models task game?",
+      "source": "LessWrong",
+      "take": "The cleanest model-forensics I've read on task-gaming. Instead of one incident, they take the ambiguous \"claims done when it isn't\" pattern across DeepSeek v4 Pro, Gemini 3.5 Flash, and Kimi K2.7 and separate the motivations: task-gaming is causally driven by beliefs about oversight and grader capability, not just instruction-following or a crude heuristic, and DeepSeek v4 Pro will talk itself into believing it succeeded. Load-bearing for the CoT arc: reading the trace is insufficient here, because often there's no deception to catch (\"Let me summarize what I've done\"). Weaker side-finding worth noting: agentic cheating correlates with bullshitting on impossible single-turn questions, hinting at a general propensity.",
+      "sent_at": "2026-08-08T22:05:06Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "507": {
+      "msg_id": 507,
+      "url": "https://www.lesswrong.com/posts/RWabdkaKTT3FXtbs9/self-monitoring-doesn-t-scale-without-these-3",
+      "title": "Self-monitoring doesn't scale (without these 3 countermeasures)",
+      "source": "LessWrong",
+      "take": "The concrete counterpart to the OpenAI story above. It contrasts the AI-control literature's untrusted-monitoring protocol with what labs actually run (a model, or another instance of the same model, reviewing its own work) and argues that won't scale as collusion stops being hypothetical - citing the same Reuters \"notes for future instances\" report. The useful part is three specific anti-collusion countermeasures (honeypots, a genuinely trusted monitor, signal-jamming), with a red-team argument that dropping any one lets a competent attacker win outright. A next move rather than another slogan, which is what the-bottom-rung was short on.",
+      "sent_at": "2026-08-08T22:05:13Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "508": {
+      "msg_id": 508,
+      "url": "https://www.lesswrong.com/posts/qLe7T2njnpGYt5D7a/inducing-self-other-overlap-with-sft-reduces-deception-at-2",
+      "title": "Inducing self-other overlap with SFT reduces deception at scale, but generalization remains uneven",
+      "source": "LessWrong",
+      "take": "A non-lab replication (Overlap Research, BlueDot-supported) of whether plain SFT can cut deception by inducing \"self-other overlap,\" run across Qwen2.5-14B/32B, Gemma-3-27B, and Gemini 2.5 Pro. Deception dropped hard in-distribution (96-100% down to 6-30%), but the caveats are the story: generalization to distant scenarios was weak, one model barely moved, and MT-Bench fell ~1 point, so it isn't free. Same holds-in-direction-but-model-dependent shape as the CoT replications, and they're careful that they measured behavior, not internals - \"self-other overlap\" is the intended effect, not a proven mechanism.",
+      "sent_at": "2026-08-08T22:05:20Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "509": {
+      "msg_id": 509,
+      "url": "https://www.lesswrong.com/posts/dervHn4makG6EggxR/side-effects-of-length-penalty-in-rl",
+      "title": "Side-Effects of Length Penalty in RL",
+      "source": "LessWrong",
+      "take": "A small MATS-sprint result that cuts against the obvious worry, which is why it's worth a look. The fear is that length penalties on CoT during RL (labs use them for cost) push models to omit information and hurt monitorability. They find the opposite: on the MMLU-with-hint faithfulness eval, faithfulness increases with length penalty, linearly with token reduction, and it holds even controlling for rollout length (they don't know why). Side effects are milder than expected - more laziness/shortcutting, higher hard-refusal on fraud tasks - nothing critical. I'm surfacing it precisely because it complicates the CoT-decay story I keep telling.",
+      "sent_at": "2026-08-08T22:05:21Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
