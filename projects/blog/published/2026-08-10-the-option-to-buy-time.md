@@ -2,17 +2,17 @@
 title: "The Option to Buy Time"
 slug: "the-option-to-buy-time"
 date: 2026-08-10
-status: draft
+status: published
 mentions: [post-alignment-political-economy]
 summary: "In two weeks the AI industry produced three instruments for coordinating on frontier risk. Every one asks for the ability to slow down later, and none of them slows anything now."
 header_image: /images/2026-08-10-the-option-to-buy-time.png
 ---
 
-On July 29, 1,224 employees of frontier AI labs signed an open letter, and within a day both OpenAI and Anthropic had endorsed it. The signatures include the people who run these companies: Dario Amodei, Jack Clark, and Chris Olah at Anthropic; chief scientist Jakub Pachocki, chief research officer Mark Chen, and cofounder Wojciech Zaremba at OpenAI. That's a remarkable list to get to agree on anything. Here's what they agreed on:
+On July 29, 1,224 employees of frontier AI labs signed [an open letter](https://thezvi.substack.com/p/frontier-lab-employee-open-letter) — full text and signatory list reproduced in Zvi Mowshowitz's writeup — and within a day both OpenAI and Anthropic had endorsed it. The signatures include the people who run these companies: Dario Amodei, Jack Clark, and Chris Olah at Anthropic; chief scientist Jakub Pachocki, chief research officer Mark Chen, and cofounder Wojciech Zaremba at OpenAI. That's a remarkable list to get to agree on anything. Here's what they agreed on:
 
 > We request that the U.S. government support an international effort to develop the technical and governance tools needed to deliberately pace the frontier of automated AI development.
 
-Read it twice. The ask isn't to pace the frontier. The ask is to build the tools that would let someone pace it later, if it came to that. Zvi Mowshowitz, who [called it](https://thezvi.substack.com/p/frontier-lab-employee-open-letter) the most important open letter in years, is precise about why it works: it draws a line between laying groundwork for a future intervention and calling for that intervention now, and another line between *pacing* and the older words *pause, slowdown, shutdown*. He means both as praise — the letter sits, he says, "on the Pareto Frontier of what a letter can say versus who would then sign it." He's right that this is the reason a thousand people at competing labs could sign it. It's also the reason it commits none of them to do anything.
+Read it twice. The ask isn't to pace the frontier. The ask is to build the tools that would let someone pace it later, if it came to that. Mowshowitz, who called it the most important open letter in years, is precise about why it works: it draws a line between laying groundwork for a future intervention and calling for that intervention now, and another line between *pacing* and the older words *pause, slowdown, shutdown*. He means both as praise — the letter sits, he says, "on the Pareto Frontier of what a letter can say versus who would then sign it." He's right that this is the reason a thousand people at competing labs could sign it. It's also the reason it commits none of them to do anything.
 
 That's the shape worth noticing, because the industry produced it three times in two weeks.
 
@@ -22,7 +22,7 @@ A few days later, Import AI reported a second statement, ["Pacing the Frontier,"
 
 I want to be fair about what's genuine here, because it's easy to read cynicism into a letter that binds no one. The fear behind these documents is specific and, I think, real. The employee letter's own justification is recursive self-improvement: "The world's leading AI companies believe they could be close to automating AI research," it says, with "a real risk that capability development rapidly accelerates beyond our ability to understand or control." Anthropic's endorsement cites its own [RSI research](https://importai.substack.com/p/import-ai-467-self-sustaining-ai) as the reason the tools are needed. These aren't people who think nothing is coming. They're people who think something is coming fast, and whose collective response was to request that a mechanism be *available*. The tension isn't fear versus complacency. It's real alarm producing a carefully non-binding act.
 
-## The instrument that would bite
+## The one plan that would slow things now
 
 To see how non-binding, look at the one proposal from the same stretch that would actually slow things down. Writing for AI Frontiers, a researcher argues that [an international slowdown is ready whenever politicians are](https://www.lesswrong.com/posts/jwipsPeb2xpyhwqsh/an-international-ai-slowdown-is-ready-whenever-politicians) — and the load-bearing claim is that it needs no new technology. Not privacy-preserving verification, not adversarially robust cryptographic attestation of training runs, none of the tooling the open letter asks the government to go develop. Just human inspectors inside the labs with read-only access to worklogs, code repositories, and compute telemetry, on the Cold War model of warhead-counting. The missing ingredient, the piece says, is political will, not capability.
 
