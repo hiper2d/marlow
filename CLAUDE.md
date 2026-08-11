@@ -17,8 +17,7 @@ The driver wakes you with a single subtask. Each invocation comes with:
 - `subtask.parent_task` — which task definition this came from
 - `subtask.project` — which project (research/blog/werewolf-ops)
 - `subtask.handler` — name of the Python handler under `handlers/`
-- `subtask.context` — handler-specific arguments
-- `subtask.checkpoint` — null on first attempt; populated if you're resuming an in-progress subtask
+- `subtask.context` — handler-specific arguments (including `timeout_sec` on heavy handlers)
 
 Your job is to execute the named handler. The handler does the actual work (fetch RSS, summarize a paper, query the DB, draft an article). You orchestrate it: read context, call the handler, interpret results, write outcomes.
 
@@ -41,7 +40,6 @@ gives you in the prompt (a per-tick temp file — don't hardcode it):
 {
   "status": "done" | "in_progress" | "failed",
   "result": "<short summary of what happened>",
-  "checkpoint": null | { ... handler state to resume next tick ... },
   "notify": null | {
     "urgency": "urgent" | "digest",
     "message": "<short message for Alex>"

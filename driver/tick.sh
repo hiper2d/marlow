@@ -297,7 +297,7 @@ fi
 if [ ! -f "$RESULT_FILE" ]; then
     log "WARNING: session did not write a result file — marking subtask failed"
     cat > "$RESULT_FILE" <<EOF
-{"status": "failed", "result": "session exited without writing result file", "checkpoint": null, "notify": null}
+{"status": "failed", "result": "session exited without writing result file", "notify": null}
 EOF
 fi
 

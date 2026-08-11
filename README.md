@@ -148,7 +148,7 @@ Each tick (launchd, every 20 min while awake):
 6. Invokes a Claude Code session: the shared `CLAUDE.md` (auto-loaded) **plus this loop's `profiles/<profile>/IDENTITY.md`** appended via `--append-system-prompt`, with the chosen subtask and the named handler. Hard wall-clock timeout: 5 min (heavy tasks declare their own, up to 15).
 7. Captures the handler's outcome:
    - `done` → move subtask to `tasks/completed/<profile>/<date>/`.
-   - `in_progress` → checkpoint stays in queue, picked up next tick.
+   - `in_progress` → stays in queue and is picked up again next tick, restarting from scratch (handlers are idempotent; no state is carried across ticks).
    - `failed` → log, alert via `notify` if critical.
 8. Releases the lock, appends a tick log to `memory/recent/`.
 
@@ -216,12 +216,11 @@ For dynamic work (e.g. "process every pending food entry"), use `decompose_handl
   "status": "pending",
   "priority": "high",
   "queued_at": "2026-06-01T08:00:00Z",
-  "started_at": null,
-  "checkpoint": null
+  "started_at": null
 }
 ```
 
-Statuses: `pending | in_progress | done | failed`. Most subtasks complete in one tick. For long-running work, the handler returns `{status: in_progress, checkpoint: ...}`; next tick the driver passes the checkpoint back so the handler resumes rather than restarts.
+Statuses: `pending | in_progress | done | failed`. Every subtask must complete in one tick. There is no cross-tick state: an `in_progress` subtask is re-picked ahead of new work on the next tick and **restarts from scratch**, which is safe because handlers are idempotent. Long work is bounded by the per-handler `timeout_sec` (300s default, 900s for `draft_article` and `grade_memory`, kept under the 1200s launchd interval) rather than resumed. A handler that cannot finish inside its timeout will repeat its opening indefinitely and nothing will report that as a failure — decompose it into separate subtasks instead.
 
 ## Handlers
 

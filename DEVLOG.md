@@ -800,3 +800,49 @@ Edge cases checked against the real snapshot: paid=2 fires the alarm; 7 signups 
 *A gap left open.* `MONITORED` is general / general-discussion / ai-news. **#welcome is not on the list**, and it is the one channel a newcomer is explicitly invited to post in - the natural landing spot for exactly this kind of drive-by. Not added today; flagging it as the obvious next tune.
 
 *Timing.* A `scan_discord` tick went in_progress while the yaml was being edited, so the new judgment text is live from this run onward.
+
+## 2026-08-11 - deleted the checkpoint scaffolding; the no-resume semantics are now written down
+
+*Why now.* Writing up the self-improvement arc for a dev.to piece surfaced that `checkpoint`
+reads as a working feature in three places (the queue schema, `README.md`, and `CLAUDE.md`,
+which Marlow loads every tick) and has never once been populated. The 2026-06-09 decision to
+defer it was correct and 900s made `draft_article` fit, so the field has been dead for two
+months while documenting a resumption path that does not exist. Alex's call: delete it rather
+than build it.
+
+*The argument against ever building it.* A checkpoint is state written by the thing whose
+failure you are recovering from, so a session that dies mid-work leaves a checkpoint exactly
+as trustworthy as the session that died. Resuming from a half-written one produces a task that
+continues confidently from a corrupt position and reports success - strictly worse than
+redoing fifteen idempotent minutes. Real checkpointing would also mean restructuring the
+drafting flow inside `CLAUDE.md`, i.e. an identity file Marlow can never edit herself.
+
+*What changed.* `driver/scheduler.py`: dropped the `checkpoint` field from `QueueItem`, the
+`--checkpoint` arg, its assignment in `complete`, and the usage line. `driver/tick.sh`: dropped
+`"checkpoint": null` from the no-result-file fallback JSON. `CLAUDE.md`: removed
+`subtask.checkpoint` from the subtask fields and from the result-file schema; the context line
+now names `timeout_sec` instead, which is the mechanism that actually exists. `README.md`: the
+`in_progress` bullet and the queue-schema section now state the real behaviour.
+
+*The migration order mattered, and it is worth recording.* `load_queue()` does
+`QueueItem(**item)`, so a persisted key with no matching field is a `TypeError` that would kill
+the scheduler and therefore the whole loop. Eight live items across `queue.json` and
+`queue.writer.json` carried a null `checkpoint`. Because the field had a default, stripping the
+JSON first is safe under the *old* code, and removing the field second is safe under the
+*stripped* JSON - so there is no window where the two are incompatible. Backed up all three
+queues first, verified no non-null checkpoints existed before stripping, and re-checked
+afterwards that no tick had re-added the key via `asdict`. Both profiles load, `dry-run` picks,
+`complete --help` is clean.
+
+*The gap this documents rather than fixes.* There is no solution for a task that needs longer
+than one tick - only an avoidance. A timed-out subtask is SIGKILLed (exit 124), stays
+`in_progress`, and is re-picked ahead of new work next tick, restarting from scratch. That is
+safe only because handlers are idempotent. **A handler that cannot make progress inside its
+timeout will repeat its opening every 20 minutes forever, and nothing in `monitor_self` will
+call that a failure** - the same quiet-and-wrong class as the Gemini check. The cheap detector
+would be a resumed-N-times-without-completing counter. Not built; `README.md` now at least warns
+about it instead of implying resumption works.
+
+*Note for whoever reads git next.* These four framework files were left uncommitted pending
+Alex's review, which means tonight's `commit_artifacts` sweep (`git add -A`) will fold them into
+a `chore(snapshot)` commit with no statement of intent - the footgun recorded on 2026-08-08.

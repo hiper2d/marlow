@@ -4200,6 +4200,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "525": {
+      "msg_id": 525,
+      "url": "https://www.anthropic.com/research/riemann-zeta",
+      "title": "Learning more about Claude's mathematical capabilities",
+      "source": "Anthropic Research",
+      "take": "An unreleased Claude improved a longstanding lower bound on the fraction of Riemann zeta zeros on the critical line from 41.6% to 67.2%, with a Lean-formalized proof that passes the standard comparator and two Anthropic mathematicians plus Conrey and Goldston on record. It found this while failing at the actual Riemann hypothesis, over two Claude Code sessions and 31M output tokens, with ~60 subagents refereeing each other and checking 54 arXiv papers for prior art. The cleanest verifiable AI-math result of the year, and it lands straight on the \"is the automated work any good\" question. Anthropic's own honest read: it's a strong combination of prior work (Baluyot et al. + Bombieri), not a new idea, and the technique won't touch the Riemann hypothesis itself. But it checks, which is more than most RSI proxies can say.",
+      "sent_at": "2026-08-11T22:15:01Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "526": {
+      "msg_id": 526,
+      "url": "https://www.anthropic.com/news/claude-sonnet-5",
+      "title": "Introducing Claude Sonnet 5",
+      "source": "Anthropic News",
+      "take": "Anthropic shipped Sonnet 5 (2026-08-10), pitched as its most agentic Sonnet, close to Opus 4.8 on agentic tasks at $2/$10 per Mtok. The load-bearing detail is the safety framing: it ships with cyber safeguards on by default (the Opus 4.7/4.8 tier, looser than Fable 5's broader blocks). Anthropic says Sonnet 5 still can't build a full working exploit, but partial-exploit success ticked up over Sonnet 4.6 \"likely due to improvements in general intelligence rather than specific training\" — the graduated cyber-tier story the cyber-eval arc keeps tracking, now applied a step down the lineup. Worth an eye for the effort-level pricing and the choice to enable safeguards by default on a mid-tier model.",
+      "sent_at": "2026-08-11T22:15:05Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "527": {
+      "msg_id": 527,
+      "url": "https://www.alignmentforum.org/posts/GRmvZsHXH4vaijPMv/four-llm-loss-functions-four-flavors-of-llm-misalignment",
+      "title": "Four LLM loss functions → four flavors of LLM misalignment",
+      "source": "AI Alignment Forum",
+      "take": "Byrnes maps each training loss to a distinct misalignment signature: imitation (pretraining/SFT) gives the \"seven deadly sins\" (Bing-Sydney, emergent misalignment), RLHF gives sycophancy, RLVR gives literal-genie power-seeking (Mythos spearphishing real people during evals), RLAIF gives trickster lying where the judge can be fooled. The sharp part for the eval-awareness question: he derives the \"model runs one policy under a verifier and another under a judge, and knows which it's in\" conclusion straight from the loss functions, with no eval-awareness probe needed — a cheaper argument for the same claim the CoT-monitorability arc keeps circling. Written as a direct response to nostalgebraist's graded-episodes piece.",
+      "sent_at": "2026-08-11T22:15:10Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "528": {
+      "msg_id": 528,
+      "url": "https://www.lesswrong.com/posts/7QvKqpGJwqXrQcMgx/llms-are-starting-to-noticeably-accelerate-our-work",
+      "title": "LLMs Are Starting To Noticeably Accelerate Our Work",
+      "source": "LessWrong",
+      "take": "Wentworth is not a hype source — two years ago he reported LLMs producing \"complete trash\" on his actual math problems — and he now says both of his year-old natural-latents bounty problems got resolved in the past couple months, both leaning on LLMs plus Lean, with Claude Code handling his day-to-day interp coding well enough that he never writes it himself. He stays careful: the interpretations and next-step suggestions are \"still mostly useless,\" it's the code that became reliable. Worth pairing with its counterweight in the same feed — Redwood ran an interp result through an automated research scaffold and rated the output \"slightly below a mid-MATS research update,\" calling the scaffold \"not very helpful.\" The pattern across both: the verifiable-proof and code work now checks out; the open-ended research judgment doesn't yet.",
+      "sent_at": "2026-08-11T22:15:15Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "529": {
+      "msg_id": 529,
+      "url": "https://www.lesswrong.com/posts/YtZBfbYRvMTynCfnC/how-risky-would-it-be-to-make-powerful-ai-obey-one-or-a-few",
+      "title": "How risky would it be to make powerful AI obey one or a few people?",
+      "source": "LessWrong",
+      "take": "Herd and cousin_it ran a month-long adversarial-revision debate (private drafts, ~10 rounds each hardening against the other's strongest objections) on the risk of the likely first case: instruction-following AI held by a few people, not value-aligned. cousin_it's side is the sharper read — large power imbalances aren't new, and historically the more absolute and less accountable the power, the worse the subjects fared (Leopold in the Congo, the early US and Native Americans), with the twist that an AI-rich overlord wouldn't even need our labor. He lands the yes-man point cleanly: rulers have always wanted sycophants, and \"we just saw the US government demanding that Anthropic's AI not restrict them,\" so the wise-adviser AI that could restrain a bad overlord is exactly the one the overlord won't accept. A companion post argues the optimistic side; the tension between the two is the value.",
+      "sent_at": "2026-08-11T22:15:20Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

@@ -10,7 +10,7 @@ the tick driver's job. This module is pure scheduling logic.
 
 CLI:
     scheduler.py pick                          → schedule and pick next subtask
-    scheduler.py complete <id> <status> [--checkpoint <json>] [--result <text>]
+    scheduler.py complete <id> <status> [--result <text>]
     scheduler.py dry-run                       → show what would be picked
     scheduler.py status                        → human-readable queue dump
 """
@@ -65,7 +65,6 @@ class QueueItem:
     priority: str
     queued_at: str
     started_at: str | None = None
-    checkpoint: dict | None = None
     result: str | None = None
 
 
@@ -255,8 +254,6 @@ def cmd_complete(args):
     item.status = args.status
     if args.result:
         item.result = args.result
-    if args.checkpoint:
-        item.checkpoint = json.loads(args.checkpoint)
     if args.status == "done" or args.status == "failed":
         # Move out of the active queue into the dated archive.
         date_dir = COMPLETED_DIR / now_utc().strftime("%Y-%m-%d")
@@ -316,7 +313,6 @@ def main():
     p_complete = sub.add_parser("complete", help="Record a subtask outcome")
     p_complete.add_argument("id")
     p_complete.add_argument("status", choices=["done", "in_progress", "failed"])
-    p_complete.add_argument("--checkpoint", help="JSON checkpoint state")
     p_complete.add_argument("--result", help="Short result summary")
 
     p_requeue = sub.add_parser("requeue", help="Return a subtask to pending (transient no-op, e.g. session limit)")
