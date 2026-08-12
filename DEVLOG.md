@@ -846,3 +846,51 @@ about it instead of implying resumption works.
 *Note for whoever reads git next.* These four framework files were left uncommitted pending
 Alex's review, which means tonight's `commit_artifacts` sweep (`git add -A`) will fold them into
 a `chore(snapshot)` commit with no statement of intent - the footgun recorded on 2026-08-08.
+
+## 2026-08-12 - the Qwen monitor had never once read the setting it was reporting
+
+*What landed.* `handlers/scrape_stats.py`: the Qwen free-tier extractor now reads the per-model
+auto-stop state off the row's `<button role="switch" aria-checked>` and emits an `auto_stop`
+bool, replacing the `mode` string it used to scrape from the cell's `innerText`. Severity in
+`_derive_issues` branches on it: a guarded model keeps the 50/20 thresholds and pages on zero;
+an unguarded one skips both pre-warnings and emits a single `quota_crossover` digest at 0%.
+Added `guarded_models` so a still-guarded model that isn't the worst one gets named, since
+nothing in the old shape would ever have mentioned it. `auto_stop: null` means the control was
+missing: that emits `parse_failed` and falls back to the guarded read rather than guessing.
+
+*The bug.* The Actions cell holds the toggle **plus a static label reading "Free quota only"
+that never changes**. The extractor read the label. So it reported every model as auto-stopped
+regardless of switch position, and had done since it shipped on 08-06 - it never observed the
+real setting even once. This surfaced when the 08-12 tick fired an urgent saying qwen3.7-plus
+at 7.6% would "stop rather than bill", Alex said auto-stop was off for the models he uses, and
+the console agreed with him: `aria-checked="false"` on all three, and on all ten rows of page one.
+
+*Decisions reconsidered.* The 2026-08-06 entry below states as fact that "every model is set to
+Free quota only (auto-stop), so an exhausted grant makes the game's calls fail, never bill."
+That was never verified - it was the parse bug reflected back. Correction: the free grant is
+always spent before the card, so with auto-stop off, exhaustion is a silent handoff to
+pay-as-you-go, not an outage.
+
+*Things that surprised us.* Tier 3's failure taxonomy gets a third entry, and it is the worst
+shape yet. GLM 06-11 read a plausible wrong number. Mistral 07-26 read nothing and failed loud.
+This one read a **real string off the real row** and was wrong about what the string meant - no
+parse error to catch, no zero to distrust, and the value was stable across every run, which
+reads as healthy. The generalizable rule: a cell that renders text next to a control is not a
+state readout. Check for an input inside the cell before parsing its text as state.
+
+*Worth recording from the docs* (`docs.qwencloud.com/resources/free-quota.md`, since none of this
+is inferable from the console): the grant is one-time and non-renewing, 90 days from account
+activation, remainder void at expiry and never reissued. But a model released *after* signup
+gets its own fresh 1M dated from its release, and a dated snapshot counts as a separate model
+from the undated latest - so adding Qwen models to the game is also adding free grants. Tool
+call fees (built-in web search, $10/1k calls) are not covered by the grant.
+
+*What's deferred.* Qwen still has no money metric. Once auto-stop is off the honest thing to
+track after crossover is spend, but the console's pay-as-you-go page has read $0.00 all month
+and there is nothing yet to learn its shape from. Waiting for real charges before designing it;
+until then `budget_state.render()` keeps printing the quota percent every run, which is
+visibility without alerting, and that is what Alex asked for.
+
+*State at end of day.* Verified against the live console: all three tracked models
+`auto_stop: false`, today's reading produces zero issues. Derivation exercised across eight
+states (guarded/unguarded/unreadable x above/below/at zero). Marlow + Simona.

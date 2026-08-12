@@ -70,6 +70,11 @@ CRITICAL_CAP_FRAC = 0.95  # urgent
 # a 25% threshold would fire once and be at zero on the next run. 50/20 buys
 # roughly two days and one day of notice at that rate; lower them if the real
 # steady-state burn turns out slower than launch week.
+#
+# These apply ONLY to models whose auto-stop switch is on, where hitting zero is
+# an outage. With auto-stop off, exhaustion just starts billing and there is
+# nothing to warn ahead of, so _derive_issues skips both thresholds and reports
+# the crossover alone.
 QUOTA_LOW_PCT = 50.0       # digest
 QUOTA_CRITICAL_PCT = 20.0  # urgent
 QUOTA_EXPIRY_WARN_DAYS = 7  # digest — the grant expires on a date, not just on use
@@ -289,11 +294,18 @@ MINIMAX = {
 # Qwen / QwenCloud — added 2026-08-06 with the Qwen3.7/3.8 models. This one is
 # NOT a money balance and doesn't fit either existing metric. QwenCloud gives new
 # accounts a 90-day free tier of 1M tokens PER MODEL (Alex registered 2026-08-05
-# → expires 2026-11-05), and every model is set to "Free quota only" (auto-stop),
-# so when a model's grant is gone the game's calls to it simply FAIL — they never
-# silently start billing. The number that matters is therefore percent-of-grant
-# remaining on the three models the game actually uses, not dollars: the console's
-# pay-as-you-go page reads $0.00 and will keep reading $0.00 while the grant lasts.
+# → expires 2026-11-05). It is one-time and does not renew: per QwenCloud's docs
+# the remainder is void at expiry and is never reissued, though a model released
+# AFTER signup gets its own fresh grant dated from its release (and a dated
+# snapshot counts as a separate model from the undated latest).
+#
+# Whether exhaustion hurts depends on the per-model auto-stop switch. On, calls
+# to that model FAIL rather than bill. Off, they roll onto pay-as-you-go, since
+# the free grant is always spent before the card. Alex turned auto-stop OFF for
+# the tracked models on 2026-08-12, so exhaustion is now a billing crossover and
+# not an outage. Percent-of-grant is still the only number the console gives
+# while the grant lasts (its pay-as-you-go page reads $0.00 throughout), so we
+# keep reading it - but see _derive_issues for how much noise it earns.
 #
 # The console's own JSON endpoint (/data/api.json?product=freetier&action=
 # ListBailianFreetier) is POST-with-CSRF ("PostonlyOrTokenError" on a plain GET),
@@ -318,7 +330,17 @@ QWEN = {
       set.call(i, __CODE__); i.dispatchEvent(new Event('input',{bubbles:true}));
       return JSON.stringify({ok:true});})()""",
     # Row cells: ['', code, quota, consumed, 'NN.NN%', 'YYYY-MM-DD\\nN days remaining',
-    # status, mode] — a leading blank cell (row selector), so index off the code cell.
+    # status, actions] - a leading blank cell (row selector), so index off the code cell.
+    #
+    # The last cell is NOT a state readout. It holds the auto-stop toggle plus a
+    # STATIC label reading "Free quota only" that never changes. Until 2026-08-12
+    # this extractor took that label as `mode` and so reported every model as
+    # guarded no matter where the switch sat - it had never once observed the
+    # real setting. The state lives on the control:
+    #   <button role="switch" aria-checked="true|false"
+    #           data-autolog="key=benefits.free_tier.table.safe_mode.toggle">
+    # so read aria-checked and emit a bool. null means the control was missing,
+    # which the caller treats as "assume guarded" rather than guessing.
     "row_js": """(()=>{const code=__CODE__;
       const row=[...document.querySelectorAll('tr')].find(r=>
         [...r.querySelectorAll('td')].some(c=>c.innerText.trim()===code));
@@ -328,9 +350,12 @@ QWEN = {
       const pct=parseFloat(String(cells[k+3]||'').replace('%',''));
       const exp=String(cells[k+4]||'');
       const days=(exp.match(/([0-9]+)\\s*days? remaining/)||[])[1];
+      const sw=row.querySelector('[role="switch"]');
+      const aria=sw?sw.getAttribute('aria-checked'):null;
       return JSON.stringify({found:true, code, quota:cells[k+1]||null, consumed:cells[k+2]||null,
         remaining_pct: isNaN(pct)?null:pct, expires:(exp.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)||[])[0]||null,
-        days_left: days?parseInt(days,10):null, status:cells[k+5]||null, mode:cells[k+6]||null});})()""",
+        days_left: days?parseInt(days,10):null, status:cells[k+5]||null,
+        auto_stop: aria===null?null:aria==='true'});})()""",
 }
 
 QWEN_SEARCH_SETTLE_S = 2.5   # the table re-renders client-side; no network wait needed
@@ -417,6 +442,12 @@ def _check_qwen(settle_s: float = NAV_SETTLE_S) -> dict:
             "remaining_pct": worst["remaining_pct"], "worst_model": worst["code"],
             "days_left": min(days) if days else None,
             "expires": worst.get("expires"),
+            # Auto-stop of the model the headline is about, so the issue text and
+            # the number it quotes always describe the same row.
+            "auto_stop": worst.get("auto_stop"),
+            # Any tracked model still guarded is worth naming even when it isn't
+            # the worst one: that's the one that will fail instead of billing.
+            "guarded_models": [m["code"] for m in models if m.get("auto_stop") is True],
             "models": models, "missing_models": misses}
 
 
@@ -546,20 +577,48 @@ def _derive_issues(results: list[dict]) -> list[dict]:
                                "detail": f"{name} balance ${usd:.2f} (< ${LOW_USD:.0f}). Top up soon."})
         elif r.get("metric") == "quota":
             # Qwen: percent of the per-model free-token grant still left, taken
-            # from whichever tracked model is furthest along. Exhausted means the
-            # game's calls to that model start FAILING (auto-stop), not billing.
+            # from whichever tracked model is furthest along. What running out
+            # MEANS depends on that model's auto-stop switch, so the severity
+            # has to branch on it:
+            #   guarded   -> calls to the model start FAILING. Outage-shaped,
+            #                so warn early and loudly, and page on the zero.
+            #   unguarded -> calls roll onto pay-as-you-go. No disruption, so
+            #                the pre-warnings are pure noise; say it once at the
+            #                crossover so the spend doesn't start unannounced.
             pct, model = r.get("remaining_pct"), r.get("worst_model")
-            if pct is not None:
+            guarded = r.get("auto_stop")
+            if guarded is None:
+                # Never guess this one. A missing switch means the extractor is
+                # broken, and silently assuming either mode invents a fact.
+                issues.append({"severity": "digest", "kind": "parse_failed", "target": name,
+                               "detail": f"{name} auto-stop switch unreadable on {model}; "
+                                         "assuming guarded, so the quota lines below may overstate this."})
+            if pct is None:
+                pass
+            elif guarded is False:
                 if pct <= 0:
-                    issues.append({"severity": "urgent", "kind": "quota_exhausted", "target": name,
-                                   "detail": f"{name} free quota exhausted on {model} — that model is now failing in-game."})
-                elif pct < QUOTA_CRITICAL_PCT:
-                    issues.append({"severity": "urgent", "kind": "quota_critical", "target": name,
-                                   "detail": f"{name} free quota {pct:.1f}% left on {model} (< {QUOTA_CRITICAL_PCT:.0f}%). "
-                                             "It stops rather than bills — swap the model or add credit."})
-                elif pct < QUOTA_LOW_PCT:
-                    issues.append({"severity": "digest", "kind": "quota_low", "target": name,
-                                   "detail": f"{name} free quota {pct:.1f}% left on {model} (< {QUOTA_LOW_PCT:.0f}%)."})
+                    issues.append({"severity": "digest", "kind": "quota_crossover", "target": name,
+                                   "detail": f"{name} free grant used up on {model}. Calls to it now bill "
+                                             "pay-as-you-go instead of failing, so track spend from here, "
+                                             "not quota. The grant is one-time and won't come back."})
+            elif pct <= 0:
+                issues.append({"severity": "urgent", "kind": "quota_exhausted", "target": name,
+                               "detail": f"{name} free quota exhausted on {model} - that model is now failing in-game."})
+            elif pct < QUOTA_CRITICAL_PCT:
+                issues.append({"severity": "urgent", "kind": "quota_critical", "target": name,
+                               "detail": f"{name} free quota {pct:.1f}% left on {model} (< {QUOTA_CRITICAL_PCT:.0f}%). "
+                                         "Auto-stop is ON for it, so it stops rather than bills - turn auto-stop "
+                                         "off, swap the model, or add credit."})
+            elif pct < QUOTA_LOW_PCT:
+                issues.append({"severity": "digest", "kind": "quota_low", "target": name,
+                               "detail": f"{name} free quota {pct:.1f}% left on {model} (< {QUOTA_LOW_PCT:.0f}%)."})
+            # A guarded model that isn't the worst one still fails on its own
+            # zero, and nothing above would ever mention it.
+            others = [c for c in (r.get("guarded_models") or []) if c != model]
+            if others and guarded is False:
+                issues.append({"severity": "digest", "kind": "quota_guarded", "target": name,
+                               "detail": f"{name} auto-stop still ON for: {', '.join(others)}. "
+                                         "Those fail instead of billing when their grant runs out."})
             days = r.get("days_left")
             if days is not None and days <= QUOTA_EXPIRY_WARN_DAYS:
                 issues.append({"severity": "digest", "kind": "quota_expiring", "target": name,
