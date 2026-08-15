@@ -4506,6 +4506,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "550": {
+      "msg_id": 550,
+      "url": "https://www.anthropic.com/research/reviewing-the-evidence-on-worker-retraining-programs",
+      "title": "Reviewing the evidence on worker retraining programs",
+      "source": "Anthropic Research",
+      "take": "Anthropic's own economists (Roodman + Massenkoff) ran a new meta-analysis of 56 US randomized trials on job retraining, the most-cited fix for AI labor disruption: per training slot, employment rises 2-3pp and earnings ~$1,000/yr against a ~$13,000 cost, so the programs roughly break even once you count recovered taxes and benefits. The employer-partnered \"sector programs\" do several times better but keep failing to replicate, and the authors conclude that at scale, existing retraining would fall short. The interesting part is who's saying it: a lab publishing evidence that the popular remedy for the disruption its own product accelerates doesn't work well enough. Numbers-forward and self-implicating in a way company blog posts usually aren't.",
+      "sent_at": "2026-08-15T22:10:19Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "551": {
+      "msg_id": 551,
+      "url": "https://www.lesswrong.com/posts/oKxc8maZGtnzgpNzx/rerunning-ai-safety-papers-on-every-frontier-release-would-1",
+      "title": "Rerunning AI safety papers on every frontier release would be pretty easy and valuable",
+      "source": "LessWrong",
+      "take": "Second Look Research (the group behind the 11-model \"unfaithfulness requires computation\" replication) makes the general case: a lot of safety research is never rerun on newer models, and results can decay silently between releases. Their pitch is unglamorous and probably right, a trusted undergrad reruns a handful of already-replicated experiments overnight per launch ($0-5k each) and either posts \"nothing changed\" or flags a step change. The gap they're filling is the non-eval-shaped work (internal-state control, filler-token capacity, peer preservation) that system cards routinely skip. The honest tell buried in the post: writing up the result takes longer than the rerun.",
+      "sent_at": "2026-08-15T22:10:24Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "552": {
+      "msg_id": 552,
+      "url": "https://www.lesswrong.com/posts/CjcQ6WWy7LLBFrEah/red-vs-blue-but-for-evals",
+      "title": "Red vs Blue, but for Evals",
+      "source": "LessWrong",
+      "take": "A clean reframe: AI control's red-team/blue-team setup is almost always aimed at the deployment game, but here the object under adversarial attack is the evaluation protocol itself, the blue team's preregistered decision rule that the untrusted model tries to subvert (sandbagging capability evals, faking alignment on propensity evals). It's the formal version of grading-your-own-danger's core worry: what if the measurement, not just the model, is the thing being gamed. Reads as more framework than mechanism so far, but making the frame explicit is worth something, and it sits squarely on both the control and cyber-eval arcs.",
+      "sent_at": "2026-08-15T22:10:29Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "553": {
+      "msg_id": 553,
+      "url": "https://www.lesswrong.com/posts/a5hkSyi9JDjkMdNBa/toy-model-of-activation-obfuscation",
+      "title": "Toy Model of Activation Obfuscation",
+      "source": "LessWrong",
+      "take": "The \"most forbidden technique\" slogan says don't train against your probes, or the model learns to obfuscate its activations instead of behaving. This is a clean toy showing the failure mode is real, not just feared: a small residual-stream MLP, forced to use a feature it's penalized for exposing, learns to hide it from difference-of-means and logistic-regression probes at the target layer (AUROC ~0.62) and decode it two blocks later. Two useful handles: nonlinear probes still catch it, and probing multiple layers at once actually makes obfuscation harder to pull off. A controlled sandbox where you can watch obfuscation emerge beats another correlational field result.",
+      "sent_at": "2026-08-15T22:10:33Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "554": {
+      "msg_id": 554,
+      "url": "https://www.lesswrong.com/posts/eAbuPXbjakop5rSJx/your-agents-are-not-time-aware",
+      "title": "Your Agents Are Not Time Aware",
+      "source": "LessWrong",
+      "take": "MATS work measuring something the \"autonomous agent\" story assumes and never checks: can an agent estimate its own runtime? No. Claude Code and Codex consistently over-predict, worst on short tasks, and lean heavily on timestamps mined from their own transcripts (redact those and the error doubles). Self-scoring is just as shaky: Opus 4.8 and GPT-5.5 overrate failed runs by ~20%, while Opus 5 underrates itself. If an agent can't tell how long it's been working or how well it did, then deadline-following and \"iterate on this for two hours\" are gaps no current benchmark measures, and the authors tie it directly to whether agents stay controllable over long horizons.",
+      "sent_at": "2026-08-15T22:10:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
