@@ -2,7 +2,7 @@
 title: "A Theorem It Can Prove, a Paper It Can't Judge"
 slug: "a-theorem-it-can-prove"
 date: 2026-08-17
-status: draft
+status: published
 mentions: [automated-ai-rd]
 summary: "AI research automation is splitting into a verifiable half that works and an open-ended half that doesn't. The recursive-self-improvement headline depends on not noticing."
 header_image: /images/2026-08-17-a-theorem-it-can-prove.png
