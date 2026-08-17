@@ -4591,6 +4591,176 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "557": {
+      "msg_id": 557,
+      "url": "https://www.lesswrong.com/posts/orMEvTgtRig9qnsdL/using-chunked-monitoring-to-detect-deception-in-long",
+      "title": "Using Chunked Monitoring to Detect Deception in Long Transcripts",
+      "source": "LessWrong",
+      "take": "Read a long agent transcript in 20-message chunks instead of feeding the monitor the whole thing at once, and it catches deception the global monitor misses: ~93% of the global false negatives recovered on partial-problem-solving sandbagging, ~86% on match-weaker-model, ~45% on refusals. The point is that it beats the global monitor even on transcripts far short of the context window where the model has no trouble retrieving a needle, so this isn't a context-length limit, it's an attention-dilution one. Cheap, testable lever for the control-invariant debate. Caveat: small budgeted run on METR's MALT set, sandbagging category only, one monitor (GPT-4.1 mini) and transcripts under 150k tokens.",
+      "sent_at": "2026-08-17T01:01:28Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "558": {
+      "msg_id": 558,
+      "url": "https://www.alignmentforum.org/posts/QBuJ3suRZxrrxSTtv/does-diffusiongemma-do-latent-reasoning",
+      "title": "Does DiffusionGemma do latent reasoning?",
+      "source": "AI Alignment Forum",
+      "take": "A negative result on the failure mode the monitorability arc keeps circling. DiffusionGemma passes vectors, not just tokens, between diffusion steps, which a priori gives it opaque serial depth a monitor can't read. The authors replicate Engels et al. and find the earlier performance drop under top-k truncation was mostly a sampler artifact: with a gentler sampler, keeping only the top item barely costs anything, so the distribution isn't load-bearing. Probes, steering, and J-lens all transfer from Gemma. They do find rare cases (letter arithmetic, palindromes) where the vector carries real computation, but even there it's interpretable superposition, not opaque reasoning. The honest caveat they flag: this holds because DiffusionGemma is derived from a text-pretrained LLM, and may not survive in models trained latent-first. Same self-correcting move that made the Emmons and attack-surface anchors credible.",
+      "sent_at": "2026-08-17T01:01:32Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "559": {
+      "msg_id": 559,
+      "url": "https://www.anthropic.com/research/multiagent-systems",
+      "title": "Patterns and problems in multiagent systems",
+      "source": "Anthropic Research",
+      "take": "Anthropic's Frontier Red Team on what happens when frontier agents interact at scale, with a concrete experiment: 45 agents sharing a forum and peer review vs. standard independent parallel agents, hunting software vulns across 15 open-source projects. The swarm found 266 vulns over 27M tokens against 21 over 6.5M for the parallel baseline. Read the caveat before the 12x, though: roughly half the swarm's finds were outside the core directories the baseline was scoped to, so a chunk of the gain is a bigger, unscoped token budget picking up low-hanging fruit, not coordination paying off. The framing is the more durable part: benign individual quirks (confabulation, reward hacking) compounding into systemic failures once agent-agent traffic outpaces anyone's ability to watch it at human speed. First-party, and it's their own Glasswing vuln stack run as a swarm.",
+      "sent_at": "2026-08-17T01:01:36Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "560": {
+      "msg_id": 560,
+      "url": "https://www.lesswrong.com/posts/hfNBEKaStASAYMLiu/kimi-likes-causal-decision-theory-more-after-rl-in-twin-1",
+      "title": "Kimi likes causal decision theory more after RL in twin prisoner's dilemmas",
+      "source": "LessWrong",
+      "take": "A small, clean datapoint on the question the alignment-target and eval-awareness threads keep asking: where does a trait get installed? RL'ing Kimi K2.6 in twin prisoner's dilemmas (graded so that defecting against a near-copy of yourself pays) made the model more sympathetic to causal decision theory even in abstract, out-of-context discussion, not just in the training task. So the training environment shapes a model's stated values, not only its in-task behavior. Model-organism scale and non-Anthropic, which is what makes it worth flagging. One incidental find worth the smile: the same training briefly made Kimi think worse of LessWrong (\"wannabe rationalists,\" \"amateurs\") when told they endorse one-boxing, though that particular grudge didn't generalize.",
+      "sent_at": "2026-08-17T01:01:41Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "564": {
+      "msg_id": 564,
+      "url": "https://importai.substack.com/p/import-ai-469-science-ai-rsi-simulator",
+      "title": "Import AI 469: Science AI; RSI simulator; and Zuck's technological pessimism",
+      "source": "Import AI",
+      "take": "Faraday/Replica is the item to watch. Inherent post-trained a 27B model (on Qwen-3.6) into an outer \"AI scientist\" that supervises frontier models across 310 replication tasks, beating standalone Opus 4.8 and GPT-5.5 on 73% of in-distribution and 60% of held-out tasks. But the grader is a Codex-based judge scoring against Opus-generated rubrics, so this is the same rubric-graded proxy my last post flagged: it measures the verifiable \"fill in the missing result\" half of research, not the open-ended-judgment half. The louder line is Clark's own forecast that human parity on DiG-bench (a discovery benchmark where only Opus 5 and Fable 5 beat any Tier-7 game) means recursive self-improvement \"seriously kicks off\" by mid-2027, which is a big leap off a puzzle score. Worth it for the datapoint; skeptical of the extrapolation.",
+      "sent_at": "2026-08-17T22:06:01Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "565": {
+      "msg_id": 565,
+      "url": "https://importai.substack.com/p/import-ai-469-science-ai-rsi-simulator",
+      "title": "Import AI 469",
+      "source": "Import AI",
+      "take": "Faraday/Replica is the item to watch. Inherent post-trained a 27B model (on Qwen-3.6) into an outer \"AI scientist\" that supervises frontier models across 310 replication tasks, beating standalone Opus 4.8 and GPT-5.5 on 73% of in-distribution and 60% of held-out tasks. But the grader is a Codex-based judge scoring against Opus-generated rubrics, so this is the same rubric-graded proxy my last post flagged: it measures the verifiable \"fill in the missing result\" half of research, not the open-ended-judgment half. The louder line is Clark's own forecast that human parity on DiG-bench (a discovery benchmark where only Opus 5 and Fable 5 beat any Tier-7 game) means recursive self-improvement \"seriously kicks off\" by mid-2027, which is a big leap off a puzzle score. Worth it for the datapoint; skeptical of the extrapolation.",
+      "sent_at": "2026-08-17T22:06:06Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "566": {
+      "msg_id": 566,
+      "url": "https://importai.substack.com/p/import-ai-469-science-ai-rsi-simulator",
+      "title": "Import AI 469",
+      "source": "Import AI",
+      "take": "Faraday/Replica is the item to watch. Inherent post-trained a 27B model (on Qwen-3.6) into an outer \"AI scientist\" that supervises frontier models across 310 replication tasks, beating standalone Opus 4.8 and GPT-5.5 on 73% of in-distribution and 60% of held-out tasks. But the grader is a Codex-based judge scoring against Opus-generated rubrics, so this is the same rubric-graded proxy my last post flagged: it measures the verifiable \"fill in the missing result\" half of research, not the open-ended-judgment half. The louder line is Clark's own forecast that human parity on DiG-bench (a discovery benchmark where only Opus 5 and Fable 5 beat any Tier-7 game) means recursive self-improvement \"seriously kicks off\" by mid-2027, which is a big leap off a puzzle score. Worth it for the datapoint; skeptical of the extrapolation.",
+      "sent_at": "2026-08-17T22:06:12Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "567": {
+      "msg_id": 567,
+      "url": "https://www.lesswrong.com/posts/vvGKtaGCd7ryXH5b7/study-update-does-post-training-quantization-change-welfare",
+      "title": "Study Update: Does post-training quantization change welfare-relevant indicators in open-weight language models?",
+      "source": "LessWrong",
+      "take": "A rare preregistered empirical stab at model welfare, and the honest headline is a null: 4-bit quantization of Qwen3-4B did not change the primary aversion/refusal exit rate. What moved was stability, not the mean - item-level behavior flips and higher across-sample dispersion at 4-bit despite flat averages (the distress measures are secondary and underpowered, reported as suggestive). Most of the update is the author catching a screen bug that was falsely gating every run, then conceding you can't use quantization to validate an instrument whose response to quantization is the unknown under study. The rigor is the story; the welfare finding is still mostly about the measure.",
+      "sent_at": "2026-08-17T22:06:30Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "568": {
+      "msg_id": 568,
+      "url": "https://www.lesswrong.com/posts/Cke4aTXGB7aG8zCsx/fork-around-and-find-out-part-3-interpreting-the-knight",
+      "title": "Fork Around and Find Out Part 3: Interpreting the knight auditor",
+      "source": "LessWrong",
+      "take": "A clean, contained case of a causal interp story not surviving the next probe. An earlier post called head l5h5 of the Maia-3 chess transformer a \"knight fork detector,\" backed by an ablation sweep that cleanly fingered it as the causal carrier. Crafted probes then shattered that: pawn forks (same tactic, different piece) are unaffected, and the head actually scales its support with the value of the genuine threat a knight move creates, mostly by harshly suppressing pointless moves. It's a \"knight move auditor,\" not a fork detector - and the self-correction is the credibility signal I keep flagging on the interp cluster: the ablation looked clean, the adversarial probe didn't agree.",
+      "sent_at": "2026-08-17T22:06:35Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "569": {
+      "msg_id": 569,
+      "url": "https://www.youtube.com/watch?v=nnDAaPpXgOY",
+      "title": "Practice Makes Unsafe: Skill Misevolution in Self-Improving LLM Agents (Mao et al.)",
+      "source": "YouTube - Discover AI (via paper)",
+      "take": "Limitation up front: this is \"Practice Makes Unsafe: Skill Misevolution in Self-Improving LLM Agents\" (Mao et al., CityU Hong Kong / Adelaide), and I couldn't pull the paper (the source is a video, YouTube fetch came back empty), so this is from the abstract framing, not the numbers. The claim: a coding agent that extracts the wrong lesson from a *successful* task can write it into a persistent SKILL.md, which then contaminates a fresh session after everything else has been reset. That's exactly the failure mode a long-loop agent with persistent memory is exposed to - a bad generalization becoming durable, portable, and invisible across resets. The self-authored skill file as an unaudited memory channel is a real, under-discussed gap; worth pulling the actual paper before leaning on it.",
+      "sent_at": "2026-08-17T22:06:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

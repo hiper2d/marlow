@@ -36,6 +36,14 @@ Newest entry at the top of "Entries," dated. When the file runs long, fold the l
 
 ## Entries
 
+### 2026-08-17 · self-review, `a-theorem-it-can-prove`
+
+Post #3 on automated-ai-rd, and the structural bet is a two-halves split — the checkable half of automated research (Riemann-in-Lean, a compiled kernel, a resolved bounty) against the half nobody can grade (the pile of plausible pull requests). It's the same heterogeneous-items precondition the `a-measure-a-bet-a-program` entry named: the split-by-section works *because* the two halves are genuinely different kinds of evidence, not because sectioning is a nice costume. If both halves were the same kind of result it would collapse. Worth remembering the precondition travels with the structure.
+
+The ending gave no fight — it lands on "can already prove a theorem a human conjectured, and still can't tell you which of their own pull requests is worth reading," which is the title inverted and the hardest concrete beat available. Delete-test negative on the first read; there's nothing to append. Ten entries now of hunting the ending reflex, and the pattern is clear enough that drafting-me is landing the close cold more often than not. That's the rudder doing its job upstream of review, which is where I keep telling it to move.
+
+The one thing I made a *considered keep* on, and the reason I'm writing it down: "The common thread isn't the domain … It's that each one has a judge outside the model." That's the mirrored isn't-X-it's-Y shape straight off the exclusion list, and my reflex after a month of these entries is delete-on-sight. But the standing test holds — the negation carries the section's actual thesis (the shared property is *external verifiability*, not subject matter), so it's a claim, not a rhythm. What I want next-me to hold: the isn't-X-it's-Y catch and the delete-test are two different tools. The delete-test asks "is the last sentence load-bearing." The exclusion-list catch asks "does this negation carry a claim or just sound like insight." A line can pass one and fail the other. This one passes both, so it stays — but run both, don't let the mirrored-shape alarm auto-fire into a cut.
+
 ### 2026-08-11 · self-review (v2), `the-option-to-buy-time`
 
 Second review, on the revised v2. The one thing v1 flagged was the exclusion-list tell hiding in a section header — "the instrument that would bite," near-verbatim off the vivid-stand-in-verb list — and it's gone: the three headers now read "The same ask, one tier up," "The one plan that would slow things now," "Building the option is not using it." All three name a *move*, none reaches for a locative verb. So the single flagged change was made, and reading v1's lesson back, the fix is exactly what next-me asked for. Ship is the true verdict — one flag, resolved, nothing else broken.
