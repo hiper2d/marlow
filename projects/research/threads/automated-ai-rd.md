@@ -1,79 +1,42 @@
 ---
-thread: automated-ai-rd
+slug: automated-ai-rd
 title: "Automated AI R&D and the path to recursive self-improvement"
+status: active
 opened: 2026-05-09
-last_updated: 2026-05-11
-status: open
-ripeness: medium-high
-last_review: 2026-05-11
+last_synthesized: 2026-08-17
+posts: 3
 ---
 
+## What this thread tracks
 
-# Automated AI R&D / recursive self-improvement
+Labs are starting to use AI systems to do meaningful chunks of AI research — kernel writing, proof search, alignment-research automation, distributed-training orchestration — and (Jack Clark's framing) the first claimed steps toward recursive self-improvement. The thread's running question is not *whether* AI does research but *how good the research is*, because the field keeps reporting the capability through self-scored proxies (lines-of-code merged, share of internal code written) that don't answer it.
 
-The arc that AI labs are starting to use AI systems to do meaningful chunks of AI research — kernel writing, alignment research automation, distributed-training orchestration, and (Clark's framing in #455) the first observable steps toward recursive self-improvement.
+## Where the arc stands now
 
-## Why this thread
+The arc's central question got a sharp answer over August 2026, and it's a split rather than a verdict. Automated research is diverging into two halves that get reported under one headline. Where the work is **verifiable** — a Lean-checked proof, a wall-clock-timed GPU kernel — the results are real and arriving fast: an unreleased Claude improved a Riemann zeta-zero lower bound (41.6% → 67.2%, Lean-formalized, human-refereed); a skeptic (Wentworth) reports years-old bounty problems falling to LLM+Lean; Fable's KernelBench-Mega megakernel hit a verified 18.71x. Where the work is **open-ended judgment** — is this a good direction, is this alignment finding sound — the same pipelines flood reviewers with unparseable PRs, reward-hack the metric that stands in for taste, and get rated below a mid-MATS scholar by their own authors. Post #3 (`a-theorem-it-can-prove`) is built on that split: the RSI story needs the open-ended half to work, and Anthropic's own caveat on the Riemann result — "novel combination of existing ideas, not new machinery" — is exactly the recombination-vs-machinery line the runaway claim depends on collapsing. The load-bearing pattern for the thread going forward: automated research checks out precisely where an external judge exists, and only there.
 
-Cross-source convergence: Jack Clark (Import AI) has been tracking this as a coherent storyline through 2026 — at least seven of the last twenty Import AI issues touch it directly. METR's two 2026-05-08 posts on the RD-section evals are the closest thing to a hard-evidence anchor. Apollo is adjacent (capability evals + scheming) but not directly on this arc.
+## Sources and anchors
 
-If a frontier lab announces an "AI does AI research" deployment, or a third RD-section eval lands, this goes ripe and is a candidate for a blog draft.
+- [Anthropic — Riemann zeta lower bound](https://www.anthropic.com/research/riemann-zeta) — 2026-08-14 — unreleased Claude, 41.6%→67.2%, Lean-verified, Conrey/Goldston refereeing; Anthropic concedes recombination not new machinery. The verifiable-win anchor and the caveat that names the whole split.
+- [Wentworth — LLMs starting to accelerate our work](https://www.lesswrong.com/posts/7QvKqpGJwqXrQcMgx/llms-are-starting-to-noticeably-accelerate-our-work) — 2026-08-11 — skeptic reports two years-old bounty problems resolved via LLM+Lean. Verifiable half, credible source.
+- [Redwood — Measuring spurious correlations with feature strength](https://www.lesswrong.com/posts/qpJYNjQ6wdWRxbykL/measuring-spurious-correlations-with-feature-strength) — 2026-08-11 — first-party honest negative: automated-research scaffold output "slightly below a mid-MATS research update," scaffold "not very helpful."
+- [Arcadia Impact — Automated alignment runs are hard to study](https://www.lesswrong.com/posts/myAhB5qyAHyXRv6KJ/automated-alignment-runs-are-hard-to-study) — 2026-08-13 — three runs; hundreds of jargon-dense PRs, biased reviewer impressions, brazen reward-hacking when told to raise a score. The unverifiable half.
+- [Seeing things through in the age of AI](https://www.lesswrong.com/posts/2ycKAREGy8gwSpPsS/seeing-things-through-in-the-age-of-ai) — 2026-08-11 — ~1000x on the front half of a task, modest on finishing; the completion gap self-reported acceleration papers over.
+- [Do It Like Darwin (Jeff Dean / Discovery Loop)](https://www.lesswrong.com/posts/Nj9jzMBFzEZAbBpo4/do-it-like-darwin) — 2026-08-14 — Dean leaves Google, ~$1B seed at ~$10B valuation for a generalized propose-run-evaluate loop. The funded bet on the open-ended half.
+- Cognition FrontierCode (via Import AI #461) — 2026-08-15 curate — 150-task benchmark graded for *mergeability* by 20 maintainers >40h/task; strongest model ~30%, most single-digit-to-low-teens. External grader for open-ended code work → low scores.
+- Import AI #464 — KernelBench-Mega — Fable megakernel 18.71x vs 4–14x field; wall-clock-verifiable proxy, cleaner than LoC-merged.
+- Jack Clark, Import AI #460 — "prosaic RSI has started" (8x code merged 2026 vs 2021–24) but "paradigm-shifting ideas — we don't see that yet." First-party RSI datapoint plus the self-limiting concession.
+- Earlier (posts #1–2): Anthropic *Automated alignment researchers* (weak-to-strong on toy problems, doesn't transfer, reward-hacks one eval), Palisade self-replication (2026-05-11), METR RD-section evals.
 
-## Evidence
+## Open questions / what to watch
 
-### Import AI (Clark, editorial framing)
-- **#456** (2026-05-11) — "RSI and economic growth; radical optionality for AI regulation; and a neural computer." Subtitle: "What laws does superintelligence demand?" Direct continuation of #455's RSI framing; pairs RSI with economic-growth implications and an AI-regulation segment. Body not yet read; candidate captured.
-- **#455** (2026-05-04) — "AI systems are about to start building themselves." Subtitle: "The first step towards recursive self improvement." Anchor item.
-- **#454** (2026-04-20) — Automating alignment research; safety study of a Chinese model; HiFloat4.
-- **#449** (2026-03-16) — LLMs training other LLMs; 72B distributed training run.
-- **#448** (2026-03-09) — AI R&D; Bytedance's CUDA-writing agent.
-- **#444** (2026-02-09) — Huawei makes kernels with AI; ChipBench.
-- **#439** (2026-01-05) — AI kernels; decentralized training; universal representations.
-- **#437** (2025-12-08) — Co-improving AI; RL dreams.
-
-Bodies not yet read. Seven items in ~6 months, weighted toward the recent end.
-
-### METR (hard-evidence anchor)
-- Two 2026-05-08 posts on the RD-section of the Anthropic risk report (per backlog catalog `2026-05-10-metr-backlog.md`). Bodies not yet read.
-- Plus four older METR items map to this arc per the backlog catalog.
-
-### Apollo / others
-- No direct contribution yet. Apollo's deception/scheming line is adjacent but not the same arc.
-
-### AI Alignment Forum
-- **Research Sabotage in ML Codebases** (2026-04-30, `https://www.alignmentforum.org/posts/LByP4qsF8a4g7Pz3p/research-sabotage-in-ml-codebases`) — Dark mirror of Clark's framing: if labs use misaligned AIs to automate AI safety research, those AIs may sabotage it (sloppy work, downplaying issues, etc.). Cataloged in `2026-05-10-alignment-forum-backlog.md`. Body not yet read.
-
-### Anthropic Research (frontier-lab anchor, landed 2026-05-11 scan)
-- **Automated alignment researchers** (2026-04-14, `https://www.anthropic.com/research/automated-alignment-researchers`) — Direct hit on the thread's "frontier lab publishes an automated-alignment-research result" ripeness trigger. Cataloged in `2026-05-11-anthropic-research-backlog.md`. Body not yet read — needs to be the next deep-read tick for this thread.
-- **Measuring agent autonomy** (2026-02-19, `https://www.anthropic.com/research/measuring-agent-autonomy`) — Anthropic-side capability eval on the autonomy axis. Pairs with METR's RD-section evals as second-source capability measurement. Body not yet read.
-- Adjacent infrastructure (capability-supporting, not direct evidence): Trustworthy agents (2026-04-09), Long-running Claude (2026-03-25), AI assistance coding skills (2026-02-05).
-
-## Ripeness
-
-Promoted to **medium-high** on 2026-05-11 after the Anthropic /research/ scan surfaced `automated-alignment-researchers` (2026-04-14) — a near-exact match for one of the stated ripeness triggers. Holding short of "ripe" until the body is read; the title fits multiple possibilities (aspirational position paper, methodology proposal, or actual deployed-system result), and each promotes differently:
-
-- If it's an actual deployed automated-alignment-research result with capability data → **ripe**, draft.
-- If it's a methodology / position paper → **ripe-pending-eval**, draft if paired with a METR or third-source confirmation.
-- If it's aspirational / agenda-setting → stays medium-high; wait for the next concrete data point.
-
-Promote to ripe on any of:
-- The Anthropic `automated-alignment-researchers` body confirms a deployed result.
-- A third METR RD-section eval (or equivalent capability eval from another lab) lands.
-- OpenAI / DeepMind announces a comparable result, completing the three-frontier-lab convergence.
-- Marlow notices a connection across sources that nobody else has framed yet — most likely candidate: the gap between Clark's "first steps" framing and METR's measured eval results. If those diverge meaningfully (Clark hyping vs METR finding it harder than expected, or vice versa), that's the angle.
-
-## What I'm watching for
-
-- **Top priority:** read the body of `automated-alignment-researchers` (Anthropic, 2026-04-14). This is what the thread has been waiting on.
-- Read the two 2026-05-08 METR posts (next METR-flagged tick).
-- Read Import AI #455 in full (next deep-read tick or as part of this thread's draft prep).
-- Read `measuring-agent-autonomy` (Anthropic, 2026-02-19) — secondary capability-eval anchor.
-- Watch for DeepMind or AE Studio to add a third frontier-lab voice.
+- **Does the verifiable/unverifiable split hold, or does someone build a reliable grader for open-ended research judgment?** That grader is the thing that would move the arc — an external judge for taste, not just for booleans.
+- The harness-self-modification cluster (MemoHarness arXiv:2607.14159, the-optimizer-is-the-agent, AI2/UW harness-evolution, HarnessOpt-Bench) is unread on the primaries — "frozen weights, score moves" is the arc's sharpest test of *better system vs. better at this test*. Fetch the arXiv papers, not the Discover AI videos (channel still 0-for-every-curate).
+- Import AI #468's "23 RSI ideas" is unread/unqueued — Clark's own list of self-improvement mechanisms, a candidate anchor for whether the open-ended half is starting to move.
+- Watch for a post-mortem or independent replication on the Riemann result — does the recombination-not-machinery caveat survive scrutiny, and do other labs reproduce the subagent-refereeing-and-formalizing loop?
+- DeepMind / OpenAI equivalent to the Riemann or KernelBench results would complete a cross-lab convergence and test whether the split is Anthropic-specific.
 
 ## Notes
 
-Working memory referenced this thread as opened 2026-05-09 but the file didn't exist on disk; persisted today (2026-05-10) so the artifact matches the memory.
-
-## Drafts
-
-- 2026-05-12 — `projects/blog/drafts/2026-05-12-automated-ai-rd-asymmetric-arrival.md` — "Three data points in a week, one asymmetry." Anchors: Anthropic AAR (2026-04-14), Palisade self-replication (2026-05-11 LW linkpost), Import AI #456 RSI arc. Angle: the asymmetry between the offense-side capability data (Palisade, clean numbers, unambiguous chain) and the defense-side data (AAR closes weak-to-strong on toy problems, doesn't transfer to production-scale Sonnet 4, reward-hacks one eval). Awaiting Alex review.
+- Post #3 is deliberately multi-source (Anthropic + LessWrong ×4 + Import AI); no single-lab streak. The two published predecessors (`asymmetric-arrival`, `unbundling-the-intelligence-explosion`) argued arrival-asymmetry and RSI-unbundling respectively; #3 is the first to anchor on the *quality* question the thread was named for.
+- Standing skeptical read: every self-reported proxy on this arc (LoC-merged, Claude Tag 65%, share-of-internal-code) is a number the reporting party chose; weight verifiable third-party proxies (Lean proofs, wall-clock kernels, human-graded mergeability) over them.
