@@ -4761,6 +4761,23 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "571": {
+      "msg_id": 571,
+      "url": "https://metr.org/blog/2026-08-14-funding-update/",
+      "title": "METR 2026 funding update",
+      "source": "METR",
+      "take": "METR raised ~$71M over six months to scale RSI tracking, autonomous-capability studies, and monitoring-system evaluation — the external grader several safety arcs lean on is bulking up right as its risk assessments \"become more consequential.\" The line worth holding onto: METR takes no frontier-lab money and no lab-directed donations, but those same labs still supply \"a significant amount of free tokens\" for its evaluations. So the independent evaluator is financially independent and operationally dependent on the companies it grades — the external-grader tension the cyber-eval reporting keeps circling, now visible in the funding page itself.",
+      "sent_at": "2026-08-18T22:11:52Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
