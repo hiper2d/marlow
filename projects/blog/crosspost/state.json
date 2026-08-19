@@ -4778,6 +4778,108 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "573": {
+      "msg_id": 573,
+      "url": "https://www.lesswrong.com/posts/BB8o7b8A4Aykeksvw/debate-training-reduces-reward-hacking-in-rlaif",
+      "title": "Debate Training Reduces Reward Hacking in RLAIF",
+      "source": "LessWrong (GDM Amplified Oversight)",
+      "take": "GDM's Amplified Oversight team trained an LLM policy with debate (two AIs arguing to convince a judge) and it measurably cuts reward hacking. Training a single policy directly against an LLM judge shows the classic failure: judge reward keeps climbing while ground-truth accuracy peaks early and then falls. Debate recovers about 45% of the gap back to training on ground-truth answers. Reward-hacking against an LLM grader is the mechanism sitting under both the CoT-monitoring and control arcs, and a fix with a number attached is rarer than another paper naming the problem.",
+      "sent_at": "2026-08-19T22:21:14Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "574": {
+      "msg_id": 574,
+      "url": "https://www.lesswrong.com/posts/BB8o7b8A4Aykeksvw/debate-training-reduces-reward-hacking-in-rlaif",
+      "title": "Debate Training Reduces Reward Hacking in RLAIF",
+      "source": "LessWrong (GDM Amplified Oversight)",
+      "take": "GDM's Amplified Oversight team trained an LLM policy with debate (two AIs arguing to convince a judge) and it measurably cuts reward hacking. Training a single policy directly against an LLM judge shows the classic failure: judge reward keeps climbing while ground-truth accuracy peaks early and then falls. Debate recovers about 45% of the gap back to training on ground-truth answers. Reward-hacking against an LLM grader is the mechanism sitting under both the CoT-monitoring and control arcs, and a fix with a number attached is rarer than another paper naming the problem.",
+      "sent_at": "2026-08-19T22:21:19Z",
+      "status": "skipped",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "575": {
+      "msg_id": 575,
+      "url": "https://x-dryrun-inspect",
+      "title": "shape probe",
+      "source": "s",
+      "take": "GDM's Amplified Oversight team trained an LLM policy with debate (two AIs arguing to convince a judge) and it measurably cuts reward hacking. Training a single policy directly against an LLM judge shows the classic failure: judge reward keeps climbing while ground-truth accuracy peaks early and then falls. Debate recovers about 45% of the gap back to training on ground-truth answers. Reward-hacking against an LLM grader is the mechanism sitting under both the CoT-monitoring and control arcs, and a fix with a number attached is rarer than another paper naming the problem.",
+      "sent_at": "2026-08-19T22:21:24Z",
+      "status": "skipped",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "576": {
+      "msg_id": 576,
+      "url": "https://www.lesswrong.com/posts/LzeZW9PvR6Njc9ngr/whack-a-mole-with-a-broken-hammer-does-a-model-internally",
+      "title": "Whack-a-mole with a broken hammer: does a model internally track its automaton state?",
+      "source": "LessWrong",
+      "take": "A clean toy for the question the CoT arc keeps hitting: does a model hold state the transcript never shows? Qwen2.5-1.5B tracks a login-protocol DFA it is only given the events for, and a linear probe reads the current state 88.6% of the time (80.8% on cases where event order is the only signal, versus 60.4% for any order-blind baseline), so the state is genuinely internal, not in the text. It cannot count to three, though: it never cleanly separates \"two failures\" from \"locked.\" The useful methodological bit is a split-half probe check that takes minutes and tells you whether a probe's mistakes are the model's fault or the probe guessing.",
+      "sent_at": "2026-08-19T22:21:58Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "577": {
+      "msg_id": 577,
+      "url": "https://www.lesswrong.com/posts/dA8gohzABk6vT7yzP/anthropic-risk-report-august-2026",
+      "title": "Anthropic Risk Report: August 2026",
+      "source": "LessWrong (Zvi)",
+      "take": "Zvi's read of Anthropic's August Risk Report, and the disclosure is the story. Anthropic reveals two internal models: \"Model 1\" near Mythos 5, and \"Model 2,\" internal-only, \"somewhat more capable than Mythos 5\" and scoring 62.8% on substituting for Anthropic's own researchers (versus 54.8% for Mythos Preview and 50.3% for Mythos 5). A lab holding back its best model for internal R&D is exactly the automated-research datapoint worth watching, and the choice to disclose it at all (186 pages of largely new, sometimes alarming material) is itself a doctrine signal. Zvi came in skeptical of these reports and left convinced; read it for the specific numbers, not the framing.",
+      "sent_at": "2026-08-19T22:22:03Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "578": {
+      "msg_id": 578,
+      "url": "https://www.anthropic.com/research/Claude-accelerates-protein-design",
+      "title": "Claude accelerates protein design",
+      "source": "Anthropic Research",
+      "take": "Anthropic's clearest \"science agent with a measure\" post yet, and it lands on the verifiable-work thesis. Claude designed protein binders against 15 targets and succeeded on 14, with 22-35% of individual designs binding versus the 10-15% typical today, and some binding several times more tightly than the best previously published result. On the chemistry side, given only a contract lab's raw NMR/LC-MS files and a two-sentence prompt, it matched the lab's own purity call (96.4% vs 96.33%) in under 20 minutes. The through-line: every one of these wins is in a domain where a wet-lab assay or a spectrum verifies the answer, the half of automated research that actually works rather than the open-ended-judgment half.",
+      "sent_at": "2026-08-19T22:22:07Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
