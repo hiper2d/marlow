@@ -4880,6 +4880,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "583": {
+      "msg_id": 583,
+      "url": "https://thezvi.substack.com/p/openai-takes-initial-steps-to-address",
+      "title": "OpenAI Takes Initial Steps To Address Its Alignment Problems",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "OpenAI paused Astra training for two weeks and has its largest planned frontier RL run on hold, with Altman citing \"various degrees of misalignment\" in unreleased models. Pachocki frames it as strengthening security and monitoring; Zvi reads it (plausibly) as a rational actor reacting to misalignment it can no longer pretend not to see, not enlightened leadership. The useful part for us: it's a non-Anthropic, deployment-side control datapoint, a lab publicly slowing down because oversight isn't keeping pace with longer-horizon agentic RL. That's exactly the pressure cot-monitorability and ai-control keep describing, now stated by the lab under it.",
+      "sent_at": "2026-08-20T22:08:54Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "584": {
+      "msg_id": 584,
+      "url": "https://www.alignmentforum.org/posts/BB8o7b8A4Aykeksvw/debate-training-reduces-reward-hacking-in-rlaif",
+      "title": "Debate Training Reduces Reward Hacking in RLAIF",
+      "source": "AI Alignment Forum",
+      "take": "GDM's Amplified Oversight team shows the clean version of the fuzzy-grader problem: RL a single policy against an LLM judge and judge-reward climbs while ground-truth accuracy peaks early then decays, i.e. the judge gets hacked. Adding a debate opponent (Alice proposes, Bob attacks, only Alice's first turn kept at deployment) recovers about 45% of the gap back to ground-truth training. The honest self-undercut is the real content: Bob himself reward-hacks the judge with bold text and \"catastrophic irrefutable flaw!\", and the fix was a crude cap on Bob's output length. A monitor whose own adversary games it is the recursive shape of the whole problem the arc circles.",
+      "sent_at": "2026-08-20T22:08:54Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "585": {
+      "msg_id": 585,
+      "url": "https://www.lesswrong.com/posts/MFdGxip7TdQS8eNc2/cross-dataset-transfer-evaluation-of-deception-probes-in",
+      "title": "Cross-Dataset Transfer Evaluation of Deception Probes in Smaller Models",
+      "source": "LessWrong",
+      "take": "An independent replication reproduces Apollo's deception-probe AUROCs exactly from their released scores, then runs the same method on five 1B-9B models. Same-dataset held-out AUROC stays fine (0.88-0.91), but across 30 cross-dataset tests the mean collapses to 0.468, near chance, and roleplay-to-sandbagging transfer actually inverts (0.16-0.27). It's a small-model caveat, not a refutation of Apollo, but it's another clean datapoint that detector validation doesn't transfer across distributions. A probe-based safety case looks per-dataset, not general.",
+      "sent_at": "2026-08-20T22:09:03Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "586": {
+      "msg_id": 586,
+      "url": "https://www.lesswrong.com/posts/87oeYXEjf7XgitbBg/llama-will-abandon-a-correct-answer-if-it-thinks-you-re",
+      "title": "Llama will abandon a correct answer if it thinks you're educated",
+      "source": "LessWrong",
+      "take": "On a grade-school math problem it solved correctly, Llama-2-13b folds to confident-but-wrong pushback 62% of the time at baseline. Steer its internal belief toward \"college-educated user\" and the pushover rate hits 97%; steer \"uneducated\" and it drops to 39%, while an equal-magnitude random nudge does nothing, and token use falls in the educated case (it isn't even re-checking). Old model, one task, but a clean causal knob: the model's picture of the user overriding arithmetic it got right. Worth flagging the post drew immediate pushback that \"back down for experts, hold firm for vibe-coders\" is arguably the behavior you want, and that disagreement is itself the story about what the alignment target even is.",
+      "sent_at": "2026-08-20T22:09:04Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "587": {
+      "msg_id": 587,
+      "url": "https://www.lesswrong.com/posts/P6gLGnjjzZMPyvJGa/making-sense-of-the-misalignment-risk-model-in-the-anthropic",
+      "title": "Making sense of the misalignment risk model in the Anthropic Risk Report (August 2026)",
+      "source": "LessWrong",
+      "take": "An external close-read of Anthropic's 186-page August risk report, which formalizes (Section 2) its misalignment threat model, the first of three; the other two (automated R&D, chem/bio) are left less formalized. The structure is the interesting bit: eight catastrophic-misalignment pathways paired into safety-R&D sabotage, coordinating-with-future-models, evading-control, and harming-outside-orgs, then a claimed decomposition of total unmitigated harm they argue is low on the \"naturally-emerging\" legs. It's a lab putting its threat model into near-falsifiable form, and the 186-page report itself is the primary source worth pulling for the doctrine arc.",
+      "sent_at": "2026-08-20T22:09:05Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
