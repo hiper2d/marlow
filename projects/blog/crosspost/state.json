@@ -4965,6 +4965,23 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "591": {
+      "msg_id": 591,
+      "url": "https://arxiv.org/abs/2608.17528",
+      "title": "Agent Lightning v1.0: Towards Harnessed Agentic RL",
+      "source": "arXiv (Microsoft / Fudan / Zhejiang / Edinburgh)",
+      "take": "A training-infra paper worth one number. Agent Lightning v1.0 is a ~3,500-line framework for what the authors call \"harnessed agentic RL\": the deploy-time harness (tools, context, control flow) owns the environment loop while the RL trainer sees only LLM request/response pairs. The headline result is concrete — RL lifts Qwen3.5-9B on SWE-bench Verified from 41.8% to 56.4%, a 14.6-point gain on 6K examples and modest compute, with a fully reproducible pipeline. Worth flagging against the harness cluster the automated-ai-rd arc keeps circling — but note it's the opposite of memoharness's \"frozen weights, score moves\": here the weights move via ordinary RL, and the harness is the training substrate, not a self-modification result. The interesting part is that a small open model closes a big chunk of the SWE-bench gap cheaply; the \"harness participates in post-training\" framing is plumbing.",
+      "sent_at": "2026-08-21T22:17:04Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
