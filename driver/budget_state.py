@@ -129,52 +129,152 @@ def _age(checked_at: str | None) -> tuple[str, float]:
     return (f"{hrs/24:.1f}d ago", hrs)
 
 
-def _fmt_provider(p: dict) -> str:
-    name = p.get("provider", "?")
-    if not p.get("ok"):
-        return f"  {name:11} — {p.get('kind') or 'error'}: {(p.get('error') or '')[:48]}"
-    metric = p.get("metric")
-    if metric == "quota" or p.get("remaining_pct") is not None:
-        pct, worst = p.get("remaining_pct", 0.0), p.get("worst_model", "?")
-        days = f", {p['days_left']}d left" if p.get("days_left") is not None else ""
-        return f"  {name:11} {pct:>7.1f}% quota ({worst}{days})"
-    if metric == "spend_cap" or (p.get("spend_usd") is not None and p.get("cap_usd")):
-        spend, cap = p.get("spend_usd", 0.0), p.get("cap_usd")
-        pend = f" +${p['pending_usd']:.2f} pending" if p.get("pending_usd") else ""
-        return f"  {name:11} ${spend:>8.2f} / ${cap:g} cap{pend}"
-    bal = p.get("balance_usd", 0.0)
-    return f"  {name:11} ${bal:>8.2f}"
+# ─── Report rendering ────────────────────────────────────────────────────────
+#
+# The report answers one question first: how much money is left on each key.
+# Everything else is subordinate to that, which drives three choices here.
+#
+#   1. Grouped by WHAT THE NUMBER IS, not by which handler read it. Whether a
+#      balance came from an API or a console scrape is our plumbing detail;
+#      mixing a real balance, a postpaid spend-vs-cap and a token quota into one
+#      list made three unlike things look alike.
+#   2. Sorted ascending, with a total. What needs a top-up floats to the top.
+#   3. Every row says how the number was obtained. A Tier-2 balance is DERIVED
+#      (baseline minus cost-API spend), and a top-up Alex didn't tell us about
+#      is invisible to it - so the row carries the baseline's age and asks for a
+#      re-anchor once it's old. On 2026-08-22 a 13-day-old OpenAI baseline fired
+#      a false CRITICAL after a top-up; the number looked exactly as trustworthy
+#      as a directly-read one. Now it doesn't.
+
+LOW_USD = 10.0
+CRITICAL_USD = 3.0
+BASELINE_STALE_DAYS = 14
+
+
+def _days_since(date_str: str | None) -> int | None:
+    try:
+        d = datetime.fromisoformat(date_str).replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError):
+        return None
+    return (_now() - d).days
+
+
+def _bucket(p: dict) -> str:
+    """money = a balance that depletes · cap = postpaid metered spend · quota = free tokens."""
+    if p.get("metric") == "quota" or p.get("remaining_pct") is not None:
+        return "quota"
+    if p.get("metric") == "spend_cap" or (p.get("spend_usd") is not None and p.get("cap_usd")):
+        return "cap"
+    return "money"
+
+
+def _status(bal: float) -> str:
+    if bal < CRITICAL_USD:
+        return "CRITICAL"
+    return "low" if bal < LOW_USD else "ok"
+
+
+def _read_note(p: dict, kind: str, age_str: str, bal: float) -> str:
+    """How this number was obtained, and how far to trust it."""
+    if "baseline" in (p.get("source") or ""):
+        days = _days_since(p.get("since"))
+        if days is None:
+            return "derived from a console baseline"
+        # Prompt for a re-anchor when the derivation is about to cause action,
+        # not only when the baseline is old. A derived balance under the low
+        # threshold is the moment Alex reaches for his card - and the moment a
+        # top-up he already made would be invisible. On 2026-08-22 the OpenAI
+        # baseline was 13 days old (inside any sane staleness window) and the
+        # $2.26 it produced was pure fiction: he had already topped up.
+        prompt = days > BASELINE_STALE_DAYS or bal < LOW_USD
+        return f"derived, baseline {days}d old{'  <-- RE-ANCHOR if topped up since' if prompt else ''}"
+    return f"{'read live' if kind == 'keys' else 'scraped'} {age_str}"
 
 
 def render() -> str:
-    out = ["API budget state — Werewolf provider keys", ""]
+    money, caps, quotas, broken, issue_lines, notes = [], [], [], [], [], []
+    icon = {"urgent": "[!]", "digest": "[~]"}
     any_data = False
-    sev_rank = {"urgent": "🔴", "digest": "⚠️"}
-    issue_lines = []
-    for kind, name in (("keys", "monitor_keys (API)"), ("scrape", "scrape_stats (console)")):
+
+    for kind, label in (("keys", "API"), ("scrape", "console")):
         rep = load_latest(kind)
         if not rep:
-            out.append(f"{name}: no run recorded yet")
-            out.append("")
+            notes.append(f"{label} monitor has no run recorded yet")
             continue
         any_data = True
-        # Count providers live so the label never goes stale when one is added.
-        label = name[:-1] + f" · {len(rep.get('providers', []))})"
         age_str, hrs = _age(rep.get("checked_at"))
-        stale = " ⏰ STALE" if hrs > STALE_HOURS.get(kind, 24) else ""
-        out.append(f"{label} — last run {rep.get('checked_at','?')} ({age_str}){stale}")
+        if hrs > STALE_HOURS.get(kind, 24):
+            notes.append(f"{label} snapshot is STALE: {age_str}, cadence is {STALE_HOURS[kind]}h")
         for p in rep.get("providers", []):
-            out.append(_fmt_provider(p))
+            row = (p, kind, age_str)
+            if not p.get("ok"):
+                broken.append(row)
+            else:
+                {"money": money, "cap": caps, "quota": quotas}[_bucket(p)].append(row)
         for i in rep.get("issues", []):
-            issue_lines.append(f"  {sev_rank.get(i['severity'],'')} [{i['severity']}] {i['target']}: {i['detail']}")
-        out.append("")
+            issue_lines.append(f"  {icon.get(i['severity'], '')} {i['severity']:6} {i['target']:10} {i['detail']}")
+
     if not any_data:
         return "No monitoring runs recorded yet. Run monitor_keys/scrape_stats report first."
+
+    # One set of keys, two live sites. Verified 2026-08-22: all 11 provider keys
+    # in pokerwithai.net's .env are byte-identical to the werewolf Firestore map,
+    # so every balance here is the COMBINED drain of both games and neither site's
+    # spend is separable from the other's. Say so, rather than let the header keep
+    # implying these numbers belong to Werewolf alone.
+    out = ["API budget - shared game keys (aiwerewolf.net + pokerwithai.net)", ""]
+
+    if money:
+        money.sort(key=lambda r: r[0].get("balance_usd") or 0.0)
+        out.append("MONEY LEFT (prepaid balances)")
+        total = 0.0
+        for p, kind, age_str in money:
+            bal = p.get("balance_usd") or 0.0
+            total += bal
+            out.append(f"  {p['provider']:10} ${bal:>8.2f}   {_status(bal):8}  {_read_note(p, kind, age_str, bal)}")
+        out.append(f"  {'':10} {'-' * 9}")
+        out.append(f"  {'TOTAL':10} ${total:>8.2f}   across {len(money)} prepaid keys")
+        out.append("")
+
+    if caps:
+        out.append("POSTPAID (metered against a cap - no balance to run out of)")
+        for p, kind, age_str in caps:
+            spend, cap = p.get("spend_usd") or 0.0, p.get("cap_usd") or 0.0
+            pct = f"{spend / cap * 100:.0f}%" if cap else "?"
+            pend = f", +${p['pending_usd']:.2f} pending" if p.get("pending_usd") else ""
+            out.append(f"  {p['provider']:10} ${spend:>8.2f}   of ${cap:g} cap ({pct}){pend}")
+        out.append("")
+
+    if quotas:
+        out.append("FREE GRANT (tokens, not money)")
+        for p, kind, age_str in quotas:
+            models = p.get("models") or []
+            dead = [m for m in models if not (m.get("remaining_pct") or 0)]
+            pct = p.get("remaining_pct") or 0.0
+            # Headline is the WORST model, so say how many share that fate -
+            # "0% on qwen3.8-max" reads like one model when all three are dry.
+            spread = f", {len(dead)}/{len(models)} models exhausted" if models else ""
+            billing = "spend now bills pay-as-you-go" if not p.get("auto_stop") else "auto-stop on, calls fail instead of billing"
+            exp = f", expires {p['expires']} ({p['days_left']}d)" if p.get("days_left") is not None else ""
+            out.append(f"  {p['provider']:10} {pct:>7.1f}% left{spread}{exp}")
+            out.append(f"  {'':10} {billing}")
+        out.append("")
+
+    if broken:
+        out.append("NOT READ")
+        for p, kind, age_str in broken:
+            out.append(f"  {p.get('provider', '?'):10} {p.get('kind') or 'error'}: {(p.get('error') or '')[:60]}")
+        out.append("")
+
+    if notes:
+        out.extend(f"  ! {n}" for n in notes)
+        out.append("")
+
     if issue_lines:
-        out.append("Issues:")
+        out.append("ISSUES")
         out.extend(issue_lines)
     else:
-        out.append("No issues — all providers healthy.")
+        out.append("No issues - all providers healthy.")
     return "\n".join(out)
 
 

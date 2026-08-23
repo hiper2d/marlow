@@ -894,3 +894,127 @@ visibility without alerting, and that is what Alex asked for.
 *State at end of day.* Verified against the live console: all three tracked models
 `auto_stop: false`, today's reading produces zero issues. Derivation exercised across eight
 states (guarded/unguarded/unreadable x above/below/at zero). Marlow + Simona.
+
+## 2026-08-22 - a critical alert that was arithmetic, not a balance
+
+*What landed.* `budget_state.render()` rewritten. It grouped providers by which handler read
+them (`monitor_keys` vs `scrape_stats`), which is our plumbing, not Alex's question. He asked
+for "how much money do I have on each key," so the report now groups by what the number *is*:
+MONEY LEFT (eight depleting prepaid balances, sorted ascending so the next top-up is the top
+line, with a total), POSTPAID (Gemini and Mistral, metered against a cap, nothing to run out
+of), FREE GRANT (Qwen tokens), NOT READ (failed reads). Three unlike things had been rendering
+as one list and reading as if they were all balances.
+
+Each money row now states how its number was obtained: `read live`, `scraped`, or `derived`.
+That column is the actual fix for the day's incident.
+
+*The incident.* The 20:00 UTC tick fired urgent: OpenAI $2.26, under the $3 critical floor.
+Alex had already topped up. The number was not a balance - OpenAI exposes no balance endpoint
+(re-verified against live docs today, along with Anthropic's; both still cost/usage only), so
+Tier 2 reconstructs it as `baseline - spend since baseline`. The baseline was a console figure
+read on 08-09. A top-up is invisible to the cost API, so the derivation kept subtracting real
+spend from a number that predated the payment and produced a confident, wrong, actionable
+alarm. Everything downstream was correct; the input was three days past meaning anything.
+
+*The failure mode worth naming.* A broken scrape fails loud - `parse_failed`, `reauth`, and you
+get told. A stale baseline fails quiet and wrong, and the first symptom is a critical alert you
+believe. Failing loud is the stated design goal of this whole system and Tier 2 does not meet
+it. Same shape as GLM's placeholder zero (06-11) and Qwen's label-vs-switch (08-12): the third
+time a plausible wrong value has beaten a loud failure to the alarm.
+
+*Decision reconsidered mid-change.* First version flagged a derived row for re-anchoring once
+the baseline passed 14 days. OpenAI's was 13 days old - it would have stayed silent through the
+exact incident that motivated the flag. Age was the wrong trigger. It now also prompts whenever
+a derived balance drops under the low threshold, which is the moment Alex reaches for his card
+and therefore the moment an already-made top-up needs surfacing. Anthropic's baseline, dated
+2026-05-31 and 83 days old, trips the age half and is a live open question: its $16.95 is only
+right if that key has not been topped up since May.
+
+*Also fixed.* Qwen's row reported the worst model alone ("0% on qwen3.8-max"), which reads as
+one model when all three tracked models are dry. It now says 3/3.
+
+*What we tried and where it stands.* Alex's question was the good one: why derive at all,
+instead of reading the balance and comparing to $10? Because for these two the balance exists
+in exactly one place, the console page - which is what `scrape_stats` already does for six
+providers. Moving OpenAI to Tier 3 would delete the manual re-anchor entirely. Tested the
+plumbing: navigation and JS eval against `platform.openai.com/settings/organization/billing/
+overview` on the port-9223 profile both succeeded and returned a plain `/login` redirect. No
+bot wall, no Cloudflare challenge - the profile simply has no OpenAI session, which is the
+cheap failure. One headful login unblocks it. Not built yet.
+
+*Open.* Re-anchor OpenAI (needs the console figure, or the login above which yields it);
+confirm whether Anthropic has been topped up since 05-31; decide whether OpenAI moves to Tier 3.
+
+*State at end of day.* Report renders across all 11 providers plus a synthetic degraded case
+(failed read, missing fields, absent snapshot). `save`/`load_latest`/`failure_streak`/
+`STATE_DIR` untouched, so both handlers are unaffected. Total across 8 prepaid keys reads
+$97.38, of which the OpenAI line is known-wrong pending the re-anchor. Simona.
+
+## 2026-08-22 (later) - pokerwithai.net joins the watch, and the keys turn out to be shared
+
+*The finding that reframed the request.* Alex asked to add pokerwithai.net as "one more website
+to monitor." Before building anything, fingerprinted its provider keys against Werewolf's:
+SHA-256 of each value in poker's `.env` vs the werewolf Firestore `freeTierApiKeys` map, hashes
+compared, values never printed. **All eleven are byte-identical.** The two sites are one
+operation on one set of accounts.
+
+That means the budget half of "monitor poker" was already done and had been for as long as poker
+has been live - and also that the report had been quietly mislabelled. Every balance in it is
+the combined drain of both games. Renamed the header to `API budget - shared game keys
+(aiwerewolf.net + pokerwithai.net)` with the verification recorded in a comment beside it.
+
+Two consequences worth keeping in view. Neither site's spend is separable from the other's: the
+cost APIs see one org, so today's OpenAI drain has no attribution and cannot get one without a
+per-site cost signal. And either site can starve the other - if poker gets traction, Werewolf's
+free tier dies with nothing in the alert naming poker as the cause. Alex's call was to flag it
+and decide later, so no key split, no attribution layer. Recorded, not fixed.
+
+*What landed: `monitor_uptime`, both sites, hourly at :30.* The real gap was that nothing in
+werewolf-ops had ever fetched a page. `monitor_cloudflare` reads zone/DNS/SSL and Pages deploy
+status, `monitor_health` reads game docs, `monitor_betterstack` reads logs - all three can be
+green while a visitor gets a 500 or a blank shell, which is exactly what a successful deploy of
+a broken build looks like. So the new handler does the dumb thing none of them do: GET the page
+like a stranger.
+
+Three failures kept distinct: unreachable or non-200 is `site_down` (urgent); 200 with the
+content marker absent is `content_missing` (digest, urgent at 3 consecutive runs); 200 and
+correct but over 10s is `site_slow` (digest). The middle case is the reason the handler exists -
+a 200 serving an empty body is what a status-code check calls healthy. The marker is the page
+`<title>`, which survives restyling and cannot appear on an error page. Every check retries once
+before it counts; a dropped connection on an unattended cron is not an outage. No credentials at
+all, which is the nicest property it has - nothing to provision, rotate, or expire.
+
+Verified live rather than assumed: happy path on both sites (Werewolf 0.24s/Cloudflare, Poker
+1.60s/Vercel, later 0.17s and 0.37s warm), plus every failure branch exercised - a dead domain,
+a real 404, a deliberately wrong marker against a live 200, an over-threshold latency row, and a
+synthetic two-run history proving the third consecutive `content_missing` escalates to urgent.
+Slow threshold set at 10s deliberately loose: poker's cold start is ~1.6s and a tight threshold
+would only teach us to ignore the digest.
+
+*Registration is documentation here, not code.* There is no handler registry - `driver/scheduler.py`
+globs `projects/*/tasks/*.yaml` and filters on `profile`, and the in-tick flow lives in the YAML
+comment block. So the task is only real once `profiles/ops/IDENTITY.md` and the README task table
+name it. Both updated. Confirmed the ops profile loads it (`schedule: 30 * * * *`, handler
+`monitor_uptime`) and that, being first-sight, it will not fire immediately - it gets marked now
+and starts at the next :30, which is the behavior we want from a newly added hourly job.
+
+*Deferred, and why.* Poker's game-error watch is NOT built. Poker parks a failed lane by writing
+`ERROR_FIELD[lane]` onto the game doc and emitting `log.warn('lane stopped ...')`, so its errors
+reach both Firestore and BetterStack. BetterStack is the cheaper path by a lot: poker has its own
+Firebase project, so the Firestore route needs a second read-only service account provisioned,
+while the log route may need nothing at all - the existing ClickHouse credential is team-scoped
+(`t507167_*`) and would likely reach poker's source too. Could not confirm it: `SHOW TABLES`
+returns empty (BetterStack exposes only the `remote()`/`s3Cluster()` table functions, not a
+catalog) and we hold only ClickHouse credentials, no Telemetry API token to list sources. Probed
+nine plausible table names and got `NAMED_COLLECTION`/`CLUSTER` errors on all of them. Stopped
+there rather than keep guessing - the api-docs discovery lesson applies to table names too.
+Needs one string from Alex: poker's source table name from the BetterStack UI.
+
+*Scope note.* `monitor_uptime` lives in `projects/werewolf-ops/` but covers both sites, which is
+now slightly wrong on the label the same way the budget report was. If poker grows its own ops
+surface, this and the budget watch both want lifting into a shared `game-ops` project rather than
+being copied. Flagged in the task YAML, not decided.
+
+*State at end of day.* Nine ops tasks, up from eight. Both sites up. Poker's error watch blocked
+on one lookup; the OpenAI re-anchor still blocked on the console figure or the headful login.
+Simona.

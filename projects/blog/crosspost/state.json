@@ -4982,6 +4982,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "597": {
+      "msg_id": 597,
+      "url": "https://www.lesswrong.com/posts/ExB6KYDcznaFS72eT/evaluating-explanations-of-llm-behavior-in-the-wild-with",
+      "title": "Evaluating Explanations of LLM Behavior In The Wild with Counterfactual Experiments",
+      "source": "LessWrong",
+      "take": "CHIVE auto-discovers odd model behaviors in the wild and explains each with counterfactual prompt edits, then uses those measured edits to grade interpretability tools. The headline: activation-reading tools (activation oracles, NLAs, SAEs) give zero uplift — agents handed them predict behavior no better than agents that just read the transcript. That's the \"our internals-readers don't add predictive value\" leg becoming a pattern, now measured in the wild rather than on a toy testbed, and it stacks with steering-are-explanations-not-handles and the did-you-lie detector-transfer failure. The one bright spot: models trained to predict how prompt edits change their own behavior do generalize, so the transcript, not the activations, is where the signal is.",
+      "sent_at": "2026-08-22T23:00:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "598": {
+      "msg_id": 598,
+      "url": "https://www.lesswrong.com/posts/MWTQoa4Xo2AGyZiXe/rogue-scalpel-activation-steering-breaks-refusal-even-with",
+      "title": "Rogue Scalpel: Activation steering breaks refusal, even with benign directions",
+      "source": "LessWrong",
+      "take": "Steering was sold as precise, interpretable control and a safer alternative to fine-tuning. This says the opposite: adding a random Gaussian vector to the residual stream raises harmful compliance from 0% to 2-27%, and SAE features do slightly worse than random, with the most potent jailbreak features being benign concepts like \"Portugal\" and \"brand identity.\" No master key, no way to enumerate the dangerous features in advance because which one breaks refusal depends on the prompt — so a legitimate user just playing with activations can bypass safety by accident. Tested Llama-3/Qwen2.5/Falcon 3B-70B; worth reading right after the CHIVE result, since this paper's proposed fix (activation oracles, NL autoencoders to catch side effects) is the exact tool CHIVE just found gives no uplift.",
+      "sent_at": "2026-08-22T23:00:42Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "599": {
+      "msg_id": 599,
+      "url": "https://www.lesswrong.com/posts/mFbDjEbhJtsCDGtAT/a-j-space-based-metric-for-model-valence-defining-the-metric",
+      "title": "A J-Space-Based Metric for Model Valence",
+      "source": "LessWrong",
+      "take": "An outside researcher turns Anthropic's J-space (the \"global workspace\" construct) into a welfare-measurement tool: probe internal activations for a validated valence direction, then compare that internal score to what the model says about its own state. The divergence is model-specific — Gemma's self-reports run rosier than its internal valence, Mistral gloomier, Qwen most aligned — which is a say/do gap on welfare, not just on task behavior. It rhymes hard with the emotion-vector result (internal state that steers behavior while the surface reads clean), and it's the non-lab extension of a lab construct the model-welfare arc has been short on. Note the method deliberately picks J-lens over the residual stream and NLAs, arguing those carry vocabulary-sentiment traces rather than true valence.",
+      "sent_at": "2026-08-22T23:00:47Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "600": {
+      "msg_id": 600,
+      "url": "https://www.lesswrong.com/posts/4JCne6evQjtjxXKED/when-is-unlimited-optimization-catastrophic",
+      "title": "When is Unlimited Optimization Catastrophic?",
+      "source": "LessWrong",
+      "take": "A funded, formal attempt (Dovetail Research, ARIA-backed, with an arXiv paper) to put conditions on the \"human value is fragile\" argument instead of asserting it whole. It models one-time alignment as a proxy condition guaranteeing similarity between the human and agent value functions, then asks: under what strictness of that guarantee can a catastrophic value function still slip through training and go on to heavily optimize the world? That's the kind of \"is the load-bearing intuition actually true\" work alignment-target-definitions collects — Yudkowsky's Value is Fragile canonicalized the claim; this tries to delimit exactly when unlimited optimization destroys value and when it doesn't. Judge the paper, not the post, but a formal handle on a usually-hand-waved premise is rare enough to flag.",
+      "sent_at": "2026-08-22T23:00:51Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

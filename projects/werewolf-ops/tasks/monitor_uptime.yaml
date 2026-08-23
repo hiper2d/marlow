@@ -1,0 +1,46 @@
+# monitor_uptime - is the site actually serving? Both game sites, one handler.
+#
+# Fills a real gap: nothing in werewolf-ops ever fetched a page. monitor_cloudflare
+# reads zone/DNS/SSL/deploy status, monitor_health reads game docs, monitor_betterstack
+# reads logs. All three can be green while a visitor gets a 500 or a blank shell -
+# a successful deploy of a broken build looks exactly like that. This GETs the page.
+#
+# NOTE ON SCOPE: this task lives in werewolf-ops but covers BOTH live sites,
+# aiwerewolf.net (Cloudflare) and pokerwithai.net (Vercel). As of 2026-08-22 they
+# are one operation on one set of provider keys (verified: all 11 keys byte-identical).
+# If poker grows its own ops surface, this and the budget watch both want lifting
+# into a shared "game-ops" project rather than being copied. Flagged, not decided.
+#
+# Hourly, matching monitor_betterstack. A down site costs visitors continuously,
+# so this is the hottest check in the project apart from the log watch.
+#
+# Three distinguished failures:
+#   - unreachable / non-200          -> site_down       (urgent)
+#   - 200 but content marker absent  -> content_missing (digest; urgent at 3 runs)
+#   - 200, correct, but > 10s        -> site_slow       (digest)
+# The middle one is the point: a 200 with an empty body is what a status-code check
+# calls healthy, and it is the most likely shape of a bad deploy. Every check retries
+# once before it counts - one dropped connection on an unattended cron is not an outage.
+#
+# No credentials. Nothing to provision, rotate, or expire.
+#
+# In-tick flow:
+#   1. Run `uv run python handlers/monitor_uptime.py report`.
+#   2. Parse JSON. If `any_urgent: true`, send ONE consolidated urgent Telegram
+#      naming each down site, its host (Cloudflare vs Vercel decides where to look),
+#      and the error. Do not send one message per site.
+#   3. Otherwise append `monitor_uptime.py digest` to the end-of-day digest if
+#      non-empty. An all-up check prints nothing, so a healthy day adds no line.
+#   4. Write the tick result and exit. No report file - the state snapshot in
+#      state/uptime_latest.json plus the history tape is the record.
+name: monitor_uptime
+project: werewolf-ops
+profile: ops
+description: Hourly reachability check for both live game sites (aiwerewolf.net, pokerwithai.net). GETs each page and asserts a content marker, so a 200 serving a blank shell is caught rather than passed. Urgent on down, digest on a missing marker or a slow response.
+schedule: "30 * * * *"
+priority: normal
+must_run_within_hours: 2
+subtasks:
+  - id: check_sites
+    handler: monitor_uptime
+    context: {}
