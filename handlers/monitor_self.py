@@ -92,7 +92,7 @@ from croniter import croniter
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from driver.scheduler import load_last_scheduled, load_task_definitions  # noqa: E402
+from driver.scheduler import load_last_scheduled, load_queue, load_task_definitions  # noqa: E402
 from tools.notify import notify_alex  # noqa: E402
 
 # Profile scoping. When run from a split loop, MARLOW_PROFILE is exported by
@@ -168,12 +168,16 @@ _SESSION_HEADER_RE = re.compile(r"^\[([^\]]+)\]")
 # yet produce nothing (06-05) or stop producing silently — this verifies the
 # OUTPUT exists and is recent, not just that the task was dispatched.
 # (name, path, jsonl timestamp key, max age in hours)
+# (label, artifact path, timestamp key, max age hours, producing handler).
+# The handler name lets the check ask "is this artifact stale because something
+# is broken, or because its tick is sitting in the queue waiting to run?"
 FRESH_ARTIFACTS = [
     (
         "werewolf_stats snapshot",
         REPO_ROOT / "projects" / "werewolf-ops" / "state" / "stats_history.jsonl",
         "checked_at",
         26,
+        "werewolf_stats",
     ),
 ]
 
@@ -549,12 +553,36 @@ def _jsonl_last(path: Path, ts_key: str) -> datetime | None:
         return None
 
 
+def _pending_handlers() -> set[str]:
+    """Handlers with a subtask currently queued. An artifact whose producer is
+    sitting in the queue is *late*, not broken."""
+    try:
+        return {
+            it.handler for it in load_queue()
+            if getattr(it, "status", None) in ("pending", "in_progress")
+        }
+    except Exception:  # noqa: BLE001 - a queue read failure must not hide staleness
+        return set()
+
+
 def check_output_freshness(now: datetime) -> list[dict]:
     """Declared daily artifacts must exist and be recent. Catches the case a
     failed/empty run looks identical to a quiet day: the task is 'done' but no
-    output landed. Verifies the effect, which last_scheduled does not."""
+    output landed. Verifies the effect, which last_scheduled does not.
+
+    DORMANCY- AND QUEUE-AWARE, for the same reason check_scheduler_freshness is.
+    Staleness alone cannot tell "the producer is broken" from "the laptop was
+    asleep through its slot and the tick is queued." Paging urgent on the second
+    case trains the urgent channel to be ignored, which is the one thing an
+    alerting path cannot afford. Both conditions downgrade to digest; neither
+    suppresses the issue entirely, so a genuinely wedged queue still surfaces.
+    (Added 2026-08-24 after a 9.5h overnight sleep swallowed the 05:05Z
+    werewolf_stats slot and paged urgent about a handler that was fine.)
+    """
     issues: list[dict] = []
-    for name, path, ts_key, max_age in FRESH_ARTIFACTS:
+    hbs = _load_heartbeats()
+    pending = _pending_handlers()
+    for name, path, ts_key, max_age, producer in FRESH_ARTIFACTS:
         ts = _jsonl_last(path, ts_key)
         if ts is None:
             issues.append(_issue(
@@ -564,10 +592,34 @@ def check_output_freshness(now: datetime) -> list[dict]:
             ))
             continue
         age_h = (now - ts).total_seconds() / 3600
-        if age_h > max_age:
+        if age_h <= max_age:
+            continue
+
+        gap_min = _max_dormant_gap_min(hbs, ts, now) if hbs is not None else 0.0
+        dormant = gap_min >= DRIVER_DORMANT_GAP_MIN
+        queued = producer in pending
+
+        if queued:
+            issues.append(_issue(
+                "output_freshness", "digest",
+                f"{name} is {age_h:.0f}h stale (max {max_age}h), but its `{producer}` "
+                f"tick is queued - late, not broken.",
+                "No action; it will land when the queue drains. Investigate only "
+                "if it is still queued at the next audit.",
+            ))
+        elif dormant:
+            issues.append(_issue(
+                "output_freshness", "digest",
+                f"{name} is {age_h:.0f}h stale (max {max_age}h) across a "
+                f"driver-dormant window (~{gap_min / 60:.1f}h gap) - the slot was "
+                f"missed to sleep/offline, not to a broken handler.",
+                "No action unless it stays stale once the loop has been alive "
+                "through a full slot.",
+            ))
+        else:
             issues.append(_issue(
                 "output_freshness", "urgent",
-                f"{name} is {age_h:.0f}h stale (newest {_iso(ts)}, max {max_age}h) — the tick ran but produced nothing, or stopped.",
+                f"{name} is {age_h:.0f}h stale (newest {_iso(ts)}, max {max_age}h) - the tick ran but produced nothing, or stopped.",
                 f"Check the handler that writes {path.name}; a failed/empty run looks identical to a quiet day.",
             ))
     return issues

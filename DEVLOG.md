@@ -1268,3 +1268,58 @@ Every other list helper in the file (`check_pages`, `check_workers`,
 — `_list_ssl_packs` was the one holdout. Widened its `except` clause to match.
 Smoke-tested: `report` returns `ok: true`, `issues: []`. Diagnosis
 `diag_20260824_120759_monitor-cloudflare`, commit `a92b717`.
+
+## 2026-08-24 - the stale-artifact alert could not tell broken from queued
+
+*What landed*
+
+`check_output_freshness` is now dormancy- and queue-aware, matching what
+`check_scheduler_freshness` has done since June.
+
+*What happened*
+
+The memory-bounds work surfaced an unrelated urgent: "werewolf_stats snapshot is
+31h stale - the tick ran but produced nothing, or stopped." It had not stopped.
+`collect_stats` has completed `done` every day for a week. A 9.5h overnight
+dormancy gap (01:48Z -> 11:19Z, laptop asleep) swallowed the 05:05Z slot; the
+scheduler re-enqueued it on wake and it was sitting `pending` in `queue.ops.json`,
+draining behind a backlog at roughly one subtask per 22 minutes.
+
+So the artifact was late for a completely benign reason and the audit paged
+urgent about a handler that was fine. `check_scheduler_freshness` already knew
+how to make this distinction - it was written in June precisely so an overnight
+sleep does not page per-tick - but `check_output_freshness` was age-only.
+
+Two suppressions now, both downgrading to digest rather than silencing:
+
+- **Producer queued.** `FRESH_ARTIFACTS` entries name their producing handler;
+  if a subtask with that handler is `pending`/`in_progress`, the artifact is late,
+  not broken. The precise case, and it covers catch-up windows the heartbeat test
+  cannot see.
+- **Driver dormant.** Reuses `_max_dormant_gap_min` over the staleness window.
+
+Neither suppresses the issue outright, so a genuinely wedged queue still surfaces
+on the next audit - the difference is that it surfaces as a digest line instead of
+a 2am page.
+
+*Things that surprised us*
+
+Running `monitor_self check` by hand is not representative. With `MARLOW_PROFILE`
+unset it reads the legacy global `tasks/queue.json` and `~/.marlow/heartbeat.log`
+rather than the per-loop state, which produced a nonsense "~1150h dormant gap" and
+an empty pending set. Scoped correctly, ops takes the queued branch and writer
+takes the dormant branch, both with real numbers. Any manual audit run needs
+`MARLOW_PROFILE=ops` or `=writer` to mean anything.
+
+*The point*
+
+An alerting path that cannot separate "broken" from "late" spends its urgent
+budget on weather. Every overnight sleep was paging about a healthy handler, and
+the cost of that is not the page - it is that the next real urgent gets read with
+the same shrug.
+
+*Open, not fixed*
+
+`FRESH_ARTIFACTS` is not profile-scoped, so the writer loop also audits the ops
+loop's snapshot. Harmless now that both paths are digest-only, but it means the
+same staleness is reported twice on a bad morning.
