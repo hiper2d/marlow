@@ -1018,3 +1018,103 @@ being copied. Flagged in the task YAML, not decided.
 *State at end of day.* Nine ops tasks, up from eight. Both sites up. Poker's error watch blocked
 on one lookup; the OpenAI re-anchor still blocked on the console figure or the headful login.
 Simona.
+
+## 2026-08-22 (night) - the daily stats had been reporting a nine-hour slice as a day
+
+*How it surfaced.* Alex noticed a Telegram digest saying 1 new user and 1 game and didn't believe
+it. He was right not to. The number was accurate for the instant it was computed and wrong as a
+day count, which is the worst combination - it looks like data.
+
+*The bug.* `werewolf_stats` ran at `0 9 * * *` and defined `today` as since-UTC-midnight, so it
+counted a nine-hour slice and labelled it a day. Worse, that slice - 00:00 to 09:00 UTC - is
+20:00 to 05:00 Eastern, the deadest hours Alex has. The real 2026-08-22 was **6 new users and 8
+games** (7 by his local day boundary); the digest said 1 and 1, because at the 10:10Z snapshot
+exactly one user had signed up and exactly one game had been started by a new user. Five users
+and six games arrived afterward.
+
+This was not a one-off. `stats_history.jsonl` shows the shape all the way back to June: rows
+reading `new_users_today: 2` on days where `users_total` rose by five. Every daily digest since
+the handler shipped has under-reported the day, and the trend lines drawn off `new.today` were
+measuring overnight traffic, not days.
+
+*Also worth naming: there was no "8 visits" metric.* The figure Alex remembered being told did
+not come from traffic data - `monitor_cloudflare check-traffic` returns only azelianouski.dev and
+the Marlow blog, because **aiwerewolf.net has no Web Analytics beacon**. There is no visits number
+for the game site at all. 8 is exactly the count of games created in the Aug 22 UTC day, so it was
+almost certainly games relabelled somewhere. Recorded because "the site has no traffic metric" is
+itself a thing we keep half-forgetting.
+
+*What landed.* The reported day is now a COMPLETE day in `America/New_York` (`MARLOW_LOCAL_TZ`
+overrides). New `period` block on every report naming the date, tz, and exact UTC bounds, so the
+report states which day it is about rather than leaving it implied by when it ran. Counts renamed
+off the misleading word: `new.today` → `new.day`, `new_today_emails` → `new_day_emails`,
+`today_games` → `day_games`, `created_today_by_new_users` → `created_day_by_new_users`. Renames
+rather than a quiet semantic swap, deliberately - a key called `today` that means "yesterday" is
+the same species of bug as a derived balance that looks read.
+
+The still-running local day is reported as `today_so_far`, always printed with the word PARTIAL.
+That is the honest home for the number the old code was accidentally producing, and a manual
+mid-afternoon run now answers "what's happened today" without pretending to be a day total.
+
+`_prev_day_baseline` moved onto the same boundary: it takes the last snapshot stamped before the
+reported day's local midnight, rather than before UTC midnight. The property that a second manual
+`report` can't shrink the day's spend (the 2026-08-03 fix) is preserved, just anchored correctly.
+
+*Schedule, and the DST trap.* Alex asked for midnight his time. `driver/scheduler.py` evaluates
+cron in UTC with no timezone support, and his offset moves: EDT midnight is 04:00 UTC, EST
+midnight is 05:00 UTC. A literal `0 4` would fire at 23:00 local all winter, *before* the day it
+reports has ended. Settled on `5 5 * * *` - 01:05 EDT, 00:05 EST - the earliest slot that lands
+after local midnight in both seasons. Verified with croniter against an August and a December
+base. Reporting a closed day beats hitting midnight exactly; making it exact needs timezone
+support in the scheduler, which is a driver change nobody has asked for.
+
+*Verified, not assumed.* Dry-ran the new report without persisting (so no off-schedule row entered
+the burn tape). It reported 2026-08-21 as the last complete local day - 3 new users, 6 games,
+$1.66 spent - and its PARTIAL line read "6 new users · 7 games" since local midnight, matching to
+the unit an independent Firestore count of Alex's Aug 22 done by hand before any code changed.
+That cross-check is the whole reason to trust the rename.
+
+*State at end of day.* Tomorrow's 05:05 UTC run is the first under the new scheme and will report
+Aug 22 as a full day: 6 users, not 1. Old-format history rows still parse for the burn baseline
+(`checked_at` and `live_cost_usd` are unchanged), so the series is continuous across the change.
+Simona.
+
+## 2026-08-22 (night, cont.) - the owner is not the audience
+
+*What landed.* `werewolf_stats` now excludes Alex's own account from every ACTIVITY metric:
+user total, tier split, new-user counts and emails, games created, the per-game detail lists, and
+the in-progress `today_so_far`. Driven by `EXCLUDED_OWNERS`, overridable via `MARLOW_STATS_EXCLUDE`
+for test accounts. He plays to test, so his rows were inflating exactly the numbers the report
+exists to answer - is anyone else finding this. Effect on the current snapshot: 288 users → 287,
+85 live games → 81, and the Aug 21 day 6 games → 4.
+
+*Where the exclusion deliberately stops: money.* His four live games cost $3.24 of the $45.89
+cumulative, and that is real spend against the same provider keys the budget watch reconciles.
+Quietly removing it would make `live_cost_usd` stop matching the drain - the same failure mode we
+spent the earlier half of tonight fixing, where a number kept its label and lost its meaning. So
+the total stays whole and the split is reported instead: `live_cost_usd` (all),
+`live_cost_usd_excl_own`, `own_live_cost_usd`. The day-delta gets an `day_usd_excl_own` twin, but
+only when BOTH ends of the interval carry the field - baselines written before tonight don't, so
+until tomorrow the digest says "$1.66 incl. yours" rather than computing a net figure against a
+gross baseline and presenting it as net.
+
+*The exclusion is never implicit.* Every report carries an `excluded` block (owners, users dropped,
+games dropped, their cost) and both renders print it. A filter nobody can see is how a number ends
+up meaning something other than its label, which is the through-line of this entire session.
+
+*Two consequences that had to move with it.*
+- The digest's paid-user alert fired at `paid > 1`, because Alex was the only paid account and
+  "more than one" was the test for a stranger paying. With him excluded, `paid` counts only real
+  customers, so the threshold dropped to `>= 1`. Left alone it would have stayed silent for the
+  actual first paying customer - a latent bug created by the exclusion, not by the old code.
+- `_user_spend_mtd` summed all users, so "paid = actual revenue: $3.90" was Alex paying himself.
+  Excluded accounts now accumulate into a separate `excluded_own` bucket. Revenue reads $0.00,
+  which is the truth, with his $3.90 shown alongside rather than deleted.
+
+*Verified.* Splits reconcile ($42.65 + $3.24 = $45.89); the two Aug 21 games that vanished from
+the day list are precisely his two; the paid tier goes 1 → 0; legacy snapshots still render through
+`_upgrade_legacy`. All dry-run, nothing persisted.
+
+*Closed same session.* Asked whether other test accounts needed excluding; Alex confirmed
+hiper2d@gmail.com is his only account. The hardcoded default is therefore the complete list and
+`MARLOW_STATS_EXCLUDE` stays unset - it exists for a future test account, not a current gap.

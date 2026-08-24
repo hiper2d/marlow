@@ -198,7 +198,7 @@ For dynamic work (e.g. "process every pending food entry"), use `decompose_handl
 | ops | werewolf-ops | `monitor_uptime` | `monitor_uptime` | hourly :30 |
 | ops | werewolf-ops | `monitor_cloudflare` | `monitor_cloudflare` | daily 09:00 |
 | ops | werewolf-ops | `scrape_stats` | `scrape_stats` | daily 09:00 |
-| ops | werewolf-ops | `werewolf_stats` | `werewolf_stats` | daily 09:00 |
+| ops | werewolf-ops | `werewolf_stats` | `werewolf_stats` | daily 05:05 UTC (just after local midnight) |
 | ops | calories | `poll_food` | `poll_food` | every tick (20 min) |
 | ops | calories | `daily_calorie_digest` | `calorie_digest` | daily 12:00 (~07:00 ET, prior day closed) |
 | ops | _framework | `commit_artifacts` | `commit_artifacts` | daily 23:50 |
@@ -310,7 +310,7 @@ Operational monitoring for the AI Werewolf game. **Live.** Four axes: what the f
 
 - **Key budgets** (`monitor_keys`, twice daily): low-balance watch on 5 provider keys — DeepSeek, Moonshot, xAI/Grok via balance API; OpenAI, Anthropic via cost-API-minus-baseline. Urgent Telegram alert below threshold, with anti-spam (no repeat ping if balances are unchanged).
 - **Console scrape** (`scrape_stats`, daily): the 3 providers with no balance API — GLM balance, Gemini + Mistral spend-vs-cap — read via a logged-in headless Chrome profile. Eight providers covered in total.
-- **User-activity stats** (`werewolf_stats`, daily): new users, games created, and AI burn (cost), read from the Werewolf Firestore `users`/`games` collections (read-only service account). Digest-only, no alerts.
+- **User-activity stats** (`werewolf_stats`, daily 05:05 UTC): new users, games created, and AI burn (cost), read from the Werewolf Firestore `users`/`games` collections (read-only service account). Reports the **complete local day** (`MARLOW_LOCAL_TZ`, default America/New_York) that just ended, never a partial one. Alex's own account is excluded from every activity count (`MARLOW_STATS_EXCLUDE`); his games still count toward burn, reported as a split, so the cost figure keeps reconciling with the provider balances. Digest-only, no alerts.
 - **Broken-game watch** (`monitor_health`, every 6h): scans the `games` collection for the `errorState` the engine writes when a system error hits a game. Alerts on games that became errored *since the last scan* (baselines the standing pile, never re-pings); urgent if `recoverable: false` (game is dead), digest if it may self-heal.
 - **App-level error watch** (`monitor_betterstack`, hourly): the failures that never reach a game doc — unhandled exceptions, provider 5xx, server errors. Reads the app's structured logs back through Betterstack's ClickHouse SQL API. Baselines the pre-existing set; urgent on a new error.
 - **Cloudflare health** (`monitor_cloudflare`, daily): Pages deploys + zone status + SSL-expiry check across the zones reachable through a read-only API token, plus blog traffic (Web Analytics page views + visits per blog site, informational) folded into the digest.

@@ -61,11 +61,31 @@
 # This task is activity reporting only. It deliberately raises NO alerts — if a
 # metric ever warrants one (e.g. a signup spike worth capacity planning), add an
 # explicit threshold here rather than letting the report turn noisy.
+# ── Why 05:05 UTC and not "0 9" (changed 2026-08-22) ─────────────────────────
+# It ran at 09:00 UTC and counted "today" as since-UTC-midnight, so it reported a
+# nine-hour slice as a day - and that slice, 00:00-09:00 UTC, is 20:00-05:00
+# Eastern: the deadest hours Alex has. On 2026-08-22 it reported 1 new user and 1
+# game; the real local day was 6 users and 8 games. The whole stats_history tape
+# shows it, rows reading `new_users_today: 2` on days users_total rose by 5.
+#
+# The handler now reports the last COMPLETE local day. This cron only has to fire
+# after local midnight. It cannot do that "at midnight" year-round, because the
+# scheduler evaluates cron in UTC with no timezone support (driver/scheduler.py)
+# while Alex's offset moves with DST:
+#     EDT (Mar-Nov) local midnight = 04:00 UTC
+#     EST (Nov-Mar) local midnight = 05:00 UTC
+# A fixed "0 4" would fire at 23:00 local through the winter - BEFORE the day it
+# is meant to report has ended. 05:05 UTC is the earliest slot that lands after
+# local midnight in both seasons (01:05 EDT / 00:05 EST). Reporting a closed day
+# is worth more than hitting midnight exactly; making it exact needs timezone
+# support in the scheduler, which is a driver change nobody has asked for yet.
+#
 name: werewolf_stats
 project: werewolf-ops
 profile: ops
-description: Daily Werewolf user-activity snapshot — new users, games created, and AI burn (cost) — from Firestore users/games collections. Digest-only, no alerts.
-schedule: "0 9 * * *"
+description: Daily Werewolf user-activity snapshot — new users, games created, and AI burn (cost) — from Firestore users/games collections. Reports the COMPLETE local day (America/New_York) that just ended, not a partial UTC day. Excludes Alex's own account from all activity counts (MARLOW_STATS_EXCLUDE); his games still count toward burn and are shown as a split. Digest-only, no alerts.
+# 05:05 UTC = 01:05 EDT / 00:05 EST — see the DST note above.
+schedule: "5 5 * * *"
 priority: normal
 must_run_within_hours: 6
 subtasks:

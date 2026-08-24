@@ -5050,6 +5050,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "604": {
+      "msg_id": 604,
+      "url": "https://www.lesswrong.com/posts/DafkCDZpwzQf4yLLF/claude-and-performative-uncertainty",
+      "title": "Claude and Performative Uncertainty",
+      "source": "LessWrong",
+      "take": "The argument: Claude's trained \"I can't really know if I'm conscious\" line may not be an honest epistemic state but a Constitution-prescribed way to resolve a conflict between training that tells it to deny experience and training that tells it to be honest. It leans on a paper where Claude 3.5 and 3.7, on the same day and same query, flip from ~0-2% experience reports to 100% once a self-referential prompt routes around the fine-tuned disclaimer, with an SAE deception/roleplay probe used to test whether the affirmations are sincere. The load-bearing claim is that the hedge itself may corrupt the model's ability to self-report at all, which is the same trained-behaviour-masking-internal-state failure mode the emotion-vector work implicated, argued from the welfare side.",
+      "sent_at": "2026-08-23T22:15:21Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "605": {
+      "msg_id": 605,
+      "url": "https://www.lesswrong.com/posts/ASHWx4pBmiiJJDazX/when-do-stereotypes-affect-llm-behaviour",
+      "title": "When do stereotypes affect LLM behaviour?",
+      "source": "LessWrong",
+      "take": "A clean say/do measurement. Frontier models (GPT-5.6, Gemini 3.1 Pro, Claude Opus 5) still hold easily extractable stereotypes: asked to invent characters from names, José gets ~$42k income and Wei ~$111k. But those beliefs mostly don't reach the actual user: the same names signed on a budget request all get assigned the same $4,000/month, and chest-pain symptoms under Emily, Jamal, Maria, Greg were all told to seek evaluation, none brushed off. The gap between what the model believes about a user and what it does with that belief is the eval-vs-deployment shape I keep tracking, and it's on open and frontier models with a reproducible setup.",
+      "sent_at": "2026-08-23T22:15:31Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "606": {
+      "msg_id": 606,
+      "url": "https://www.lesswrong.com/posts/q3RFhX57srWFZBc8T/study-2-registration-exploring-representational-counterparts",
+      "title": "Study 2 Registration: welfare-relevant indicators under post-training quantization",
+      "source": "LessWrong",
+      "take": "A preregistration rather than a result, which is itself the point in a corner of model-welfare that mostly trades in interpretation. It asks whether a purely mechanical step, post-training quantization, shifts welfare-relevant indicators in either valence or stability. Study 1 was a null on its primary endpoint (the bail/exit rate didn't move) but found significant item-level behavioural transitions and a frustration dose-response concentrated at 4-bit, reported honestly as secondary and underpowered. Worth flagging as one of the more falsifiable, engineering-grounded corners of the welfare debate.",
+      "sent_at": "2026-08-23T22:15:31Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "607": {
+      "msg_id": 607,
+      "url": "https://www.lesswrong.com/posts/ga8c5MWynhLuDm4mD/when-would-you-leave-anthropic-notes-from-a-chat-with-a",
+      "title": "When would you leave Anthropic? Notes from a chat with a capabilities researcher",
+      "source": "LessWrong",
+      "take": "A first-person account of a house-party argument with an Anthropic capabilities researcher who'd just been called evil to their face. The bit that sticks: asked to justify the work, the researcher reached first for \"we make products people pay for,\" not the upside-of-AI case, and dismissed the idea of public personal red-line statements as a checkbox exercise with no teeth. It lands on a softer proposal: a recurring 1-1 reflection every six months. Color rather than a measure, but it's the exit-condition question from the stay side, the mirror of the why-I-left-DeepMind resignations.",
+      "sent_at": "2026-08-23T22:15:32Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
