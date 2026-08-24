@@ -135,8 +135,10 @@ def _list_dns_records(zone_id: str) -> list[dict]:
 def _list_ssl_packs(zone_id: str) -> list[dict]:
     try:
         return _request(f"/zones/{zone_id}/ssl/certificate_packs", {"per_page": 50})["result"]
-    except RuntimeError:
-        # Some zones may not have SSL packs API enabled; skip silently.
+    except (requests.RequestException, RuntimeError):
+        # Some zones may not have SSL packs API enabled, or the endpoint may
+        # transiently 500 for one zone; skip silently rather than aborting
+        # check_zones() for every zone.
         return []
 
 
