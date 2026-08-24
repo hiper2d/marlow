@@ -360,7 +360,79 @@ QWEN = {
 
 QWEN_SEARCH_SETTLE_S = 2.5   # the table re-renders client-side; no network wait needed
 
-PROVIDERS = {p["name"]: p for p in (GLM, GEMINI, MISTRAL, SAKANA, MINIMAX, QWEN)}
+# OpenAI - prepaid API credit. Moved here from monitor_keys' Tier 2 on
+# 2026-08-24. Tier 2 derived the balance as (a console figure Alex read once)
+# minus cost-API spend since that date, which is true only until he tops up: a
+# top-up is invisible to the cost API, so the derivation kept subtracting real
+# spend from a pre-payment number and produced two confident, wrong CRITICALs
+# (08-22 $2.26, 08-24 $0.40 - the real balance was $20.05). A stale baseline
+# fails quiet and wrong. Reading the console every run fails loud instead, and
+# deletes the manual re-anchor-after-every-top-up step entirely.
+#
+# "API credit balance" is the depleting prepaid total. Do NOT scan for the
+# largest $ on the page - it also prints auto-reload copy and plan pricing.
+# `auto_reload` is context, not the metric: with it ON, a low balance refills
+# itself and is much less urgent than the number alone suggests.
+OPENAI = {
+    "name": "openai",
+    "url": "https://platform.openai.com/settings/organization/billing/overview",
+    "js": """(()=>{
+      const t=document.body.innerText;
+      if(/auth\\.openai\\.com|\\/log[- ]?in|\\/login/i.test(location.href)) return JSON.stringify({login_wall:true});
+      if(!/API credit balance/.test(t) && /sign[ -]?in|log[ -]?in|continue with/i.test(t))
+        return JSON.stringify({login_wall:true});
+      const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
+        const m=t.slice(i+label.length,i+label.length+(win||40))
+                 .match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/); return m?parseFloat(m[1].replace(/,/g,'')):null;};
+      const ar=t.match(/Auto-reload is\\s*\\n?\\s*(ON|OFF)/i);
+      return JSON.stringify({login_wall:false, balance:after('API credit balance'),
+        auto_reload: ar?ar[1].toUpperCase()==='ON':null});
+    })()""",
+}
+
+
+# Anthropic - prepaid credit. Joined OpenAI in leaving monitor_keys' Tier 2 on
+# 2026-08-24, for the same reason: a console baseline is only true until a
+# top-up, and a top-up is invisible to the cost API. This one had not gone
+# wrong yet (derived $16.24 vs an actual $16.08 - the key genuinely had not
+# been topped up since the 2026-05-31 anchor, which closes that open question),
+# but an 85-day-old baseline was one payment away from OpenAI's failure.
+#
+# Anchoring is the fiddly part here. "Credit balance" is a section HEADING
+# followed by a two-sentence blurb, so the number is ~150 chars downstream of
+# it and a windowed search would sweep in whatever else rendered. The number is
+# instead pinned by the label that TRAILS it ("$16.08 / Remaining balance"), so
+# we match backwards off that. Sidebar "Credits $NN.NN" is the fallback.
+#
+# Do NOT scan for the largest $: this page also prints the monthly spend limit
+# ($100), month-to-date spend ($9.85) and every historical credit grant ($50).
+# The spend/limit pair is captured as context - it is a notification threshold
+# Alex set, not money he holds.
+ANTHROPIC = {
+    "name": "anthropic",
+    "url": "https://console.anthropic.com/settings/billing",
+    "js": """(()=>{
+      const t=document.body.innerText;
+      const authed=/Remaining balance|Credit balance/i.test(t);
+      if(!authed && /continue with google|continue with email|build on the claude platform/i.test(t))
+        return JSON.stringify({login_wall:true});
+      if(!authed && /\\/login|auth\\.anthropic\\.com/i.test(location.href))
+        return JSON.stringify({login_wall:true});
+      const num=(x)=>x?parseFloat(String(x).replace(/,/g,'')):null;
+      const trailing=t.match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)\\s*\\n?\\s*Remaining balance/i);
+      const sidebar=t.match(/Credits\\s*\\n?\\s*\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/i);
+      const spent=t.match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)\\s*spent/i);
+      const limit=t.match(/^Monthly spend limit$[\\s\\S]{0,60}?\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/m);
+      return JSON.stringify({login_wall:false,
+        balance: num(trailing?trailing[1]:(sidebar?sidebar[1]:null)),
+        spend_usd: num(spent?spent[1]:null),
+        spend_limit_usd: num(limit?limit[1]:null),
+        auto_reload: /Auto reload is off/i.test(t) ? false : (/Auto reload is on/i.test(t) ? true : null)});
+    })()""",
+}
+
+
+PROVIDERS = {p["name"]: p for p in (GLM, GEMINI, MISTRAL, SAKANA, MINIMAX, QWEN, OPENAI, ANTHROPIC)}
 
 
 # ─── Normalize each provider's raw extract into a common shape ───────────────
@@ -526,7 +598,7 @@ def _check_once(provider: str, settle_s: float = NAV_SETTLE_S) -> dict:
             return {**base, "ok": False, "kind": "parse_failed", "error": "no usage figure found"}
         return {**base, "ok": True, "metric": "spend_cap", "spend_usd": round(usage, 4),
                 "cap_usd": MISTRAL_CAP_USD, "pending_usd": pending}
-    if provider in ("sakana", "minimax"):
+    if provider in ("sakana", "minimax", "openai", "anthropic"):
         bal = raw.get("balance")
         if bal is None:
             return {**base, "ok": False, "kind": "parse_failed", "error": "no credit balance found"}
@@ -537,9 +609,17 @@ def _check_once(provider: str, settle_s: float = NAV_SETTLE_S) -> dict:
             return {**base, "ok": False, "kind": "suspect_zero",
                     "error": f"reads $0.00 across retries but last run saw ${suspect_prev:.2f} — "
                              "likely placeholder render; verify in console before topping up"}
-        extra = ({"usage_usd": raw.get("usage")} if provider == "sakana"
-                 else {"cash_usd": raw.get("cash"), "voucher_usd": raw.get("voucher"),
-                       "outstanding_usd": raw.get("outstanding")})
+        if provider == "sakana":
+            extra = {"usage_usd": raw.get("usage")}
+        elif provider == "openai":
+            extra = {"auto_reload": raw.get("auto_reload")}
+        elif provider == "anthropic":
+            extra = {"auto_reload": raw.get("auto_reload"),
+                     "spend_usd": raw.get("spend_usd"),
+                     "spend_limit_usd": raw.get("spend_limit_usd")}
+        else:
+            extra = {"cash_usd": raw.get("cash"), "voucher_usd": raw.get("voucher"),
+                     "outstanding_usd": raw.get("outstanding")}
         return {**base, "ok": True, "metric": "balance", "balance_usd": round(bal, 4),
                 **extra, "is_available": bal > 0}
     return {**base, "ok": False, "kind": "parse_failed", "error": "unknown provider"}

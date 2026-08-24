@@ -16,9 +16,13 @@
 # remaining = a baseline Alex reads from the console once, minus cumulative
 # spend since, from the provider's admin cost API). Works for shared accounts
 # because the cost API counts ALL spend, not just the game's:
-#   - OpenAI    (GET /v1/organization/costs, admin key)
 #   - Anthropic (GET /v1/organizations/cost_report, admin key; COMPLETED 1d
 #                buckets only — same-day baseline reads spend 0 until tomorrow)
+# OpenAI LEFT this tier on 2026-08-24 for a console read in monitor_keys' sibling
+# `scrape_stats` (Tier 3). A baseline is only true until Alex tops up, and a
+# top-up is invisible to the cost API, so it fired two confident wrong CRITICALs
+# ($2.26 on 08-22, $0.40 on 08-24; the key actually held $20.05). See the
+# staleness note at the bottom — it applies to Anthropic alone now.
 # Game-spend estimation was rejected: provider budgets are shared across Alex's
 # other projects, so game spend != total spend. Baselines live in
 # projects/werewolf-ops/config/tier2_baselines.json; update on each top-up via
@@ -54,17 +58,23 @@
 #      each empty/critical key and its balance. If only digest-severity
 #      issues, append a single digest entry.
 #   5. If no issues, append a one-line digest listing each provider + balance,
-#      e.g. "Werewolf keys: DeepSeek $X, Moonshot $Y, Grok $Z, OpenAI $A,
-#      Anthropic $B — all healthy."
+#      e.g. "Werewolf keys: DeepSeek $X, Moonshot $Y, Grok $Z, Anthropic $A
+#      — all healthy."
+#      Dollar figures go through the tick RESULT FILE, never a shell argv. On
+#      2026-08-24 a `marlow notify "…$0.40…"` in double quotes reached Telegram
+#      as "/bin/zsh.40" — zsh expanded $0. If you must shell out, single-quote
+#      it or use `marlow notify --stdin` with a quoted heredoc delimiter.
 #   6. Write the tick result and exit.
 #
-# Note on Tier-2 staleness: if an OpenAI/Anthropic baseline goes stale (Alex
-# topped up but didn't re-anchor), remaining will trend negative and trip a
-# false "empty" — that's the signal to re-run set-baseline, not a real outage.
+# Note on Tier-2 staleness (Anthropic only now): if its baseline goes stale
+# (Alex topped up but didn't re-anchor), remaining trends toward a false "empty"
+# — that's the signal to re-run set-baseline, not a real outage. This failure is
+# quiet and wrong, which is why OpenAI was moved off the tier entirely; Anthropic
+# stays only until its console read is built.
 name: monitor_keys
 project: werewolf-ops
 profile: ops
-description: Twice-daily low-balance watch for 5 Werewolf provider keys — DeepSeek, Moonshot, xAI/Grok (balance API) + OpenAI, Anthropic (cost API − baseline).
+description: Twice-daily low-balance watch for 4 Werewolf provider keys — DeepSeek, Moonshot, xAI/Grok (balance API) + Anthropic (cost API − baseline). OpenAI moved to the console scrape 2026-08-24.
 schedule: "0 8,20 * * *"
 priority: normal
 must_run_within_hours: 6

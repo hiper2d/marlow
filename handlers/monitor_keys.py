@@ -360,7 +360,19 @@ def _xai_configured() -> bool:
     return bool(os.environ.get(ENV_XAI_KEY) and os.environ.get(ENV_XAI_TEAM))
 
 
-# ─── Tier 2: cost-API + console baseline (OpenAI, Anthropic) ─────────────────
+# ─── Tier 2: cost-API + console baseline (DORMANT as of 2026-08-24) ──────────
+#
+# Nothing uses this tier right now. OpenAI and Anthropic, its only two members,
+# both moved to a console read in scrape_stats on 2026-08-24: a baseline is only
+# true until the next top-up, a top-up is invisible to a cost API, and the tier
+# therefore fails QUIET AND WRONG rather than loud. It cost two confident false
+# CRITICALs on a key holding $20 before we pulled it.
+#
+# The machinery is kept, not deleted, because it is the right fallback for a
+# provider that has neither a balance endpoint nor a scrapable console. It
+# activates only for a provider with BOTH an admin key and an entry in
+# tier2_baselines.json (currently `{}`), so it stays inert until someone opts a
+# provider back in - and whoever does should read the failure above first.
 
 
 def _load_baselines() -> dict:

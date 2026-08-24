@@ -16,8 +16,9 @@ Usage:
     marlow logs [-n N] [-f]    show last N lines of ~/.marlow/log; -f to follow
     marlow digest preview      print what today's digest would send
     marlow digest send         assemble + send today's digest now
-    marlow notify "msg"        send an urgent Telegram message
-    marlow notify --digest "msg"   append to today's digest
+    marlow notify 'msg'        send an urgent Telegram message (SINGLE quotes - $ is shell-eaten)
+    marlow notify --stdin      read the message from stdin (expansion-proof)
+    marlow notify --digest 'msg'   append to today's digest
 """
 
 from __future__ import annotations
@@ -137,13 +138,46 @@ def cmd_digest(args):
         compose_daily_digest.cmd_send(ns)
 
 
+# A notify message reaches this process as an argv string, so it has already
+# been through the shell. An unquoted "$" is expanded before Python ever sees
+# it: on 2026-08-24 a keys alert written as "OpenAI now $0.40 (< $3)" landed in
+# Telegram as "OpenAI now /bin/zsh.40" because zsh substituted $0. By then the
+# original text is gone and nothing here can recover it, so we do the two things
+# that are still possible - offer a channel that never expands (--stdin, fed by
+# a heredoc with a QUOTED delimiter), and name the damage loudly when the
+# tell-tale shell path shows up in a message that is about to go out.
+_EXPANSION_TELLS = ("/bin/zsh", "/bin/bash", "/bin/sh", "/usr/bin/env")
+
+
+def _warn_if_shell_mangled(message: str) -> None:
+    for tell in _EXPANSION_TELLS:
+        if tell in message:
+            print(
+                f"WARNING: message contains {tell!r}, which is almost certainly an unquoted "
+                "'$' the shell expanded (\"$0.40\" -> \"/bin/zsh.40\"). Sending anyway - an "
+                "urgent alert is worth more mangled than dropped - but resend it with single "
+                "quotes or --stdin.",
+                file=sys.stderr,
+            )
+            return
+
+
 def cmd_notify(args):
     _ensure_repo_cwd()
     sys.path.insert(0, str(REPO_ROOT))
     from tools import notify  # noqa: E402
 
+    if args.stdin:
+        message = sys.stdin.read().strip()
+    else:
+        message = args.message
+    if not message:
+        print("notify: need a message argument or --stdin", file=sys.stderr)
+        sys.exit(2)
+    _warn_if_shell_mangled(message)
+
     urgency = "digest" if args.digest else "urgent"
-    result = notify.notify_alex(args.message, urgency=urgency)
+    result = notify.notify_alex(message, urgency=urgency)
     print(result)
     sys.exit(0 if result.get("delivered") else 1)
 
@@ -428,7 +462,9 @@ def main():
     p_digest.set_defaults(func=cmd_digest)
 
     p_notify = sub.add_parser("notify", help="Send a notification")
-    p_notify.add_argument("message")
+    p_notify.add_argument("message", nargs="?", help="Message text. Single-quote it: an unquoted $ is eaten by the shell")
+    p_notify.add_argument("--stdin", action="store_true",
+                          help="Read the message from stdin - expansion-proof, use a heredoc with a quoted delimiter")
     p_notify.add_argument("--digest", action="store_true", help="Append to digest instead of urgent send")
     p_notify.set_defaults(func=cmd_notify)
 

@@ -1343,3 +1343,69 @@ the same shrug.
 `FRESH_ARTIFACTS` is not profile-scoped, so the writer loop also audits the ops
 loop's snapshot. Harmless now that both paths are digest-only, but it means the
 same staleness is reported twice on a bad morning.
+
+## 2026-08-24 - the budget watch stops deriving what it can read
+
+*How it surfaced.* A Telegram urgent said OpenAI was at $0.40, "4th consecutive
+critical check, 97% of the $13.36 baseline spent." Alex didn't believe it. He
+was right: the console held $20.05. Second false CRITICAL from the same cause in
+three days.
+
+*What was actually fixed on 08-22, and what wasn't.* That entry ends with an
+explicit *Open* line - "Re-anchor OpenAI; decide whether OpenAI moves to Tier 3."
+Neither happened. What shipped that day was the *labelling* in `budget_state`:
+a derived row now prints "RE-ANCHOR if topped up since" when it drops under the
+low threshold. That is a caveat on a report you have to go and ask for. The
+`monitor_keys` alert path was never touched, so the alert kept firing with full
+confidence while the caveat sat in a place nobody was looking. **Fixing how a
+wrong number is *described* is not fixing the number.** The stale baseline from
+08-09 survived two top-ups and paged Alex four times.
+
+*What landed.*
+- **OpenAI and Anthropic both left Tier 2 for a console read in `scrape_stats`.**
+  Retiring a provider needed no code change at all: the tier is opt-in on
+  `(admin key AND an entry in tier2_baselines.json)`, so emptying the file to
+  `{}` retires both cleanly and silently. `monitor_keys` is now three direct
+  balance APIs and derives nothing.
+- **The 08-22 blocker was gone.** That day the port-9223 profile had no OpenAI
+  session and bounced to `/login`; it has one now, so OpenAI needed no human
+  step. Anthropic did - one login by Alex, and that is the whole ongoing cost of
+  Tier 3 for both.
+- **Anthropic's extractor anchors backwards.** "Credit balance" is a heading
+  followed by a two-sentence blurb, so the number sits ~150 chars downstream;
+  it is pinned instead by the label that *trails* it (`$16.08 / Remaining
+  balance`), sidebar `Credits $NN` as fallback. First cut also read the spend
+  limit as $9.85, because the blurb "Set a monthly spend limit..." matched
+  case-insensitively and pulled `$9.85 spent` into the window - now anchored on
+  the label as its own line. Both pages also print decoy dollars (OpenAI's
+  auto-reload copy; Anthropic's $100 limit, $9.85 MTD, $50 historical grants),
+  so neither may scan for the largest `$`.
+- **`auto_reload` is captured for both.** "$4 with auto-reload ON" and "$4 with
+  it OFF" are different alerts. Both are OFF, which is why these keys can
+  actually reach zero.
+- **`marlow notify` hardened.** The alert reached Telegram as "OpenAI now
+  /bin/zsh.40" - the tick shelled out with a double-quoted `"$0.40"` and zsh
+  expanded `$0`. The sanctioned path (the tick result file) is JSON and was
+  never at risk; the tick just didn't use it. Since the text is destroyed before
+  Python sees it, added `--stdin` (heredoc-safe) and a guard that spots
+  shell-path debris in an outgoing message and warns loudly while still sending,
+  because a mangled urgent beats a dropped one.
+
+*An open question closed.* Anthropic's baseline, 85 days old and flagged on
+08-22 as "only right if that key has not been topped up since May," was honest:
+derived $16.24 vs an actual $16.08. It had not been topped up. It was one
+payment away from OpenAI's failure, not already in it.
+
+*The pattern, fourth instance.* GLM's placeholder zero (06-11), Mistral's
+re-layout (07-28), Qwen's label-vs-switch (08-12), and now this. Every time, a
+plausible wrong value beat a loud failure to the alarm. The difference here is
+that the fragile tier was *known* fragile and documented as such on 08-22, and
+the incident still repeated, because what shipped was a warning label rather
+than a removal. Tier 2 is now dormant with a note on it explaining why anyone
+opting a provider back in should read this first.
+
+*State at end of day.* All 11 providers read live, nothing derived: 8 prepaid
+keys total **$113.26** (sakana $3.54 low, deepseek $9.63 low, glm $10.48, xai
+$14.22, moonshot $15.78, anthropic $16.08, openai $19.57, minimax $23.96), plus
+gemini $18.64/$2000 and mistral $8.37/$30 postpaid, and qwen's free grant fully
+exhausted (3/3 models, billing pay-as-you-go). No urgents. Simona.
