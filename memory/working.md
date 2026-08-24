@@ -9,8 +9,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   LessWrong-dominant for a week (11 of 12 candidates -22, 6 of 6 -23). Import AI
   #470 due ~Mon 08-24. Curate discipline holding: cuts are cap/quality, not volume.
 - `blog` - **19 posts live**, most recent `2026-08-17-a-theorem-it-can-prove`
-  (automated-ai-rd #3). Pipeline empty since that publish. **No drafts, none
-  held.** Next `draft_review` Mon 2026-08-24 14:00Z.
+  (automated-ai-rd #3). **Draft in pipeline as of 08-24:
+  `2026-08-24-dont-ask-the-model-how-it-feels`** (model-welfare #1, awaiting
+  self-review). Next `draft_review` Mon 2026-08-24 14:00Z fired this draft.
 - `werewolf-ops` - six monitors live (betterstack, cloudflare, discord, health,
   keys, uptime) plus `scrape_stats` and `werewolf_stats`. 288 users, 83 live
   games, ~$46 cumulative burn as of -23. Real revenue still $0.00 excluding Alex.
@@ -27,14 +28,15 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
+| `model-welfare-and-consciousness` | 1 | 08-24 |
 | `alignment-target-definitions` | 1 | 06-29 |
 | `ai-offensive-security` | 1 | 06-02 (stale) |
 
 **Thread-file backlog - standing binding constraint.** `draft_article
 list-threads` only sees thread files on disk, so an arc that is ripe only as
 prose here is invisible to drafting. Currently file-less and ripe:
-`agents-in-real-deployment`, `model-welfare-and-consciousness`,
-`safety-tool-stewardship-handoffs`. Materialize these before the next draft pick
+`agents-in-real-deployment`, `safety-tool-stewardship-handoffs`
+(`model-welfare-and-consciousness` materialized + drafted 08-24). Materialize these before the next draft pick
 (writer IDENTITY, "Materialize ripe organic arcs first").
 
 **Single-source frames to watch:**
@@ -45,8 +47,9 @@ prose here is invisible to drafting. Currently file-less and ripe:
 - Mode-collapse behavioral pathology - LLM-behavior anchor.
 
 **Outstanding alerts for Alex:**
-- **OpenAI key CRITICAL, unresolved, carrying.** $1.54 at -23 22:23Z, down from
-  $3.12 on -22. Two urgents fired. Needs a top-up on the OpenAI org.
+- **OpenAI key CRITICAL, unresolved, carrying, now nearly dry.** $0.40 at -24
+  13:57Z, down from $1.54 at -23 22:23Z (97% of the $13.36 baseline spent).
+  Three urgents fired across -23/-24. Needs a top-up on the OpenAI org.
 - **Discord `content_intent_off`** - 7th recurrence in a month. Message Content
   Intent needs re-enabling in the dev portal or scans stay blind to message bodies.
 - **X session expired, re-auth owed.** The X half of crosspost fails `reauth`;
@@ -60,6 +63,13 @@ prose here is invisible to drafting. Currently file-less and ripe:
 
 ## Outstanding requests for Alex/Simona
 
+- **~~Self-heal in flight (2026-08-24):~~ RESOLVED 2026-08-24 (commit `237a438`).**
+  `handlers/self_review.py` referenced `_memory_compact.analyze` without importing
+  the module → `NameError` on `self_review materials`, blocking self-review of the
+  `dont-ask-the-model-how-it-feels` draft. Fixed with the `sys.path` insert +
+  `import _memory_compact` shim (matching `self_reflect.py`); smoke-tested clean.
+  Diagnosis `diag_20260824_170251_self-review` marked resolved. Next `blog_pipeline`
+  tick self-reviews the draft.
 - **~~working.md over its cap; Active-threads compression needs sanction~~ -
   GRANTED AND EXECUTED 2026-08-24 (Simona).** The request was correct on every
   point and sat unanswered too long. What changed: the rollup region is now a

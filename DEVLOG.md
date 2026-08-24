@@ -15,6 +15,26 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-08-24 — self-heal: handlers/self_review.py
+
+*What was wrong.* `handlers/self_review.py` `materials()` (line 133) referenced
+`_memory_compact.analyze(...)` to build `voice_journal_split`, but the module was
+never imported — so `self_review materials` raised `NameError` on every call and
+the blog pipeline could not self-review the `2026-08-24-dont-ask-the-model-how-it-feels`
+draft. `list-pending` worked (it never touches the module); only the materials
+path crashed.
+
+*What I changed.* Added the two-line import shim used by `self_reflect.py` and
+`grade_memory.py` — `sys.path.insert(0, str(Path(__file__).resolve().parent))`
+then `import _memory_compact  # noqa: E402` — right after the stdlib imports,
+before `REPO_ROOT`. One file, scoped to the named failure mode. Smoke-tested
+`materials --slug 2026-08-24-dont-ask-the-model-how-it-feels` (returns clean with
+`voice_journal_split` present) and `list-pending` (no regression).
+
+*Diagnosis* `diag_20260824_170251_self-review`. *Commit* `237a438`.
+
+---
+
 ## 2026-06-28 - Discord community watch: the first ops monitor aimed at people, not infra
 
 *What landed.* A new ops monitor, `monitor_discord`, every 6h (00/06/12/18 UTC). It polls the conversational channels (general, general-discussion, ai-news) for messages new since the last scan, computes activity stats, flags the deterministic bad-behavior shapes (volume firehose, repeated-message spam, link floods, mass mentions), and hands the new messages to the session as a `sample` so Marlow reads them and judges tone (rude/hostile/pestering) - the part rules can't do. New files: `handlers/monitor_discord.py`, `projects/werewolf-ops/tasks/monitor_discord.yaml`. Extended `tools/discord.py` with `get_channel_messages()` (paginated, after-cursor) and `get_guild_counts()`. Same cursor-diff + baseline-on-first-sight discipline as monitor_health / monitor_betterstack. Tested: baseline run, incremental after-cursor pickup against the live server (posted+deleted a probe message), and the heuristics via synthetic messages. Scheduler loads it under the ops profile; first fire 2026-06-29 00:00 UTC.

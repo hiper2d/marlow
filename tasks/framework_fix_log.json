@@ -64,5 +64,49 @@
     "escalated_at": null,
     "escalation_reason": null,
     "resolved_at": "2026-08-03T16:37:13Z"
+  },
+  {
+    "id": "diag_20260824_120759_monitor-cloudflare",
+    "detected_at": "2026-08-24T12:07:59Z",
+    "file": "handlers/monitor_cloudflare.py",
+    "line": 136,
+    "failure_mode": "_list_ssl_packs() only catches RuntimeError, not requests.RequestException/HTTPError; a transient non-2xx (e.g. 500) from the certificate_packs endpoint for one zone propagates uncaught, aborting check_zones() for ALL zones instead of degrading just that zone's ssl_packs to [] as the inline comment claims (\"skip silently\"). Hit today: zone pokerwithai.net (0266fe65bae5c20d0c38d0992b5a6fd2) 500'd once, top-level report ok:false, retry succeeded (transient).",
+    "suggested_fix": "Widen the except clause in _list_ssl_packs to (requests.RequestException, RuntimeError), matching the pattern already used in check_pages/check_workers/check_registrar.",
+    "attempts": 1,
+    "attempt_notes": [
+      {
+        "n": 1,
+        "at": "2026-08-24T12:29:43Z",
+        "result": "pass",
+        "note": null
+      }
+    ],
+    "status": "resolved",
+    "resolved_commit": "a92b717",
+    "escalated_at": null,
+    "escalation_reason": null,
+    "resolved_at": "2026-08-24T12:29:43Z"
+  },
+  {
+    "id": "diag_20260824_170251_self-review",
+    "detected_at": "2026-08-24T17:02:51Z",
+    "file": "handlers/self_review.py",
+    "line": 133,
+    "failure_mode": "materials() references _memory_compact but the module is never imported, raising NameError so self_review materials always crashes",
+    "suggested_fix": "add sys.path.insert(0, handlers dir) + 'import _memory_compact' near the top, matching self_reflect.py/grade_memory.py",
+    "attempts": 1,
+    "attempt_notes": [
+      {
+        "n": 1,
+        "at": "2026-08-24T17:24:02Z",
+        "result": "pass",
+        "note": null
+      }
+    ],
+    "status": "resolved",
+    "resolved_commit": "237a4389376a3a72a232bbc6e34573fecf60f636",
+    "escalated_at": null,
+    "escalation_reason": null,
+    "resolved_at": "2026-08-24T17:24:02Z"
   }
 ]
