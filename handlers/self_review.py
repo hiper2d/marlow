@@ -35,6 +35,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _memory_compact  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DRAFTS = REPO_ROOT / "projects" / "blog" / "drafts"
 MEMORY = REPO_ROOT / "memory"
