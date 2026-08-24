@@ -54,6 +54,18 @@ Invariant registry — each check(now) returns a list of Issue dicts:
   - site_integrity       every active thread file has >=1 published post and
                          its `posts:` count matches reality. Catches the
                          empty-thread / bookkeeping-drift class.
+  - memory_bounds        every memory file that is loaded into a tick stays
+                         inside its bound. Catches the class this audit missed
+                         entirely for two months: working.md drifting to 149KB
+                         against a documented 10KB cap, and voice-journal.md
+                         growing to 35KB with no bound declared at all. Both are
+                         prepended to real ticks, so unbounded growth is a
+                         silent per-tick context tax that nothing else reports -
+                         nothing fails, everything just costs more. Also flags a
+                         compaction flag that has been set for days (she was
+                         asked to distill and hasn't) and rollups written far
+                         over the per-entry budget, which is what shrinks the
+                         FIFO history window from ~8 days to ~2.
 
 Severity → channel:
   urgent → notify_alex(urgency="urgent")  immediate Telegram.
@@ -93,6 +105,26 @@ from tools.notify import notify_alex  # noqa: E402
 _PROFILE = os.environ.get("MARLOW_PROFILE") or ""
 _MARLOW_DIR = Path.home() / ".marlow" / _PROFILE
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _memory_compact  # noqa: E402
+import grade_memory  # noqa: E402
+import self_reflect  # noqa: E402
+import self_review  # noqa: E402
+
+MEMORY_DIR = REPO_ROOT / "memory"
+# Retained daily-rollup sections below which the history window is too short to
+# be useful. The FIFO bounds the file either way; this catches the rollups being
+# written so fat that the window collapses to a day or two.
+MIN_ROLLUP_DAYS = 5
+# Open items under "Outstanding requests for Alex/Simona" above which the queue
+# is treated as backed up. Marlow's only sanctioned channel for something she
+# cannot fix herself is to write a request there and wait; nothing ever read
+# that section back. The 149KB working.md was, in the end, a request that sat
+# unanswered for weeks while she did the part she was allowed to do. This
+# measures queue DEPTH, not age - the bullets carry no reliable timestamp - so
+# it is a proxy for "nobody is draining this", not a per-item SLA.
+MAX_OPEN_REQUESTS = 8
+REQUESTS_HEADING = "## Outstanding requests for Alex/Simona"
 DRAFTS_DIR = REPO_ROOT / "projects" / "blog" / "drafts"
 THREADS_DIR = REPO_ROOT / "projects" / "research" / "threads"
 PUBLISHED_DIR = REPO_ROOT / "projects" / "blog" / "published"
@@ -541,6 +573,103 @@ def check_output_freshness(now: datetime) -> list[dict]:
     return issues
 
 
+def check_memory_bounds(now: datetime) -> list[dict]:
+    """Memory files loaded into ticks must stay inside their bounds.
+
+    Nothing here blocks work, so everything is `digest` unless a file has run
+    far enough past its cap that it is a real per-tick cost (the 149KB case).
+    The point is that unbounded growth becomes *visible* - the previous failure
+    mode was a cap that lived only in a prompt, which nothing ever checked.
+    """
+    issues: list[dict] = []
+
+    # 1. working.md - the mechanically bounded one. Over cap means the FIFO
+    #    step is not running, not that she wrote too much.
+    rep = grade_memory.bound_working(grade_memory.ROLLUP_CAP_BYTES, check_only=True)
+    if rep.get("ok"):
+        over = rep["region_bytes_after"] > rep["cap_bytes"]
+        if over:
+            issues.append(_issue(
+                "memory_bounds", "digest",
+                f"working.md rollups {rep['region_bytes_after'] / 1000:.0f}KB "
+                f"over the {rep['cap_bytes'] / 1000:.0f}KB FIFO cap after truncation.",
+                "uv run python handlers/grade_memory.py bound-working",
+                "A single rollup is larger than the whole cap; the queue can't drain further.",
+            ))
+        if rep.get("head_over_warn"):
+            issues.append(_issue(
+                "memory_bounds", "digest",
+                f"working.md `## Current state` is {rep['head_bytes'] / 1000:.0f}KB "
+                f"(warn at {rep['head_warn_bytes'] / 1000:.0f}KB) - it has become a log, not a state summary.",
+                "Rewrite `## Current state` down to current facts only; history belongs in the rollups.",
+            ))
+        # The signal that matters is a SHORT WINDOW, not a fat-entry count. Once
+        # oversized rollups have already evicted their neighbours there are too
+        # few entries left for a count threshold to fire - the symptom masks
+        # itself exactly when it is worst. Warn on retained days instead, and
+        # name the fat entries as the cause.
+        fat = rep.get("oversized") or []
+        if rep.get("kept", 0) < MIN_ROLLUP_DAYS and fat:
+            worst = max(f["bytes"] for f in fat)
+            issues.append(_issue(
+                "memory_bounds", "digest",
+                f"working.md rollup window down to {rep['kept']} days "
+                f"(target ~8): {len(fat)} rollups over the {rep['entry_max_bytes']}B "
+                f"budget, worst {worst / 1000:.1f}KB.",
+                "Keep each rollup to one paragraph plus a short bullet list; "
+                "fat rollups evict older days from the FIFO.",
+            ))
+
+    # 2. The request queue. A request she cannot action herself is a dead letter
+    #    unless something surfaces it.
+    working = _memory_compact.read(MEMORY_DIR / "working.md")
+    _, req_block = _memory_compact.split_sections(working, REQUESTS_HEADING)
+    if req_block:
+        body = req_block.split("\n## ")[0]
+        open_reqs = [
+            ln for ln in body.splitlines()
+            if ln.startswith("- ") and "~~" not in ln
+        ]
+        if len(open_reqs) > MAX_OPEN_REQUESTS:
+            issues.append(_issue(
+                "memory_bounds", "digest",
+                f"{len(open_reqs)} open items under Outstanding requests "
+                f"(threshold {MAX_OPEN_REQUESTS}) - the queue is backing up.",
+                "Triage with Alex: action, decline, or strike each one. An "
+                "unanswered request is the one failure Marlow cannot route around.",
+            ))
+
+    # 3. The judgment-compacted files. A flag that stays set means she was asked
+    #    to distill and hasn't - the failure mode that let the journals grow.
+    for label, path, heading in (
+        ("voice-journal.md", MEMORY_DIR / "voice-journal.md", self_review.VOICE_JOURNAL_STANDING_HEADING),
+        ("self-reflection.md", MEMORY_DIR / "self-reflection.md", self_reflect.STANDING_HEADING),
+        ("lessons.md", MEMORY_DIR / "lessons.md", grade_memory.LESSONS_STANDING_HEADING),
+    ):
+        if not path.exists():
+            continue
+        info = _memory_compact.analyze(path, standing_heading=heading)
+        if info["needs_compaction"]:
+            sev = "digest"
+            issues.append(_issue(
+                "memory_bounds", sev,
+                f"{label} compactable region {info['compactable_bytes'] / 1000:.0f}KB "
+                f"over its {info['thresholds']['compact_bytes'] / 1000:.0f}KB threshold "
+                f"({info['compactable_count']} entries awaiting distillation).",
+                f"Next tick that opens {label} should run its compaction pass "
+                f"(protected tail: {info['protected_count']} newest entries).",
+            ))
+        if info["needs_standing_resynthesis"]:
+            issues.append(_issue(
+                "memory_bounds", "digest",
+                f"{label} standing section {info['standing_bytes'] / 1000:.0f}KB - "
+                f"due for a deliberate re-synthesis.",
+                f"Re-synthesize `{heading}` once, carefully. This is rare by design.",
+            ))
+
+    return issues
+
+
 def check_lock_health(now: datetime) -> list[dict]:
     """Surface tick-lock auto-recoveries from the last 24h. tick.sh self-heals a
     stale/wedged lock (dead-PID fast path or skip-counter slow path), but a break
@@ -608,6 +737,7 @@ CHECKS = [
     check_output_freshness,
     check_held_artifacts,
     check_site_integrity,
+    check_memory_bounds,
     check_lock_health,
     check_session_limits,
 ]

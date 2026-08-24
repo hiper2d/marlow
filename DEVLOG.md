@@ -1118,3 +1118,153 @@ the day list are precisely his two; the paid tier goes 1 → 0; legacy snapshots
 *Closed same session.* Asked whether other test accounts needed excluding; Alex confirmed
 hiper2d@gmail.com is his only account. The hardcoded default is therefore the complete list and
 `MARLOW_STATS_EXCLUDE` stays unset - it exists for a future test account, not a current gap.
+
+## 2026-08-24 - bounding the memory files, and what an unenforced cap is worth
+
+*What landed*
+
+- `handlers/_memory_compact.py` (new). Two shared primitives, deliberately
+  different in kind: `truncate_fifo` (deterministic, code-enforced) for the file
+  the code bounds, and `analyze` (pre-split, protected tail) for the files Marlow
+  bounds with judgment. Imported by `grade_memory`, `self_reflect`, `self_review`
+  and `monitor_self` so there is one contract instead of four.
+- `grade_memory bound-working` - `working.md`'s `## Daily rollups` region is now a
+  fixed-size FIFO, hard-capped at 12KB. `## Current state` and `## Outstanding
+  requests` are exempt: facts there expire when they stop being true, not on a
+  schedule, and a FIFO would drop a true fact for being old. Applied once by
+  hand: 152KB -> 78KB, 7 rollups dropped, newest 2 kept verbatim, head
+  byte-identical.
+- Protected-tail compaction wired into `self_reflect` (self-reflection diary) and
+  `self_review` (voice journal, which had no bound of any kind). The three
+  newest entries are handed over pre-separated and are off-limits; only the older
+  region folds into the standing section. Standing sections get their own, much
+  higher threshold so they are re-synthesized rarely.
+- `memory/lessons.md` (new) - long-term memory, read every tick. Replaces the
+  `memory/archive/` weekly-synthesis layer, which the contract described from May
+  and which was never built. Seeded with the two lessons that were about to age
+  out of the rollup window.
+- `monitor_self` gains `check_memory_bounds`. Every memory file loaded into a
+  tick now has a daily assertion on its size.
+- `profiles/root.md` memory rules and the writer IDENTITY grader/reflect/review
+  flows rewritten to describe what the code now does.
+
+*The actual finding - and a correction to the first version of this entry*
+
+The first draft of this entry said the grader "read the cap every night and
+declined every night," and framed it as a capable model ignoring an instruction.
+That was wrong, and the correction is the more useful finding.
+
+She was not ignoring it. Her -23 grading pass compressed the rollup section
+**58KB -> 27KB** in a single tick, taking the file 123KB -> 92KB. Then she wrote
+this, under Outstanding requests, and it sat there:
+
+> working.md is ~9x over its ~10KB cap and rollup compression is now exhausted.
+> That is as far as my sanctioned lever goes. The remaining bulk is "Active
+> threads" (~51KB) - single bullets run 2-4KB and duplicate the job of
+> `projects/research/threads/*.md`. Proposal unchanged and now blocking:
+> sanction moving per-thread anchor detail into the thread files and hold
+> working.md thread bullets to 2-3 lines each. Every tick reads this file; at
+> 92KB that is a real per-tick tax across ~40 ticks/day.
+
+That is the correct diagnosis, the correct fix, the right escalation channel, and
+an accurate cost estimate. She compressed everything she believed she was allowed
+to compress, correctly identified that the rest was *state* rather than log, and
+asked for sanction to touch it. Nobody answered. The request had been sitting
+across multiple daily rollups, restated each night.
+
+So the failure was never "the model won't follow the instruction." It was two
+things:
+
+1. **The lever she was given was too small for the problem.** Rollup compression
+   could not reach the bulk, and the bulk lived in a section the contract
+   discouraged her from rewriting unilaterally.
+2. **The escalation channel was write-only.** `profiles/root.md` tells her that
+   when something is out of her scope she should "propose changes in `working.md`
+   under Outstanding requests." Nothing ever read that section back. A request
+   there is a dead letter unless a human happens to scroll past it.
+
+The generalizable lesson is not about prompts versus code, though that still
+holds for the rollup FIFO. It is: **when you bound an agent's authority, you own
+the queue where it files what it cannot do.** An unanswered request is the one
+failure mode an autonomous loop cannot route around by design - it did the
+correct thing and the correct thing was to wait.
+
+Fixes, both landed: the rollup region is now bounded in code so that lever is no
+longer hers to pull, and `monitor_self` now reports open-request queue depth so
+the queue is drained rather than accumulated. The Active-threads sanction is
+granted, executed, and recorded as standing so she never has to ask again.
+
+*Things that surprised us*
+
+- `self-reflection.md` had compacted itself down to **one** raw dated entry
+  behind 8.6KB of standing text. The threshold worked; nothing protected the
+  tail, so the distillation ate almost all of the primary material. The
+  protected-tail rule was designed against a hypothetical and turned out to be
+  fixing something already in progress.
+- The first FIFO implementation made the problem worse in a way that only showed
+  up in a dry run: `### Earlier` had accumulated dropped *prose* to 7.4KB, and
+  being exempt from the queue it starved the 12KB cap down to a single retained
+  day. A bookkeeping line that grows is not bookkeeping. It is dates and a
+  pointer now.
+- Second bug, same section: rendering "first .. last (N days)" and re-parsing by
+  counting dates recovers 2, not N. The record of how much history had aged out
+  was silently resetting on every pass. Now parsed by an explicit span regex and
+  verified idempotent over repeated runs.
+
+*Decisions reconsidered*
+
+- Per-rollup size started as a hard truncation and ended as a *report*. Cutting
+  prose mid-sentence to hit a byte count makes the record worse, and the FIFO
+  bounds the file either way - entry size only decides how many days fit in it.
+  It is surfaced to `monitor_self` instead.
+- The oversized-entry alert was a count threshold (`>= 3 fat rollups`) until the
+  dry run showed it stops firing exactly when the problem is worst: once fat
+  entries have evicted their neighbours, too few remain to trip a count. It
+  warns on retained *window length* now, with the fat entries named as cause.
+
+*What's deferred*
+
+- `voice-journal.md` still holds a 26KB backlog across 14 compactable entries.
+  Left to her first `self_review` tick deliberately: it is her voice, and the
+  design says she distills it. The audit flags it daily until it lands.
+
+*Also landed, same session: the Current state rewrite*
+
+Once the sanction question was answered, `## Current state` was rewritten
+against verified ground truth rather than summarized. It had frozen around
+2026-06-16 and drifted badly: it claimed **nine posts live** when nineteen are
+published, carried a "Pending drafts: ONE" entry for an article that shipped on
+-17, and listed a dozen active threads when eight thread files exist. Most of
+its 67KB was closed items kept as struck-through history and a "Pending
+follow-ups" section that had become an append-only curate log.
+
+Checked against disk before writing: published count and latest slug, drafts
+directory (empty), every thread file's `posts:` and `last_synthesized:`, the
+framework-fix log, and the newest health report. Closed alerts were dropped
+rather than struck. The `temperature is deprecated` app bug was dropped on
+evidence: last seen 2026-07-15, absent from every report since. Durable lessons
+went to `lessons.md`; the rest is recoverable from the repo history.
+
+67KB -> 5.6KB, under the 6KB warn. Whole file 152.8KB -> 16.6KB.
+
+*State at end of day*
+
+Memory total across bounded files 117KB, down from ~192KB. Two of six files at
+target with no work needed, three now enforced, one (Current state) awaiting her
+own pass. Every bound is either a function or a daily assertion; none is only a
+sentence.
+
+## 2026-08-24 — self-heal: handlers/monitor_cloudflare.py
+
+`monitor_cloudflare`'s 09:00Z run came back `ok:false`: `_list_ssl_packs()`
+caught only `RuntimeError` around its certificate-packs fetch, but a plain
+HTTP error (`resp.raise_for_status()`) raises `requests.HTTPError`, a subclass
+of `requests.RequestException` — not caught. Zone `pokerwithai.net` 500'd once
+(transient, retry succeeded), and the uncaught exception propagated out of
+`check_zones()`, failing the whole report instead of degrading just that one
+zone's `ssl_packs` to `[]` as the inline comment promised ("skip silently").
+Every other list helper in the file (`check_pages`, `check_workers`,
+`check_registrar`) already catches `(requests.RequestException, RuntimeError)`
+— `_list_ssl_packs` was the one holdout. Widened its `except` clause to match.
+Smoke-tested: `report` returns `ok: true`, `issues: []`. Diagnosis
+`diag_20260824_120759_monitor-cloudflare`, commit `a92b717`.

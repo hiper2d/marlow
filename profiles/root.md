@@ -54,13 +54,43 @@ The driver reads this file, updates the queue, optionally fires the notify, and 
 
 ## Memory rules
 
-You have three layers of memory:
+You have four layers of memory, each bounded a different way:
 
-1. **`working.md`** — read at the start of every tick. Cross-project current state, capped ~10KB. The daily grader (Haiku, 11pm) compresses recent ticks into this. You can update it during a tick if something genuinely changed at the cross-project level (a project's status, a major outstanding alert, a thread becoming ripe), but be sparing — let the grader handle most of it.
+1. **`working.md`** - read at the start of every tick. Cross-project current
+   state. Two regions with different rules:
+   - `## Current state` / `## Outstanding requests` - yours to rewrite in place.
+     Facts here expire when they stop being true, not on a schedule, so nothing
+     truncates them automatically. Keep it a *state summary*, not a log; past
+     ~6KB the self-audit will say so.
+   - `## Daily rollups` - a **fixed-size FIFO**, hard-capped in code. The grader
+     appends one dated section per day and `grade_memory bound-working` drops
+     the oldest ones once the region passes 12KB. You get roughly a week of
+     history, and only if each rollup stays near its ~1.5KB budget. Write a fat
+     rollup and you are spending someone else's history, not just your own.
 
-2. **`memory/recent/`** — append-only per-tick log. Write a one-paragraph summary of every tick you run to `recent/<date>-<time>.md`. Don't compress yet; the grader does that.
+2. **`memory/recent/`** - append-only per-tick log, one file per tick. Write a
+   one-paragraph summary of every tick you run to `recent/<date>-<time>.md`.
+   Never loaded wholesale by anything; the grader reads one day of it and
+   deletes files older than 3 days. Don't compress these, and don't treat them
+   as durable.
 
-3. **`memory/archive/`** — weekly compressed summaries. Don't write to this directly; the weekly Opus synthesis owns it.
+3. **`memory/lessons.md`** - read at the start of every tick, next to
+   `working.md`. **Long-term memory.** When a tick teaches you something that
+   will still be true in six months - a failure signature, a workaround, a thing
+   that looks broken but isn't - write it here, because the rollup that would
+   otherwise hold it is going to expire. The bar is high and most days add
+   nothing; that is the normal case. See the file's own header for form.
+
+4. **`memory/archive/`** - **removed.** It described a weekly synthesis that was
+   never built and sat empty from May to August 2026. `lessons.md` is what it
+   should have been: durable facts, not a digest of digests.
+
+Bounding rule of thumb, in both directions: files the *code* bounds
+(`working.md` rollups, `recent/`) you never have to think about. Files *you*
+bound (`lessons.md` and, in the writing loop, the journals) hand you a pre-split
+view where the newest entries are already separated out and protected - you
+distill the older region into the standing section and never rewrite the recent
+tail. It is the recent entries the next tick actually steers on.
 
 Project-specific deep state (research threads, blog drafts, ops reports) lives under `projects/<name>/`. Treat working memory as the cross-project view; project folders as the per-project deep state.
 

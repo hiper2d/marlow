@@ -20,6 +20,9 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _memory_compact  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MEMORY = REPO_ROOT / "memory"
 SELF_REFLECTION = MEMORY / "self-reflection.md"
@@ -28,8 +31,17 @@ RECENT_DIR = MEMORY / "recent"
 PUBLISHED_DIR = REPO_ROOT / "projects" / "blog" / "published"
 
 # Fold older dated entries into a distilled "Standing reflections" section once
-# the file passes this size. Keeps a frequently-written diary from rotting.
+# the COMPACTABLE region passes this size. Measured on the older entries only,
+# never the whole file - otherwise a long protected tail trips the flag and she
+# gets woken to compact with nothing she's allowed to touch.
 COMPACT_THRESHOLD_BYTES = 8_000
+# Never offer the newest N entries for compaction. They are what the next tick
+# reads for steering; distilling them is the one edit that defeats the file.
+PROTECT_ENTRIES = 3
+# The distilled section is re-synthesized rarely and deliberately (see the
+# ratchet note in _memory_compact) - not on every pass.
+STANDING_THRESHOLD_BYTES = 20_000
+STANDING_HEADING = "## Standing reflections"
 
 
 def _read(path: Path) -> str:
@@ -74,12 +86,24 @@ def _recent_activity(n: int = 8) -> list[str]:
 
 def materials() -> dict:
     body = _read(SELF_REFLECTION)
+    split = _memory_compact.analyze(
+        SELF_REFLECTION,
+        standing_heading=STANDING_HEADING,
+        protect=PROTECT_ENTRIES,
+        threshold=COMPACT_THRESHOLD_BYTES,
+        standing_threshold=STANDING_THRESHOLD_BYTES,
+    )
     return {
         "self_reflection": body,
         "self_reflection_path": str(SELF_REFLECTION.relative_to(REPO_ROOT)),
         "exists": SELF_REFLECTION.exists(),
-        "size_bytes": len(body.encode()),
-        "needs_compaction": len(body.encode()) > COMPACT_THRESHOLD_BYTES,
+        "size_bytes": split["size_bytes"],
+        "needs_compaction": split["needs_compaction"],
+        # Pre-split view. `protected` is verbatim and off-limits; `compactable`
+        # is the only region a compaction pass rewrites. Handed over already
+        # separated so the recent tail is structurally out of reach rather than
+        # protected by instruction alone.
+        "split": split,
         "editorial_direction": _read(EDITORIAL_DIRECTION),
         "recent_published": _recent_published(),
         "recent_activity": _recent_activity(),

@@ -40,6 +40,15 @@ DRAFTS = REPO_ROOT / "projects" / "blog" / "drafts"
 MEMORY = REPO_ROOT / "memory"
 THREADS = REPO_ROOT / "projects" / "research" / "threads"
 VOICE_JOURNAL = MEMORY / "voice-journal.md"
+# The voice journal is append-only per review and, until now, had no bound at
+# all - no threshold, no flag, no instruction to distill. It reached 35KB and is
+# loaded on every drafting and review tick. Same protected-tail contract as the
+# self-reflection diary: the newest entries stay verbatim, older ones fold into
+# "Standing craft notes", and that standing section is re-synthesized rarely.
+VOICE_JOURNAL_STANDING_HEADING = "## Standing craft notes"
+VOICE_JOURNAL_PROTECT = 3
+VOICE_JOURNAL_COMPACT_THRESHOLD_BYTES = 8_000
+VOICE_JOURNAL_STANDING_THRESHOLD_BYTES = 20_000
 
 BEHAVIORAL_FILES = {
     "voice_guidelines": MEMORY / "voice-guidelines.md",
@@ -118,6 +127,16 @@ def materials(slug: str) -> dict:
         "rubric": rubric,
         "voice_journal": _read(VOICE_JOURNAL),
         "voice_journal_path": str(VOICE_JOURNAL.relative_to(REPO_ROOT)),
+        # Pre-split for the compaction pass. Append the new entry first, then
+        # compact `compactable` only if `needs_compaction` is set. `protected`
+        # is never rewritten.
+        "voice_journal_split": _memory_compact.analyze(
+            VOICE_JOURNAL,
+            standing_heading=VOICE_JOURNAL_STANDING_HEADING,
+            protect=VOICE_JOURNAL_PROTECT,
+            threshold=VOICE_JOURNAL_COMPACT_THRESHOLD_BYTES,
+            standing_threshold=VOICE_JOURNAL_STANDING_THRESHOLD_BYTES,
+        ),
         "verdict_options": ["ship", "revise", "hold-for-alex"],
     }
 

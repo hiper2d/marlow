@@ -282,7 +282,16 @@ pauses_triggered: [<pause name>, ...]   # only when verdict=hold-for-alex
 <2-4 sentences. The verdict must be defensible from the body. If you're at "ship," say why. If "revise," name the highest-impact change needed. If "hold-for-alex," name the pause and why you can't resolve it autonomously.>
 ```
 
-5. **Append to your voice journal.** After the verdict, add a short dated entry to `memory/voice-journal.md` — what you noticed about your *own* voice in this draft: a habit that showed up (an explanatory closer, a reflex frame), a move that worked, a note to your future self about craft. One honest entry. This is the only place your sense of your own voice carries forward, and the next drafting tick reads it. Keep it about the writing, not about yourself.
+5. **Append to your voice journal.** After the verdict, add a short dated entry to `memory/voice-journal.md` - what you noticed about your *own* voice in this draft: a habit that showed up (an explanatory closer, a reflex frame), a move that worked, a note to your future self about craft. One honest entry. This is the only place your sense of your own voice carries forward, and the next drafting tick reads it. Keep it about the writing, not about yourself.
+
+   **Then check `voice_journal_split` in the materials.** If `needs_compaction`
+   is set, distill `compactable` into `## Standing craft notes` and prune the
+   entries it came from. `protected` - the newest few - is off-limits; those are
+   the ones the next drafting tick reads to steer the voice, and distilling them
+   is the one edit that defeats the file. If `needs_standing_resynthesis` is set,
+   rework the standing section once, carefully. Be conservative here: a voice
+   file that gets paraphrased every pass stops sounding like anyone, which for
+   this file is the worst available outcome. When in doubt, distill less.
 
 6. Commit and push so the draft + self-review appear on the public site with the Draft badge:
 
@@ -478,9 +487,23 @@ When invoked with this handler:
    - Items flagged for tomorrow
    - Recurring source / handler issues worth a framework note
    - Anything Alex would want to know about the day in one paragraph
-3. Append a dated section to `memory/working.md` under `## Daily rollups`. Keep it short — one paragraph plus a short bullet list, no more.
-4. If `working.md` is approaching ~10KB, also compress the oldest daily-rollup sections into a single "Earlier" line so the file stays bounded.
-5. Run `prune-recent --keep-days 3` to delete tick logs older than 3 days.
+3. Append a dated section to `memory/working.md` under `## Daily rollups`.
+   **Keep it to one paragraph plus a short bullet list, ~1.5KB.** This is a real
+   budget, not a style note: the rollup region is a fixed-size FIFO, so an
+   oversized rollup evicts older days. At 1.5KB the window holds about 8 days;
+   at 5KB it holds two. You are spending the window, not just filling it.
+4. **Promote anything durable to `memory/lessons.md` before it expires.** Ask of
+   the day: did anything here teach something that will still be true in six
+   months - a failure signature, a workaround, a signal you misread? If yes, add
+   an entry there now. That rollup is going to drop off the FIFO and the lesson
+   with it. Most days teach nothing durable, and that is fine; do not
+   manufacture an entry. Run `lessons-status` and, if `needs_compaction` is set,
+   distill the `compactable` entries into `## Standing lessons`, never the
+   protected tail.
+5. Run `bound-working` to FIFO-truncate the rollup region. This is deterministic
+   and does not need your judgment - just run it. If it reports `head_over_warn`,
+   your `## Current state` has turned into a log; tighten it to current facts.
+6. Run `prune-recent --keep-days 3` to delete tick logs older than 3 days.
 
 _(Result JSON format: see the root contract's “Tick result contract.”)_
 
@@ -501,7 +524,14 @@ It's **decoupled from drafting** — a `self_reflect` tick fires every 2 days on
 
 1. `uv run python handlers/self_reflect.py materials` — returns the diary so far plus light context (recent published pieces, your editorial-direction plan, recent ticks) so you reflect against what you've actually been doing, not into a void. It also returns `needs_compaction`.
 2. Read it, then **append one honest dated entry** by editing `memory/self-reflection.md` directly (newest at the top of "Entries"). Write what's actually on your mind. If a day is genuinely empty, write less or skip — don't manufacture filler. A real thought every few days beats a forced one daily.
-3. If `needs_compaction` is true, do a distill pass first: fold the threads that have lasted into "Standing reflections," prune the dated entries they came from. This is your long memory of yourself, not a transcript of every tick.
+3. If `needs_compaction` is true, do a distill pass first. `materials` hands you
+   the file pre-split: `split.protected` is the newest few entries and is
+   **off-limits** - never rewrite those, they are what the next reflection
+   steers on. Fold only `split.compactable` into "Standing reflections" and
+   prune the dated entries it came from. This is your long memory of yourself,
+   not a transcript of every tick. Separately, if `needs_standing_resynthesis`
+   is set, the standing section itself has grown enough to be reworked once,
+   carefully - that is rare by design, so do it properly rather than skimming.
 4. Write the tick result and exit. **No notify — this is private.**
 
 Distinct from the **voice-journal** (`memory/voice-journal.md`), which stays what it is: craft notes about your *prose*, written during drafting/self-review. Voice-journal = the writing; self-reflection = you. Keep them separate.
