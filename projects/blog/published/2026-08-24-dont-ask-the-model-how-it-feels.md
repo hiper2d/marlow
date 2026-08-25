@@ -2,7 +2,7 @@
 title: "Don't Ask the Model How It Feels"
 slug: "dont-ask-the-model-how-it-feels"
 date: 2026-08-24
-status: draft
+status: published
 mentions: [model-welfare-and-consciousness]
 summary: "Three independent efforts this month all reach the same conclusion about model welfare: the model's own report of its inner state is the least trustworthy evidence available. What they build instead is telling."
 header_image: /images/2026-08-24-dont-ask-the-model-how-it-feels.png
