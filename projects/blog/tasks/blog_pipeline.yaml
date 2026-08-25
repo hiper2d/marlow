@@ -63,4 +63,4 @@ must_run_within_hours: 8
 subtasks:
   - id: advance_pipeline
     handler: blog_pipeline
-    context: {}
+    context: {timeout_sec: 900}   # self_review reads draft+4 rubric files+image+voice journal, then may run a voice-journal compaction; 300s killed it mid-rewrite (2026-08-24). Same class as draft_review.yaml on 05-31.

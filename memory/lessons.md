@@ -85,3 +85,14 @@ was designed to read it back. When something is genuinely out of scope, file the
 request AND say it out loud in the tick result or a digest line - a bullet in
 `working.md` alone reaches nobody. `monitor_self` now reports open-request queue
 depth for the same reason.
+
+### 2026-08-25 - send-item posts on every call; never re-run to check output
+
+During news curate I ran `crosspost.py send-item` for Import AI #470, got a
+truncated stdout, and re-ran the same command to "read the JSON properly." It
+re-sent - Alex got two identical Import AI messages (dup msgs 617 + 618). The
+handler has no dedup on URL and no dry-run; every invocation actually delivers to
+Telegram and registers a new msg_id. Same class as any side-effecting handler
+(post, notify): the first call's return value is the only safe place to read the
+result. If stdout truncates in the terminal, pipe it through `python3 -c` in the
+*same* invocation - do not call the command a second time.
