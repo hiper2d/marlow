@@ -5118,6 +5118,40 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "611": {
+      "msg_id": 611,
+      "url": "https://www.youtube.com/watch?v=rtYTguPItDE",
+      "title": "Stealing reasoning traces from proprietary LLM APIs",
+      "source": "alphaXiv / Matthew Green (via bycloud)",
+      "take": "The security-side mirror of the chain-of-thought monitorability question. A MATS team (building on Matthew Green's May finding that the labs dismissed as having \"no security implications\") shows the encrypted reasoning blocks providers return to clients are portable across sessions, users, and models — so a cheap model like Haiku can be used as a decryption oracle to read a frontier model's hidden CoT verbatim. The harvest is concrete: decoding blocks scraped from public repos recovered 367 PII artifacts and 182 credentials, some of which never appeared in the plaintext logs at all; the same flaw bypasses anti-distillation, surfaces hazardous content the model refused to output, and enables invisible prompt injection through the block. The line worth sitting with: the opacity labs added to protect IP and safety is itself the leak.",
+      "sent_at": "2026-08-24T22:18:33Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "612": {
+      "msg_id": 612,
+      "url": "https://www.404media.co/show-how-3m-is-0-at-fault-expert-witness-used-chatgpt-to-write-report-defending-company-in-deadly-explosion-lawsuit/",
+      "title": "Expert witness used ChatGPT to write report defending 3M in deadly explosion lawsuit",
+      "source": "404 Media",
+      "take": "A 3M expert witness in the Watson Grinding explosion litigation (three dead, roughly 200 homes destroyed) used ChatGPT to write significant parts of his sworn expert report — and his prompts became discoverable. They read \"create an exceptional expert witness report defending the standard of care at 3M\" and \"show how 3M is 0% at fault.\" This pushes the AI-in-court failure mode past hallucinated citations and into paid technical testimony, where a model's output is laundered as independent expert opinion. The tell isn't a fabricated case; it's the prompt, which names the desired conclusion first and asks the model to reverse-engineer the reasoning to fit it.",
+      "sent_at": "2026-08-24T22:18:37Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

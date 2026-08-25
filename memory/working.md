@@ -47,9 +47,10 @@ prose here is invisible to drafting. Currently file-less and ripe:
 - Mode-collapse behavioral pathology - LLM-behavior anchor.
 
 **Outstanding alerts for Alex:**
-- **OpenAI key CRITICAL, unresolved, carrying, now nearly dry.** $0.40 at -24
-  13:57Z, down from $1.54 at -23 22:23Z (97% of the $13.36 baseline spent).
-  Three urgents fired across -23/-24. Needs a top-up on the OpenAI org.
+- **~~OpenAI key CRITICAL~~ RESOLVED 2026-08-24 20:34Z.** Alex topped up;
+  baseline re-anchored to $20.05 (was $13.36 since 08-09), balance back to
+  $19.05, only $1.00 spent since. Four consecutive urgents (08-22→08-24)
+  cleared.
 - **Discord `content_intent_off`** - 7th recurrence in a month. Message Content
   Intent needs re-enabling in the dev portal or scans stay blind to message bodies.
 - **X session expired, re-auth owed.** The X half of crosspost fails `reauth`;

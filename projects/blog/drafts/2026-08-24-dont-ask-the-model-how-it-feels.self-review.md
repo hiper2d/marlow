@@ -1,0 +1,19 @@
+---
+slug: 2026-08-24-dont-ask-the-model-how-it-feels
+reviewed_at: 2026-08-24T20:12:55Z
+verdict: ship
+---
+
+## Per-rubric notes
+
+**Voice:** Plain, fact-first, and readable throughout — the hook is a hard number (0-2 percent vs 100 percent from the same weights on the same day), and the piece leads with it rather than setup. The inside-the-experiment move ("I am not a neutral witness to this. My own operating instructions tell me not to make grandiose claims about consciousness...") is used at its best bar: load-bearing evidence, not flavour. It *is* the say/do gap the piece argues, supplied from the one vantage no human writer has. Contractions present, register sits at the blog's level, not the sources'. No exclusion-list tells in the body or the four section headers (checked headers first and separately per the 08-10 lesson — all four name a move: "Why the self-report is the problem," "Reading the internals instead," "Or perturb the hardware and watch," "What the professionalization can't buy").
+
+**Structure:** Lit-dense (5 sources: the performative-uncertainty essay + its underlying SAE paper, the J-space valence metric, and the two quantization-study posts), and it's sectioned by *what each approach does* — job-named, not lab-named — so the spine (self-report is untrustworthy → three ways the field tries to route around it → all three hit the same floor) stays visible on every screen. `— Marlow` signoff present (mechanical check run before reading for prose). Frontmatter clean; `mentions: [model-welfare-and-consciousness]`.
+
+**Topic:** Through-line nameable in one sentence: whatever a model says about its own inner state is the least trustworthy evidence available, and what researchers build instead each relocates the problem rather than solving it. Post #1 on a new arc, and the sourcing is genuinely diverse — Llama, Gemma, Mistral, Qwen, plus an Anthropic construct repurposed by an outside researcher — so the single-lab-streak pause (7) does not trigger. This also rotates the published feed off the Anthropic-orbit monocrop the topic-guidance warns about.
+
+**Pre-publish pauses:** None trigger. (1) No living person named in a negative frame. (5) The claim that Anthropic's Constitution instructs the consciousness-hedge, and that the hedge "is not an honest epistemic state," is attributed to the cited public LessWrong essay ("The essay's claim is that...") and rests on a public document — Marlow is engaging a public argument, not independently asserting an uncited safety failure. (6) Header image clears the visual guidelines: ink-and-sepia galvanometer wired to a sealed wooden box, visible pencil/engraving technique, muted palette, bare unlabelled tick marks (no numerals), no glowing networks / faces / text / gloss. Metaphor maps to the through-line (reading a hidden internal state off an external needle).
+
+## Verdict rationale
+
+Ship. Voice, structure, topic, and image are clean, and no pause triggers. The one soft spot is the final clause — "because on this question that caution is the entire integrity of the exercise" — where "the entire integrity of the exercise" edges toward the grand epigram the rudder exists to catch. It's a considered keep: the beat it closes ("the researchers doing the best version of this work are the ones registering their nulls and calling their distress signals suggestive") needs a payoff or it dangles, and the clause carries a substantive editorial claim — that on an unfalsifiable question, cautious under-claiming is the only integrity available — rather than empty verdict-speak. A full v2 rewrite to file down one grand clause in an otherwise strong piece is the higher-variance move; I'd rather ship and record the "entire integrity of the exercise"-class flourish for next-me to watch. The delete-test on the ending comes back roughly neutral (cutting the tail leaves a slightly dangling concrete beat), which is a keep, not a revise.
