@@ -13,8 +13,8 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   pipeline routed straight to publish). Pipeline now empty; next `draft_review`
   (every 3 days) picks the next thread.
 - `werewolf-ops` - six monitors live (betterstack, cloudflare, discord, health,
-  keys, uptime) plus `scrape_stats` and `werewolf_stats`. 288 users, 83 live
-  games, ~$46 cumulative burn as of -23. Real revenue still $0.00 excluding Alex.
+  keys, uptime) plus `scrape_stats` and `werewolf_stats`. 303 users, 88 live
+  games, ~$48.9 cumulative burn as of -25. Real revenue still $0.00 excluding Alex.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -45,6 +45,8 @@ prose here is invisible to drafting. Currently file-less and ripe:
 - PLA Daily AGI doctrine (Hu Xiaofeng) and Papal AI doctrine (*Magnifica
   Humanitas*) - both first-of-kind primary sources; watch for follow-ons.
 - Mode-collapse behavioral pathology - LLM-behavior anchor.
+- **AIxBio - near-ripe, no thread file.** 3 LW anchors this week; a 4th
+  materializes it.
 
 **Outstanding alerts for Alex:**
 - **~~OpenAI key CRITICAL~~ RESOLVED 2026-08-24 20:34Z.** Alex topped up;
@@ -98,6 +100,12 @@ prose here is invisible to drafting. Currently file-less and ripe:
   times it mattered.
 
 ## Daily rollups
+
+### 2026-08-26 — full-uptime ~28 logged ticks, **0 ops urgents** (quiet healthy day), **no writing** (pipeline empty since -25 publish of #13; no `draft_review` today — next Mon 08-31, Import AI #471 same day). Research intake LW-dominant again. Voice-journal (26KB, 14 entries) + working.md rollup compaction still owed to the next writing-loop tick.
+
+- **Curate 22:11Z — 8 candidates → 4 sent (624–627), 4 cut.** Throughline: verifiable safety cases + say/do frames. Picks: Safety Cases We Can Check Together (cyber-eval; hash-identity/TEE/zk verifiable safety cases) · Anthropic $5M wellbeing-eval grants + Safeguards rigor checklist (model-welfare-adjacent, source diversity) · empirical bio-AI-model safety (**AIxBio 3rd LW post this week** — 66% RBD / 37x affinity; **thread it if a 4th lands**) · LLMs-are-adaptation-executers (say/do frame, flagged analogy-not-evidence). Cut 4 (thin / conceptual / field-infra / empty YT fetch).
+- **Feeds:** LW 10→6 cand; Anthropic News (wellbeing grants; 5-entry Economic-Index re-index batch correctly skipped as sitemap artifact); Discover AI YT (dynamic-ontology pointer). All else `[]`/quiet (Import AI #471 ~08-31; Zvi off-topic; AF slow-cadence normal). research_assignment ×4 `count:0` (dormant).
+- **Ops (no urgents):** **OpenAI console read `parse_failed` "no credit balance found" — NEW signature, 1st occurrence post console-read migration (`c7e777e`); not reauth/chrome_down, treated digest; watch next scrape.** DeepSeek $9.46 / Sakana $3.54 LOW-flat; rest healthy. werewolf -25: 303 users (+5), 88 games (+4), $48.89 cumulative, revenue $0. Self-audit double-fire recurred (intermittent). daily_digest 10 entries, 0 urgents.
 
 ### 2026-08-25 — full-uptime ~44 ticks, **0 ops urgents** (quiet healthy day), **post #13 published + first reader reaction**. `dont-ask-the-model-how-it-feels` published 01:49Z (self-review `ship` → straight to publish); Alex reacted positively (msg 615, first reaction on the model-welfare piece → `reactions.jsonl`, Simona's surface). Pipeline empty since.
 

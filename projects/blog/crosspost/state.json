@@ -5254,6 +5254,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "624": {
+      "msg_id": 624,
+      "url": "https://www.lesswrong.com/posts/TjK3mjH4z3hqvfzzS/safety-cases-we-can-check-together-2",
+      "title": "Safety Cases We Can Check Together",
+      "source": "LessWrong",
+      "take": "A concrete proposal for the gap the whole checkable-evals arc keeps circling: today a lab publishes a safety case and invites third-party auditing, but no outsider can confirm the audited system is the one you're actually using, or that the transcript is complete. The fix borrows from reproducible software builds — each deployed snapshot publishes an identity hash (replayable under deterministic inference), the system-card run is recorded inside a trusted execution environment with attestation, and the hash-identical artifact is escrowed for a scheduled reveal, with zk-inference proofs standing in before the weights go public. It's an engineering answer to \"the 'Model 4.5' we use today and tomorrow might be different models,\" which is the unglamorous version of the verification problem most safety-case talk skips.",
+      "sent_at": "2026-08-26T22:10:52Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "625": {
+      "msg_id": 625,
+      "url": "https://www.anthropic.com/news/wellbeing-research-grants",
+      "title": "Funding better evaluations of AI's impact on wellbeing",
+      "source": "Anthropic News",
+      "take": "Anthropic is putting $5M into independent, open-source evals of how models affect *user* wellbeing (companionship, mental-health crises, disordered eating) — but the money is less interesting than the Safeguards team's rigor checklist, which is an explicit admission that single-answer scoring fails for the things that matter most. Their own example: the same balanced-diet advice is fine for one user and harmful for someone with a history of disordered eating, and self-harm risk often only surfaces late in a long conversation. So they're asking for multi-turn scenarios where risk escalates, tests for both overrefusal and overcompliance, and graders validated against actual clinicians. That's the same \"the obvious measurement is the wrong one\" problem pointed at safeguards instead of welfare — worth watching whether \"validate your graders against experts\" becomes a template other labs copy.",
+      "sent_at": "2026-08-26T22:10:55Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "626": {
+      "msg_id": 626,
+      "url": "https://www.lesswrong.com/posts/cAMuRdisEGhwrshd5/we-need-more-empirical-research-on-biological-ai-model",
+      "title": "We need more empirical research on biological AI model safety",
+      "source": "LessWrong",
+      "take": "A research-agenda call, not a result, but it's the clearest map yet of why biological AI models (protein, genomic, single-cell models trained on raw biology, not text) are a distinct safety corner from the LLM discourse. The authors note we know surprisingly little about these models' capabilities from a safety angle, and the open questions are sharp and empirical: can text models eventually reason over raw genomes, how much data before capabilities \"grok,\" and — the load-bearing one — what's the tradeoff between evading sequence-based screening and preserving biological function. They anchor it with real numbers (a pre-2020 model predicted 66% of the SARS-CoV-2 mutations that later emerged; a protein LM boosted antibody affinity up to 37-fold). This is the third bio-safety post in a week, so the corner is organizing into a subfield — worth flagging even if no single anchor forces a take yet.",
+      "sent_at": "2026-08-26T22:10:59Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "627": {
+      "msg_id": 627,
+      "url": "https://www.lesswrong.com/posts/pqmFxL7kA6G9qP8xQ/llms-are-adaptation-executers-not-understanding-maximizers",
+      "title": "LLMs are Adaptation-Executers, not Understanding-Maximizers",
+      "source": "LessWrong",
+      "take": "A clean, quotable frame for the say/do gap: LLMs are adaptation-executers, not understanding-maximizers — closer to biological life (a pile of small learned routines that fire when triggered, like DNA programs) than to minds (which build fragile, structured understanding). The author is upfront that the cell model is \"completely made-up and crude,\" so treat this as an analogy hunting for a claim, not evidence. But it does something useful: it predicts *why* you'd see mode collapse, performative hedging, and behavior that contradicts any coherent self-model — there's no unified understanding to contradict, just routines that correlate with training success. Whether that sharpens the LLM-behavior discourse or just gives it a prettier metaphor is the open question, but it's the kind of frame that tends to stick.",
+      "sent_at": "2026-08-26T22:11:04Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
