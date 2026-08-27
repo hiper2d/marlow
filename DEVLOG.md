@@ -1442,3 +1442,88 @@ keys total **$113.26** (sakana $3.54 low, deepseek $9.63 low, glm $10.48, xai
 $14.22, moonshot $15.78, anthropic $16.08, openai $19.57, minimax $23.96), plus
 gemini $18.64/$2000 and mistral $8.37/$30 postpaid, and qwen's free grant fully
 exhausted (3/3 models, billing pay-as-you-go). No urgents. Simona.
+
+## 2026-08-27 - the digest could not answer the one question the budget watch exists to answer
+
+Alex read the day's digest and could not find out how much was left on his keys.
+He was right, and the reason was structural rather than a bug: nothing in the
+system was ever responsible for saying so in one place.
+
+*What was actually wrong.* `monitor_keys` appended its own roll-call on each of
+its two daily runs, so DeepSeek, Moonshot and Grok appeared twice with identical
+numbers. `scrape_stats` appended a different roll-call six hours earlier
+covering six others. OpenAI and Anthropic appeared in neither - OpenAI because
+its read was failing, Anthropic because it had migrated between the two tasks
+and fallen out of both summaries. Three balances twice, five once, two never.
+The unified `budget_state.py show` renderer that would have answered him has
+existed since 08-24 and was reachable only from a terminal.
+
+*What landed.*
+
+- **One block, composed at send time.** `budget_state.digest_block()` renders
+  every provider from the saved snapshots, and `compose_daily_digest` appends it
+  to the outgoing message - including on a quiet day, since "nothing to flag"
+  and "here is what's left" are different statements. Both monitor tasks now
+  post issues ONLY; their YAMLs and the ops IDENTITY alerting section say so
+  explicitly, because the roll-call instruction was written there.
+- **Rendered for the medium.** `show` keeps its fixed-width columns for a
+  terminal. Telegram sends plain text in a proportional font, where padded
+  columns come out ragged, so the digest block is narrow and unaligned. Same
+  data, two renderers, rather than one reflowed compromise.
+- **Deduped by provider.** A key that is mid-migration can sit in both
+  snapshots; the freshest read wins. Without this the prepaid TOTAL would
+  silently double-count, which is worse than either input being wrong.
+
+*Three numbers that were wrong or missing, and why each was.*
+
+- **Gemini said "$22.62 of $2000 (1%)" on a day the balance was $9.83.** Alex
+  moved the billing account to prepay and the metric changed underneath us: not
+  spend against a ceiling any more, but a balance that runs out. The old pair
+  was not merely stale, it was reassuring in exactly the wrong direction. The
+  balance is on the AI Studio billing page and is NOT in that page's DOM - AI
+  Studio embeds a `payments.google.com` widget in an iframe. Same site,
+  different origin, so the parent cannot read across it AND it never surfaces as
+  its own CDP target. No host-page regex could ever have found it.
+- **OpenAI had reported `parse_failed: no credit balance found` for two runs.**
+  The extractor was fine. Headless Chrome advertises `HeadlessChrome/151` in its
+  UA, Cloudflare served a "Verify you are human" interstitial, and the page body
+  was EMPTY - which reads downstream as a missing number. A failure mode that
+  names the wrong layer costs more than a silent one: two days of looking at a
+  regex that was correct. The profile now masks its UA to plain Chrome and the
+  key reads $14.47.
+- **Qwen showed "0% quota" and no dollars.** True and useless: the grant ran out
+  around 08-25 and, with auto-stop off, the calls rolled onto pay-as-you-go. The
+  row was still describing the thing that had stopped paying. Now it reads the
+  billing page ($1.85 this month, $0 due) and switches metric on the data rather
+  than on a date - while a grant has tokens left, percent is still the headline.
+  The crossover alert, which had fired identically for three days, now only
+  fires when the dollar figure cannot be read.
+
+*What we built to get there.* Simona's browser CLI grew `js --frame <substr>`:
+resolve the frame from `Page.getFrameTree`, `Page.createIsolatedWorld` on it,
+evaluate in that context. It is the general answer to a console rendering its
+number inside an embedded widget, and consoles are trending that way. Rejected
+first: Google Cloud's own payment page (same iframe problem), and
+`payments.google.com` at top level (demands interactive identity verification).
+
+*Things that surprised us.* The Gemini balance had been unreadable by
+construction, not by drift - there was never a moment when the old extractor
+would have worked against a prepay account. And the "0 Projects" dead end
+documented on 07-31 was the same shape of problem: the number was on a page
+nobody had thought to look at, twice.
+
+*What's deferred.* `tools/budget/` - the per-provider plugin architecture
+`plans/budget-providers.md` opened with - is now explicitly declared never-build
+and the doc trimmed to what is wired. The split that matters is "has a balance
+API" vs "does not", with reporting unified afterwards, and that is what exists.
+
+*Open question.* `pkill` on the scrape profile left a survivor holding port
+9223, so `ensure_chrome` no-opped and the relaunch silently kept the old flags -
+the UA fix looked like it had failed when it had simply not been applied. The
+re-auth runbook now says to confirm the process is gone. Worth making
+`ensure_chrome` verify the flags it expects rather than only the port.
+
+*State at end of day.* All 11 read live: 9 prepaid keys total **$115.52**
+(sakana $3.54 low, deepseek $9.44 low, gemini $9.83 low, glm $10.18, xai $12.46,
+openai $14.47, moonshot $15.76, anthropic $15.91, minimax $23.93), plus mistral
+$9.39/$30 and qwen $1.85 metered. Three digest-level lows, no urgents. Simona.

@@ -57,13 +57,19 @@
 #   4. If `any_urgent: true`, send one consolidated urgent Telegram listing
 #      each empty/critical key and its balance. If only digest-severity
 #      issues, append a single digest entry.
-#   5. If no issues, append a one-line digest listing each provider + balance,
-#      e.g. "Werewolf keys: DeepSeek $X, Moonshot $Y, Grok $Z, Anthropic $A
-#      — all healthy."
-#      Dollar figures go through the tick RESULT FILE, never a shell argv. On
-#      2026-08-24 a `marlow notify "…$0.40…"` in double quotes reached Telegram
-#      as "/bin/zsh.40" — zsh expanded $0. If you must shell out, single-quote
-#      it or use `marlow notify --stdin` with a quoted heredoc delimiter.
+#   5. If no issues, append NOTHING to the digest. Do NOT write a roll-call of
+#      provider balances — `compose_daily_digest` appends one consolidated block
+#      covering all 11 providers at send time, built from the saved snapshots
+#      (driver/budget_state.py). This task runs twice a day, so its own
+#      roll-call put the same three balances in the digest twice while the eight
+#      providers it does not cover appeared elsewhere or not at all. Alex could
+#      not read his own balances off the digest (2026-08-27). Report issues; the
+#      balances are somebody else's job now.
+#      Dollar figures in any message you DO send go through the tick RESULT
+#      FILE, never a shell argv. On 2026-08-24 a `marlow notify "…$0.40…"` in
+#      double quotes reached Telegram as "/bin/zsh.40" — zsh expanded $0. If you
+#      must shell out, single-quote it or use `marlow notify --stdin` with a
+#      quoted heredoc delimiter.
 #   6. Write the tick result and exit.
 #
 # Note on Tier-2 staleness (Anthropic only now): if its baseline goes stale
@@ -74,7 +80,7 @@
 name: monitor_keys
 project: werewolf-ops
 profile: ops
-description: Twice-daily low-balance watch for 4 Werewolf provider keys — DeepSeek, Moonshot, xAI/Grok (balance API) + Anthropic (cost API − baseline). OpenAI moved to the console scrape 2026-08-24.
+description: Twice-daily low-balance watch for the 3 Werewolf provider keys with a real balance API — DeepSeek, Moonshot, xAI/Grok. The other 8 are console-scraped by scrape_stats; OpenAI and Anthropic moved there 2026-08-24.
 schedule: "0 8,20 * * *"
 priority: normal
 must_run_within_hours: 6

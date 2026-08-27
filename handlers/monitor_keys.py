@@ -7,14 +7,14 @@ map `{keys: {<API_KEY_CONSTANTS name>: "<value>"}}`. Strangers playing the
 free tier burn Alex's prepaid credit; the only thing he had before this was
 manually eyeballing each provider's dashboard.
 
-Of the 8 providers, only three expose a programmatic balance endpoint:
-  - DeepSeek  — GET https://api.deepseek.com/user/balance      (normal key)
+Of the 11 providers, only three expose a programmatic balance endpoint:
+  - DeepSeek  — GET https://api.deepseek.com/user/balance       (normal key)
   - Moonshot  — GET https://api.moonshot.ai/v1/users/me/balance (normal key)
-  - xAI/Grok  — needs a separate *management* key (not wired here yet)
-The other five (OpenAI, Anthropic, Google, Mistral, GLM/Z.AI) have no balance
-API — those are Tier 2 (estimate = recorded top-up minus game spend).
-
-This handler covers the API-checkable providers (Tier 1: DeepSeek, Moonshot).
+  - xAI/Grok  — separate *management* key (balance = invoice preview)
+Those three are this handler. The other eight (OpenAI, Anthropic, Gemini,
+Mistral, GLM/Z.AI, Sakana, MiniMax, Qwen) have no usable balance API and are
+read from their consoles by `scrape_stats`. Tier 2 below (balance derived from
+a cost API minus a console baseline) is DORMANT — see its section for why.
 It returns deterministic JSON snapshots; Marlow's session turns the `issues`
 array into a Telegram alert / digest entry.
 

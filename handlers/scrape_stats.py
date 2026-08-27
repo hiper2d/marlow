@@ -1,13 +1,17 @@
 """
-scrape_stats — console scraping for the 6 Werewolf providers that have NO usable
+scrape_stats — console scraping for the 8 Werewolf providers that have NO usable
 balance/cost API (so they can't go through monitor_keys):
 
   - GLM / Z.AI   → cash + credits balance        (a real depleting balance)
-  - Gemini       → spend vs. billing tier cap     (postpaid, pay-as-you-go)
+  - Gemini       → prepaid credit balance          (a real depleting balance;
+                   was spend-vs-cap until Alex moved to prepay on 2026-08-27)
   - Mistral      → month usage vs. spending limit  (postpaid)
   - Sakana Fugu  → prepaid credit balance          (a real depleting balance)
   - MiniMax      → prepaid effective balance       (a real depleting balance)
-  - Qwen         → per-model free-token quota      (NOT money — see QWEN below)
+  - Qwen         → month spend, postpaid + uncapped (free-token quota while the
+                   one-time grant lasted — see QWEN below)
+  - OpenAI       → prepaid credit balance          (a real depleting balance)
+  - Anthropic    → prepaid credit balance          (a real depleting balance)
 
 These numbers live ONLY in each provider's web console, so we read them with a
 real Chrome that's logged in once (a dedicated persistent profile on port 9223;
@@ -25,7 +29,7 @@ Driving is delegated to simona's browser CLI (CDP_PORT=9223) rather than a
 second automation stack — same machinery the browser skill uses.
 
 CLI:
-    python handlers/scrape_stats.py report          # all six + derived issues
+    python handlers/scrape_stats.py report          # all eight + derived issues
     python handlers/scrape_stats.py check <name>     # one provider (see PROVIDERS)
     python handlers/scrape_stats.py ensure-chrome    # (re)launch the headless profile
 """
@@ -125,10 +129,17 @@ def _cli(*args: str) -> subprocess.CompletedProcess:
     )
 
 
-def _eval_json(js: str) -> dict:
+def _eval_json(js: str, frame: str | None = None) -> dict:
     """Run `js` in tab 0 (it must return a JSON string) and parse the result.
-    Returns the parsed dict, or {error:...} on failure."""
-    res = _cli("js", js, "--tab", "0")
+    Returns the parsed dict, or {error:...} on failure.
+
+    `frame` runs the extractor inside the sub-frame whose URL contains that
+    substring. Needed when the number lives in an embedded widget rather than
+    the host page - AI Studio renders the Gemini credit balance in a
+    payments.google.com iframe, which the parent document cannot read across.
+    """
+    args = ["js", js, "--tab", "0"] + (["--frame", frame] if frame else [])
+    res = _cli(*args)
     if res.returncode != 0:
         return {"error": f"js failed: {res.stderr[:160] or res.stdout[:160]}"}
     try:
@@ -149,17 +160,21 @@ def _navigate(url: str, settle_s: float = NAV_SETTLE_S) -> str | None:
 
 
 def _navigate_and_extract(url: str, js: str, click_js: str | None = None,
-                          settle_s: float = NAV_SETTLE_S) -> dict:
+                          settle_s: float = NAV_SETTLE_S, frame: str | None = None) -> dict:
     """Navigate tab 0 to `url`, let it settle, optionally run `click_js` to
     reveal a sub-view (then settle again), run `js` (must return a JSON string),
-    parse it. Returns the parsed dict, or {error:...} on failure."""
+    parse it. Returns the parsed dict, or {error:...} on failure.
+
+    `frame` targets an embedded widget instead of the host document (see
+    `_eval_json`).
+    """
     err = _navigate(url, settle_s)
     if err:
         return {"error": err}
     if click_js:
         _cli("js", click_js, "--tab", "0")
         time.sleep(settle_s)
-    return _eval_json(js)
+    return _eval_json(js, frame=frame)
 
 
 # ─── Per-provider extractors (JS returns a JSON string) ──────────────────────
@@ -185,39 +200,58 @@ GLM = {
     })()""",
 }
 
-# Gemini moved AGAIN (2026-07-31, four days of parse_failed). The old recipe
-# was: open /usage, click the "Spend" toggle, read the largest $ on screen.
-# Both halves are dead. "Spend" is no longer a toggle on the usage view — it's
-# its own sidebar page (/spend) — so the click_js found nothing. And BOTH
-# /usage and /spend are now scoped to imported Cloud Projects; Alex has none
-# imported ("0 Projects"), so both render "No Cloud Projects Available" with no
-# dollar figure at all. That is a structurally empty page, not a flaky one, and
-# no amount of retrying would have fixed it.
+# Gemini is PREPAID as of 2026-08-27, and the metric changed with it. Alex moved
+# the billing account onto prepay credits, so the number that matters is a
+# depleting balance, not spend-against-a-cap. Reporting the old pair was worse
+# than useless: "$22.62 of $2000 (1%)" reads as an account with room to spare on
+# the exact day the real balance was $9.83.
 #
-# The real number never left — it's on /billing, which is billing-ACCOUNT
-# scoped and needs no project import: "Total cost $0.76" for the month plus
-# "Paid 1 · $250 Billing Account Tier Cap". So we read the cap live off the
-# page instead of trusting a constant, and keep GEMINI_CAP_USD only as the
-# fallback for when the tier line doesn't parse.
+# The balance is on aistudio.google.com/billing under "Payments" - but NOT in
+# that page's DOM. AI Studio embeds a payments.google.com widget in an iframe,
+# so `document.body.innerText` on the host page has no "Credit balance" in it at
+# all, which is why no host-page regex could ever have found it. payments.google
+# .com and aistudio.google.com are different ORIGINS but the same SITE, so the
+# frame shares the renderer and never appears as its own CDP target either.
+# `--frame` (added to simona's browser CLI 2026-08-27) attaches an isolated
+# world to it and reads it directly.
 #
-# Don't scan for the largest $ here — /billing also prints the $250 cap, which
-# would swamp the real spend and read as permanently maxed. Anchor on labels.
-# Caveat from the page itself: "Cost information may take up to 24 hours to
-# update", so a fresh burst of spend lags this figure by up to a day.
-GEMINI_CAP_USD = float(os.environ.get("GEMINI_SPEND_CAP", "250"))
+# Month-to-date cost stays as CONTEXT, read from the host page's "Total cost".
+# It is not the headline any more and never gates the read: a balance with no
+# spend figure is still a good balance. Caveat from the page itself: "Cost
+# information may take up to 24 hours to update".
+GEMINI_FRAME = "payments.google.com/payments"
 GEMINI = {
     "name": "gemini",
     "url": "https://aistudio.google.com/billing",
+    "frame": GEMINI_FRAME,
+    # Runs INSIDE the payments frame. The frame has no login chrome of its own -
+    # when the session lapses the host page redirects, so the login guard is the
+    # host-page check in `js_host` below.
     "js": """(()=>{
-      if(/accounts\\.google\\.com\\/v3\\/signin|ServiceLogin/i.test(location.href)) return JSON.stringify({login_wall:true});
+      const t=document.body.innerText;
+      if(!/Credit balance/.test(t)) return JSON.stringify({login_wall:false, balance:null});
+      const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
+        const m=t.slice(i+label.length,i+label.length+(win||40))
+                 .match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/);
+        return m?parseFloat(m[1].replace(/,/g,'')):null;};
+      const ar=t.match(/Auto-reload:\\s*(On|Off)/i);
+      const added=t.match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)\\s*added on\\s*([A-Za-z]{3}\\s*[0-9]{1,2})/);
+      return JSON.stringify({login_wall:false, balance:after('Credit balance'),
+        prepay: /Prepay/.test(t),
+        auto_reload: ar?ar[1].toLowerCase()==='on':null,
+        last_topup_usd: added?parseFloat(added[1].replace(/,/g,'')):null,
+        last_topup_on: added?added[2]:null});
+    })()""",
+    # Runs on the HOST page: login guard + month-to-date spend for context.
+    "js_host": """(()=>{
+      if(/accounts\\.google\\.com\\/v3\\/signin|ServiceLogin/i.test(location.href))
+        return JSON.stringify({login_wall:true});
       const t=document.body.innerText;
       const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
         const m=t.slice(i+label.length,i+label.length+(win||60))
                  .match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/);
         return m?parseFloat(m[1].replace(/,/g,'')):null;};
-      const capM=t.match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)\\s*Billing Account Tier Cap/);
-      return JSON.stringify({login_wall:false,
-        spend: after('Total cost'), cap: capM?parseFloat(capM[1].replace(/,/g,'')):null});
+      return JSON.stringify({login_wall:false, spend: after('Total cost')});
     })()""",
 }
 
@@ -360,6 +394,35 @@ QWEN = {
 
 QWEN_SEARCH_SETTLE_S = 2.5   # the table re-renders client-side; no network wait needed
 
+# Qwen's MONEY page, added 2026-08-27. Until the free grant ran out this handler
+# reported percent-of-grant alone, and the note in the config above said the
+# dollar page "reads $0.00 either way" - true while the grant was paying for
+# everything. It stopped being true on the crossover (2026-08-25): calls now bill
+# pay-as-you-go and the console shows real spend, so a row that says only
+# "0% left" hides the one number Alex is actually being charged.
+#
+# There is no balance here to deplete - QwenCloud is postpaid and metered, with
+# no cap exposed in the UI. So the honest headline is spend-to-date plus what is
+# currently due, and quota stays as the sub-note it now is.
+QWEN_BILLING = {
+    "url": "https://home.qwencloud.com/billing/overview",
+    # Figures render as a label, then a bare "$", then the number on its own
+    # line ("Total Spend | 2026-08 | $ | 1.85"), so the $ and the digits cannot
+    # be matched as one token the way every other console allows.
+    "js": """(()=>{
+      const t=document.body.innerText;
+      if(/You are currently not logged in|Log in to QwenCloud/i.test(t))
+        return JSON.stringify({login_wall:true});
+      const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
+        const m=t.slice(i+label.length,i+label.length+(win||60))
+                 .match(/\\$\\s*\\n?\\s*([0-9][0-9,]*\\.?[0-9]*)/);
+        return m?parseFloat(m[1].replace(/,/g,'')):null;};
+      const period=(t.match(/([0-9]{4}-[0-9]{2})/)||[])[1]||null;
+      return JSON.stringify({login_wall:false, spend:after('Total Spend'),
+        due:after('Total Due'), period});
+    })()""",
+}
+
 # OpenAI - prepaid API credit. Moved here from monitor_keys' Tier 2 on
 # 2026-08-24. Tier 2 derived the balance as (a console figure Alex read once)
 # minus cost-API spend since that date, which is true only until he tops up: a
@@ -462,7 +525,8 @@ def _confirmed_balance(cfg: dict, provider: str, value: float, field: str = "bal
     if value != 0:
         return value, None
     for settle in (10.0, 15.0):
-        retry = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"), settle_s=settle)
+        retry = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"),
+                                      settle_s=settle, frame=cfg.get("frame"))
         v = retry.get(field)
         if v is None:
             continue
@@ -510,7 +574,18 @@ def _check_qwen(settle_s: float = NAV_SETTLE_S) -> dict:
 
     worst = min(models, key=lambda m: m["remaining_pct"])
     days = [m["days_left"] for m in models if m.get("days_left") is not None]
-    return {**base, "ok": True, "metric": "quota",
+
+    # The money page is a second navigation off the benefits page. A failure
+    # here degrades the row to quota-only rather than failing the whole check -
+    # the grant numbers we already have are still worth reporting.
+    money = _navigate_and_extract(QWEN_BILLING["url"], QWEN_BILLING["js"], settle_s=settle_s)
+    spend, due = money.get("spend"), money.get("due")
+    # Once the grant is gone the spend figure IS the headline; while it lasts,
+    # percent-of-grant still is. Switching the metric on the data rather than on
+    # a date means the row describes whatever is actually paying for the calls.
+    metric = "spend" if (spend is not None and worst["remaining_pct"] <= 0) else "quota"
+    return {**base, "ok": True, "metric": metric,
+            "spend_usd": spend, "due_usd": due, "spend_period": money.get("period"),
             "remaining_pct": worst["remaining_pct"], "worst_model": worst["code"],
             "days_left": min(days) if days else None,
             "expires": worst.get("expires"),
@@ -544,7 +619,8 @@ def _check_once(provider: str, settle_s: float = NAV_SETTLE_S) -> dict:
     if provider == "qwen":
         return _check_qwen(settle_s)
     cfg = PROVIDERS[provider]
-    raw = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"), settle_s=settle_s)
+    raw = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"),
+                                settle_s=settle_s, frame=cfg.get("frame"))
     base = {"provider": provider, "checked_at": _now_iso()}
     if raw.get("error"):
         return {**base, "ok": False, "kind": "parse_failed", "error": raw["error"]}
@@ -562,7 +638,8 @@ def _check_once(provider: str, settle_s: float = NAV_SETTLE_S) -> dict:
         # zero from a single read — re-extract with longer settles.
         if total == 0:
             for settle in (10.0, 15.0):
-                retry = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"), settle_s=settle)
+                retry = _navigate_and_extract(cfg["url"], cfg["js"], cfg.get("click_js"),
+                                              settle_s=settle, frame=cfg.get("frame"))
                 r_cash, r_credits = retry.get("cash"), retry.get("credits")
                 if r_cash is None and r_credits is None:
                     continue
@@ -584,14 +661,27 @@ def _check_once(provider: str, settle_s: float = NAV_SETTLE_S) -> dict:
         return {**base, "ok": True, "metric": "balance", "balance_usd": round(total, 4),
                 "cash_usd": cash, "credits_usd": credits, "is_available": total > 0}
     if provider == "gemini":
-        spend = raw.get("spend")
-        if spend is None:
+        # `raw` came from the payments FRAME. The host page carries the login
+        # guard and the month-to-date spend, so read it separately - the page is
+        # already loaded, so this is one extra eval, not a second navigation.
+        host = _eval_json(cfg["js_host"])
+        if host.get("login_wall"):
+            return {**base, "ok": False, "kind": "reauth",
+                    "error": "login wall - session expired, re-auth needed"}
+        bal = raw.get("balance")
+        if bal is None:
             return {**base, "ok": False, "kind": "parse_failed",
-                    "error": "no 'Total cost' figure on the billing page"}
-        # Cap is read live off the page ("$250 Billing Account Tier Cap"); the
-        # env constant is only the fallback if that line moves or disappears.
-        cap = raw.get("cap") or GEMINI_CAP_USD
-        return {**base, "ok": True, "metric": "spend_cap", "spend_usd": round(spend, 4), "cap_usd": cap}
+                    "error": "no 'Credit balance' in the AI Studio payments frame"}
+        bal, suspect_prev = _confirmed_balance(cfg, provider, bal)
+        if suspect_prev:
+            return {**base, "ok": False, "kind": "suspect_zero",
+                    "error": f"reads $0.00 across retries but last run saw ${suspect_prev:.2f} - "
+                             "likely placeholder render; verify in console before topping up"}
+        return {**base, "ok": True, "metric": "balance", "balance_usd": round(bal, 4),
+                "spend_mtd_usd": host.get("spend"), "auto_reload": raw.get("auto_reload"),
+                "last_topup_usd": raw.get("last_topup_usd"),
+                "last_topup_on": raw.get("last_topup_on"),
+                "is_available": bal > 0}
     if provider == "mistral":
         usage, pending = raw.get("usage"), raw.get("pending")
         if usage is None:
@@ -655,7 +745,7 @@ def _derive_issues(results: list[dict]) -> list[dict]:
             elif usd < LOW_USD:
                 issues.append({"severity": "digest", "kind": "balance_low", "target": name,
                                "detail": f"{name} balance ${usd:.2f} (< ${LOW_USD:.0f}). Top up soon."})
-        elif r.get("metric") == "quota":
+        elif r.get("metric") in ("quota", "spend"):
             # Qwen: percent of the per-model free-token grant still left, taken
             # from whichever tracked model is furthest along. What running out
             # MEANS depends on that model's auto-stop switch, so the severity
@@ -676,11 +766,18 @@ def _derive_issues(results: list[dict]) -> list[dict]:
             if pct is None:
                 pass
             elif guarded is False:
-                if pct <= 0:
+                # The crossover is only news while we cannot yet quote the money.
+                # Once the billing page reads (metric "spend"), the row itself
+                # carries the dollar figure and repeating this every run is the
+                # noise Alex flagged on 2026-08-27 - it fired identically for
+                # three days running with no new information in it.
+                if pct <= 0 and r.get("metric") == "quota":
                     issues.append({"severity": "digest", "kind": "quota_crossover", "target": name,
                                    "detail": f"{name} free grant used up on {model}. Calls to it now bill "
                                              "pay-as-you-go instead of failing, so track spend from here, "
-                                             "not quota. The grant is one-time and won't come back."})
+                                             "not quota. The billing page could not be read this run, so "
+                                             "there is no dollar figure to show. The grant is one-time and "
+                                             "won't come back."})
             elif pct <= 0:
                 issues.append({"severity": "urgent", "kind": "quota_exhausted", "target": name,
                                "detail": f"{name} free quota exhausted on {model} - that model is now failing in-game."})

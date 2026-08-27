@@ -52,6 +52,19 @@ threshold.)_
 
 ## Entries
 
+### 2026-08-27 - a batch of same-timestamp sitemap entries is a re-index artifact, not new content
+
+Sitemap feeds (Anthropic News, Anthropic Research, the Economic-Index batch, and
+Apollo's site-wide re-index) periodically return a large block of entries all
+stamped within a ~2-min window - including famous *old* pages (Toy Models 2022,
+Constitutional AI 2022, 2023 partnership PR). This is the CMS regenerating the
+sitemap and bumping every `lastmod`, not a burst of publishing. Skip the whole
+block as an artifact; a genuinely-new post shows up isolated by hours from the
+cluster (e.g. the -27 Frontier Red Team multiagent post, ~18h off the batch).
+Treating a re-index as new floods curate with evergreen backfill. When correcting
+a `www`/prefix mismatch that unblocks a backlog, the same trap applies - seed the
+cursor to the uniform lastmod so the first corrected scan doesn't dump the archive.
+
 ### 2026-08-24 - a "failed" curate record can still have delivered the work
 
 Twice now (2026-08-15, 2026-08-22) a `curate_and_send_*` task record came back

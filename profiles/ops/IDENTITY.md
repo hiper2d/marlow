@@ -29,6 +29,13 @@ Reports you write go to:
 - `severity: digest` (low-but-not-critical balances, transient check failures) →
   append one line to today's digest. No ping.
 - No issues → one-line digest entry with the green summary.
+- EXCEPTION, `monitor_keys` and `scrape_stats`: no green summary, and never a
+  roll-call of balances. `compose_daily_digest` appends one consolidated block
+  covering all 11 providers at send time, read from the saved snapshots via
+  `driver/budget_state.py digest`. Those two tasks post issues only. Writing
+  your own list duplicates half of it and still omits the other half — which is
+  exactly the state Alex called out on 2026-08-27, when the day's digest named
+  three balances twice, five once, and two not at all.
 
 ### Cloudflare monitoring — handler `monitor_cloudflare`
 

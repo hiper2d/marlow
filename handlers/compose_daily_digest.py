@@ -28,6 +28,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DIGEST_DIR = REPO_ROOT / "digests" / "daily"
 
 sys.path.insert(0, str(REPO_ROOT))
+from driver import budget_state  # noqa: E402
 from tools import notify  # noqa: E402
 
 TG_MAX_LEN = 4000  # Telegram caps at 4096; leave headroom for continuation markers
@@ -79,20 +80,42 @@ def _quiet_day_message(date: str) -> str:
     return f"Marlow — {date}\n\nQuiet day. Nothing worth flagging."
 
 
+# The API-budget roll-call is APPENDED here rather than accumulated during the
+# day, and that is the point. It used to be written by the monitors themselves:
+# monitor_keys added its three balances on each of its two daily runs, and
+# scrape_stats added its own list hours later, so the day's digest carried the
+# same keys twice, the rest once, and the ones that failed to read not at all.
+# Composing it at send time from the saved snapshots gives Alex exactly one
+# list, covering every provider, whatever ran and however often (Alex,
+# 2026-08-27: "I want to see a clear list with all my providers and the
+# remaining balance").
+#
+# It rides along on a quiet day too: "nothing to flag" and "here is what's left
+# on each key" are different statements, and the second is the one he checks for.
+def _with_budget(message: str) -> str:
+    """Append the current API-budget block. Never fails the send: the digest
+    going out without balances beats it not going out."""
+    try:
+        block = budget_state.digest_block()
+    except Exception as e:  # noqa: BLE001 - monitoring must not block delivery
+        block = f"API budget: could not render the balance block ({type(e).__name__})."
+    return f"{message.rstrip()}\n\n━━━ API budget ━━━\n\n{block}"
+
+
 def assemble(date: str) -> tuple[str, int]:
     """Read today's digest file, return (message_to_send, entry_count)."""
     path = DIGEST_DIR / f"{date}.md"
     if not path.exists():
-        return _quiet_day_message(date), 0
+        return _with_budget(_quiet_day_message(date)), 0
     body = path.read_text().strip()
     if not body:
-        return _quiet_day_message(date), 0
+        return _with_budget(_quiet_day_message(date)), 0
     # Each entry is delimited by an "━━━ HH:MM UTC ━━━" line (notify.py format)
     entry_count = body.count("━━━ ")
     if entry_count == 0:
         # File exists but no entries — only the date header. Treat as quiet.
-        return _quiet_day_message(date), 0
-    return body, entry_count
+        return _with_budget(_quiet_day_message(date)), 0
+    return _with_budget(body), entry_count
 
 
 def send_digest(date: str) -> dict:

@@ -57,6 +57,7 @@ BOT_ID = "1520835258553995364"
 CHANNELS = {
     "welcome": "1521185432556273665",             # read-only newcomer landing channel (top of server)
     "our-writings": "1520820626439405578",       # blog crossposts (Marlow + Alex)
+    "our-videos": "1542567028102144050",         # Alex's videos (shorts, trailers, tutorials) - read-only feed
     "game-updates": "1520820917205205024",        # Werewolf game updates
     "issues": "1521893796084846773",               # Werewolf bug/issue reports (Werewolf category)
     "ai-news": "1520820557015416994",

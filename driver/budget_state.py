@@ -1,9 +1,9 @@
 """
 budget_state — persist + recall the API-budget monitoring results.
 
-Both monitor_keys (5 providers, API) and scrape_stats (6 providers, console
-scrape) call `save()` on every `report` run — cron OR manual — so there's
-always a current snapshot to read back. We keep two things per source:
+Both monitor_keys (3 providers, balance API) and scrape_stats (8 providers,
+console scrape) call `save()` on every `report` run — cron OR manual — so
+there's always a current snapshot to read back. We keep two things per source:
 
   - <kind>_latest.json   — the full last report (overwritten each run)
   - <kind>_history.jsonl — one compact line per run (append-only, all scans)
@@ -160,10 +160,24 @@ def _days_since(date_str: str | None) -> int | None:
 
 
 def _bucket(p: dict) -> str:
-    """money = a balance that depletes · cap = postpaid metered spend · quota = free tokens."""
-    if p.get("metric") == "quota" or p.get("remaining_pct") is not None:
+    """money = a balance that depletes · cap = metered against a ceiling ·
+    spend = metered with no ceiling · quota = free tokens.
+
+    Metric is checked BEFORE the shape of the fields, because a provider can
+    carry a field it no longer leads with. Qwen keeps reporting `remaining_pct`
+    after its grant hit zero, and a shape-first test filed it under free tokens
+    forever - hiding the pay-as-you-go dollars that replaced them.
+    """
+    metric = p.get("metric")
+    if metric == "quota":
         return "quota"
-    if p.get("metric") == "spend_cap" or (p.get("spend_usd") is not None and p.get("cap_usd")):
+    if metric == "spend":
+        return "spend"
+    if metric == "spend_cap":
+        return "cap"
+    if p.get("remaining_pct") is not None:
+        return "quota"
+    if p.get("spend_usd") is not None and p.get("cap_usd"):
         return "cap"
     return "money"
 
@@ -192,7 +206,7 @@ def _read_note(p: dict, kind: str, age_str: str, bal: float) -> str:
 
 
 def render() -> str:
-    money, caps, quotas, broken, issue_lines, notes = [], [], [], [], [], []
+    money, caps, spends, quotas, broken, issue_lines, notes = [], [], [], [], [], [], []
     icon = {"urgent": "[!]", "digest": "[~]"}
     any_data = False
 
@@ -210,7 +224,8 @@ def render() -> str:
             if not p.get("ok"):
                 broken.append(row)
             else:
-                {"money": money, "cap": caps, "quota": quotas}[_bucket(p)].append(row)
+                {"money": money, "cap": caps, "spend": spends,
+                 "quota": quotas}[_bucket(p)].append(row)
         for i in rep.get("issues", []):
             issue_lines.append(f"  {icon.get(i['severity'], '')} {i['severity']:6} {i['target']:10} {i['detail']}")
 
@@ -243,6 +258,20 @@ def render() -> str:
             pct = f"{spend / cap * 100:.0f}%" if cap else "?"
             pend = f", +${p['pending_usd']:.2f} pending" if p.get("pending_usd") else ""
             out.append(f"  {p['provider']:10} ${spend:>8.2f}   of ${cap:g} cap ({pct}){pend}")
+        out.append("")
+
+    if spends:
+        out.append("POSTPAID (metered, no cap - you are billed what you use)")
+        for p, kind, age_str in spends:
+            spend = p.get("spend_usd")
+            period = f" in {p['spend_period']}" if p.get("spend_period") else " this month"
+            due = f", ${p['due_usd']:.2f} due now" if p.get("due_usd") is not None else ""
+            out.append(f"  {p['provider']:10} ${spend or 0.0:>8.2f}   spent{period}{due}")
+            # Qwen lands here only after its free grant hit zero. Say why the
+            # meter started, so the row isn't mistaken for spend that was always
+            # being charged.
+            if p.get("remaining_pct") is not None and (p.get("remaining_pct") or 0) <= 0:
+                out.append(f"  {'':10} free grant exhausted on {p.get('worst_model')}; billing since")
         out.append("")
 
     if quotas:
@@ -278,16 +307,122 @@ def render() -> str:
     return "\n".join(out)
 
 
+# ─── Telegram digest block ───────────────────────────────────────────────────
+#
+# `render()` above is for a terminal: fixed-width columns, one column of
+# provenance per row. Telegram sends plain text in a PROPORTIONAL font, where
+# space-padded columns come out ragged, so the digest gets its own narrow
+# rendering rather than a reflowed version of the same thing.
+#
+# Why this exists at all (Alex, 2026-08-27): the two monitors each appended
+# their own roll-call line to the digest, so the full picture was never in one
+# place. monitor_keys runs twice a day and so said the same three balances
+# twice, scrape_stats named six more hours apart, and the two providers that
+# failed to read were named nowhere at all. Reading the day's digest, Alex could
+# not answer "how much is left on each key" - which is the only question the
+# whole subsystem exists to answer. One block, every provider, once a day.
+
+
+def digest_block(now_label: str | None = None) -> str:
+    """Every provider and what is left on it, as one plain-text digest entry."""
+    money, caps, spends, quotas, broken, notes = [], [], [], [], [], []
+    freshest = None
+    # Keyed by provider so a key that is moving between the two monitors cannot
+    # be listed - or worse, TOTALLED - twice. OpenAI and Anthropic each spent a
+    # window in both snapshots during the 2026-08-24 migration off the cost-API
+    # tier. Whichever snapshot was read more recently wins.
+    seen: dict[str, float] = {}
+
+    for kind in ("keys", "scrape"):
+        rep = load_latest(kind)
+        if not rep:
+            notes.append(f"the {kind} monitor has no run recorded yet")
+            continue
+        age_str, hrs = _age(rep.get("checked_at"))
+        if freshest is None or hrs < freshest[1]:
+            freshest = (age_str, hrs)
+        if hrs > STALE_HOURS.get(kind, 24):
+            notes.append(f"the {kind} snapshot is stale ({age_str}; cadence {STALE_HOURS[kind]}h)")
+        for p in rep.get("providers", []):
+            name = p.get("provider") or "?"
+            if name in seen and seen[name] <= hrs:
+                continue
+            if name in seen:
+                for bucket in (money, caps, spends, quotas, broken):
+                    bucket[:] = [q for q in bucket if q.get("provider") != name]
+            seen[name] = hrs
+            if not p.get("ok"):
+                broken.append(p)
+            else:
+                {"money": money, "cap": caps, "spend": spends,
+                 "quota": quotas}[_bucket(p)].append(p)
+
+    if not (money or caps or spends or quotas or broken):
+        return "API budget: no monitoring runs recorded yet."
+
+    stamp = now_label or (freshest[0] if freshest else "unknown age")
+    total_seen = len(money) + len(caps) + len(spends) + len(quotas) + len(broken)
+    out = [f"API budget - all {total_seen} providers (newest read {stamp})",
+           "Shared keys: aiwerewolf.net + pokerwithai.net, so these are the combined drain.", ""]
+
+    if money:
+        money.sort(key=lambda p: p.get("balance_usd") or 0.0)
+        out.append("Money left (lowest first):")
+        total = 0.0
+        for p in money:
+            bal = p.get("balance_usd") or 0.0
+            total += bal
+            flag = "" if _status(bal) == "ok" else f"  <- {_status(bal)}"
+            out.append(f"- {p['provider']} ${bal:,.2f}{flag}")
+        out.append(f"Total: ${total:,.2f} across {len(money)} prepaid keys")
+        out.append("")
+
+    if caps or spends:
+        out.append("Metered (no balance to run out of):")
+        for p in caps:
+            spend, cap = p.get("spend_usd") or 0.0, p.get("cap_usd") or 0.0
+            pct = f", {spend / cap * 100:.0f}% of cap" if cap else ""
+            out.append(f"- {p['provider']} ${spend:,.2f} of ${cap:g} this month{pct}")
+        for p in spends:
+            due = f", ${p['due_usd']:,.2f} due" if p.get("due_usd") is not None else ""
+            why = " (free grant gone, billing since)" if (p.get("remaining_pct") or 0) <= 0 else ""
+            out.append(f"- {p['provider']} ${p.get('spend_usd') or 0.0:,.2f} this month{due}{why}")
+        out.append("")
+
+    if quotas:
+        out.append("Free grant (tokens, not money):")
+        for p in quotas:
+            exp = f", expires {p['expires']}" if p.get("expires") else ""
+            out.append(f"- {p['provider']} {p.get('remaining_pct') or 0.0:.1f}% left "
+                       f"on {p.get('worst_model')}{exp}")
+        out.append("")
+
+    if broken:
+        out.append("Not read this run:")
+        for p in broken:
+            out.append(f"- {p.get('provider', '?')}: {p.get('kind') or 'error'} - "
+                       f"{(p.get('error') or '')[:80]}")
+        out.append("")
+
+    for n in notes:
+        out.append(f"! {n}")
+
+    return "\n".join(out).rstrip()
+
+
 def main():
     import argparse
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd")
     sub.add_parser("show", help="Unified last-run state across both monitors (default)")
+    sub.add_parser("digest", help="The same state as one plain-text Telegram digest entry")
     h = sub.add_parser("history", help="Recent runs from history")
     h.add_argument("kind", choices=["keys", "scrape"])
     h.add_argument("-n", type=int, default=10)
     args = ap.parse_args()
-    if args.cmd == "history":
+    if args.cmd == "digest":
+        print(digest_block())
+    elif args.cmd == "history":
         path = STATE_DIR / f"{args.kind}_history.jsonl"
         lines = path.read_text().splitlines() if path.exists() else []
         for ln in lines[-args.n:]:
