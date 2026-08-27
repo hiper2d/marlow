@@ -60,14 +60,14 @@ subtasks:
     handler: process_sitemap_feed
     context:
       url: "https://www.apolloresearch.ai/sitemap.xml"
-      prefix: "https://www.apolloresearch.ai/science/"
+      prefix: "https://apolloresearch.ai/science/"
       source_name: "Apollo Research (science)"
 
   - id: scan_apollo_blog
     handler: process_sitemap_feed
     context:
       url: "https://www.apolloresearch.ai/sitemap.xml"
-      prefix: "https://www.apolloresearch.ai/blog/"
+      prefix: "https://apolloresearch.ai/blog/"
       source_name: "Apollo Research (blog)"
     priority: low   # mostly company announcements; science section is primary
 
