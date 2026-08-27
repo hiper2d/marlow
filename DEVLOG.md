@@ -15,6 +15,39 @@ framework work appends an entry before moving on to the next.
 
 ---
 
+## 2026-08-27 — self-heal: projects/research/tasks/feed_scan.yaml
+
+*What was wrong.* Both Apollo scan tasks (`scan_apollo_science` L63,
+`scan_apollo_blog` L70) filtered sitemap locs on the prefix
+`https://www.apolloresearch.ai/...`, but the sitemap at that domain emits
+**bare-domain** locs (`https://apolloresearch.ai/science/...`). `sitemap_reader`
+filters with `loc.startswith(prefix)`, so the `www.` prefix matched zero URLs —
+both `/science/` and `/blog/` scans returned `[]` permanently and the cursors
+sat at `None`. Apollo's `/science/` catalog (scheming evals, CoT monitorability,
+deception probes) is a core research beat and had been silently invisible.
+
+*What I changed.* Dropped `www.` from both prefixes (now
+`https://apolloresearch.ai/science/` and `.../blog/`); left the sitemap URLs
+alone (they 301 to the bare domain and `requests` follows it). Verified against
+the live sitemap: 26 science + 9 blog locs now match. Diagnosis
+`diag_20260827_161636_feed-scan`, commit `40541bf`, one-attempt clean.
+
+*Cursor seeding (state, not committed as code).* The sitemap is a **uniform
+re-index** — all 26 science pages share lastmod `2026-08-25T12:08:14.628Z`, all
+9 blog share `2026-08-25T12:18:34.390Z`. Left un-seeded, the corrected-prefix
+cursors (`None`) would flood curate with 35 evergreen pages as first-scan
+backfill. Seeded both via `mark-seen` to their respective re-index lastmod;
+since `fetch_new` skips entries where `published <= last_seen` (string compare,
+equal timestamps qualify), the whole backlog is suppressed and `fetch` now
+returns `[]` for both. Verified end-to-end.
+
+*Watch item.* This is lastmod-based dedup on a sitemap that re-stamps every page
+with one timestamp on re-index. If Apollo re-indexes again, every page (old +
+any genuinely new) gets a newer uniform lastmod and floods once more — that
+would be a fresh diagnosis, not a regression of this fix. The two orphaned
+`www.`-prefix keys left in feed state are harmless (no task references them);
+left in place to avoid an out-of-scope state edit.
+
 ## 2026-08-24 — self-heal: handlers/self_review.py
 
 *What was wrong.* `handlers/self_review.py` `materials()` (line 133) referenced

@@ -108,5 +108,27 @@
     "escalated_at": null,
     "escalation_reason": null,
     "resolved_at": "2026-08-24T17:24:02Z"
+  },
+  {
+    "id": "diag_20260827_161636_feed-scan",
+    "detected_at": "2026-08-27T16:16:36Z",
+    "file": "projects/research/tasks/feed_scan.yaml",
+    "line": 63,
+    "failure_mode": "Both Apollo scan prefixes use 'https://www.apolloresearch.ai/...' but the sitemap emits bare-domain locs 'https://apolloresearch.ai/...', so sitemap_reader's loc.startswith(prefix) filter matches zero URLs; both /science/ and /blog/ scans return [] permanently and cursors stay None.",
+    "suggested_fix": "Drop 'www.' from both Apollo prefixes (lines 63 and 70): 'https://apolloresearch.ai/science/' and 'https://apolloresearch.ai/blog/'. After the edit, seed the corrected-prefix cursors via mark-seen to the current uniform re-index lastmod so the 26+9 existing evergreen pages don't flood curate as backfill.",
+    "attempts": 1,
+    "attempt_notes": [
+      {
+        "n": 1,
+        "at": "2026-08-27T16:40:06Z",
+        "result": "pass",
+        "note": null
+      }
+    ],
+    "status": "resolved",
+    "resolved_commit": "40541bf",
+    "escalated_at": null,
+    "escalation_reason": null,
+    "resolved_at": "2026-08-27T16:40:06Z"
   }
 ]

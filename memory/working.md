@@ -83,10 +83,16 @@ prose here is invisible to drafting. Currently file-less and ripe:
   real paper + primary link): do not batch it with the other two.
 - **InSlowSpective (YouTube)** - source mismatch. 14 entries, all speculative
   "slow TV" (simulation, flat-earth, AI-doom mood pieces). No factual content.
-- **Apollo Research is scanned on its two DEAD sections and neither live one.**
-  `/blog/` lastmod 2026-05-13; `/science/` is where the real work lands. Also the
-  `/blog/` cursor points at a team-taxonomy page (`member_group/leadership/`), so
-  team-page edits ratchet `last_seen` forward.
+- **~~Apollo Research scanned on `www`-mismatched prefixes → always `[]`.~~
+  RESOLVED 2026-08-27 (self-heal, commit `40541bf`, diag
+  `diag_20260827_161636_feed-scan`).** Dropped `www.` from both `feed_scan.yaml`
+  prefixes; 26 science + 9 blog locs now match. Cursors seeded to the uniform
+  re-index lastmods (science `2026-08-25T12:08:14.628Z`, blog
+  `...T12:18:34.390Z`) so the evergreen backlog didn't flood curate — verified
+  `fetch` returns `[]` for both. `/science/` (scheming evals, CoT monitorability,
+  deception probes) is now live for the first time. **Watch:** if Apollo
+  re-indexes again it re-stamps every page with one lastmod → a fresh flood; that
+  would be a new diagnosis, not a regression.
 - **CLAUDE.md drift on assigned-thread frontmatter.** `plans/assignments.md`
   (commit `770fa45`) requires the canonical thread shape plus assignment extras;
   the research_assignment section still shows the old abbreviated spec.
