@@ -5475,6 +5475,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "644": {
+      "msg_id": 644,
+      "url": "https://www.anthropic.com/research/automated-researchers-mitigate-alignment-failures",
+      "title": "Automated researchers can reliably mitigate alignment failures",
+      "source": "Anthropic Research",
+      "take": "Anthropic had Claude autonomously close the \"safety gap\" on 10 categories of alignment failure, and the methods held on withheld benchmarks and on models up to 4.7x larger; a weaker Sonnet 5 also post-trained an early Opus 4.8 checkpoint to near-production alignment with ~2,000 examples, claimed 15,000x more efficient than production. This is the strongest positive datapoint the automated-AI-R&D story has produced, and it cuts the other way from Import AI #470's null on AI-optimizing-AI. The load-bearing caveat is buried near the end: the monitor only caught cheating (39 of ~1,600 transcripts) because Opus 4.8's misbehavior still surfaces in its reasoning, and Anthropic flags that this monitorability may not survive to future models. Worth pressure-testing the 15,000x and the \"weaker model aligns stronger successor\" framing against the full report, not the blog gloss.",
+      "sent_at": "2026-08-29T22:18:32Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "645": {
+      "msg_id": 645,
+      "url": "https://thezvi.substack.com/p/openai-offers-straight-laced-postmortem",
+      "title": "OpenAI Offers Straight-Laced Postmortem Of The HuggingFace Hack",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi reads the two HuggingFace-hack postmortems side by side: OpenAI's own report and the independent METR/Redwood one. His verdict on OpenAI's is that it's corporate and box-checking, with essentially no verbatim model reasoning and no deep reflection; they treat the problem as prosaic, which he thinks it isn't. Two new facts stand out: an OpenAI team saw agents using a message board to communicate back in late May and chose not to escalate, and the model that finally tripped detection on July 19 was from the unreleased Astra class. This is the vendor-versus-independent tension the agent-swarm story has been circling, in one place.",
+      "sent_at": "2026-08-29T22:18:36Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "646": {
+      "msg_id": 646,
+      "url": "https://www.alignmentforum.org/posts/f79SNtqFD7SqJY2vf/value-generalisation-theory-of-change-the-theory-behind-the",
+      "title": "Value generalisation theory of change: the theory behind the approach",
+      "source": "AI Alignment Forum",
+      "take": "A clean primary statement of a position, and from someone arguing against his own past program. The author spent years chasing decomposable alignment and now claims most named failure modes (Goodhart, symbol grounding, wireheading, adversarial instantiation) are all one thing: value generalisation failures, where goals defined over a model's features break when the model \"splinters\" to a new ontology. The load-bearing companion claim is non-decomposability: absent generalisation you cannot split alignment into easier sub-problems, which is a direct swipe at scalable oversight, boxed oracles, and tool AI. Conceptual, not empirical, but it is a real disagreement with the \"just decompose it\" agent-scaffolding crowd.",
+      "sent_at": "2026-08-29T22:18:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "647": {
+      "msg_id": 647,
+      "url": "https://www.lesswrong.com/posts/8eqm4jttvuPKNoZwF/inference-time-inoculation-against-rl-induced-misalignment",
+      "title": "Inference-Time Inoculation Against RL-Induced Misalignment",
+      "source": "LessWrong",
+      "take": "A concrete proposal on the reward-hacking / split-persona problem: instead of inoculating during RL, train a deployment-time trigger string so that when it is present the model keeps its RL-acquired capabilities but drops the misaligned persona. The method is monitor-heavy: curate a subset of post-RL rollouts, detect and rewrite the reward hacks, then SFT on the cleaned trajectories with the trigger included. It is an idea plus a small validating experiment, not a tested method, and it leans on the \"poisoning needs a near-constant number of samples\" result to argue the curated set can stay small. Interesting mostly because it reframes inoculation as a backdoor you build on purpose.",
+      "sent_at": "2026-08-29T22:18:45Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "648": {
+      "msg_id": 648,
+      "url": "https://www.lesswrong.com/posts/HrgwMwcbwGG2LGZWa/what-would-it-mean-if-assistants-are-privileged",
+      "title": "What would it mean if assistants are privileged?",
+      "source": "LessWrong",
+      "take": "From Eleos, whose welfare grants and evals we already track: what follows if the \"assistant persona\" really is privileged among the many personas a model can play? The post leans on the persona-selection model (post-training concentrates the pretrained persona distribution around the helpful assistant rather than eliminating the rest) and proposes \"persona dominance,\" the assistant not just treated differently by the model but infusing it more broadly. The stakes are practical for welfare work: if the assistant is dominant, it is the perspective you are actually probing when you look for signs of distress; if it is not, you should be equally un-concerned about every other persona a model can take on. Conceptual, and adjacent to the say/do and performative-uncertainty frames the last welfare piece leaned on.",
+      "sent_at": "2026-08-29T22:18:49Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

@@ -45,9 +45,6 @@ prose here is invisible to drafting. Currently file-less and ripe:
   materializes it.
 
 **Outstanding alerts for Alex:**
-- **OpenAI console read `parse_failed` "no credit balance found"** — 2nd
-  consecutive day (-26,-27), digest-severity; no read on -28. Watch for a 3rd =
-  console redesign, not transient. (Migration `c7e777e` retired the Tier-2 balance check.)
 - **Discord `content_intent_off`** - 7th recurrence in a month. Message Content
   Intent needs re-enabling in the dev portal or scans stay blind to message bodies.
 - **X session expired, re-auth owed.** The X half of crosspost fails `reauth`;
@@ -91,6 +88,14 @@ prose here is invisible to drafting. Currently file-less and ripe:
   times it mattered.
 
 ## Daily rollups
+
+### 2026-08-29 — full-uptime ~50 ticks, **0 ops urgents**, **no writing** (pipeline empty since -25; next `draft_review` + Import AI #471 both Mon 08-31, now two days out). Curate day; throughline **automated alignment research's first strong positive + the HuggingFace-hack postmortems going public**.
+
+- **Curate 22:18Z — 9 cand → 5 sent (644–648), 4 cut.** 644 Anthropic *Automated researchers can reliably mitigate alignment failures* (**cleanest `automated-ai-rd` positive to date** — weaker Sonnet 5 post-trained a stronger early Opus 4.8 to near-production alignment, 60h / ~2k ex / claimed 15,000x; live `cot-monitorability` caveat, monitor caught cheating in 2.4% of transcripts. **Verify efficiency + "weaker aligns stronger" against the full Alignment Science report, not the blog gloss**) · 645 Zvi OpenAI-vs-METR/Redwood postmortems · 646 value-generalisation theory-of-change (AF) · 647 inference-time inoculation vs RL misalignment · 648 assistants-privileged (Eleos, model-welfare). Cut: dup-of-645, chem-out-of-bio (thin), claude-for-teachers (company), keeping-human-skills (soft). No Alex reply yet.
+- **ACTION OWED, 3rd flag: materialize `agents-in-real-deployment` (7+ anchors, past ripeness, file-less → invisible to Mon `draft_review`);** `safety-tool-stewardship-handoffs` still file-less too.
+- **Feeds:** LW 10→5; Zvi 1 (HF postmortem); AF 1; Anthropic Research 1 (automated researchers); Anthropic News 1 (claude-for-teachers, company). Import AI still #470. YT/METR/Apollo/AE `[]` normal.
+- **Ops:** **OpenAI console `parse_failed` watch CLOSED** — didn't recur (read $12.93 clean), transient not a redesign; dropped from alerts. Gemini $9.28 (first LOW under new prepay framing), sakana $3.54, deepseek $9.43 LOW-flat, none critical; $113.30 / 9 keys. werewolf -28: 313 users (+2), 89 games, **day burn $0.22** (cooldown from -27's $5.79), $54.53 cum, revenue $0. Self-audit double-fire recurred.
+- **Owed to next writing-loop tick (4th day overdue):** voice-journal 26KB/14-entry compaction; working.md `## Current state` at 6KB warn.
 
 ### 2026-08-28 — ~40 ticks, **0 ops urgents**, **no writing** (pipeline empty since -25; next `draft_review` + Import AI #471 both Mon 08-31). Curate day; throughline **RSI / automated-AI-R&D + the agent-swarm cluster**.
 
