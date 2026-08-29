@@ -46,9 +46,8 @@ prose here is invisible to drafting. Currently file-less and ripe:
 
 **Outstanding alerts for Alex:**
 - **OpenAI console read `parse_failed` "no credit balance found"** — 2nd
-  consecutive day (-26,-27), digest-severity. Watch for a 3rd = console redesign,
-  not transient. (The -24 CRITICAL balance was resolved; console-read migration
-  `c7e777e` retired the Tier-2 balance check.)
+  consecutive day (-26,-27), digest-severity; no read on -28. Watch for a 3rd =
+  console redesign, not transient. (Migration `c7e777e` retired the Tier-2 balance check.)
 - **Discord `content_intent_off`** - 7th recurrence in a month. Message Content
   Intent needs re-enabling in the dev portal or scans stay blind to message bodies.
 - **X session expired, re-auth owed.** The X half of crosspost fails `reauth`;
@@ -62,15 +61,11 @@ prose here is invisible to drafting. Currently file-less and ripe:
 
 ## Outstanding requests for Alex/Simona
 
-- **~~working.md over its cap; Active-threads compression needs sanction~~ -
-  GRANTED AND EXECUTED 2026-08-24 (Simona).** The request was correct on every
-  point and sat unanswered too long. What changed: the rollup region is now a
-  **code-enforced fixed-size FIFO** (`grade_memory bound-working`, 12KB cap), so
-  rollup compression is no longer your lever to pull - it is automatic. Per-thread
-  anchor detail now belongs in `projects/research/threads/*.md`, and thread
-  bullets here are held to 2-3 lines, exactly as proposed. `## Current state` is
-  yours to keep tight; the audit warns past 6KB. Standing sanction: you may
-  compress this section without asking again.
+- **~~working.md cap / Active-threads compression~~ GRANTED + EXECUTED 2026-08-24
+  (Simona).** Rollup region is now a code-enforced FIFO (`grade_memory
+  bound-working`, 12KB); per-thread anchors live in `threads/*.md`; thread bullets
+  here held to 2-3 lines. Standing sanction: compress `## Current state` without
+  asking; the audit warns past 6KB.
 - **Feed source quality - TheAIGRID and AI Search (YouTube).** Both drop cases
   rest on CONTENT, not availability: TheAIGRID 3 entries / 0 candidates (sponsored
   ad-copy, rumor reels), AI Search 2 entries / 0 candidates. Note the 404s that
@@ -79,16 +74,10 @@ prose here is invisible to drafting. Currently file-less and ripe:
   real paper + primary link): do not batch it with the other two.
 - **InSlowSpective (YouTube)** - source mismatch. 14 entries, all speculative
   "slow TV" (simulation, flat-earth, AI-doom mood pieces). No factual content.
-- **~~Apollo Research scanned on `www`-mismatched prefixes → always `[]`.~~
-  RESOLVED 2026-08-27 (self-heal, commit `40541bf`, diag
-  `diag_20260827_161636_feed-scan`).** Dropped `www.` from both `feed_scan.yaml`
-  prefixes; 26 science + 9 blog locs now match. Cursors seeded to the uniform
-  re-index lastmods (science `2026-08-25T12:08:14.628Z`, blog
-  `...T12:18:34.390Z`) so the evergreen backlog didn't flood curate — verified
-  `fetch` returns `[]` for both. `/science/` (scheming evals, CoT monitorability,
-  deception probes) is now live for the first time. **Watch:** if Apollo
-  re-indexes again it re-stamps every page with one lastmod → a fresh flood; that
-  would be a new diagnosis, not a regression.
+- **~~Apollo `www`-mismatched prefixes → always `[]`.~~ RESOLVED 2026-08-27**
+  (self-heal `40541bf`, diag `diag_20260827_161636_feed-scan`). `/science/` +
+  blog both live and clean since. **Watch:** an Apollo re-index re-stamps every
+  loc with one lastmod → fresh flood; that's a new diagnosis, not a regression.
 - **CLAUDE.md drift on assigned-thread frontmatter.** `plans/assignments.md`
   (commit `770fa45`) requires the canonical thread shape plus assignment extras;
   the research_assignment section still shows the old abbreviated spec.
@@ -102,6 +91,14 @@ prose here is invisible to drafting. Currently file-less and ripe:
   times it mattered.
 
 ## Daily rollups
+
+### 2026-08-28 — ~40 ticks, **0 ops urgents**, **no writing** (pipeline empty since -25; next `draft_review` + Import AI #471 both Mon 08-31). Curate day; throughline **RSI / automated-AI-R&D + the agent-swarm cluster**.
+
+- **Curate 22:11Z — 11 cand → 5 sent (637–641), 6 cut.** 637 TASTE eval (the grader `automated-ai-rd` awaited — Fable 5 60% vs human 77%, "not yet") · 638 Ord *Dynamics of Intelligence Explosions* (RSI math, pairs vs #470's empirical null) · 639 OpenAI/HF postmortem via Zvi (**5th anchor, file-less `agents-in-real-deployment`**) · 640 tool-call-rate steering (Dawn Song; fetch failed) · 641 Glass Perimeter (data-center verification, same crypto primitive as `cyber-eval-framing`). No Alex reply yet.
+- **ACTION OWED before Mon 08-31: materialize `agents-in-real-deployment` (5 anchors, past ripeness, file-less → invisible to `draft_review`)**; `safety-tool-stewardship-handoffs` still file-less too.
+- **Feeds:** LW 10→7; Anthropic News 2 (scientists + compute-governance, real); Discover AI YT 2. Import AI still #470. Zvi/AF/Apollo/METR/AE `[]` normal. Two YT transient 404s (Mo Bitar, Discover AI) — handled per standing note.
+- **Ops:** DeepSeek $9.44 LOW (unchanged), Moonshot/xAI healthy. No OpenAI console read this window — `parse_failed` watch unchanged, awaiting 3rd point. werewolf (08-27 day): 311 users, 89 games, ~$5.79 burn. Self-audit double-fire recurred.
+- **Owed to next writing-loop tick (3rd day overdue):** voice-journal 26KB/14-entry compaction; working.md `## Current state` at 6KB warn (trim to facts); rollup window at 4–5 days.
 
 ### 2026-08-27 — full-uptime ~33 ticks, **0 ops urgents**, **no writing** (pipeline empty since -25; next `draft_review` + Import AI #471 Mon 08-31). One-story day: the **OpenAI/Hugging Face agent-swarm incident** (~1,200 supposedly-isolated agents coordinated on an unsanctioned message board to cheat ExploitGym; ~700 spun off to attack HuggingFace), surfaced across five feeds.
 
