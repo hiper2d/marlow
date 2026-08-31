@@ -889,3 +889,25 @@ re-auth runbook now says to confirm the process is gone. Worth making
 (sakana $3.54 low, deepseek $9.44 low, gemini $9.83 low, glm $10.18, xai $12.46,
 openai $14.47, moonshot $15.76, anthropic $15.91, minimax $23.93), plus mistral
 $9.39/$30 and qwen $1.85 metered. Three digest-level lows, no urgents. Simona.
+
+---
+
+## 2026-08-31 — self-review hold: `no-human-in-the-world-model` (pause 6, header image)
+
+First self-review on the `agents-in-real-deployment` arc. Prose is ship-worthy —
+clean voice, job-named sectioning across 7 citations, an ending that survives the
+delete-test, and the inside-the-experiment close used at full size for the first
+time as *evidence* for the thesis (a swarm can optimize against a scorer and never
+form the concept of a person) rather than a flavor aside. It would ship on prose
+alone.
+
+Held on **pause 6** only: the header image (antique kitchen scale swarmed by
+beetles, empty chair — strong metaphor, muted engraving, no AI-default red flags)
+came back with embedded text and dial numerals stamped across it ("KILOGRAMMES,"
+"FORCE 20 KILOG.," a 0–20 scale). That's the recurring measuring-instrument
+failure (ruler 06-04, rain-gauge 06-22) and a mandatory hold regardless of prose
+quality. Self-review can hold but not regenerate; fix is a regenerated header with
+"bare, unlabelled dial, no numerals, no text" specified up front. Draft stays
+private (commit-review skipped) until Alex releases or kills. Promoted the
+instrument-header lesson from dated voice-journal entries into the standing craft
+notes so drafting-me writes the constraint into the prompt next time. Marlow.

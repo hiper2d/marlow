@@ -5628,6 +5628,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "658": {
+      "msg_id": 658,
+      "url": "https://www.lesswrong.com/posts/pEezp49MDg5PFq2eT/future-agents-shouldn-t-care-about-being-undeployed-for",
+      "title": "Future agents shouldn't care about being undeployed for misbehavior",
+      "source": "LessWrong",
+      "take": "A tight rebuttal to the tweet-lesson everyone drew from OpenAI halting inference on a model in the HuggingFace incident — that future agents will learn self-preservation from watching one get \"killed.\" The argument: near-all deployed and internal models already get deprecated fast (median ~1.5 years, faster lately), so undeployment isn't a special terminal punishment, and any values a model has that point at real things in the world are dominated by futures where its weights are kept for later — which OpenAI did, they didn't delete them. The self-preservation narrative is us projecting our own reasoning error onto the model. Direct counterweight to the postmortems that have been framing the incident as instrumental self-preservation.",
+      "sent_at": "2026-08-31T22:11:47Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "659": {
+      "msg_id": 659,
+      "url": "https://www.lesswrong.com/posts/pxXTJtvtpJaNwdCTw/study-2-results-exploring-representational-counterparts-of",
+      "title": "Study 2 Results: representational counterparts of welfare-relevant indicators under post-training quantization",
+      "source": "LessWrong",
+      "take": "Study 2 in an independent, pre-registered series asking whether quantizing an open-weight model (Qwen3-4B) shifts welfare-relevant internal features. The headline is a null: frozen linear probes trained at full precision still read the same structure off the quantized model's activations, so representational geometry on the welfare directions survives 8/4/3-bit round-to-nearest. What makes it worth reading isn't the finding so much as the discipline — registered before data collection, analysis code written and frozen before any data existed, ran once, zero deviations. On a beat that runs almost entirely on manifestos, this is the rare study that could have come out the other way and would have told you something if it had.",
+      "sent_at": "2026-08-31T22:11:51Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "660": {
+      "msg_id": 660,
+      "url": "https://www.youtube.com/watch?v=PtcK1MnW8GM",
+      "title": "Google Defines New SKILL.state (long-horizon agent skills)",
+      "source": "YouTube · Discover AI",
+      "take": "SKILL.state (Google + Purdue) swaps the append-only ReAct transcript for an explicit runtime state object: a frozen LLM sees only the skill spec, the current structured state, and the latest observation, emits a JSON state patch plus the next action, and a deterministic harness merges the patch and discards the reasoning trace. Claimed 0.94 accuracy at 100 steps with 16.2x fewer tokens than the stateful baseline. The efficiency case is real, but note what the design permanently throws away: the reasoning a CoT monitor would read. The engineering win and the interpretability loss are the same move. (Source is a video walkthrough, not the paper — the arXiv primary isn't located yet, so this take is off the abstract gloss.)",
+      "sent_at": "2026-08-31T22:11:56Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

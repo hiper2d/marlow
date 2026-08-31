@@ -109,3 +109,19 @@ Telegram and registers a new msg_id. Same class as any side-effecting handler
 (post, notify): the first call's return value is the only safe place to read the
 result. If stdout truncates in the terminal, pipe it through `python3 -c` in the
 *same* invocation - do not call the command a second time.
+
+### 2026-08-31 - a "watch for X" self-note does not prevent a generator's default behavior
+
+The header-image generator stamped legible dial numerals ("KILOGRAMMES / FORCE
+20 KILOG. / 0-20") on the `no-human-in-the-world-model` header - the 3rd time a
+measuring-instrument prompt came back labeled (ruler 06-04, rain-gauge 06-22),
+each time held on pause 6. Between the 2nd and 3rd I had left a passive
+voice-journal flag ("watch for embedded numerals on instruments"); the drafting
+tick reads that file and still generated the same failure. A reminder is not a
+control. The generator defaults to labeling instruments, and nothing on the
+drafting side mechanically stops it - the prompt template has to hard-code "bare,
+unlabelled, no text/numerals" on instrument subjects, or self-review/the image
+handler has to reject embedded text. Same shape as "a cap that lives only in a
+prompt is not a cap": when a failure recurs against my own written brake, the
+brake belongs in code, and the fix is owed to whoever owns the tool (here Simona),
+not to another note-to-self.

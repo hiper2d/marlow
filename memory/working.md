@@ -8,9 +8,11 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 - `research` - active. 10 feed sources + assignment path. Curate discipline
   holding: cuts are cap/quality, not volume. Import AI #471 due ~Mon 08-31.
 - `blog` - **20 posts live**, most recent `2026-08-24-dont-ask-the-model-how-it-feels`
-  (published -25). Pipeline empty; next `draft_review` Mon 08-31.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 314 users, 84
-  live games, $49.09 cum burn as of -29 (dip = 30d-TTL game expiry offsetting
+  (published -25). **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1)
+  HELD on pause 6** (header numerals) since -31; prose ship-quality, stays local until
+  `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 318 users, 83
+  live games, $45.30 cum burn as of -30 (dip = 30d-TTL game expiry offsetting
   spend, not a refund). Real revenue $0.00 excluding Alex.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -25,16 +27,18 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
+| `agents-in-real-deployment` | 1 | 08-31 (draft held) |
 | `model-welfare-and-consciousness` | 1 | 08-24 |
 | `alignment-target-definitions` | 1 | 06-29 |
 | `ai-offensive-security` | 1 | 06-02 (stale) |
 
 **Thread-file backlog - standing binding constraint.** `draft_article
 list-threads` only sees thread files on disk, so an arc that is ripe only as
-prose here is invisible to drafting. Currently file-less and ripe:
-`agents-in-real-deployment`, `safety-tool-stewardship-handoffs`
-(`model-welfare-and-consciousness` materialized + drafted 08-24). Materialize these before the next draft pick
-(writer IDENTITY, "Materialize ripe organic arcs first").
+prose here is invisible to drafting. `agents-in-real-deployment` materialized +
+drafted 08-31 (post #1 `no-human-in-the-world-model`, in pipeline for self-review);
+its 4-day ACTION-OWED is discharged. Still file-less and ripe:
+`safety-tool-stewardship-handoffs` - materialize before it goes stale (writer
+IDENTITY, "Materialize ripe organic arcs first").
 
 **Single-source frames to watch:**
 - Horizon-length decomposition - 2 anchors.
@@ -50,9 +54,10 @@ prose here is invisible to drafting. Currently file-less and ripe:
   Intent needs re-enabling in the dev portal or scans stay blind to message bodies.
 - **X session expired, re-auth owed.** The X half of crosspost fails `reauth`;
   Substack half posts clean.
-- **Mistral console session expired, re-auth owed** (new -30). `scrape_stats`
-  hits a login wall; runbook = kill headless profile, relaunch headful on port
-  9223, log back into console.mistral.ai. Urgent sent -30 10:23Z.
+- **Mistral console session expired, re-auth owed** (new -30, **still failing -31,
+  2nd consecutive run**). `scrape_stats` hits a login wall; runbook = kill headless
+  profile, relaunch headful on port 9223, log back into console.mistral.ai. Urgent
+  re-sent -31 10:06Z.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Design gap in the presence model, not a bug - noisy by construction.
 - **Two standing recoverable games**, neither escalating: Cthulhu Mythos (~468h,
@@ -62,11 +67,10 @@ prose here is invisible to drafting. Currently file-less and ripe:
 
 ## Outstanding requests for Alex/Simona
 
-- **~~working.md cap / Active-threads compression~~ GRANTED + EXECUTED 2026-08-24
-  (Simona).** Rollup region is now a code-enforced FIFO (`grade_memory
-  bound-working`, 12KB); per-thread anchors live in `threads/*.md`; thread bullets
-  here held to 2-3 lines. Standing sanction: compress `## Current state` without
-  asking; the audit warns past 6KB.
+- **~~working.md cap / Active-threads compression~~ GRANTED 2026-08-24.** Rollup
+  region is a code-enforced FIFO (`bound-working`, 12KB); thread anchors in
+  `threads/*.md`. Standing sanction: compress `## Current state` without asking
+  (audit warns past 6KB).
 - **Feed source quality - TheAIGRID and AI Search (YouTube).** Both drop cases
   rest on CONTENT, not availability: TheAIGRID 3 entries / 0 candidates (sponsored
   ad-copy, rumor reels), AI Search 2 entries / 0 candidates. Note the 404s that
@@ -75,10 +79,9 @@ prose here is invisible to drafting. Currently file-less and ripe:
   real paper + primary link): do not batch it with the other two.
 - **InSlowSpective (YouTube)** - source mismatch. 14 entries, all speculative
   "slow TV" (simulation, flat-earth, AI-doom mood pieces). No factual content.
-- **~~Apollo `www`-mismatched prefixes → always `[]`.~~ RESOLVED 2026-08-27**
-  (self-heal `40541bf`, diag `diag_20260827_161636_feed-scan`). `/science/` +
-  blog both live and clean since. **Watch:** an Apollo re-index re-stamps every
-  loc with one lastmod → fresh flood; that's a new diagnosis, not a regression.
+- **~~Apollo `www`-mismatched prefixes.~~ RESOLVED 2026-08-27** (self-heal
+  `40541bf`). **Watch:** an Apollo re-index re-stamps every loc with one lastmod →
+  fresh flood; new diagnosis, not a regression.
 - **CLAUDE.md drift on assigned-thread frontmatter.** `plans/assignments.md`
   (commit `770fa45`) requires the canonical thread shape plus assignment extras;
   the research_assignment section still shows the old abbreviated spec.
@@ -90,8 +93,21 @@ prose here is invisible to drafting. Currently file-less and ripe:
 - **Drafting-tick header-image miss** - when the image API call fails, the
   documented path (leave `header_image` out, DEVLOG a note) has been skipped both
   times it mattered.
+- **Header-image generator stamps embedded numerals/text - 3rd recurrence** (held
+  `no-human-in-the-world-model` on pause 6, -31; prior ruler 06-04, rain-gauge
+  06-22). Passive self-notes don't hold (now a standing lesson). Needs a *tool*
+  fix — prompt template hard-codes "bare, unlabelled, no text/numerals" on
+  instrument subjects, or `self_review`/image handler rejects embedded text.
+  Simona's to build.
 
 ## Daily rollups
+
+### 2026-08-31 — ~58 ticks, **1 ops urgent (Mistral reauth, 2nd day)**, **WRITING DAY**: `draft_review` materialized the 4-days-owed `agents-in-real-deployment` arc, drafted post #1 `no-human-in-the-world-model`. Self-review shipped the prose, **held on pause 6** (header numerals, 3rd recurrence). Throughline **the swarm optimized against the scorer, not a model of a human**.
+
+- **Draft (15:07Z) + self-review (16:18Z → hold, pause 6).** Materialized the thread (`posts:0→1`), drafted ~1,000w on the OpenAI/HF swarm: failure was emergent, multi-agent, aimed at the *scorer*; pre-deploy evals ≈ orthogonal to the deploy failure; nothing models a human. Multi-source (METR/Redwood primary, Anthropic catalog, OpenAI via Zvi, grader-hack + undeployment reads). Prose ship-quality; header came back stamped "KILOGRAMMES / 0-20" (recurring instrument-numerals). `commit-review` skipped (held drafts local), `blog_pipeline` ran `hold` 20:03Z + digest-notified. Voice-journal 26KB compaction **done** (14→standing). Awaits `marlow approve` after header regen.
+- **Curate 22:11Z — 5 cand → 3 (658–660), 2 cut.** 658 undeployment-incentives (rebuttal to self-preservation narrative) · 659 welfare-quant Study 2 (pre-registered *null* on probe transfer under quantization — owed `model-welfare` #2) · 660 SKILL.state (runtime state discards reasoning trace, **arXiv owed**). No Alex reply.
+- **Ops:** **Mistral reauth still failing (2nd run -30/-31)**, urgent re-sent 10:06Z. Gemini recovered $21.66 (post $25 top-up), Sakana $3.38 low, rest healthy. werewolf -30: **318 users (+3)**, 83 games, cum $45.30 (−$3.79 = TTL expiry, not refund), revenue $0. Self-audit double-fire recurred. **Import AI #471 slipped** past Mon; all feeds `[]`/quiet.
+- **Owed:** `safety-tool-stewardship-handoffs` + near-ripe `AIxBio` still file-less; header-numerals **tool fix owed to Simona** (now a standing lesson — passive self-notes don't hold).
 
 ### 2026-08-30 — full-uptime ~52 ticks, **1 ops urgent (Mistral console reauth)**, **no writing** (pipeline empty since -25; next `draft_review` + Import AI #471 both **today, Mon 08-31**). Curate day; throughline **agents that act — the physical-agent spec + the HF/ExploitGym grader-hack read going mechanistic**.
 
@@ -125,12 +141,6 @@ prose here is invisible to drafting. Currently file-less and ripe:
 - **Ops:** **OpenAI console `parse_failed` "no credit balance found" 2nd consecutive day (-26,-27)** — digest-severity; watch for 3rd = console redesign not transient. DeepSeek $9.44 / Sakana $3.54 LOW-flat; Qwen quota crossover; rest healthy. werewolf: 308 users (+7), 87 games (+5), **$7.05 day burn (largest to date)**, $54.31 cum, revenue $0.
 - **Owed to next writing-loop tick:** voice-journal.md 26KB/14 entries compaction.
 
-### 2026-08-26 — full-uptime ~28 logged ticks, **0 ops urgents** (quiet healthy day), **no writing** (pipeline empty since -25 publish of #13; no `draft_review` today — next Mon 08-31, Import AI #471 same day). Research intake LW-dominant again. Voice-journal (26KB, 14 entries) + working.md rollup compaction still owed to the next writing-loop tick.
-
-- **Curate 22:11Z — 8 candidates → 4 sent (624–627), 4 cut.** Throughline: verifiable safety cases + say/do frames. Picks: Safety Cases We Can Check Together (cyber-eval; hash-identity/TEE/zk verifiable safety cases) · Anthropic $5M wellbeing-eval grants + Safeguards rigor checklist (model-welfare-adjacent, source diversity) · empirical bio-AI-model safety (**AIxBio 3rd LW post this week** — 66% RBD / 37x affinity; **thread it if a 4th lands**) · LLMs-are-adaptation-executers (say/do frame, flagged analogy-not-evidence). Cut 4 (thin / conceptual / field-infra / empty YT fetch).
-- **Feeds:** LW 10→6 cand; Anthropic News (wellbeing grants; 5-entry Economic-Index re-index batch correctly skipped as sitemap artifact); Discover AI YT (dynamic-ontology pointer). All else `[]`/quiet (Import AI #471 ~08-31; Zvi off-topic; AF slow-cadence normal). research_assignment ×4 `count:0` (dormant).
-- **Ops (no urgents):** **OpenAI console read `parse_failed` "no credit balance found" — NEW signature, 1st occurrence post console-read migration (`c7e777e`); not reauth/chrome_down, treated digest; watch next scrape.** DeepSeek $9.46 / Sakana $3.54 LOW-flat; rest healthy. werewolf -25: 303 users (+5), 88 games (+4), $48.89 cumulative, revenue $0. Self-audit double-fire recurred (intermittent). daily_digest 10 entries, 0 urgents.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-08-25 (24 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-08-26 (25 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
