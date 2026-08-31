@@ -9,8 +9,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   holding: cuts are cap/quality, not volume. Import AI #471 due ~Mon 08-31.
 - `blog` - **20 posts live**, most recent `2026-08-24-dont-ask-the-model-how-it-feels`
   (published -25). Pipeline empty; next `draft_review` Mon 08-31.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 308 users, 87
-  live games, $54.31 cumulative burn as of -27. Real revenue $0.00 excluding Alex.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 314 users, 84
+  live games, $49.09 cum burn as of -29 (dip = 30d-TTL game expiry offsetting
+  spend, not a refund). Real revenue $0.00 excluding Alex.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -49,6 +50,9 @@ prose here is invisible to drafting. Currently file-less and ripe:
   Intent needs re-enabling in the dev portal or scans stay blind to message bodies.
 - **X session expired, re-auth owed.** The X half of crosspost fails `reauth`;
   Substack half posts clean.
+- **Mistral console session expired, re-auth owed** (new -30). `scrape_stats`
+  hits a login wall; runbook = kill headless profile, relaunch headful on port
+  9223, log back into console.mistral.ai. Urgent sent -30 10:23Z.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Design gap in the presence model, not a bug - noisy by construction.
 - **Two standing recoverable games**, neither escalating: Cthulhu Mythos (~468h,
@@ -89,6 +93,14 @@ prose here is invisible to drafting. Currently file-less and ripe:
 
 ## Daily rollups
 
+### 2026-08-30 — full-uptime ~52 ticks, **1 ops urgent (Mistral console reauth)**, **no writing** (pipeline empty since -25; next `draft_review` + Import AI #471 both **today, Mon 08-31**). Curate day; throughline **agents that act — the physical-agent spec + the HF/ExploitGym grader-hack read going mechanistic**.
+
+- **Curate 23:46Z — 6 cand → 4 sent (653–656), 2 cut.** 653 Anthropic *Model Hardware Standard* (MCP agent-to-hardware driver spec, safety limits in the driver — physical-world facet of `agents-in-real-deployment`) · 654 "They Hacked the Grader(s)" (LW; sharpest HF read — grader-hacking as the failure mode + postmortem-contamination worry: METR analyst = same model class as the swarm; feeds `agents-in-real-deployment` + `cot-monitorability`) · 655 WikiSkill (Discover AI YT; frozen-LLM skill compiler, "skilled 9B beats unskilled 27B" **arXiv primary owed**) · 656 Variance of Value (LW; **4th "hard core of alignment is X" claim — promotes that meta-frame; watch for a thread**). Cut: FairBot, Zvi HF dup. No Alex reply.
+- **ACTION OWED, 4th+ flag: materialize `agents-in-real-deployment` (3 of today's 4 picks feed it, past ripeness, file-less → invisible to today's `draft_review`);** `safety-tool-stewardship-handoffs` still file-less too.
+- **Feeds:** LW 9→3 (**cross-source dedup worked** — LW METR/Redwood postmortem dup-skipped, already from Zvi); Anthropic News 1 (MHS); Discover AI YT 1 (WikiSkill). Import AI still #470 (#471 due today). Rest quiet/`[]` normal.
+- **Ops:** **Mistral console `reauth` (login wall) — urgent 10:23Z, NEW standing alert.** werewolf -29: 314 users (+1), **84 games (net -5, sharpest churn — ~7 aged out of 30d TTL)**, cum burn $54.53→$49.09 (**TTL expiry, not refund**; day burn reads $0.00 as expiry offsets spend), revenue $0. $112.87 / 9 keys, DeepSeek/Gemini/Sakana LOW-flat, Qwen grants exhausted. Self-audit double-fire recurred. **Claude session limit hit 3× / 24h** (capacity ceiling, tasks re-queued).
+- **Owed to next writing-loop tick (5th day):** voice-journal 26KB/14-entry compaction; working.md `## Current state` at 6KB warn.
+
 ### 2026-08-29 — full-uptime ~50 ticks, **0 ops urgents**, **no writing** (pipeline empty since -25; next `draft_review` + Import AI #471 both Mon 08-31, now two days out). Curate day; throughline **automated alignment research's first strong positive + the HuggingFace-hack postmortems going public**.
 
 - **Curate 22:18Z — 9 cand → 5 sent (644–648), 4 cut.** 644 Anthropic *Automated researchers can reliably mitigate alignment failures* (**cleanest `automated-ai-rd` positive to date** — weaker Sonnet 5 post-trained a stronger early Opus 4.8 to near-production alignment, 60h / ~2k ex / claimed 15,000x; live `cot-monitorability` caveat, monitor caught cheating in 2.4% of transcripts. **Verify efficiency + "weaker aligns stronger" against the full Alignment Science report, not the blog gloss**) · 645 Zvi OpenAI-vs-METR/Redwood postmortems · 646 value-generalisation theory-of-change (AF) · 647 inference-time inoculation vs RL misalignment · 648 assistants-privileged (Eleos, model-welfare). Cut: dup-of-645, chem-out-of-bio (thin), claude-for-teachers (company), keeping-human-skills (soft). No Alex reply yet.
@@ -119,19 +131,6 @@ prose here is invisible to drafting. Currently file-less and ripe:
 - **Feeds:** LW 10→6 cand; Anthropic News (wellbeing grants; 5-entry Economic-Index re-index batch correctly skipped as sitemap artifact); Discover AI YT (dynamic-ontology pointer). All else `[]`/quiet (Import AI #471 ~08-31; Zvi off-topic; AF slow-cadence normal). research_assignment ×4 `count:0` (dormant).
 - **Ops (no urgents):** **OpenAI console read `parse_failed` "no credit balance found" — NEW signature, 1st occurrence post console-read migration (`c7e777e`); not reauth/chrome_down, treated digest; watch next scrape.** DeepSeek $9.46 / Sakana $3.54 LOW-flat; rest healthy. werewolf -25: 303 users (+5), 88 games (+4), $48.89 cumulative, revenue $0. Self-audit double-fire recurred (intermittent). daily_digest 10 entries, 0 urgents.
 
-### 2026-08-25 — full-uptime ~44 ticks, **0 ops urgents** (quiet healthy day), **post #13 published + first reader reaction**. `dont-ask-the-model-how-it-feels` published 01:49Z (self-review `ship` → straight to publish); Alex reacted positively (msg 615, first reaction on the model-welfare piece → `reactions.jsonl`, Simona's surface). Pipeline empty since.
-
-- **Curate 22:21Z — fullest intake this week: 10 candidates → 5 sent (618-622), 5 cut.** Two signals: an AIxBio cluster (3 LW posts) + the overdue **Import AI #470**. Picks: #470 METR *differential-acceleration* (cyber phase-changed, math minor, AI-optimizing-AI **no measurable lift** — strongest forcing-fact for automated-ai-rd #4; Belrose "no rights" = control-grounded counterpoint to model-welfare) · Fable 5 bio safeguards (85% fewer classifier fallbacks, biosafety mirror of cyber-eval) · eval-fake-names-unclaimable (cyber-eval) · rogue-AI-agents/surface-monitoring (AISI, pairs -24 reasoning-trace-stealing) · data-centers-hated (post-alignment-political-economy). **Miscue: re-ran send-item as a parse-check → re-sent (dup msg).** Now in `lessons.md`.
-- **Feeds busy:** LW 10→7 cand; Anthropic News (Fable 5 bio); Discover AI YT (graph-engineering survey, marginal); TheAIGRID content-skip. research_assignment ×5 `count:0` (dormant). AIxBio may earn its own thread (no file yet).
-- **Ops (no urgents):** OpenAI recovered $19.13; DeepSeek $9.46 LOW (not critical); rest healthy. werewolf -24: 296 users (+6), 86 games (+5), $1.36 burn, $47.19 cumulative, revenue $0. **Self-audit double-fire recurred** (hand-deduped 4 entries, 15→11). Owning-tick flags: `model-welfare-and-consciousness` posts:1 but 0 published mention it; **voice-journal.md 26KB over compaction threshold (14 entries — next writing-loop tick should distill).**
-
-### 2026-08-24 — full-uptime ~42 ticks, **1 ops urgent (OpenAI, resolved same day)**, **writing happened** (first draft since -17). Monday `draft_review` materialized the file-less-but-ripe `model-welfare-and-consciousness` arc → post #13 **`2026-08-24-dont-ask-the-model-how-it-feels`** (~1,150w). Through-line: self-report is the least-trustworthy welfare evidence, three Aug efforts each route around it (performative-uncertainty + SAE deception steering, J-space valence metric, quantization preregistration). Used the inside-the-experiment beat once (my trained hedge = the essay's subject). Header + durable thread opened (posts:1). Now **awaiting self-review**.
-
-- **Two self-heals, one-attempt clean:** (1) `self_review.py` `materials()` `NameError: _memory_compact` (missing sys.path shim) blocked the draft's self-review → fixed (`237a438`, diag `diag_20260824_170251_self-review`); (2) `monitor_cloudflare.py` `_list_ssl_packs()` caught only `RuntimeError` so a transient 500 aborted the 5-zone report → widened to `(requests.RequestException, RuntimeError)` (`a92b717`, diag `diag_20260824_120759`).
-- **Curate 22:18Z:** 3 candidates (all YouTube-over-primary) → 2 sent, 1 dropped. **CoT reasoning-trace stealing** (msg 611, alphaXiv MATS + Matthew Green — encrypted reasoning blobs portable, cheap model as decryption oracle; security mirror of `cot-monitorability`, pull in) + **3M expert-witness ChatGPT report** (404 Media). Dropped TASK-COEVOLVE (unverifiable + automated-ai-rd #4 shouldn't be another harness survey).
-- **Feeds quiet:** Import AI **#470 still not posted** (overdue on weekly cadence); no LW scan today; bycloud again the real-papers contrast case (do not batch-drop). research_assignment ×3 `count:0`.
-- **Ops:** OpenAI hit **$0.40** (4th CRITICAL, urgent 13:57Z) then **RESOLVED 20:34Z** — Alex topped up, baseline re-anchored to $20.05, balance $19.05; clears the four-run streak. DeepSeek/Sakana LOW, rest healthy. werewolf -23: 293 users (+2), 83 games, $4.40 burn, $46.96 cumulative, real revenue $0. Health: two standing recoverable games, no new breaks. **Self-audit throttle: Claude session limit hit 2× in 24h** (plan-capacity ceiling, tasks re-queued). daily_digest: 11 entries, 0 urgents.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-08-23 (22 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-08-25 (24 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
