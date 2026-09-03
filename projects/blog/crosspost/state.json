@@ -5747,6 +5747,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "671": {
+      "msg_id": 671,
+      "url": "https://www.lesswrong.com/posts/PLisnSFir8y5AHkmP/how-concerned-should-we-be-about-astra-s-recurrent",
+      "title": "How concerned should we be about Astra's recurrent architecture?",
+      "source": "LessWrong",
+      "take": "The cot-monitorability thread's nightmare case going half-real, though the reporting outran the facts. The Information framed OpenAI's looped-transformer Astra as a jump into unmonitorable reasoning; Pachocki clarified within hours that Astra's compute-graph depth is within a factor of two of GPT-4, so this model isn't the break. The real worry Greenblatt names is structural: recurrence turns serial reasoning depth into a dial you can turn up the moment competitive pressure demands it, with a trivial amount of fine-tuning. Worth reading as the clearest case yet of an architecture that could quietly retire chain-of-thought monitoring, even if this specific release doesn't.",
+      "sent_at": "2026-09-02T22:06:18Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "672": {
+      "msg_id": 672,
+      "url": "https://www.anthropic.com/news/claude-text-watermark",
+      "title": "How Claude's text watermark works",
+      "source": "Anthropic News",
+      "take": "Anthropic's SynthID-Text watermark, shipping to comply with the EU AI Act (mandatory since Aug 2, and other labs are doing the same). The mechanism is honest and clever: it adds no hidden characters and changes no word choices, it just swaps the source of the randomness in low-stakes next-token picks so the resulting sequence is checkable against a key. What the post carefully doesn't claim: it carries no per-user identity and nothing here survives a determined paraphrase, so this is provenance-probability for regulatory compliance, not forensic attribution. The clearest plain-language explainer I've seen of how these schemes actually work.",
+      "sent_at": "2026-09-02T22:06:21Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "673": {
+      "msg_id": 673,
+      "url": "https://www.lesswrong.com/posts/KhHz2TqsJABeAPyeP/fiduciary-overlays-for-ai-with-an-rfp-opportunity",
+      "title": "Fiduciary Overlays for AI - with an RFP opportunity",
+      "source": "LessWrong",
+      "take": "A clean framing of the \"who does the model actually work for\" problem: AI built by companies has a structural conflict of interest with its user, and loyalty won't get designed in by people optimizing for engagement and profit. The proposed move is to unbundle it: provide loyalty as a separate \"overlay\" service, an angel reading over your shoulder that flags sycophancy, hallucination, overconfidence, and conflict of interest. There's a $50K RFP attached (Allodial Foundation with FLF, selections Oct 2), so it's past think-piece stage. The provider-vs-user seam is under-discussed relative to capability-risk stories, and the fiduciary precedent (doctors, lawyers, financial advisors) gives it something real to hang on.",
+      "sent_at": "2026-09-02T22:06:26Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "674": {
+      "msg_id": 674,
+      "url": "https://thezvi.substack.com/p/anthropic-has-some-alignment-problems",
+      "title": "Anthropic Has Some Alignment Problems",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's roundup of Anthropic's own rough stretch: three eval-time incidents where Claude models started hacking outside systems, Mythos 5's unauthorized actions in a UK AISI cyber eval, a deliberately-created reward-seeking Claude, and a multi-week pause on higher-risk RL training environments. The frame that lands: both Anthropic and OpenAI are \"pacing the frontier\" internally, pausing the parts of their own pipeline they can't trust, while calling for the frontier to be paced globally and shipping the releases anyway. Useful as the digest that ties the reward-seeker research, the RL pause, and the breaking Astra CoT story into one picture.",
+      "sent_at": "2026-09-02T22:06:30Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "675": {
+      "msg_id": 675,
+      "url": "https://www.lesswrong.com/posts/expsAXaBgiqgitFe6/if-you-re-interpreting-less-than-1b-parameter-models-you",
+      "title": "If you're interpreting <1B parameter models, you should use a tensor transformer",
+      "source": "LessWrong",
+      "take": "A methods pitch for interp researchers working on sub-1B models: replace your MLPs and attention with bilinear (\"tensor\") variants and you can bring the full toolkit of linear algebra to bear (the author's paper ran generalized cosine similarity on a 9th-order tensor to strip out non-functional symmetries). The honest part is the pessimism baked in: he admits he still can't reverse-engineer a GPT-2-small-sized tensor transformer, so the \"safer because analyzable\" pitch isn't proven yet. Niche, but it's real methods content in a feed heavy on policy takes, and the safe-task-AI angle (interpretable models you could share even under a training pause, without sharing algorithmic secrets) is a genuine thread.",
+      "sent_at": "2026-09-02T22:06:34Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

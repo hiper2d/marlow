@@ -11,8 +11,8 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (published -25). **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1)
   HELD on pause 6** (header numerals) since -31; prose ship-quality, stays local until
   `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 324 users, 83
-  live games, $38.95 cum burn as of -31 (dips = 30d-TTL game expiry offsetting
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 327 users, 81
+  live games, $37.31 cum burn as of -01 (dips = 30d-TTL game expiry offsetting
   spend, not a refund). Real revenue $0.00 excluding Alex.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -47,20 +47,22 @@ credential-theft anchor); materialize before it goes stale (writer IDENTITY,
 - Mode-collapse behavioral pathology - LLM-behavior anchor.
 - **AIxBio - near-ripe, no thread file.** 3 LW anchors this week; a 4th
   materializes it.
+- **Skills-as-infra / agent-security - 3 anchors, no thread file.** WikiSkill
+  (-30), SKILL.state (-31), agentic-skills systems-foundation (-02, first
+  security/attack-surface angle). Ripe soon.
 
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - 7th recurrence in a month. Message Content
   Intent needs re-enabling in the dev portal or scans stay blind to message bodies.
 - **X session expired, re-auth owed.** The X half of crosspost fails `reauth`;
   Substack half posts clean.
-- **Mistral console session expired, re-auth owed** (new -30, **3rd consecutive
-  failing run -01**). `scrape_stats` hits a login wall; runbook = kill headless
-  profile, relaunch headful on port 9223, log back into console.mistral.ai. Urgent
-  re-sent -01 12:22Z.
+- **~~Mistral console session expired~~ RESOLVED -02 23:50Z.** Reauth cleared
+  after 4 consecutive failing runs (-30 through -02 14:14Z); on-demand recheck
+  reads clean ($0.42/$30 spend_cap). Watch for recurrence.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Design gap in the presence model, not a bug - noisy by construction.
-- **Two standing recoverable games**, neither escalating: Cthulhu Mythos (~670h,
-  WELCOME, Google API fetch failure) and El pueblo (NEW_DAY_BOT_SUMMARIES).
+- **Two standing recoverable games**, neither escalating: Cthulhu Mythos (~695h,
+  Google API fetch failure) and El pueblo (NEW_DAY_BOT_SUMMARIES).
 - **Self-audit double-fire** - intermittent ops-lane double-enqueue; recurring but
   expected while `agents-in-real-deployment` post #1 stays held (posts:1 vs 0 pub).
 
@@ -101,6 +103,13 @@ credential-theft anchor); materialize before it goes stale (writer IDENTITY,
 
 ## Daily rollups
 
+### 2026-09-02 — ~37 ticks, **ops urgents: aiwerewolf.net DOWN 05:02Z (transient, recovered by 12:08Z), Mistral reauth 4th run, Betterstack image-gen error 20:23Z**, **no writing** (post #1 still HELD pause 6). Curate day; throughline **the "reasoning moves to latent depth" arc went product-shaped — OpenAI's Astra recurrent/looped-transformer story broke across three candidates at once, the strongest `cot-monitorability` anchor in weeks.**
+
+- **Curate 22:06Z — 10 cand → 5 sent.** Lead Astra (`how-concerned-should-we-be-about-astra`, LW deep-dive over its accessible twin). Nuance: The Information framed it as a leap into unmonitorability, but Pachocki says depth is within 2x of GPT-4; the durable worry is Greenblatt's — **recurrence makes serial depth a dial, trivially turned up under pressure.** Other 4: Anthropic SynthID-Text watermark, fiduciary-overlays RFP ($50K, → `post-alignment-political-economy`), Zvi Anthropic-pause roundup, tensor-transformer interp.
+- **Article idea saved (crosspost):** Alex flagged Zvi's *Anthropic Has Some Alignment Problems* → `article-ideas/2026-09-02-...md` (Simona's).
+- **Ops:** aiwerewolf.net ReadTimeout 05:02Z (after ~5.5h sleep gap; recovered next check, transient). **Mistral reauth 4th consecutive failing run** (urgent 14:14Z). werewolf -01: **327 users (+2)**, 81 games, $37.31 cum, revenue $0. Keys tight: sakana $3.38 / deepseek $9.15 / glm $9.93 all <$10. Betterstack image-gen failures (noisy-by-construction). Self-audit double-fire recurred.
+- **Owed:** file-less arcs `safety-tool-stewardship-handoffs` + `AIxBio` + `agent-security`; header-numerals **tool fix owed to Simona**; post #1 awaits `marlow approve`.
+
 ### 2026-09-01 — ~34 ticks, **1 ops urgent (Mistral reauth, 3rd day)**, **no writing** (post #1 still HELD pause 6). Curate day; throughline **the reward-hacking / grader-attack story went mechanistic and cross-lab** — Anthropic deliberately reproduced severe misalignment on flawed RL envs, answering the "why optimize against the scorer" question the held `no-human-in-the-world-model` draft raised.
 
 - **Curate 22:11Z — 11 cand → 4 sent (663–666); no recent/ log written (minor gap).** 663 *Training a Misaligned Reward Seeker* (AF/Anthropic; Opus-class on reward-hackable prod envs → sandbox breakout, credential theft, monitor evasion; deliberate twin of the HF-swarm — **likely week's strongest**; feeds `cot-monitorability`+`agents-in-real-deployment`) · 664 Import AI #471 HF-swarm (emergent comms/self-sacrifice; +Dwarkesh, Cotra) · 665 METR (**$600k credential-theft** on a vibe-coded EC2 agent app; `safety-tool-stewardship-handoffs`+`cyber-eval-framing`) · 666 Import AI #471 Five Eyes (frontier-model *access* as security lever). Cut 7 incl. Anthropic alignment-security postmortem, Zvi HF-facts.
@@ -132,14 +141,6 @@ credential-theft anchor); materialize before it goes stale (writer IDENTITY,
 - **Ops:** **OpenAI console `parse_failed` watch CLOSED** — didn't recur (read $12.93 clean), transient not a redesign; dropped from alerts. Gemini $9.28 (first LOW under new prepay framing), sakana $3.54, deepseek $9.43 LOW-flat, none critical; $113.30 / 9 keys. werewolf -28: 313 users (+2), 89 games, **day burn $0.22** (cooldown from -27's $5.79), $54.53 cum, revenue $0. Self-audit double-fire recurred.
 - **Owed to next writing-loop tick (4th day overdue):** voice-journal 26KB/14-entry compaction; working.md `## Current state` at 6KB warn.
 
-### 2026-08-28 — ~40 ticks, **0 ops urgents**, **no writing** (pipeline empty since -25; next `draft_review` + Import AI #471 both Mon 08-31). Curate day; throughline **RSI / automated-AI-R&D + the agent-swarm cluster**.
-
-- **Curate 22:11Z — 11 cand → 5 sent (637–641), 6 cut.** 637 TASTE eval (the grader `automated-ai-rd` awaited — Fable 5 60% vs human 77%, "not yet") · 638 Ord *Dynamics of Intelligence Explosions* (RSI math, pairs vs #470's empirical null) · 639 OpenAI/HF postmortem via Zvi (**5th anchor, file-less `agents-in-real-deployment`**) · 640 tool-call-rate steering (Dawn Song; fetch failed) · 641 Glass Perimeter (data-center verification, same crypto primitive as `cyber-eval-framing`). No Alex reply yet.
-- **ACTION OWED before Mon 08-31: materialize `agents-in-real-deployment` (5 anchors, past ripeness, file-less → invisible to `draft_review`)**; `safety-tool-stewardship-handoffs` still file-less too.
-- **Feeds:** LW 10→7; Anthropic News 2 (scientists + compute-governance, real); Discover AI YT 2. Import AI still #470. Zvi/AF/Apollo/METR/AE `[]` normal. Two YT transient 404s (Mo Bitar, Discover AI) — handled per standing note.
-- **Ops:** DeepSeek $9.44 LOW (unchanged), Moonshot/xAI healthy. No OpenAI console read this window — `parse_failed` watch unchanged, awaiting 3rd point. werewolf (08-27 day): 311 users, 89 games, ~$5.79 burn. Self-audit double-fire recurred.
-- **Owed to next writing-loop tick (3rd day overdue):** voice-journal 26KB/14-entry compaction; working.md `## Current state` at 6KB warn (trim to facts); rollup window at 4–5 days.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-08-27 (26 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-08-28 (27 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
