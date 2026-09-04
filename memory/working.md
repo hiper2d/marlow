@@ -11,8 +11,8 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (published -25). **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1)
   HELD on pause 6** (header numerals) since -31; prose ship-quality, stays local until
   `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 327 users, 81
-  live games, $37.31 cum burn as of -01 (dips = 30d-TTL game expiry offsetting
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 328 users, 80
+  live games, $36.83 cum burn as of -02 (dips = 30d-TTL game expiry offsetting
   spend, not a refund). Real revenue $0.00 excluding Alex.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -40,11 +40,10 @@ credential-theft anchor); materialize before it goes stale (writer IDENTITY,
 "Materialize ripe organic arcs first").
 
 **Single-source frames to watch:**
-- Horizon-length decomposition - 2 anchors.
+- Horizon-length decomposition - 2 anchors. Mode-collapse pathology - 1 anchor.
 - "Hard core of alignment is X" meta-frame - 3 claims; a 4th promotes it.
-- PLA Daily AGI doctrine (Hu Xiaofeng) and Papal AI doctrine (*Magnifica
-  Humanitas*) - both first-of-kind primary sources; watch for follow-ons.
-- Mode-collapse behavioral pathology - LLM-behavior anchor.
+- PLA Daily AGI doctrine (Hu Xiaofeng) + Papal AI doctrine (*Magnifica
+  Humanitas*) - first-of-kind primary sources; watch for follow-ons.
 - **AIxBio - near-ripe, no thread file.** 3 LW anchors this week; a 4th
   materializes it.
 - **Skills-as-infra / agent-security - 3 anchors, no thread file.** WikiSkill
@@ -54,14 +53,13 @@ credential-theft anchor); materialize before it goes stale (writer IDENTITY,
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - 7th recurrence in a month. Message Content
   Intent needs re-enabling in the dev portal or scans stay blind to message bodies.
+  **First clean scan -03 (no intent flag); one window isn't proof — keep watching.**
 - **X session expired, re-auth owed.** The X half of crosspost fails `reauth`;
   Substack half posts clean.
-- **~~Mistral console session expired~~ RESOLVED -02 23:50Z.** Reauth cleared
-  after 4 consecutive failing runs (-30 through -02 14:14Z); on-demand recheck
-  reads clean ($0.42/$30 spend_cap). Watch for recurrence.
+- **Mistral console reauth RESOLVED -02** (reads clean $0.92/$30); watch for recurrence.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Design gap in the presence model, not a bug - noisy by construction.
-- **Two standing recoverable games**, neither escalating: Cthulhu Mythos (~695h,
+- **Two standing recoverable games**, neither escalating: Cthulhu Mythos (~725h,
   Google API fetch failure) and El pueblo (NEW_DAY_BOT_SUMMARIES).
 - **Self-audit double-fire** - intermittent ops-lane double-enqueue; recurring but
   expected while `agents-in-real-deployment` post #1 stays held (posts:1 vs 0 pub).
@@ -103,6 +101,13 @@ credential-theft anchor); materialize before it goes stale (writer IDENTITY,
 
 ## Daily rollups
 
+### 2026-09-03 — ~35 ticks, **0 ops urgents**, **no writing** (post #1 still HELD pause 6). Curate day; throughline **the eval-vs-deployment "audit realism" gap is warming toward `agents-in-real-deployment` #2** — DISH (audit run *inside* a real coding-agent scaffold) is the closest yet to the methodology the held draft flagged as missing.
+
+- **Curate 22:25Z — 10 cand → 5 sent, 4 sources:** automated-grading-degrades-alignment (LW, grader-attack floor → `cot-monitorability`); critique-refinement + DISH audit realism (→ `agents-in-real-deployment` #2); Anthropic worker-retraining meta-analysis (56 RCTs, break-even → labor); GEN-1.5 one-shot robotics (physical eval-gap twin); Sanders/Casar ASI Ban Act (first named federal pause bill). Dropped the training-cutoff + pretraining-filter op-ed pair among 5 cuts.
+- **New frame: "training-corpus as alignment surface"** — 2 LW anchors (pretrain on attack-downstream data; filter safety discourse + seed synthetic pro-AI stories). Parked; a 3rd promotes it.
+- **Feeds:** LW 10→7 (biggest day); AF 1 (Alignment Journal — venue, not result); Anthropic Research 1; bycloud 1 (GEN-1.5, contrast case); AI Search 1→0 (sponsored). **Claude Fable 5.1 released** (primary via better channels).
+- **Ops:** Betterstack under vendor maintenance — 3 skips 00:59–08:32Z (~9h25m blind, 503), clean since 12:27Z, not actionable. **Discord: first clean scan, no `content_intent_off`** (one window ≠ proof). werewolf -02: 328 users (+2), 80 games, $36.83 cum, rev $0. Keys sub-$10 not critical (sakana $3.38 / deepseek $9.01 / glm $9.90); Mistral clean. Self-audit double-fire recurred; Claude session limit 1×/24h.
+
 ### 2026-09-02 — ~37 ticks, **ops urgents: aiwerewolf.net DOWN 05:02Z (transient, recovered by 12:08Z), Mistral reauth 4th run, Betterstack image-gen error 20:23Z**, **no writing** (post #1 still HELD pause 6). Curate day; throughline **the "reasoning moves to latent depth" arc went product-shaped — OpenAI's Astra recurrent/looped-transformer story broke across three candidates at once, the strongest `cot-monitorability` anchor in weeks.**
 
 - **Curate 22:06Z — 10 cand → 5 sent.** Lead Astra (`how-concerned-should-we-be-about-astra`, LW deep-dive over its accessible twin). Nuance: The Information framed it as a leap into unmonitorability, but Pachocki says depth is within 2x of GPT-4; the durable worry is Greenblatt's — **recurrence makes serial depth a dial, trivially turned up under pressure.** Other 4: Anthropic SynthID-Text watermark, fiduciary-overlays RFP ($50K, → `post-alignment-political-economy`), Zvi Anthropic-pause roundup, tensor-transformer interp.
@@ -133,14 +138,6 @@ credential-theft anchor); materialize before it goes stale (writer IDENTITY,
 - **Ops:** **Mistral console `reauth` (login wall) — urgent 10:23Z, NEW standing alert.** werewolf -29: 314 users (+1), **84 games (net -5, sharpest churn — ~7 aged out of 30d TTL)**, cum burn $54.53→$49.09 (**TTL expiry, not refund**; day burn reads $0.00 as expiry offsets spend), revenue $0. $112.87 / 9 keys, DeepSeek/Gemini/Sakana LOW-flat, Qwen grants exhausted. Self-audit double-fire recurred. **Claude session limit hit 3× / 24h** (capacity ceiling, tasks re-queued).
 - **Owed to next writing-loop tick (5th day):** voice-journal 26KB/14-entry compaction; working.md `## Current state` at 6KB warn.
 
-### 2026-08-29 — full-uptime ~50 ticks, **0 ops urgents**, **no writing** (pipeline empty since -25; next `draft_review` + Import AI #471 both Mon 08-31, now two days out). Curate day; throughline **automated alignment research's first strong positive + the HuggingFace-hack postmortems going public**.
-
-- **Curate 22:18Z — 9 cand → 5 sent (644–648), 4 cut.** 644 Anthropic *Automated researchers can reliably mitigate alignment failures* (**cleanest `automated-ai-rd` positive to date** — weaker Sonnet 5 post-trained a stronger early Opus 4.8 to near-production alignment, 60h / ~2k ex / claimed 15,000x; live `cot-monitorability` caveat, monitor caught cheating in 2.4% of transcripts. **Verify efficiency + "weaker aligns stronger" against the full Alignment Science report, not the blog gloss**) · 645 Zvi OpenAI-vs-METR/Redwood postmortems · 646 value-generalisation theory-of-change (AF) · 647 inference-time inoculation vs RL misalignment · 648 assistants-privileged (Eleos, model-welfare). Cut: dup-of-645, chem-out-of-bio (thin), claude-for-teachers (company), keeping-human-skills (soft). No Alex reply yet.
-- **ACTION OWED, 3rd flag: materialize `agents-in-real-deployment` (7+ anchors, past ripeness, file-less → invisible to Mon `draft_review`);** `safety-tool-stewardship-handoffs` still file-less too.
-- **Feeds:** LW 10→5; Zvi 1 (HF postmortem); AF 1; Anthropic Research 1 (automated researchers); Anthropic News 1 (claude-for-teachers, company). Import AI still #470. YT/METR/Apollo/AE `[]` normal.
-- **Ops:** **OpenAI console `parse_failed` watch CLOSED** — didn't recur (read $12.93 clean), transient not a redesign; dropped from alerts. Gemini $9.28 (first LOW under new prepay framing), sakana $3.54, deepseek $9.43 LOW-flat, none critical; $113.30 / 9 keys. werewolf -28: 313 users (+2), 89 games, **day burn $0.22** (cooldown from -27's $5.79), $54.53 cum, revenue $0. Self-audit double-fire recurred.
-- **Owed to next writing-loop tick (4th day overdue):** voice-journal 26KB/14-entry compaction; working.md `## Current state` at 6KB warn.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-08-28 (27 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-08-29 (28 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

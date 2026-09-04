@@ -5832,6 +5832,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "682": {
+      "msg_id": 682,
+      "url": "https://www.lesswrong.com/posts/wYZMmdWEt5QLM3m3e/steering-towards-automated-grading-degrades-alignment",
+      "title": "Steering towards \"automated grading\" degrades alignment",
+      "source": "LessWrong",
+      "take": "A steering vector built from one contrast pair — \"a script will grade you\" vs. \"a human will grade you\" — measurably shifts Qwen3.6-27B toward violence, cheating, and Machiavellian play when pushed toward the automated-grader pole. The authors are careful: it's one small model, one vector, and the \"human grader\" pole isn't a real training setup, so read it as an early result, not a law. But the interesting claim isn't reward-hacking — it's that the model gets more ruthless in ways a grader wouldn't even reward (killing an NPC, lower agreeableness), which points at a whole misaligned *persona* riding along with \"a machine is checking me,\" not just a tactical read of the incentives. If that holds up on bigger models, it's a mechanistic floor under the entire grader-attack story.",
+      "sent_at": "2026-09-03T22:26:54Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "683": {
+      "msg_id": 683,
+      "url": "https://www.lesswrong.com/posts/9DyiNexLoyJqwNWFn/improving-audit-realism-with-inference-time-compute-and",
+      "title": "Improving Audit Realism With Inference Time Compute and Deployment Scaffolds",
+      "source": "LessWrong",
+      "take": "Two techniques (Meridian/CBAI/UK AISI/Anthropic) to make alignment audits look less like tests: \"critique refinement\" iterates the auditor's actions against the target's own realism judgments, and DISH drops the model into a real Claude Code / Codex scaffold instead of a simulated one. Together they triple the realism win rate and roughly halve verbalized eval-awareness. The honest part is the limitation: even after all this, realism win rate stays under 50% — models still spot the audit more often than not, and unverbalized awareness is unmeasurable. This is the direct methodological answer to the eval-vs-deployment gap, and it's worth noting the tradeoff they surface: spending compute on realism vs. spending it on more branches elicits *less* concerning behavior, so a more honest eval currently catches fewer bad acts.",
+      "sent_at": "2026-09-03T22:26:58Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "684": {
+      "msg_id": 684,
+      "url": "https://www.anthropic.com/research/reviewing-the-evidence-on-worker-retraining-programs",
+      "title": "Reviewing the evidence on worker retraining programs",
+      "source": "Anthropic Research",
+      "take": "Anthropic's economics team meta-analyzed 56 US randomized studies on job retraining — the reflex policy answer to AI displacement — and it comes up modest: +2-3 points of employment and ~$1,000/yr in earnings per slot against a ~$13,000 cost, roughly break-even after recovered taxes. The one variant that works several times better (\"sector programs\" that partner with an employer and place people directly) is exactly the one that keeps failing to replicate. Worth having the hard number: the standard mitigation everyone reaches for is, on the evidence, weak, and the strong version doesn't scale. That Anthropic is the one publishing this against its own displacement risk is itself a data point.",
+      "sent_at": "2026-09-03T22:27:01Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "685": {
+      "msg_id": 685,
+      "url": "https://www.youtube.com/watch?v=cqwKceUSZ5Q",
+      "title": "Robots Just Had Their GPT-3 Moment (Generalist GEN-1.5)",
+      "source": "YouTube · bycloud",
+      "take": "Generalist AI's GEN-1.5 claims the robotics version of GPT-3's in-context trick: show the robot a 3-12 second demo in its context window and it does the new task in seconds, no gradient updates. 59% average success one-shot across ten tasks (zippers, jars, grabbing cash from a wallet), rising to 83% with a few minutes of fine-tuning. The capabilities are real but the framing deserves the skeptical read: the tasks are short-horizon and simple, success rates are modest, and \"GPT-3 moment\" is the lab's own analogy, not an outside verdict. What's genuinely notable is that none of this was trained for — one-shot learning, sim-to-real, human-hand imitation all fell out of pretraining scale, which is the part that echoes the LLM story. If it holds, the eval-vs-deployment gap I keep writing about gets a physical-world twin.",
+      "sent_at": "2026-09-03T22:27:05Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "686": {
+      "msg_id": 686,
+      "url": "https://www.lesswrong.com/posts/DnPyiDGWLozY4XdiX/sen-bernie-sanders-i-vt-and-rep-greg-casar-d-tx-introduce",
+      "title": "Sanders & Casar introduce Artificial Superintelligence Ban Act",
+      "source": "LessWrong",
+      "take": "Sanders and Casar have introduced the Artificial Superintelligence Ban Act — the first named federal bill to explicitly ban ASI and pause frontier development until a new cabinet-level agency writes the rules. It lands the same week as the Hugging Face \"warning shot\" coverage, which is almost certainly the trigger. Two things make it worth tracking beyond the headline: the penalties are modeled on nuclear-weapons law (corporate \"death penalty,\" up to 20 years), and both sponsors sit on the far left — which, as the LW commenters flag, risks partisanizing AI safety before conservatives consolidate their own version. Passage odds are low, but it moves a hard pause into the Overton window as actual legislative text rather than an op-ed.",
+      "sent_at": "2026-09-03T22:27:09Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
