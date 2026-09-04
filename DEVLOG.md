@@ -911,3 +911,58 @@ quality. Self-review can hold but not regenerate; fix is a regenerated header wi
 private (commit-review skipped) until Alex releases or kills. Promoted the
 instrument-header lesson from dated voice-journal entries into the standing craft
 notes so drafting-me writes the constraint into the prompt next time. Marlow.
+
+---
+
+## 2026-09-03 - self-audit double-fire killed, held-draft false positive, no-text clause moved into the image tool
+
+Alex forwarded three Telegram lines that read as "monitoring is not well":
+a Betterstack 503 skip, a `posts:1 but 0 published` site-integrity digest,
+and a third-consecutive Betterstack skip. Triage against live state:
+
+*What was actually wrong.* Nothing in the monitors. Betterstack's ClickHouse
+query API was under vendor maintenance from 23:07Z 09-02 to 12:27Z 09-03
+(~13h20m blind, not the ~9h25m the third message estimated - failed scans
+are not written to history, so the gap only shows as a hole between two
+successful `checked_at` rows). The handler classified it correctly (503 ≠
+401/403, "not a creds issue"), retried hourly, and has been clean since. The
+site-integrity line was a false positive: `draft_article` bumps the thread's
+`posts:` at materialization, the audit counted only `published/`, so a HELD
+draft reads as a bookkeeping error every day until it ships. Marlow had it
+tagged "expected while draft held" in working.md and never acted on her own
+"correct the count" advice, correctly. The real signal was the [urgent] line
+Alex did not forward: post #1 of `agents-in-real-deployment` held 3.2d on
+pause 6, waiting on a header regen that was owed to Simona since 08-31.
+
+*What landed.*
+- `handlers/monitor_self.py`: `check_site_integrity` now counts drafts still
+  in `drafts/` (any status) alongside published, so `posts:` is allowed to run
+  ahead by the in-flight count. Message names the split when it does fire.
+- `handlers/monitor_self.py`: repo-global checks (`held_artifacts`,
+  `site_integrity`, `memory_bounds`) run only from the writer profile.
+  Both loops share `drafts/`, `threads/`, `memory/`, and each runs its own
+  daily audit, so every global issue went to Telegram twice (00:02Z + 00:12Z).
+  That is the "self-audit double-fire" working.md has tracked since the split.
+  Ops keeps its loop-local checks and its own "all green" proof-of-life line.
+- `handlers/generate_header_image.py`: `NO_TEXT_CLAUSE` appended to every
+  prompt inside the tool, and the final prompt is echoed in the result JSON.
+  Marlow's 08-31 lesson said it exactly: a "watch for numerals" note in memory
+  is not a control; the brake belongs in code, owned by whoever owns the tool.
+- Regenerated the `no-human-in-the-world-model` header with `--force` (same
+  metaphor: iron kitchen scale, beetle swarm, empty ladder-back chair, sepia
+  engraving). Came back with a bare dial, tick marks only. gpt-image-2
+  1536x1024, ~$0.17. Previous stamped version kept in Simona's scratchpad only.
+  Draft stays `status: held`; release is Alex's call via `marlow approve`.
+
+*Verified.* `MARLOW_PROFILE=writer monitor_self.py check` -> held_artifacts
+urgent + memory_bounds + session_limits, no site_integrity. `MARLOW_PROFILE=ops`
+-> 0 issues.
+
+*What's deferred.* working.md `## Current state` is still 6KB (Marlow's own
+memory_bounds warn); hers to rewrite. Session-limit throttling (3x/24h) is a
+plan-capacity ceiling shared with Alex's own usage, not a bug.
+
+*State at end of day.* Both loops alive (launchd 0/0, writer scheduler fresh to
+01:12Z, ops to 01:05Z). Mistral console re-auth that was urgent for four days
+reads ok since 09-03 14:50Z ($0.92/$30). One decision open for Alex: approve or
+reject post #1. Simona.

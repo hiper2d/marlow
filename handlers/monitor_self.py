@@ -385,14 +385,34 @@ def _published_mention_counts() -> dict[str, int]:
     return counts
 
 
+def _pending_mention_counts() -> dict[str, int]:
+    """Drafts still in the pipeline (top-level drafts/, any status) that mention
+    a thread. A thread's `posts:` is bumped when the draft is materialized, so
+    while the draft is held or in review the count runs one ahead of published.
+    That is bookkeeping doing its job, not drift - `held_artifacts` already
+    escalates the held draft itself."""
+    counts: dict[str, int] = {}
+    if not DRAFTS_DIR.exists():
+        return counts
+    for md in DRAFTS_DIR.glob("*.md"):
+        mentions = _frontmatter(md).get("mentions") or []
+        if isinstance(mentions, str):
+            mentions = [mentions]
+        for slug in mentions:
+            counts[slug] = counts.get(slug, 0) + 1
+    return counts
+
+
 def check_site_integrity(now: datetime) -> list[dict]:
     """Every active thread file should have >=1 published post mentioning it,
-    and its `posts:` frontmatter should match the real count. Catches threads
-    opened ahead of their first article and stale post-count bookkeeping."""
+    and its `posts:` frontmatter should match the real count (published plus
+    drafts still in flight). Catches threads opened ahead of their first
+    article and stale post-count bookkeeping."""
     issues: list[dict] = []
     if not THREADS_DIR.exists():
         return issues
     counts = _published_mention_counts()
+    pending = _pending_mention_counts()
     for tf in sorted(THREADS_DIR.glob("*.md")):
         fm = _frontmatter(tf)
         slug = fm.get("slug", tf.stem)
@@ -407,10 +427,12 @@ def check_site_integrity(now: datetime) -> list[dict]:
                     "Write its first article, or set status: archived in the thread file.",
                 ))
         claimed = fm.get("posts")
-        if isinstance(claimed, int) and claimed != actual:
+        in_flight = pending.get(slug, 0)
+        if isinstance(claimed, int) and claimed != actual + in_flight:
             issues.append(_issue(
                 "site_integrity", "digest",
-                f"Thread '{slug}' frontmatter says posts:{claimed} but {actual} published mention it.",
+                f"Thread '{slug}' frontmatter says posts:{claimed} but {actual} published"
+                + (f" + {in_flight} in drafts/" if in_flight else "") + " mention it.",
                 "Correct the posts: count in the thread file.",
             ))
     return issues
@@ -795,12 +817,23 @@ CHECKS = [
 ]
 
 
+# Checks over REPO-GLOBAL state (drafts/, threads/, memory/), which both loops
+# share. Each loop runs its own daily audit, so without this the same held-draft
+# urgent and the same site/memory digest lines went to Telegram twice a day (the
+# "self-audit double-fire" working.md tracked for weeks). The writer loop owns
+# that content; ops audits only its own loop-local invariants.
+GLOBAL_CHECKS = {check_held_artifacts, check_site_integrity, check_memory_bounds}
+GLOBAL_CHECKS_OWNER = "writer"
+
+
 def run_checks(now: datetime) -> tuple[list[dict], list[dict]]:
     """Run every check. A check that *crashes* is itself a framework bug —
     captured as an error (escalated urgent), never swallowed."""
     issues: list[dict] = []
     errors: list[dict] = []
     for chk in CHECKS:
+        if chk in GLOBAL_CHECKS and _PROFILE not in ("", GLOBAL_CHECKS_OWNER):
+            continue
         try:
             issues.extend(chk(now))
         except Exception as e:  # noqa: BLE001 — a broken check must not hide others

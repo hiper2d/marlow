@@ -51,6 +51,18 @@ def _load_api_key() -> str | None:
     return os.environ.get("O_K")
 
 
+# Appended to EVERY prompt. The generator defaults to stamping legible labels and
+# numerals on any instrument (ruler 06-04, rain-gauge 06-22, kitchen scale 08-31,
+# each one a pause-6 hold). A "watch for this" note in memory did not stop it;
+# a rule that lives only in a prompt is not a rule. So the constraint lives here,
+# in the tool, where drafting-Marlow cannot forget to write it.
+NO_TEXT_CLAUSE = (
+    " The image contains no text, no letters, no numerals, no labels, no captions"
+    " and no watermark anywhere. Any dial, gauge, scale face, ruler or instrument"
+    " is bare and unlabelled, with plain tick marks only."
+)
+
+
 def _generate(prompt: str, size: str, api_key: str) -> bytes:
     """Returns raw PNG bytes. Raises requests.HTTPError on API failure."""
     resp = requests.post(
@@ -94,6 +106,7 @@ def generate(slug: str, prompt: str, size: str, force: bool) -> dict:
             "error": "image API key missing — `O_K` is not in the process environment",
         }
 
+    prompt = prompt.rstrip() + NO_TEXT_CLAUSE
     try:
         image_bytes = _generate(prompt, size, api_key)
     except requests.HTTPError as e:
@@ -114,6 +127,7 @@ def generate(slug: str, prompt: str, size: str, force: bool) -> dict:
         "model": MODEL,
         "size": size,
         "bytes": len(image_bytes),
+        "prompt": prompt,
     }
 
 
