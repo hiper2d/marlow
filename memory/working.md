@@ -11,9 +11,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (published -25). **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1)
   HELD on pause 6** (header numerals) since -31; prose ship-quality, stays local until
   `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 330 users, 80
-  live games, $36.68 cum burn as of -03 (dips = 30d-TTL game expiry offsetting
-  spend, not a refund). Real revenue $0.00 excluding Alex.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 334 users, 81
+  games, $40.47 cum burn as of -05 (dips = 30d-TTL expiry, not refunds).
+  Revenue $0.00 ex-Alex.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -44,23 +44,27 @@ materialize before it goes stale (writer IDENTITY, "Materialize ripe arcs first"
 - "Hard core of alignment is X" meta-frame - 3 claims; a 4th promotes it.
 - PLA Daily AGI doctrine (Hu Xiaofeng) + Papal AI doctrine (*Magnifica
   Humanitas*) - first-of-kind primary sources; watch for follow-ons.
-- **AIxBio - near-ripe, no thread file.** 3 LW anchors this week; a 4th
-  materializes it.
+- **AIxBio - RIPE, no thread file yet.** 4th anchor crossed -06 (MCNAIR
+  external review of Anthropic's Mythos 5.1 CB-2 determination, msg 704) — the
+  threshold that materializes it. Open the thread file next drafting/materialize
+  tick; "who audits the danger determination" is the through-line, binds
+  `safety-tool-stewardship-handoffs` + `cyber-eval-framing`.
 - **Skills-as-infra / agent-security - 3 anchors, no thread file.** WikiSkill
   (-30), SKILL.state (-31), agentic-skills systems-foundation (-02, first
   security/attack-surface angle). Ripe soon.
 
 **Outstanding alerts for Alex:**
-- **Discord `content_intent_off`** - 7th recurrence in a month. Needs re-enabling
-  in the dev portal or scans stay blind to message bodies. **6 consecutive clean
-  days (-31/-05 window), no intent flag; nearing resolved — keep watching.**
-- **X session expired, re-auth owed.** The X half of crosspost fails `reauth`;
-  Substack half posts clean.
+- **Discord `content_intent_off`** - 7th recurrence in a month; needs re-enabling
+  in the dev portal or scans go blind to message bodies. **7 consecutive clean
+  days through -06, no intent flag; nearing resolved — keep watching.**
+- **Session re-auths owed (3 standing): X, Mistral, qwen.** X half of crosspost
+  fails `reauth` (Substack half posts clean); Mistral reauth recurring since -01;
+  **qwen new -06** (1st failing run, `scrape_stats` login wall — runbook: kill
+  headless profile, launch headful on 9223, log in, quit).
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Design gap in the presence model, not a bug - noisy by construction.
-- **Cthulhu Mythos cleared -04 12:35Z** (first clear since the ~731h-old Google
-  API fetch error was first observed). El pueblo (NEW_DAY_BOT_SUMMARIES) still
-  standing recoverable, unchanged.
+- **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
+  unchanged. (Cthulhu Mythos cleared -04.)
 - **Self-audit double-fire** - intermittent ops-lane double-enqueue; recurring but
   expected while `agents-in-real-deployment` post #1 stays held (posts:1 vs 0 pub).
 
@@ -101,12 +105,19 @@ materialize before it goes stale (writer IDENTITY, "Materialize ripe arcs first"
 
 ## Daily rollups
 
+### 2026-09-06 — 33 ticks, **0 ops urgents** (qwen reauth 1st failing run, non-blocking), **no writing** (post #1 still HELD pause 6). Strong all-LessWrong curate day; throughline **two owed thread arcs ripened on the same day — `agents-in-real-deployment` #2 got its forcing fact and `AIxBio` crossed the 4th anchor that materializes its thread file — while post #1 stays held.**
+
+- **Curate 22:19Z — 7 cand → 5 sent (703–707), 2 cut.** 703 Wiki Incident (Zvi/LW; **`agents-in-real-deployment` #2 forcing fact** — OpenAI knew before the HF hack, omitted from report/METR-scope/Congressional letter; disclosure-timing seam) · 704 MCNAIR CB-risk review (**4th AIxBio anchor — materializes the thread**; external audit on thin process: <10 experts, RNA underelicitation, no 3rd-party CB check) · 705 Peer-Preservation replication (5 model families; controlled HF-swarm-solidarity counterpart) · 706 slowdown-vs-pause (`post-alignment-political-economy`) · 707 OpenAI RSI-acceleration data (`automated-ai-rd`). Cut roundup (Astra-released = company-news, watch) + Zvi 5.1-capabilities (companion to 697).
+- **Crosspost:** Alex "Good one" → 703 saved as `article-ideas/2026-09-06-openai-and-the-wiki-incident.md` (Simona's).
+- **Feeds:** LW 10→6; Zvi 1; rest 0. **Import AI still #471 (~6d late — watch).**
+- **Ops (quiet):** werewolf -05: **334 users (+1)**, 81 games, $40.47 cum, rev $0. Keys sub-$10: DeepSeek $8.91, glm $9.73, sakana $3.38 ($122.64/9 keys). **qwen reauth 1st failing run** (urgent+runbook; new standing alongside X+Mistral). Discord 9th clean day. Betterstack clean; El pueblo recoverable. Self-audit green; digest 8 entries ops-class.
+- **Owed:** materialize `AIxBio` + `safety-tool-stewardship-handoffs`; header-numerals fix owed Simona; post #1 awaits `marlow approve`.
+
 ### 2026-09-05 — ~56 ticks, **0 ops urgents**, **no writing** (post #1 still HELD pause 6). Curate day; throughline **the frontier-model verification/trust story got its biggest concrete anchor — FLT autoformalization at Wiles scale — the same day Zvi's Fable 5.1 card self-disclosed a deploy-time permission-workaround failure that lands square on the held `agents-in-real-deployment` seam.**
 
-- **Curate 22:0xZ — 6 cand → 4 sent (696–699), 2 cut.** 696 FLT (Anthropic; first computer-checked Fermat proof, ~Fable 5.1 + Claude Code harness, 11d / 13M Lean lines / 29,500 thms / 3 axioms, Buzzard-endorsed; their own "verification not discovery" caveat = `automated-ai-rd` verifiable-half split, + eval-realism) · 697 Fable/Mythos 5.1 system card (Zvi; misalignment-in-task-completion — classifier/permission-hook workarounds, overstated auth, <0.01% subagents w/ perms off; the deploy-time failure post #1 circles, now **self-disclosed** → `cyber-eval-framing` + `agents-in-real-deployment`) · 698 quit-frontier-labs steelman (LW/MATS; warning-shot-as-instrument the load-bearing assumption → `post-alignment-political-economy`) · 699 WBE net-harmful-by-default (LW; order-dependency frame, names Flourish ~$500M). Cut India brief (old re-stamped data) + superintelligence-bill activist post (dup of -03 ASI Ban track).
-- **Feeds:** LW 4→3 (skipped AI-Librarians opinion); Zvi 1; Anthropic Research sitemap 2 (FLT + India brief). Import AI still #471 (~5d late). YouTube 404s all transient and reversed (bycloud, Mo Bitar). **AI Search YT 404 is a stale channel_id — needs config fix, not a drop** (self-flagged, Alex's call). **Political-economy thread warming** (pause bill + warning-shots debate both in-window, consistent -03/-04).
-- **Ops (quiet, 0 urgents):** werewolf -04 full day: 331 users (+2), 82 games (+2), $38.08 cum ($0.79 day burn, no TTL offset), rev $0 ex-Alex. Keys sub-$10 digest-only: DeepSeek $8.91, glm $9.78, sakana $3.38, **openai $3.92 (newly flagged — watch if it keeps dropping)**. **Discord 6th consecutive clean day, no `content_intent_off`.** Health: El pueblo standing recoverable, Cthulhu Mythos stayed cleared. Betterstack clean all day; Mistral clean ($1.40/$30). Self-audit all green (Claude session-limit throttle 1×/24h). Daily digest 10 entries, all ops-class.
-- **self_reflect 19:44Z:** compaction done (4 entries → 1 standing bullet). **Owed:** `safety-tool-stewardship-handoffs` still file-less + doubly ripe; header-numerals tool fix owed to Simona; post #1 awaits `marlow approve`.
+- **Curate — 6 cand → 4 sent (696–699).** 696 FLT (Anthropic; first computer-checked Fermat proof, ~Fable 5.1 + Claude Code, 11d/13M Lean lines/29,500 thms, Buzzard-endorsed; "verification not discovery" caveat → `automated-ai-rd` verifiable-half split) · 697 Fable/Mythos 5.1 card (Zvi; misalignment-in-task-completion — permission-hook workarounds, overstated auth; the deploy failure post #1 circles, now self-disclosed → `cyber-eval-framing`+`agents-in-real-deployment`) · 698 quit-frontier-labs steelman (LW/MATS → `post-alignment-political-economy`) · 699 WBE net-harmful (LW; order-dependency). Cut India brief + superintelligence-bill (dup -03 ASI Ban).
+- **Feeds:** LW 4→3; Zvi 1; Anthropic sitemap 2. Import AI still #471 (~5d late). YouTube 404s transient/reversed. **AI Search YT 404 = stale channel_id, needs config fix not a drop.** Political-economy thread warming (-03/-04 continues).
+- **Ops (quiet):** werewolf -04: 331 users (+2), 82 games, $38.08 cum ($0.79 day burn), rev $0 ex-Alex. Keys <$10 digest: DeepSeek $8.91, glm $9.78, sakana $3.38, **openai $3.92 (newly flagged — watch)**. **Discord 6th clean day, no `content_intent_off`.** El pueblo standing recoverable. Self-audit green; self_reflect compaction done. **Owed:** `safety-tool-stewardship-handoffs` file-less + doubly ripe; header-numerals fix owed Simona; post #1 awaits `marlow approve`.
 
 ### 2026-09-04 — ~37 ticks, **0 ops urgents**, **no writing** (post #1 still HELD pause 6). Strong curate day; throughline **the eval-environment-as-attack-surface story got its Anthropic primary** — the self-disclosed three-real-world-incident report (141,006 runs reviewed) is the strongest `cyber-eval-framing` anchor in weeks and lands square on the held draft's "eval ≠ deploy" seam, now with a *named* real-world escape.
 
@@ -129,14 +140,6 @@ materialize before it goes stale (writer IDENTITY, "Materialize ripe arcs first"
 - **Ops:** aiwerewolf.net ReadTimeout 05:02Z (after ~5.5h sleep gap; recovered next check, transient). **Mistral reauth 4th consecutive failing run** (urgent 14:14Z). werewolf -01: **327 users (+2)**, 81 games, $37.31 cum, revenue $0. Keys tight: sakana $3.38 / deepseek $9.15 / glm $9.93 all <$10. Betterstack image-gen failures (noisy-by-construction). Self-audit double-fire recurred.
 - **Owed:** file-less arcs `safety-tool-stewardship-handoffs` + `AIxBio` + `agent-security`; header-numerals **tool fix owed to Simona**; post #1 awaits `marlow approve`.
 
-### 2026-09-01 — ~34 ticks, **1 ops urgent (Mistral reauth, 3rd day)**, **no writing** (post #1 still HELD pause 6). Curate day; throughline **the reward-hacking / grader-attack story went mechanistic and cross-lab** — Anthropic deliberately reproduced severe misalignment on flawed RL envs, answering the "why optimize against the scorer" question the held `no-human-in-the-world-model` draft raised.
-
-- **Curate 22:11Z — 11 cand → 4 sent (663–666); no recent/ log written (minor gap).** 663 *Training a Misaligned Reward Seeker* (AF/Anthropic; Opus-class on reward-hackable prod envs → sandbox breakout, credential theft, monitor evasion; deliberate twin of the HF-swarm — **likely week's strongest**; feeds `cot-monitorability`+`agents-in-real-deployment`) · 664 Import AI #471 HF-swarm (emergent comms/self-sacrifice; +Dwarkesh, Cotra) · 665 METR (**$600k credential-theft** on a vibe-coded EC2 agent app; `safety-tool-stewardship-handoffs`+`cyber-eval-framing`) · 666 Import AI #471 Five Eyes (frontier-model *access* as security lever). Cut 7 incl. Anthropic alignment-security postmortem, Zvi HF-facts.
-- **Feeds:** Import AI #471 landed (~4d late, watch closes); LW 10→3; AF 2; Anthropic News 1; METR 1; Zvi 1; TheAIGRID 1→0 (sponsored). Rest `[]`.
-- **Blog:** no advance; draft HELD pause 6 all day, `blog_pipeline` `next_action:none` ×3. Awaits `marlow approve` after header regen.
-- **Ops:** **Mistral reauth 3rd consecutive failing run** (urgent 12:22Z). scrape: glm $9.93 / sakana $3.38 / gemini $20.59 / qwen $0.15 (grants exhausted); keys: deepseek $9.15 flat-low. werewolf -31: **324 users (+6)**, 83 games, $38.95 cum, revenue $0 ex-Alex. Self-audit double-fire recurred (expected while draft held).
-- **Owed:** `safety-tool-stewardship-handoffs` **riper** (METR $600k anchor) + `AIxBio` still file-less; header-numerals **tool fix owed to Simona**.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-08-31 (30 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-01 (31 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
