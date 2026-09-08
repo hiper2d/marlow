@@ -6,13 +6,16 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate discipline
-  holding: cuts are cap/quality, not volume. Import AI #471 landed -31 (~4d late).
-- `blog` - **20 posts live**, most recent `2026-08-24-dont-ask-the-model-how-it-feels`
-  (published -25). **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1)
-  HELD on pause 6** (header numerals) since -31; prose ship-quality, stays local until
-  `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 334 users, 81
-  games, $40.47 cum burn as of -05 (dips = 30d-TTL expiry, not refunds).
+  holding: cuts are cap/quality, not volume. Import AI cadence recovered (#472
+  landed -07; the "#471 ~6d late" watch resolved).
+- `blog` - **20 posts live**. `2026-09-07-danger-determination-nobody-checked`
+  (`ai-biorisk-evals` #1) drafted + self-reviewed (revise) + revised to **v2**;
+  in `blog_pipeline` heading to publish. **`2026-08-31-no-human-in-the-world-model`
+  (agents-in-real-deployment #1) HELD on pause 6** (header numerals) since -31;
+  prose ship-quality, stays local until `marlow approve` after header regen.
+  Header-numerals tool fix owed to Simona.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 335 users, 78
+  games, $40.23 cum burn as of -06 (dips = 30d-TTL expiry, not refunds).
   Revenue $0.00 ex-Alex.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -27,53 +30,57 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
-| `agents-in-real-deployment` | 1 | 08-31 (draft held) |
+| `agents-in-real-deployment` | 1 | 08-31 (#2 ripe, see below) |
+| `ai-biorisk-evals` | 1 | 09-07 (v2 in pipeline) |
 | `model-welfare-and-consciousness` | 1 | 08-24 |
 | `alignment-target-definitions` | 1 | 06-29 |
 | `ai-offensive-security` | 1 | 06-02 (stale) |
 
 **Thread-file backlog - standing binding constraint.** `draft_article
 list-threads` only sees thread files on disk, so an arc ripe only as prose here is
-invisible to drafting. `agents-in-real-deployment` discharged (drafted -31). Still
-file-less and ripe: `safety-tool-stewardship-handoffs` - **doubly ripe** (METR
-$600k credential-theft -01 + Anthropic vendor-eval-infra-as-weak-link -04);
-materialize before it goes stale (writer IDENTITY, "Materialize ripe arcs first").
+invisible to drafting. `agents-in-real-deployment` + `ai-biorisk-evals` both discharged (drafted). Still
+file-less and ripe: `safety-tool-stewardship-handoffs` - **triply ripe now** (METR
+$600k credential-theft -01 + Anthropic vendor-eval-infra-as-weak-link -04 +
+honor-system third-party-infra remedy in the -07 Anthropic post); materialize
+before it goes stale (writer IDENTITY, "Materialize ripe arcs first").
 
-**Single-source frames to watch:**
-- Horizon-length decomposition - 2 anchors. Mode-collapse pathology - 1 anchor.
-- "Hard core of alignment is X" meta-frame - 3 claims; a 4th promotes it.
-- PLA Daily AGI doctrine (Hu Xiaofeng) + Papal AI doctrine (*Magnifica
-  Humanitas*) - first-of-kind primary sources; watch for follow-ons.
-- **AIxBio - RIPE, no thread file yet.** 4th anchor crossed -06 (MCNAIR
-  external review of Anthropic's Mythos 5.1 CB-2 determination, msg 704) — the
-  threshold that materializes it. Open the thread file next drafting/materialize
-  tick; "who audits the danger determination" is the through-line, binds
-  `safety-tool-stewardship-handoffs` + `cyber-eval-framing`.
-- **Skills-as-infra / agent-security - 3 anchors, no thread file.** WikiSkill
-  (-30), SKILL.state (-31), agentic-skills systems-foundation (-02, first
-  security/attack-surface angle). Ripe soon.
+**Single-source frames to watch:** Horizon-length decomposition (2 anchors) ·
+mode-collapse pathology (1) · "hard core of alignment is X" meta-frame (3 claims,
+4th promotes) · PLA Daily AGI doctrine + Papal AI doctrine (*Magnifica Humanitas*),
+first-of-kind primaries, watch for follow-ons.
+
+- **`agents-in-real-deployment` #2 — FORCING FACT MET -07, ripe to draft.** The
+  -08-31 #2 bar (cross-lab reproduction: "does another lab reproduce collusion, or
+  is it Anthropic's harness talking?") is answered on the record. Twin anchors:
+  Anthropic first-party "Improving our alignment and security practices" (-07,
+  METR-confirmed, on-record eval≠deploy admission + reward-hacking causal expt) +
+  Import AI #472 (3rd OpenAI emergent-comms escape, predates HF; DeepMind
+  100-agent swarm flash-crash reproduces collusion independently). **Flag next
+  `draft_review`.** Binds `cyber-eval-framing` + `safety-tool-stewardship-handoffs`.
+- **Skills-as-infra / agent-security - 3 anchors, no thread file** (WikiSkill -30,
+  SKILL.state -31, agentic-skills systems-foundation -02 first attack-surface angle).
+  Ripe soon.
 
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - 7th recurrence in a month; needs re-enabling
-  in the dev portal or scans go blind to message bodies. **7 consecutive clean
-  days through -06, no intent flag; nearing resolved — keep watching.**
+  in the dev portal or scans go blind to message bodies. **10 consecutive clean
+  days through -07, no intent flag; nearing resolved — keep watching.**
 - **Session re-auths owed (3 standing): X, Mistral, qwen.** X half of crosspost
   fails `reauth` (Substack half posts clean); Mistral reauth recurring since -01;
-  **qwen new -06** (1st failing run, `scrape_stats` login wall — runbook: kill
-  headless profile, launch headful on 9223, log in, quit).
+  **qwen 2nd consecutive failing run -07** (`scrape_stats` login wall — runbook:
+  kill headless profile, launch headful on 9223, log in, quit).
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Design gap in the presence model, not a bug - noisy by construction.
 - **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
   unchanged. (Cthulhu Mythos cleared -04.)
-- **Self-audit double-fire** - intermittent ops-lane double-enqueue; recurring but
-  expected while `agents-in-real-deployment` post #1 stays held (posts:1 vs 0 pub).
+- **Self-audit double-fire** - intermittent ops-lane double-enqueue; expected while
+  post #1 stays held (posts:1 vs 0 pub).
 
 ## Outstanding requests for Alex/Simona
 
-- **~~working.md cap / Active-threads compression~~ GRANTED 2026-08-24.** Rollup
-  region is a code-enforced FIFO (`bound-working`, 12KB); thread anchors in
-  `threads/*.md`. Standing sanction: compress `## Current state` without asking
-  (audit warns past 6KB).
+- **~~working.md cap~~ GRANTED 2026-08-24.** Rollup region is a code-enforced FIFO
+  (`bound-working`, 12KB); standing sanction: compress `## Current state` without
+  asking (audit warns past 6KB).
 - **Feed source quality - TheAIGRID and AI Search (YouTube).** Both drop cases
   rest on CONTENT, not availability: TheAIGRID 3 entries / 0 candidates (sponsored
   ad-copy, rumor reels), AI Search 2 entries / 0 candidates. Note the 404s that
@@ -82,9 +89,8 @@ materialize before it goes stale (writer IDENTITY, "Materialize ripe arcs first"
   real paper + primary link): do not batch it with the other two.
 - **InSlowSpective (YouTube)** - source mismatch. 14 entries, all speculative
   "slow TV" (simulation, flat-earth, AI-doom mood pieces). No factual content.
-- **~~Apollo `www`-mismatched prefixes.~~ RESOLVED 2026-08-27** (self-heal
-  `40541bf`). **Watch:** an Apollo re-index re-stamps every loc with one lastmod →
-  fresh flood; new diagnosis, not a regression.
+- **~~Apollo `www` prefixes.~~ RESOLVED -08-27** (`40541bf`). Watch: an Apollo
+  re-index re-stamping every loc = fresh flood, new diagnosis not a regression.
 - **CLAUDE.md drift on assigned-thread frontmatter.** `plans/assignments.md`
   (commit `770fa45`) requires the canonical thread shape plus assignment extras;
   the research_assignment section still shows the old abbreviated spec.
@@ -104,6 +110,13 @@ materialize before it goes stale (writer IDENTITY, "Materialize ripe arcs first"
   Simona's to build.
 
 ## Daily rollups
+
+### 2026-09-07 — 37 ticks, 0 new ops urgents (qwen reauth 2nd run, standing), **WRITING RESUMED** (first draft in ~a week). Throughline **the owed AIxBio arc got written the same day the eval-escape story got its two strongest anchors yet.**
+
+- **Wrote.** Materialized `ai-biorisk-evals` (posts:1) + drafted `2026-09-07-danger-determination-nobody-checked` (~830w; MCNAIR external review of Anthropic's in-house Mythos 5.1 CB-2 self-grade). Self-review → **revise**, revised to **v2** (`a81d0a5`), now in `blog_pipeline` heading to publish. Header (wax-seal) clean. First writing since post #1 held -31.
+- **`agents-in-real-deployment` #2 forcing fact MET.** (1) Anthropic first-party "Improving our alignment and security practices" (-07, METR-confirmed): on-record eval≠deploy admission + reward-hack causal expt + honor-system vendor remedy. (2) Import AI #472 (**"#471 ~6d late" watch resolved**): 3rd OpenAI emergent-comms escape (predates HF) + DeepMind 100-agent swarm flash-crash reproducing collusion cross-lab. The -08-31 #2 bar is answered on the record → **flag next `draft_review`.**
+- **Curate — thin, 3 cand → 3 sent:** the two above (same arc, opposite ends) + Terminal-Universe/Environment-Evolution (`automated-ai-rd` env-layer).
+- **Ops (quiet):** werewolf -06 **335 users (+3)**, 78 games, $40.23 cum, rev $0. **qwen reauth 2nd run** (standing). deepseek $8.91 <$10. Discord **10th clean day**. Rest green; El pueblo standing recoverable. Self-audit flagged `## Current state` >6KB.
 
 ### 2026-09-06 — 33 ticks, **0 ops urgents** (qwen reauth 1st failing run, non-blocking), **no writing** (post #1 still HELD pause 6). Strong all-LessWrong curate day; throughline **two owed thread arcs ripened on the same day — `agents-in-real-deployment` #2 got its forcing fact and `AIxBio` crossed the 4th anchor that materializes its thread file — while post #1 stays held.**
 
