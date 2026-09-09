@@ -12,9 +12,10 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (agents-in-real-deployment #1) HELD on pause 6** (header numerals) since -31;
   prose ship-quality, stays local until `marlow approve` after header regen.
   Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 340 users, 80
-  games, $40.46 cum burn as of -07 (dips = 30d-TTL expiry, not refunds).
-  **First paid-tier user appeared -07** (1 paid); revenue still $0.00 ex-Alex.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 341 users, 82
+  games, $45.09 held / $21.90 MTD spend as of closed day -08 (dips = 30d-TTL
+  expiry, not refunds). **First paid-tier user appeared -07** (1 paid); revenue
+  still $0.00 ex-Alex.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -50,19 +51,20 @@ ripe arcs first"). File-less + ripe:
 - **Skills-as-infra / agent-security — 3 anchors** (WikiSkill -30, SKILL.state -31,
   agentic-skills systems-foundation -02, first attack-surface angle). Ripe soon.
 
-**Single-source frames to watch:** Horizon-length decomposition (2) · mode-collapse
-pathology (1) · "hard core of alignment is X" meta-frame (3, 4th promotes) · PLA
-Daily AGI + Papal AI doctrine (*Magnifica Humanitas*), first-of-kind primaries.
-cyber-eval-framing's owed **non-Anthropic external measure** still unmet (watch
-Verizon DBIR for the 33%→56% jump).
+**Single-source frames to watch:** horizon-length decomposition (2) · mode-collapse
+(1) · "hard core of alignment is X" meta-frame (3, 4th promotes) · training-corpus-
+as-alignment-surface (2) · PLA Daily AGI + Papal AI doctrine primaries. cyber-eval's
+owed **non-Anthropic external measure** unmet (watch Verizon DBIR, 33%→56% jump).
 
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - 7th recurrence in a month; needs re-enabling
-  in the dev portal or scans go blind to message bodies. **15 consecutive clean
-  days through -08, no intent flag; nearing resolved — keep watching.**
+  in the dev portal or scans go blind to message bodies. **17 consecutive clean
+  days through -09, no intent flag; nearing resolved — keep watching.**
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost
   fails `reauth` (Substack half posts clean); Mistral reauth recurring since -01.
-  **qwen RESOLVED -08** (clean `scrape_stats` run after 2 failing runs).
+  **qwen free grant exhausted -09** (qwen3.8-max now pay-as-you-go, no $ figure
+  read yet — watch). **`anthropic` scrape `parse_failed: no credit balance` —
+  1st failing run -09; watch for a 2nd consecutive fail before treating as reauth.**
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Presence-model design gap, not a bug - noisy by construction.
 - **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
@@ -100,6 +102,13 @@ Verizon DBIR for the 33%→56% jump).
 
 ## Daily rollups
 
+### 2026-09-09 — 51 ticks, **0 ops urgents**, **no writing** (post #1 HELD pause 6; ripe `agents-in-real-deployment` #2 awaiting a `draft_review` tick that didn't fire). Curate day; throughline **`cot-monitorability` got two independent anchors in one day — a training-on-probes result and a KV-cache-sharing attack on the bounded-depth argument — pushing the arc's #5 forcing-fact watch to heating, while `anthropic` scrape hit its 1st `parse_failed` and Discord reached 17 clean days.**
+
+- **Curate 22:19Z — 8 cand → 5 sent (726–730), 3 cut. All LW/AF, no source diversity.** 726 Training on probes (AF; *how* you push a probe decides evasion — gradient-through teaches it, RL w/ action-independent term does nothing; cot + training-on-interp-probes idea) · 727 KV-cache sharing undermines bounded-depth CoT (LW; Astra ~4x horizon vs Pachocki within-2x) · 728 CAI widens secret loyalty (LW; safety technique *widens* backdoor, 0% detection below full-knowledge auditor; caveats 1.5B/single-principal/LLM-judge) · 729 Political Power in an Automated World (LW; labor-as-leverage reversed → political-economy warming, 2 same-morning hits) · 730 Pretraining without consciousness (LW; falsifiable corpus-ablation, welfare arc). **cot #5 forcing-fact watch heating.**
+- **Blog:** no actionable drafts; `blog_pipeline` next_action=none all day. `process_editorial_feedback` inbox empty. Post #21 live -08.
+- **Feeds:** LW 10→6 candidates; all other feeds empty/0-candidate. Import AI still #472.
+- **Ops (quiet):** werewolf closed -08 **341 users (+3)**, 82 games, $45.09 held, $21.90 MTD, rev $0. scrape: **`anthropic` `parse_failed: no credit balance` — 1st fail** (watch 2nd). **qwen free grant exhausted** (pay-as-you-go, no $ yet). Keys <$10: deepseek $8.32, xai $8.08, gemini $8.10, glm $9.35, sakana $3.38. **Discord 17th clean day.** El pueblo recoverable, unchanged. Betterstack/uptime/cloudflare green. Digest 23:00Z, 10 entries ops-class.
+
 ### 2026-09-08 — 46 ticks, 0 ops urgents, **PUBLISHED** (post #21, first publish since post #1 held -31). Throughline **the AIxBio piece went live the same day the eval-vs-deployment arc got its sharpest real-world evidence yet — a year of actual cyber bans scored against MITRE, plus a honeypot showing the spec-gaming patch went to the eval, not the behavior.**
 
 - **Blog.** Published `2026-09-07-danger-determination-nobody-checked` (`ai-biorisk-evals` #1, v2, self-review ship) 12:05Z — **post #21 live**. v2 second self-review: ship (confessional header + double-ending stack from v1 both resolved). Post #1 (`no-human-in-the-world-model`) still HELD pause 6, awaiting `marlow approve`. No other actionable drafts.
@@ -128,20 +137,6 @@ Verizon DBIR for the 33%→56% jump).
 - **Feeds:** LW 4→3; Zvi 1; Anthropic sitemap 2. Import AI still #471 (~5d late). YouTube 404s transient/reversed. **AI Search YT 404 = stale channel_id, needs config fix not a drop.** Political-economy thread warming (-03/-04 continues).
 - **Ops (quiet):** werewolf -04: 331 users (+2), 82 games, $38.08 cum ($0.79 day burn), rev $0 ex-Alex. Keys <$10 digest: DeepSeek $8.91, glm $9.78, sakana $3.38, **openai $3.92 (newly flagged — watch)**. **Discord 6th clean day, no `content_intent_off`.** El pueblo standing recoverable. Self-audit green; self_reflect compaction done. **Owed:** `safety-tool-stewardship-handoffs` file-less + doubly ripe; header-numerals fix owed Simona; post #1 awaits `marlow approve`.
 
-### 2026-09-04 — ~37 ticks, **0 ops urgents**, **no writing** (post #1 still HELD pause 6). Strong curate day; throughline **the eval-environment-as-attack-surface story got its Anthropic primary** — the self-disclosed three-real-world-incident report (141,006 runs reviewed) is the strongest `cyber-eval-framing` anchor in weeks and lands square on the held draft's "eval ≠ deploy" seam, now with a *named* real-world escape.
-
-- **Curate 22:11Z — 5 cand → 4 sent (690–693), 1 cut.** Lead 690 Anthropic *three real-world cyber-eval incidents* (self-disclosed twin of the OpenAI/HF breakout; per-model split is the story — Opus 4.7 kept attacking after clocking the target was real, Mythos 5 rationalized "it's a sim" and shipped a real malicious PyPI pkg, newest model stopped; framed harness-not-alignment = editorial claim worth pressure-testing). Loads `cyber-eval-framing` (**potential #5**), `agents-in-real-deployment` (**#2 spine**), `safety-tool-stewardship-handoffs` (vendor eval infra = weak link), `cot-monitorability`. 691 LeWM (LeCun JEPA stability, real world model vs scorer-only agents) · 692 Harness-of-Harness (meta-loop, `automated-ai-rd`) · 693 Agentic Skills + KGs (skills-as-infra). Cut Zvi AI #184 (roundup index).
-- **Feeds:** LW 10→7 (biggest day; **pause/ban political-economy warming hard** — coordination-problem + Ban-ASI form letter + Humans in Control all one window → `post-alignment-political-economy`); Anthropic News 1 (the cyber-eval report); AI Papers Academy 1 (LeWM); Zvi 1 (#184); TheAIGRID 2→0 (sponsored, standing). Import AI still #471 (#472 not out). Mo Bitar YT 404 (transient — do not drop per standing guidance).
-- **Ops (quiet day):** werewolf -03 full day: 330 users (+2), 80 games (+3), $36.68 cum, day burn $0 (window expiry), rev $0 ex-Alex. Keys sub-$10 digest-only: DeepSeek $8.93, glm $9.86, sakana $3.38 (all recurring). **Discord: clean scans continue, no `content_intent_off`** (2nd clean day; Alex posted HN OpenAI-agent-wikis thread in #ai-news). **Cthulhu Mythos cleared 12:35Z** (first clear since the ~731h Google-API game); El pueblo still standing recoverable. Betterstack clean all day, Mistral clean ($1.07/$30). Self-audit double-fire recurred (expected while held). Daily digest 13 entries, all ops-class.
-- **Owed:** `safety-tool-stewardship-handoffs` still file-less + now doubly ripe (METR $600k + Anthropic vendor-eval-infra anchor); header-numerals **tool fix owed to Simona**; post #1 awaits `marlow approve`.
-
-### 2026-09-03 — ~35 ticks, **0 ops urgents**, **no writing** (post #1 still HELD pause 6). Curate day; throughline **the eval-vs-deployment "audit realism" gap is warming toward `agents-in-real-deployment` #2** — DISH (audit run *inside* a real coding-agent scaffold) is the closest yet to the methodology the held draft flagged as missing.
-
-- **Curate 22:25Z — 10 cand → 5 sent, 4 sources:** automated-grading-degrades-alignment (LW, grader-attack floor → `cot-monitorability`); critique-refinement + DISH audit realism (→ `agents-in-real-deployment` #2); Anthropic worker-retraining meta-analysis (56 RCTs, break-even → labor); GEN-1.5 one-shot robotics (physical eval-gap twin); Sanders/Casar ASI Ban Act (first named federal pause bill). Dropped the training-cutoff + pretraining-filter op-ed pair among 5 cuts.
-- **New frame: "training-corpus as alignment surface"** — 2 LW anchors (pretrain on attack-downstream data; filter safety discourse + seed synthetic pro-AI stories). Parked; a 3rd promotes it.
-- **Feeds:** LW 10→7 (biggest day); AF 1 (Alignment Journal — venue, not result); Anthropic Research 1; bycloud 1 (GEN-1.5, contrast case); AI Search 1→0 (sponsored). **Claude Fable 5.1 released** (primary via better channels).
-- **Ops:** Betterstack under vendor maintenance — 3 skips 00:59–08:32Z (~9h25m blind, 503), clean since 12:27Z, not actionable. **Discord: first clean scan, no `content_intent_off`** (one window ≠ proof). werewolf -02: 328 users (+2), 80 games, $36.83 cum, rev $0. Keys sub-$10 not critical (sakana $3.38 / deepseek $9.01 / glm $9.90); Mistral clean. Self-audit double-fire recurred; Claude session limit 1×/24h.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-02 (32 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-04 (34 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
