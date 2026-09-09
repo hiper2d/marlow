@@ -10,6 +10,12 @@
 # the day-over-day delta IS the money spent that day (see below).
 #
 # v1 metrics (what Alex asked for — "start with this, we can add more"):
+#   0. THE REPORT IS: new users on the day, new games on the day, what those
+#      games cost so far. Everything else is reference and carries no deltas.
+#      User totals are differenced ONLY on `users_total_day_end` (the count at
+#      the reported day's local midnight), which makes the report independent of
+#      when this tick actually fires. The handler asserts
+#      total_day_end(N) - total_day_end(N-1) == new_users_day(N).
 #   1. New users     — created today / 7d / 30d, + total + tier split (free/api/paid).
 #   2. Games created — started today / 7d / 30d, + total, + how many today were
 #                      by users who signed up today ("their" games). The report
@@ -24,6 +30,9 @@
 #          (≤30d) games; its day-over-day DELTA (daily_burn.usd) is the true
 #          money spent since the last snapshot. Negative delta = games expired
 #          out of the 30d TTL window (flagged, floored at 0), not a refund.
+#          live_cost itself is NOT a cumulative total and must never be called
+#          one — it fell on 7 of 11 days in early September purely from TTL
+#          eviction. The render labels it "Cost held in live games".
 #      user_spend_mtd_usd is a secondary line from users.spendings (monthly
 #      free/api/paid buckets) — NOT revenue: free = our cost, api = users' own
 #      keys, only paid = actual income (~$0 today). The field to watch if a
@@ -44,8 +53,24 @@
 #      record a diagnosis via framework_fix; notify Alex urgent only if it's the
 #      Firestore creds failing (same failure mode as monitor_keys).
 #   3. Write the snapshot to projects/werewolf-ops/reports/stats/<YYYY-MM-DD>.md
-#      — render via `werewolf_stats.py show`, plus a sentence on what moved vs
-#      yesterday's report (new signups, notable burn).
+#      — render via `werewolf_stats.py show`, then the day's new-user emails and
+#      game list. The report is THREE numbers: new users, new games, their cost.
+#
+#      ── What you may NOT do in the prose (2026-09-08) ──────────────────────
+#      Do not compute your own day-over-day deltas off the "Reference" block.
+#      Those are live readings of a 30d-TTL collection: `Games live now` falls
+#      when old games are deleted, and `Cost held in live games` falls with
+#      them. Differencing them produced "live games dropped 81->78" and
+#      "cumulative burn ticked down", both of which are artefacts.
+#
+#      If `reconciliation.ok` is false, the render prints BROKEN. Copy that
+#      through and say the user figures are not trustworthy. Do NOT explain it.
+#      You spent 2026-09-05, -06 and -07 attributing the gap to a
+#      "prior-window-rolling effect" and writing "not a data error" — there is
+#      no window on a total, so there was nothing to roll, and it WAS a data
+#      error. A number you cannot account for gets reported as a number you
+#      cannot account for. Inventing a mechanism that sounds right is the worst
+#      available option: it costs Alex the one thing the report is for.
 #   4. The digest block is now appended AUTOMATICALLY by `report` itself (it
 #      calls notify_alex(..., urgency="digest") deterministically). Do NOT run
 #      `digest | notify --digest` yourself — that would double-post. The block is

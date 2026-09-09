@@ -5,10 +5,21 @@ Companion to monitor_keys: that watches what the free tier *costs* (provider
 balances); this watches what the free tier *produces* (signups, games, burn).
 Both read the same Firestore via the same read-only service account.
 
-v1 metrics (what Alex asked for — "start with this, we can add more"):
-  1. New users     — created today / 7d / 30d, plus total + tier split.
-  2. Games created — started today / 7d / 30d, plus total.
-  3. Money spent   — the free tier's AI burn, two honest cuts (see below).
+The report is THREE numbers for one closed local day (2026-09-08 rewrite):
+  1. New users on that day.
+  2. New games on that day.
+  3. What those games have cost so far.
+Everything else is a live reading of a TTL-bounded collection and is printed
+under "Reference" with no deltas on it. Alex: "Just count new users and new
+games for the current day." The day counts were already right; every wrong line
+in the reports came from differencing the live readings around them.
+
+Two rules this file now enforces:
+  - The only user total that gets differenced is `total_day_end`, measured at
+    the same boundary as the day counts. `_reconcile` asserts
+    total_day_end(N) - total_day_end(N-1) == new_users_day(N).
+  - A failed invariant prints BROKEN and stops. It never gets an explanation.
+    Every mismatch here so far was a clock bug wearing a plausible sentence.
 
 Money, carefully:
   `games.totalGameCost` is the provider cost a game has run up *so far*. It
@@ -157,6 +168,21 @@ def _user_stats(db, now: datetime, period: dict) -> dict:
         col.where(filter=FieldFilter("created_at", ">=", period["_end_dt"])))
 
     total = _count(col)
+
+    # ── The total must be measured at the SAME boundary as `new` (2026-09-08) ──
+    # `total` is a live count: whatever the collection held at the instant the
+    # tick fired, which is 5-17 hours into the day AFTER the one being reported.
+    # `new["day"]` is a closed local calendar day. Differencing the first and
+    # reading it as the second compares two different clocks, and it disagreed
+    # on 10 of the 12 rows on the tape (2026-08-29 .. 2026-09-07). Marlow then
+    # narrated the residue away as a "prior-window-rolling effect" three days
+    # running - there is no window on a total, so there was nothing to roll.
+    # `total_day_end` is the count as of the reported day's local midnight, so
+    #     total_day_end(N) - total_day_end(N-1) == new["day"](N)
+    # holds exactly. `_reconcile` ASSERTS that. It is never explained.
+    total_day_end = _count(
+        col.where(filter=FieldFilter("created_at", "<", period["_end_dt"])))
+
     tiers = {t: _count(col.where(filter=FieldFilter("tier", "==", t)))
              for t in ("free", "api", "paid")}
 
@@ -177,6 +203,8 @@ def _user_stats(db, now: datetime, period: dict) -> dict:
         created = d.get("created_at")
         if created is None:
             continue
+        if created < period["_end_dt"]:
+            total_day_end = max(total_day_end - 1, 0)
         if period["_start_dt"] <= created < period["_end_dt"]:
             new["day"] = max(new["day"] - 1, 0)
         if created >= period["_end_dt"]:
@@ -190,7 +218,8 @@ def _user_stats(db, now: datetime, period: dict) -> dict:
                         ((d.to_dict().get("email") or d.id) for d in day_q.stream())
                         if (e or "").lower() not in EXCLUDED_OWNERS)
     return {
-        "total": total,
+        "total": total,             # live count at read time — reference only, never differenced
+        "total_day_end": total_day_end,   # count at the reported day's midnight — the one that reconciles
         "new": new,                 # {day, 7d, 30d, today_so_far} — excluded accounts removed
         "tiers": tiers,             # {free, api, paid}
         "new_day_emails": day_emails,
@@ -350,6 +379,72 @@ def _prev_day_baseline(period: dict) -> tuple[str, float] | None:
     return None
 
 
+def _history_rows() -> list[dict]:
+    """Every snapshot row, deduped by `period_date` (last write wins), oldest first.
+
+    A manual re-run appends a second row for the same reported day. Those
+    duplicates are not data - they are the same day measured twice - and left in
+    place they make every delta computed off the tape wrong (the 2026-09-03
+    re-run produced a row reading `users_total` delta 0 against 2 new users).
+    One row per reported day, and the newest wins because it saw the most.
+    """
+    try:
+        lines = STATS_HISTORY.read_text().splitlines()
+    except OSError:
+        return []
+    by_day: dict[str, dict] = {}
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        day = row.get("period_date")
+        if day:
+            by_day[day] = row
+    return [by_day[d] for d in sorted(by_day)]
+
+
+def _prev_day_row(period_date: str) -> dict | None:
+    """The snapshot for the most recent reported day BEFORE `period_date`."""
+    prior = [r for r in _history_rows() if (r.get("period_date") or "") < period_date]
+    return prior[-1] if prior else None
+
+
+def _reconcile(period: dict, users: dict) -> dict:
+    """Assert total_day_end(N) - total_day_end(N-1) == new_users_day(N).
+
+    This is the invariant the report is not allowed to talk its way around. If
+    it fails, the number is broken and the report says so, in those words, with
+    both sides shown. It does NOT get a narrated explanation: every previous
+    mismatch here was a clock bug wearing a plausible sentence, and a report
+    that explains its own discrepancies is worse than one that just breaks.
+    """
+    today = users.get("total_day_end")
+    new = (users.get("new") or {}).get("day")
+    prev = _prev_day_row(period["date"])
+    if prev is None:
+        return {"ok": None, "reason": "no prior day on the tape - baseline set"}
+    before = prev.get("users_total_day_end")
+    if before is None:
+        return {"ok": None,
+                "reason": f"prior day {prev.get('period_date')} predates the "
+                          f"day-boundary total (added 2026-09-08)"}
+    if today is None or new is None:
+        return {"ok": False, "reason": "missing users_total_day_end or new_users_day"}
+    delta = today - int(before)
+    return {
+        "ok": delta == new,
+        "prev_day": prev.get("period_date"),
+        "users_total_day_end_prev": int(before),
+        "users_total_day_end": today,
+        "delta": delta,
+        "new_users_day": new,
+    }
+
+
 def _daily_burn(prev: dict | None, live_cost: float, now: datetime, period: dict,
                 live_cost_excl: float | None = None) -> dict | None:
     """Δ live cumulative game cost, on TWO baselines.
@@ -419,7 +514,9 @@ def _compact(report: dict) -> dict:
         "own_games": g.get("own_games"),
         "daily_burn_usd": (report.get("daily_burn") or {}).get("usd"),
         "daily_burn_day_usd": (report.get("daily_burn") or {}).get("day_usd"),
-        "users_total": u.get("total"),
+        "users_total": u.get("total"),               # read-time count, reference only
+        "users_total_day_end": u.get("total_day_end"),  # the one deltas are taken on
+        "reconciles": (report.get("reconciliation") or {}).get("ok"),
     }
 
 
@@ -453,6 +550,7 @@ def report() -> dict:
     user_spend = _user_spend_mtd(db, now)
     burn = _daily_burn(_prev_snapshot(), games["live_cost_usd"], now, period,
                        games.get("live_cost_usd_excl_own"))
+    reconciliation = _reconcile(period, users)
 
     result = {
         "ok": True,
@@ -462,6 +560,9 @@ def report() -> dict:
         "users": users,
         "games": games,
         "user_spend_mtd_usd": user_spend,
+        # ok=True passes, False is BROKEN and must be surfaced as such, None
+        # means there is nothing to check against yet.
+        "reconciliation": reconciliation,
         "daily_burn": burn,   # null on first run (no prior snapshot to diff)
         # Never leave a filter implicit — an exclusion nobody can see is how a
         # number ends up meaning something other than its label.
@@ -522,23 +623,51 @@ def render(report: dict) -> str:
     per = report.get("period") or {}
     date, tz = per.get("date", "?"), per.get("tz", "?")
     label = per.get("label", "full day")
+    # ── What the day actually produced. These three are the report (2026-09-08).
+    # Everything under "Reference" is a live reading of a collection with a 30d
+    # TTL: a stock with an eviction policy. Differencing a stock like that gives
+    # you "games went 81 -> 78" when 3 were created and 6 aged out, and "burn
+    # went down" when nobody refunded anything. Those deltas are gone.
     out = [
         f"Werewolf activity for {date} ({tz}, {label})",
         f"  reported {report['checked_at']}",
         "",
-        f"  Users    {u['total']} total  ({u['tiers']['free']} free / "
-        f"{u['tiers']['api']} api / {u['tiers']['paid']} paid)",
-        f"    new:   {n['day']} on {date} · {n['7d']} 7d · {n['30d']} 30d",
-        f"  Games    {g['total']} live  (TTL 30d)",
-        f"    new:   {c['day']} on {date} · {c['7d']} 7d · {c['30d']} 30d"
-        + (f"  ({g['created_day_by_new_users']} by that day's new users)"
+        f"  New users   {n['day']}",
+        f"  New games   {c['day']}"
+        + (f"   ({g['created_day_by_new_users']} by that day's new users)"
            if g["created_day_by_new_users"] else ""),
-        f"  Burn     ${g['live_cost_usd']:.2f} live cumulative"
+        f"  Their cost  ${cc['day']:.2f} so far  (games keep accruing; this only rises)",
+    ]
+
+    rec = report.get("reconciliation") or {}
+    if rec.get("ok") is False:
+        out += [
+            "",
+            "  *** BROKEN: the user count does not reconcile. ***",
+            f"    {rec.get('users_total_day_end_prev')} at end of {rec.get('prev_day')} "
+            f"-> {rec.get('users_total_day_end')} at end of {date} "
+            f"= {rec.get('delta')}, but {rec.get('new_users_day')} new users were counted.",
+            "    Do not trust the user figures in this report. This is a bug, not a window effect.",
+        ]
+    elif rec.get("ok") is None and rec.get("reason"):
+        out.append(f"    (user count not yet checkable: {rec['reason']})")
+
+    out += [
+        "",
+        "  Reference (live readings, not day figures - do not difference these)",
+        f"    Users at end of {date}: {u.get('total_day_end', '?')}"
+        f"  ·  now {u['total']} ({u['tiers']['free']} free / "
+        f"{u['tiers']['api']} api / {u['tiers']['paid']} paid)",
+        f"    New users 7d/30d: {n['7d']} / {n['30d']}"
+        f"  ·  new games 7d/30d: {c['7d']} / {c['30d']}",
+        f"    Games live now: {g['total']}  (30d TTL - old games are deleted, "
+        f"so this falls without anything going wrong)",
+        f"    Cost held in live games: ${g['live_cost_usd']:.2f}"
         + (f"  (${g['live_cost_usd_excl_own']:.2f} others / "
            f"${g['own_live_cost_usd']:.2f} yours)"
-           if g.get("own_live_cost_usd") else ""),
-        f"    cost of games started: ${cc['day']:.2f} on {date} · "
-        f"${cc['7d']:.2f} 7d · ${cc['30d']:.2f} 30d",
+           if g.get("own_live_cost_usd") else "")
+        + "  - NOT cumulative spend; expired games drop out of it",
+        f"    Cost of games started 7d/30d: ${cc['7d']:.2f} / ${cc['30d']:.2f}",
     ]
     b = report.get("daily_burn")
     if b:
@@ -640,12 +769,25 @@ def render_digest(report: dict) -> str:
     if b.get("expired_games_suspected"):
         money += " (partial: games expired out of window)"
 
+    # Lead with the day, not the stock (2026-09-08). This block used to read
+    # "Users 341 total (+3 that day)" and "Games 82 live (+1 that day)", which
+    # put a read-time count and a closed-day count on one line as if one were
+    # the other, and called the TTL-bounded live cost "cumulative". Alex reads
+    # this block every night; it says what happened that day first, and the
+    # standing totals are labelled as standing totals.
     lines = [
         f"Werewolf - {date} ({per.get('label', 'full day')}, {per.get('tz', 'local')})",
-        f"  Users  {u['total']} total  (+{un['day']} that day · {un['7d']} 7d · {un['30d']} 30d)",
-        f"  Games  {g['total']} live  (+{gn['day']} that day · {gn['7d']} 7d · {gn['30d']} 30d)",
-        f"  Burn   {money} · ${cc['7d']:.2f} 7d · ${g['live_cost_usd']:.2f} cumulative",
+        f"  New    {un['day']} users · {gn['day']} games · {money}",
+        f"  7d     {un['7d']} users · {gn['7d']} games · ${cc['7d']:.2f}",
+        f"  Standing: {u.get('total_day_end', u['total'])} users at day end"
+        f" · {g['total']} games live now (30d TTL)"
+        f" · ${g['live_cost_usd']:.2f} held in live games",
     ]
+    rec = report.get("reconciliation") or {}
+    if rec.get("ok") is False:
+        lines.append(f"  BROKEN: user count does not reconcile "
+                     f"({rec.get('delta')} from totals vs {rec.get('new_users_day')} "
+                     f"new users) - figures not trustworthy")
 
     # Threshold dropped from >1 to >=1 on 2026-08-22: Alex used to be counted
     # here, so "more than one" was the test for a stranger paying. He is now
