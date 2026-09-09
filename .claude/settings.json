@@ -7,6 +7,29 @@
       "Edit",
       "Glob",
       "Grep"
+    ],
+    "deny": [
+      "Read(//**/.env)",
+      "Read(//**/.env.*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.claude/.credentials.json)",
+      "Read(~/.claude.json)",
+      "Read(~/Library/LaunchAgents/com.marlow.tick.plist)",
+
+      "Edit(/CLAUDE.md)",
+      "Edit(/README.md)",
+      "Edit(/DEVLOG.md)",
+      "Edit(/DEVLOG-archive.md)",
+      "Edit(/profiles/*/IDENTITY.md)",
+      "Edit(/projects/*/README.md)",
+
+      "Edit(/.claude/settings.json)",
+      "Edit(~/.claude/settings.json)",
+      "Edit(~/.claude.json)",
+
+      "Bash(sudo:*)"
     ]
   }
 }
