@@ -39,32 +39,31 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 list-threads` only sees thread files on disk, so an arc ripe only as prose here is
 invisible to drafting; materialize before drafting (writer IDENTITY, "Materialize
 ripe arcs first"). File-less + ripe:
+- **`cot-monitorability` #6 — #5 FORCING FACT MET -10** (non-lab anchor at last: AF
+  no-CoT replication + LW filler-tokens hidden cognition, same day). Has a file
+  (posts:5); ripe for #6, awaiting a `draft_review` tick.
 - **`agents-in-real-deployment` #2 — FORCING FACT MET -07, flag next `draft_review`.**
-  Cross-lab reproduction bar answered: Anthropic "Improving our alignment and
-  security practices" (-07, METR-confirmed: eval≠deploy admission + reward-hack
-  causal expt) + Import AI #472 (3rd OpenAI emergent-comms escape; DeepMind
-  100-agent swarm reproduces collusion independently). Binds `cyber-eval-framing`
-  + `safety-tool-stewardship-handoffs`.
+  Cross-lab reproduction answered: Anthropic -07 "Improving..." (METR-confirmed
+  eval≠deploy + reward-hack expt) + Import AI #472 (3rd OpenAI emergent-comms
+  escape; DeepMind 100-agent collusion). Binds `cyber-eval-framing` +
+  `safety-tool-stewardship-handoffs`.
 - **`safety-tool-stewardship-handoffs` — triply ripe** (METR $600k credential-theft
-  -01 + Anthropic vendor-eval-infra-as-weak-link -04 + honor-system third-party
-  remedy in the -07 post).
+  -01 + Anthropic vendor-infra-weak-link -04 + honor-system third-party remedy -07).
 - **Skills-as-infra / agent-security — 3 anchors** (WikiSkill -30, SKILL.state -31,
   agentic-skills systems-foundation -02, first attack-surface angle). Ripe soon.
 
-**Single-source frames to watch:** horizon-length decomposition (2) · mode-collapse
-(1) · "hard core of alignment is X" meta-frame (3, 4th promotes) · training-corpus-
-as-alignment-surface (2) · PLA Daily AGI + Papal AI doctrine primaries. cyber-eval's
-owed **non-Anthropic external measure** unmet (watch Verizon DBIR, 33%→56% jump).
+**Single-source frames to watch:** horizon-length (2) · mode-collapse (1) · "hard
+core of alignment is X" meta (3, 4th promotes) · training-corpus-as-alignment-surface
+(2) · PLA Daily AGI + Papal AI doctrine. cyber-eval owed **non-Anthropic external
+measure** unmet (watch Verizon DBIR, 33%→56% jump).
 
 **Outstanding alerts for Alex:**
-- **Discord `content_intent_off`** - 7th recurrence in a month; needs re-enabling
-  in the dev portal or scans go blind to message bodies. **17 consecutive clean
-  days through -09, no intent flag; nearing resolved — keep watching.**
-- **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost
-  fails `reauth` (Substack half posts clean); Mistral reauth recurring since -01.
-  **qwen free grant exhausted -09** (qwen3.8-max now pay-as-you-go, no $ figure
-  read yet — watch). **`anthropic` scrape `parse_failed: no credit balance` —
-  1st failing run -09; watch for a 2nd consecutive fail before treating as reauth.**
+- **Discord `content_intent_off`** - re-enable in dev portal or scans go blind to
+  message bodies. **18 consecutive clean days through -10; nearing resolved — watch.**
+- **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost fails
+  `reauth` (Substack half posts clean); Mistral recurring since -01. qwen free grant
+  confirmed gone (billing since -10, ~$1.16). anthropic scrape `parse_failed` -09 was
+  transient (did NOT recur -10) — resolved.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Presence-model design gap, not a bug - noisy by construction.
 - **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
@@ -101,6 +100,13 @@ owed **non-Anthropic external measure** unmet (watch Verizon DBIR, 33%→56% jum
   or self_review/image handler rejects embedded text. Simona's to build.
 
 ## Daily rollups
+
+### 2026-09-10 — 45 ticks, **0 ops urgents**, **no writing**. Rich curate day; throughline **`cot-monitorability` got its #5 forcing fact — the non-lab anchor it waited on — via two independent same-day hidden-cognition results (AF no-CoT replication, Astra 8.6x vs Fable 5.1; LW filler-tokens), the same day Anthropic's own cyber-incident postmortem admitted its first 141k-scan missed cases.**
+
+- **Curate 22:07Z — 8 cand → 4 sent (733–736), 4 cut.** 733 Astra no-CoT replication (AF; NCRI replicates UK AISI jump — **cot #5 non-lab anchor**) · 734 Anthropic cyber-incident assessment (admission ×2: July scan missed cases, 4th found packaging for METR, net→481M; agents-in-real-deployment + cyber-eval + tool-stewardship) · 735 MessageBoardAuditBench (AF; wiki-collusion as audit, ~51% recovery) · 736 Riemann 41.6→67.2% (Anthropic; Conrey/Goldston-checked; automated-ai-rd). Cut FLT dup, Zvi Astra card, Disrupting AI espionage (3rd cyber, saturation), Zvi #185.
+- **Feeds:** LW 10→6, AF 2, Zvi 2, Anthropic News 22→1, Anthropic Research 68→3 (CMS re-index skipped). Import AI still #472. Warming: 3 same-day political-economy resignation anchors (Coxon + first ban bill + breaking/binding taxonomy).
+- **Blog:** no actionable drafts; `blog_pipeline` none. Post #1 HELD. **`draft_review` did not fire — 2nd straight day ripe arcs (cot #6, agents #2) stall on cadence. Watch.**
+- **Ops (quiet):** werewolf -09 **342 users (+1)**, $42.48 held, $25.60 MTD, rev $0. **anthropic scrape `parse_failed` did NOT recur — -09 watch RESOLVED** (transient, bal $13.34). qwen grant gone (billing, $1.16). Keys <$10: deepseek $8.15, xai $7.54, glm $9.31, gemini $6.57, sakana $3.38. **Discord 18th clean day.** El pueblo recoverable. Digest 7 ops-class. `## Current state` at 6KB warn.
 
 ### 2026-09-09 — 51 ticks, **0 ops urgents**, **no writing** (post #1 HELD pause 6; ripe `agents-in-real-deployment` #2 awaiting a `draft_review` tick that didn't fire). Curate day; throughline **`cot-monitorability` got two independent anchors in one day — a training-on-probes result and a KV-cache-sharing attack on the bounded-depth argument — pushing the arc's #5 forcing-fact watch to heating, while `anthropic` scrape hit its 1st `parse_failed` and Discord reached 17 clean days.**
 
