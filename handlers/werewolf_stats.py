@@ -5,14 +5,32 @@ Companion to monitor_keys: that watches what the free tier *costs* (provider
 balances); this watches what the free tier *produces* (signups, games, burn).
 Both read the same Firestore via the same read-only service account.
 
-The report is THREE numbers for one closed local day (2026-09-08 rewrite):
+The report is FIVE numbers for one closed local day (2026-09-11; was three):
   1. New users on that day.
   2. New games on that day.
   3. What those games have cost so far.
+  4. What users were CHARGED that day, per user.   (added 2026-09-11)
+  5. How many users hit their daily spend cap.     (added 2026-09-11)
 Everything else is a live reading of a TTL-bounded collection and is printed
 under "Reference" with no deltas on it. Alex: "Just count new users and new
 games for the current day." The day counts were already right; every wrong line
 in the reports came from differencing the live readings around them.
+
+Why 4 and 5 were added (2026-09-11): the Gemini prepaid key drained from $20.59
+to $0 over eleven days and this report never showed it coming. Numbers 3 and 4
+are NOT the same number and the difference is the point - 3 is what games
+recorded, 4 is what users were charged. Preview and image calls used to charge
+the user but write no `requestStats` row, and previews belong to no game at all,
+so a report built on games alone was structurally blind to roughly two thirds of
+Gemini spend. `spend_reconciliation` now asserts the two against each other and
+prints the gap.
+
+Since 2026-09-11 (werewolf `recordSpend`) EVERY spend - game turns, previews,
+images, voice - writes one `requestStats` row (`kind` field) in the same
+transaction as the charge, and the user doc carries a UTC-day `dailySpend`
+ledger. `daily_ledger_reconciliation` asserts the two against each other for
+the current UTC day, so a spend path that stops writing its row shows up the
+day it stops, not eleven days later.
 
 Two rules this file now enforces:
   - The only user total that gets differenced is `total_day_end`, measured at
@@ -303,36 +321,297 @@ def _game_stats(db, now: datetime, period: dict, new_day_emails: list[str]) -> d
     }
 
 
-def _user_spend_mtd(db, now: datetime) -> dict:
-    """Current-month user spend from users.spendings (free/api/paid split).
+def _median(values: list[float]) -> float:
+    if not values:
+        return 0.0
+    v = sorted(values)
+    mid = len(v) // 2
+    return v[mid] if len(v) % 2 else (v[mid - 1] + v[mid]) / 2
 
-    Reads all user docs (low volume) and sums the bucket whose period matches
-    this UTC month. NOT revenue — see module docstring: only `paid` is income.
-    Secondary to game burn; the right field if a paid tier grows.
+
+def _user_spend(db, now: datetime, period: dict, prev_row: dict | None) -> dict:
+    """Per-user spend: the current month, and the reported day.
+
+    `users.spendings` is the ONLY complete record of what a user cost us. It
+    carries game turns, previews, images and voice alike, because every one of
+    those paths goes through recordSpend. `requestStats` did NOT until
+    2026-09-11: measured that day, it held $7.14 of Gemini spend for Sept 1-11
+    against $20.56 the provider actually billed, because image and preview
+    calls wrote no stats row. Fixed the same day (every spend now writes a row
+    with `kind`), but per-user money is still read HERE: the ledger is the
+    charge, requestStats is the cost, and `_daily_ledger_reconcile` asserts
+    they agree rather than trusting either alone.
+
+    The day figure, and why it is a delta. `spendings` is bucketed by UTC
+    MONTH, so Firestore holds no daily number to read. We build one the same
+    way `_daily_burn` builds its own: snapshot every user's month-to-date total
+    each day and difference it against the previous day's row. Same caveat,
+    stated the same way - the interval is snapshot-to-snapshot, not exactly
+    midnight-to-midnight.
+
+    Month rollover zeroes MTD, so a delta across it is meaningless. When the
+    previous row carries a different period we report NO day figure and say
+    why. A negative or invented number here would be worse than a gap.
+
+    `dailySpend` (shipped 2026-09-11; `{period: 'YYYY-MM-DD' UTC, totalUSD,
+    buckets: {free, paid}, limitHits}` - note the day key is `period`, not the
+    `date` the plan doc said) is read when present, but it is a UTC-day field
+    and this report is anchored to Alex's LOCAL day, so it is carried as a
+    separate read-time reference (`daily_field_utc`) and NOT substituted for
+    the delta. Mixing a UTC day into a local-day report is exactly the class
+    of bug the period rewrite above removed.
     """
     from google.cloud.firestore_v1 import FieldFilter
 
-    period = now.strftime("%Y-%m")
-    out = {"period": period, "total": 0.0, "free": 0.0, "api": 0.0, "paid": 0.0}
-    # Only users that have any spendings — still cheap, but skips the untouched.
+    mtd_period = now.strftime("%Y-%m")
+    out = {"period": mtd_period, "total": 0.0, "free": 0.0, "api": 0.0, "paid": 0.0}
     own = {"total": 0.0, "free": 0.0, "api": 0.0, "paid": 0.0}
+    by_user: dict[str, float] = {}          # our-cost (free bucket) MTD, per user
+    utc_today = now.strftime("%Y-%m-%d")
+    hits: dict[str, int] = {}
+    daily_seen = False
+    daily_by_user: dict[str, float] = {}
+    daily_free_total = 0.0      # whole population, Alex included (ledger side of the reconcile)
+    daily_paid_total = 0.0
+
     for d in db.collection(USERS).where(
         filter=FieldFilter("spendings", "!=", None)
     ).stream():
         doc = d.to_dict() or {}
+        key = ((doc.get("email") or d.id) or "").lower()
         # Alex's own spend is not audience spend, and his is the ONLY paid row -
         # left in, "paid revenue" reads as income when it is him paying himself.
-        bucket = own if ((doc.get("email") or d.id) or "").lower() in EXCLUDED_OWNERS else out
+        is_own = key in EXCLUDED_OWNERS
+        bucket = own if is_own else out
         for b in (doc.get("spendings") or []):
-            if b.get("period") != period:
+            if b.get("period") != mtd_period:
                 continue
             bucket["total"] += float(b.get("amountUSD") or 0.0)
             bucket["free"] += float(b.get("freeAmountUSD") or 0.0)
             bucket["api"] += float(b.get("apiAmountUSD") or 0.0)
             bucket["paid"] += float(b.get("paidAmountUSD") or 0.0)
+            if not is_own:
+                free = float(b.get("freeAmountUSD") or 0.0)
+                if free > 0:
+                    by_user[key] = round(free, 6)
+
+        # UTC-day ledger, shipped 2026-09-11. Overwritten (not appended) when
+        # the UTC day rolls, so a stale `period` is yesterday's leftover.
+        ds = doc.get("dailySpend")
+        if isinstance(ds, dict):
+            daily_seen = True
+            if ds.get("period") == utc_today:
+                n = int(ds.get("limitHits") or 0)
+                if n > 0 and not is_own:
+                    hits[key] = n
+                amt = float(ds.get("totalUSD") or 0.0)
+                if amt > 0 and not is_own:
+                    daily_by_user[key] = round(amt, 6)
+                buckets = ds.get("buckets") or {}
+                daily_free_total += float(buckets.get("free") or 0.0)
+                daily_paid_total += float(buckets.get("paid") or 0.0)
+
     res = {k: (round(v, 4) if isinstance(v, float) else v) for k, v in out.items()}
     res["excluded_own"] = {k: round(v, 4) for k, v in own.items()}
+    res["by_user_free"] = by_user
+    res["day"] = _spend_day(by_user, mtd_period, prev_row)
+    res["limit_hits"] = (
+        {
+            "instrumented": True,
+            "utc_date": utc_today,
+            "users": len(hits),
+            "hits": sum(hits.values()),
+            "by_user": dict(sorted(hits.items(), key=lambda kv: -kv[1])),
+        }
+        if daily_seen
+        else {
+            "instrumented": False,
+            "reason": "no user has a dailySpend field yet - the cap shipped "
+                      "2026-09-11 and the field appears on a user's first charge "
+                      "after that deploy",
+        }
+    )
+    if daily_seen:
+        res["daily_field_utc"] = {
+            "utc_date": utc_today,
+            "users_with_spend": len(daily_by_user),
+            "total": round(sum(daily_by_user.values()), 4),
+            # Whole-population bucket totals (Alex included): the ledger side
+            # of _daily_ledger_reconcile, which must not exclude anyone one-sidedly.
+            "free_total": round(daily_free_total, 4),
+            "paid_total": round(daily_paid_total, 4),
+            "note": "read-time UTC-day field, NOT the local day this report covers",
+        }
     return res
+
+
+def _spend_day(by_user: dict[str, float], mtd_period: str,
+               prev_row: dict | None) -> dict:
+    """Difference this run's per-user MTD map against the previous day's row.
+
+    Returns `{"ok": False, "reason": ...}` rather than a number whenever the
+    baseline cannot support one: no prior row, a prior row from before this
+    function existed, or a month boundary in between.
+    """
+    if prev_row is None:
+        return {"ok": False, "reason": "no prior day on the tape - baseline set"}
+    prev_by_user = prev_row.get("user_mtd_by_user")
+    prev_period = prev_row.get("user_mtd_period")
+    if prev_by_user is None or prev_period is None:
+        return {"ok": False,
+                "reason": f"prior day {prev_row.get('period_date')} predates per-user "
+                          f"spend tracking (added 2026-09-11)"}
+    if prev_period != mtd_period:
+        return {"ok": False,
+                "reason": f"month rollover ({prev_period} -> {mtd_period}): "
+                          f"month-to-date reset, so the delta is not spend"}
+
+    deltas: dict[str, float] = {}
+    for key, now_usd in by_user.items():
+        d = round(now_usd - float(prev_by_user.get(key) or 0.0), 6)
+        if d > 0.000005:
+            deltas[key] = d
+    # A user whose MTD went DOWN is a data problem, not a refund - surface it.
+    shrank = [k for k, v in by_user.items()
+              if v < float(prev_by_user.get(k) or 0.0) - 0.000005]
+    amounts = list(deltas.values())
+    top = sorted(deltas.items(), key=lambda kv: -kv[1])
+    return {
+        "ok": True,
+        "prev_day": prev_row.get("period_date"),
+        "users_with_spend": len(deltas),
+        "total": round(sum(amounts), 4),
+        "median": round(_median(amounts), 4),
+        "max": round(max(amounts), 4) if amounts else 0.0,
+        "top": [{"user": k, "usd": round(v, 4)} for k, v in top[:5]],
+        "shrank": shrank,
+    }
+
+
+def _spend_reconcile(user_spend: dict, burn: dict | None) -> dict:
+    """Assert per-user day spend >= game-cost day burn, and name the gap.
+
+    The two numbers come from opposite ends of the same money: `spendings` is
+    what users were charged, `totalGameCost` is what games recorded. User spend
+    must be the LARGER of the two, because preview/story generation charges the
+    user before any game exists and so lands in no game's cost. The difference
+    is therefore an estimate of preview spend - the hole this report existed to
+    hide.
+
+    If user spend comes in BELOW game burn, that is not a window effect. It
+    means a game recorded cost that was never charged to anybody, and the
+    report says BROKEN.
+
+    Compared free-bucket against burn-excluding-Alex on purpose: Alex is paid
+    tier, so his spend lands in `paid` WITH markup applied, and differencing a
+    marked-up charge against a raw provider cost would drift by design.
+    """
+    day = user_spend.get("day") or {}
+    if not day.get("ok"):
+        return {"ok": None, "reason": day.get("reason", "no per-user day figure")}
+    if not burn:
+        return {"ok": None, "reason": "no daily burn figure to compare against"}
+    burn_usd = burn.get("day_usd_excl_own")
+    basis = "day_usd_excl_own"
+    if burn_usd is None:
+        return {"ok": None,
+                "reason": "burn baseline carries no excl-own figure; a total-vs-free "
+                          "comparison would drift on markup, so not attempted"}
+    user_usd = float(day.get("total") or 0.0)
+    burn_usd = float(burn_usd)
+    # Both sides are snapshot deltas over the same interval, so they move
+    # together; the tolerance only absorbs rounding, not a real divergence.
+    tol = 0.01
+    return {
+        "ok": user_usd >= burn_usd - tol,
+        "basis": basis,
+        "user_spend_day_usd": round(user_usd, 4),
+        "game_burn_day_usd": round(burn_usd, 4),
+        "unattributed_usd": round(user_usd - burn_usd, 4),
+        "note": "positive gap = spend charged to users but held by no game "
+                "(previews); negative = cost recorded against no charge",
+    }
+
+
+def _ledger_compare(stats_free_usd: float, ledger_free_usd: float,
+                    users_with_spend: int, utc_date: str, requests: int = 0) -> dict:
+    """Pure half of _daily_ledger_reconcile: compare the two sums.
+
+    Tolerance is $0.01 per user with spend (min $0.01): each user's bucket is
+    a rounded running sum, so the drift budget scales with users, not dollars.
+    """
+    if users_with_spend == 0 and stats_free_usd <= 0.0 and requests == 0:
+        return {"ok": None, "utc_date": utc_date,
+                "reason": "no free-tier spend yet today (UTC)"}
+    tol = max(0.01, 0.01 * users_with_spend)
+    gap = round(stats_free_usd - ledger_free_usd, 4)
+    return {
+        "ok": abs(gap) <= tol,
+        "utc_date": utc_date,
+        "request_stats_free_usd": round(stats_free_usd, 4),
+        "daily_ledger_free_usd": round(ledger_free_usd, 4),
+        "gap_usd": gap,
+        "tolerance_usd": round(tol, 4),
+        "users_with_free_spend": users_with_spend,
+        "free_requests": requests,
+        "note": "positive gap = cost recorded that reached no user's ledger; "
+                "negative = a user was charged with no stats row behind it",
+    }
+
+
+def _daily_ledger_reconcile(db, now: datetime) -> dict:
+    """Assert Σ requestStats.costUSD == Σ users.dailySpend.buckets.free, today UTC.
+
+    This is exactly the check that would have caught the 2026-09-11 gap on day
+    one: requestStats held $7.14 of Gemini spend for Sept 1-11 while the
+    provider billed $20.56, because preview and image calls charged the user
+    but wrote no stats row. Both sides here are written by the same recordSpend
+    transaction, so the moment any spend path stops writing its row the left
+    side falls short of the right and this prints BROKEN - the same day.
+
+    UTC-anchored on purpose, unlike everything else in this file: `dailySpend`
+    is a UTC-day field and requestStats rows carry exact timestamps, so the two
+    can be cut at the same UTC midnight with no snapshot delta in between. It
+    is the one check here that needs no tape.
+
+    Free tier only. `buckets.paid` records the CHARGE (raw cost + 15% markup)
+    while `requestStats.costUSD` is the RAW provider cost, so a paid-side
+    compare would drift by design. No owner exclusion either: the invariant is
+    the same money seen from two sides, and dropping Alex from one side only
+    would manufacture a gap (his rows are paid tier anyway).
+
+    The tier filter is applied client-side: a range on createdAt plus an
+    equality on tier needs a composite index the read-only account cannot
+    create, and a day of rows is small.
+    """
+    from google.cloud.firestore_v1 import FieldFilter
+
+    utc_date = now.strftime("%Y-%m-%d")
+    midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    stats_free = 0.0
+    requests = 0
+    for d in db.collection("requestStats").where(
+        filter=FieldFilter("createdAt", ">=", midnight)
+    ).stream():
+        row = d.to_dict() or {}
+        if row.get("tier") != "free":
+            continue
+        requests += 1
+        stats_free += float(row.get("costUSD") or 0.0)
+
+    ledger_free = 0.0
+    users_with_spend = 0
+    for d in db.collection(USERS).where(
+        filter=FieldFilter("dailySpend.period", "==", utc_date)
+    ).stream():
+        ds = (d.to_dict() or {}).get("dailySpend") or {}
+        free = float((ds.get("buckets") or {}).get("free") or 0.0)
+        if free > 0:
+            ledger_free += free
+            users_with_spend += 1
+
+    return _ledger_compare(stats_free, ledger_free, users_with_spend, utc_date, requests)
 
 
 # ─── Snapshot persistence (own files; budget_state is balance-shaped) ────────
@@ -504,6 +783,9 @@ def _daily_burn(prev: dict | None, live_cost: float, now: datetime, period: dict
 
 def _compact(report: dict) -> dict:
     u, g = report.get("users", {}), report.get("games", {})
+    sp = report.get("user_spend_mtd_usd") or {}
+    day = sp.get("day") or {}
+    hits = sp.get("limit_hits") or {}
     return {
         "checked_at": report.get("checked_at"),
         "period_date": (report.get("period") or {}).get("date"),
@@ -517,6 +799,18 @@ def _compact(report: dict) -> dict:
         "users_total": u.get("total"),               # read-time count, reference only
         "users_total_day_end": u.get("total_day_end"),  # the one deltas are taken on
         "reconciles": (report.get("reconciliation") or {}).get("ok"),
+        # Per-user month-to-date, carried so the NEXT run can difference it into
+        # a day figure. This is the one bulky field on the tape and it earns its
+        # place: `spendings` has no daily bucket, so without the prior day's map
+        # there is no way to recover per-user daily spend at all. Free bucket
+        # only (our cost), nonzero only, excluded owners already dropped.
+        "user_mtd_period": sp.get("period"),
+        "user_mtd_by_user": sp.get("by_user_free") or {},
+        "user_spend_day_usd": day.get("total") if day.get("ok") else None,
+        "user_spend_day_users": day.get("users_with_spend") if day.get("ok") else None,
+        "limit_hits_day": hits.get("hits") if hits.get("instrumented") else None,
+        "spend_reconciles": (report.get("spend_reconciliation") or {}).get("ok"),
+        "ledger_reconciles": (report.get("daily_ledger_reconciliation") or {}).get("ok"),
     }
 
 
@@ -547,10 +841,16 @@ def report() -> dict:
     period = _period(now)
     users = _user_stats(db, now, period)
     games = _game_stats(db, now, period, users["new_day_emails"])
-    user_spend = _user_spend_mtd(db, now)
+    # Read once, pass to both: the per-user day delta and the user-count
+    # invariant anchor to the SAME prior row, so they can never disagree about
+    # which day they are differencing against.
+    prev_day_row = _prev_day_row(period["date"])
+    user_spend = _user_spend(db, now, period, prev_day_row)
     burn = _daily_burn(_prev_snapshot(), games["live_cost_usd"], now, period,
                        games.get("live_cost_usd_excl_own"))
     reconciliation = _reconcile(period, users)
+    spend_reconciliation = _spend_reconcile(user_spend, burn)
+    ledger_reconciliation = _daily_ledger_reconcile(db, now)
 
     result = {
         "ok": True,
@@ -563,6 +863,12 @@ def report() -> dict:
         # ok=True passes, False is BROKEN and must be surfaced as such, None
         # means there is nothing to check against yet.
         "reconciliation": reconciliation,
+        # Same contract as `reconciliation`: False is BROKEN, None means not
+        # checkable yet. Asserts user-charged money against game-recorded money.
+        "spend_reconciliation": spend_reconciliation,
+        # Same contract again, but UTC-anchored and tape-free: asserts every
+        # free-tier requestStats row today landed in a user's dailySpend ledger.
+        "daily_ledger_reconciliation": ledger_reconciliation,
         "daily_burn": burn,   # null on first run (no prior snapshot to diff)
         # Never leave a filter implicit — an exclusion nobody can see is how a
         # number ends up meaning something other than its label.
@@ -639,6 +945,32 @@ def render(report: dict) -> str:
         f"  Their cost  ${cc['day']:.2f} so far  (games keep accruing; this only rises)",
     ]
 
+    # ── What users were CHARGED that day (2026-09-11) ─────────────────────────
+    # Distinct from "Their cost" above, which is what games RECORDED. This line
+    # is the complete one: it includes previews and images, which belong to no
+    # game (and wrote no requestStats row before 2026-09-11). See _user_spend.
+    sp = report.get("user_spend_mtd_usd") or {}
+    spd = sp.get("day") or {}
+    if spd.get("ok"):
+        if spd["users_with_spend"]:
+            out.append(f"  Users spent ${spd['total']:.2f} across "
+                       f"{spd['users_with_spend']} user(s)"
+                       f"  (median ${spd['median']:.2f}, max ${spd['max']:.2f})")
+        else:
+            out.append("  Users spent $0.00  (nobody was charged)")
+    elif spd.get("reason"):
+        out.append(f"  Users spent n/a  ({spd['reason']})")
+
+    hits = sp.get("limit_hits") or {}
+    if hits.get("instrumented"):
+        if hits.get("hits"):
+            out.append(f"  Limit hits  {hits['users']} user(s) hit the daily cap "
+                       f"({hits['hits']} refusals, UTC {hits.get('utc_date')})")
+        else:
+            out.append("  Limit hits  none")
+    else:
+        out.append(f"  Limit hits  not instrumented yet")
+
     rec = report.get("reconciliation") or {}
     if rec.get("ok") is False:
         out += [
@@ -651,6 +983,39 @@ def render(report: dict) -> str:
         ]
     elif rec.get("ok") is None and rec.get("reason"):
         out.append(f"    (user count not yet checkable: {rec['reason']})")
+
+    srec = report.get("spend_reconciliation") or {}
+    if srec.get("ok") is False:
+        out += [
+            "",
+            "  *** BROKEN: game cost exceeds what users were charged. ***",
+            f"    users charged ${srec.get('user_spend_day_usd')} but games recorded "
+            f"${srec.get('game_burn_day_usd')} on {date}.",
+            "    Money left a provider key without landing on a user. This is a bug.",
+        ]
+    elif srec.get("ok") is True and srec.get("unattributed_usd", 0) >= 0.01:
+        out.append(f"    (${srec['unattributed_usd']:.2f} charged to users but held by "
+                   f"no game - previews, which belong to no game by design)")
+    elif srec.get("ok") is None and srec.get("reason"):
+        out.append(f"    (spend not yet checkable: {srec['reason']})")
+
+    lrec = report.get("daily_ledger_reconciliation") or {}
+    if lrec.get("ok") is False:
+        out += [
+            "",
+            "  *** BROKEN: requestStats does not reconcile with the daily ledger. ***",
+            f"    free-tier requestStats ${lrec.get('request_stats_free_usd')} vs "
+            f"users.dailySpend free ${lrec.get('daily_ledger_free_usd')} on UTC "
+            f"{lrec.get('utc_date')} (gap ${lrec.get('gap_usd')}, tolerance "
+            f"${lrec.get('tolerance_usd')}).",
+            "    A spend path is writing one record and not the other. This is a bug.",
+        ]
+    elif lrec.get("ok") is True:
+        out.append(f"    (ledger reconciles: ${lrec.get('request_stats_free_usd'):.2f} "
+                   f"free-tier across {lrec.get('free_requests')} requests, "
+                   f"UTC {lrec.get('utc_date')})")
+    elif lrec.get("ok") is None and lrec.get("reason"):
+        out.append(f"    (ledger not yet checkable: {lrec['reason']})")
 
     out += [
         "",
@@ -688,6 +1053,19 @@ def render(report: dict) -> str:
                    + (f"  (yours, excluded: ${own.get('total', 0):.2f})" if own.get("total") else ""))
         out.append(f"    (free = our cost · api = users' own keys · "
                    f"paid = actual revenue: ${r['paid']:.4f})")
+
+    if spd.get("ok") and spd.get("top"):
+        out.append("")
+        out.append(f"  Top spenders on {date}:")
+        out.extend(f"    · {t['user']}  ${t['usd']:.2f}" for t in spd["top"])
+    if spd.get("shrank"):
+        out.append(f"    ⚠ month-to-date FELL for {len(spd['shrank'])} user(s) "
+                   f"({', '.join(spd['shrank'][:3])}) - spendings is append-only, "
+                   f"so this should be impossible")
+    if hits.get("instrumented") and hits.get("by_user"):
+        out.append("")
+        out.append("  Hit the daily cap:")
+        out.extend(f"    · {k}  {v}x" for k, v in hits["by_user"].items())
 
     # The day's detail — who signed up, what they're playing.
     emails = u.get("new_day_emails") or []
@@ -783,11 +1161,43 @@ def render_digest(report: dict) -> str:
         f" · {g['total']} games live now (30d TTL)"
         f" · ${g['live_cost_usd']:.2f} held in live games",
     ]
+
+    # Per-user charged spend + the cap (2026-09-11). `money` above is what games
+    # recorded; this is what users were actually charged, previews and images
+    # included. Both are in the digest on purpose - a divergence between them is
+    # the signal, and hiding one of them is how the Gemini drain went unnoticed
+    # for eleven days.
+    sp = report.get("user_spend_mtd_usd") or {}
+    spd = sp.get("day") or {}
+    if spd.get("ok"):
+        top = (spd.get("top") or [{}])[0]
+        lines.insert(2, f"  Spend  ${spd['total']:.2f} charged to "
+                        f"{spd['users_with_spend']} user(s)"
+                        + (f" · median ${spd['median']:.2f} · top {top['user']} "
+                           f"${top['usd']:.2f}" if top.get("user") else ""))
+    elif spd.get("reason"):
+        lines.insert(2, f"  Spend  n/a ({spd['reason']})")
+
+    hits = sp.get("limit_hits") or {}
+    if hits.get("instrumented") and hits.get("hits"):
+        lines.insert(3, f"  Cap    {hits['users']} user(s) hit the daily limit "
+                        f"({hits['hits']} refusals)")
+
     rec = report.get("reconciliation") or {}
     if rec.get("ok") is False:
         lines.append(f"  BROKEN: user count does not reconcile "
                      f"({rec.get('delta')} from totals vs {rec.get('new_users_day')} "
                      f"new users) - figures not trustworthy")
+    srec = report.get("spend_reconciliation") or {}
+    if srec.get("ok") is False:
+        lines.append(f"  BROKEN: games recorded ${srec.get('game_burn_day_usd')} but "
+                     f"users were charged ${srec.get('user_spend_day_usd')} - cost "
+                     f"with no payer")
+    lrec = report.get("daily_ledger_reconciliation") or {}
+    if lrec.get("ok") is False:
+        lines.append(f"  BROKEN: requestStats ${lrec.get('request_stats_free_usd')} vs "
+                     f"daily ledger ${lrec.get('daily_ledger_free_usd')} (free tier, UTC "
+                     f"{lrec.get('utc_date')}) - a spend path is missing a record")
 
     # Threshold dropped from >1 to >=1 on 2026-08-22: Alex used to be counted
     # here, so "more than one" was the test for a stranger paying. He is now
@@ -816,6 +1226,92 @@ def render_digest(report: dict) -> str:
     return "\n".join(lines)
 
 
+# ─── Self-test ───────────────────────────────────────────────────────────────
+
+
+def selftest() -> bool:
+    """Exercise the pure reducers with no Firestore and no network.
+
+    There is no test framework in this repo, and the per-user day figure is
+    a DELTA - the class of number that is silently wrong rather than loudly
+    broken. The month-rollover and MTD-went-down branches in particular cannot
+    be triggered on demand against live data: one needs a calendar boundary,
+    the other needs corrupt data. So they are asserted here instead.
+
+    `python handlers/werewolf_stats.py selftest` - run it after touching
+    _spend_day, _spend_reconcile or _ledger_compare.
+    """
+    fails: list[str] = []
+
+    def check(label, got, want):
+        if got != want:
+            fails.append(f"{label}\n     got : {got}\n     want: {want}")
+        print(("  PASS  " if got == want else "  FAIL  ") + label)
+
+    prev = {"period_date": "2026-09-10", "user_mtd_period": "2026-09",
+            "user_mtd_by_user": {"a@x": 1.00, "b@x": 5.00, "c@x": 2.00}}
+    now = {"a@x": 3.50, "b@x": 5.00, "c@x": 2.25, "new@x": 0.75}
+
+    print("_spend_day")
+    d = _spend_day(now, "2026-09", prev)
+    # a +2.50, c +0.25, new +0.75 = 3.50. b did not move and must not appear.
+    check("counts only movers, sums to 3.50",
+          (d["ok"], d["users_with_spend"], d["total"]), (True, 3, 3.50))
+    check("median of [2.50, 0.25, 0.75]", d["median"], 0.75)
+    check("max", d["max"], 2.50)
+    check("unmoved user excluded from top",
+          [t["user"] for t in d["top"]], ["a@x", "new@x", "c@x"])
+    check("month rollover refuses a number",
+          _spend_day(now, "2026-09", dict(prev, user_mtd_period="2026-08"))["ok"], False)
+    check("no prior row refuses", _spend_day(now, "2026-09", None)["ok"], False)
+    check("legacy row without the map refuses",
+          _spend_day(now, "2026-09", {"period_date": "2026-09-01"})["ok"], False)
+    shrunk = _spend_day({"b@x": 4.00}, "2026-09", prev)
+    check("MTD going DOWN is surfaced", shrunk["shrank"], ["b@x"])
+    check("MTD going DOWN is not counted as spend", shrunk["total"], 0.0)
+
+    print("_spend_reconcile")
+    day = {"ok": True, "total": 10.00}
+    check("user > game passes, gap reported",
+          (lambda r: (r["ok"], r["unattributed_usd"]))(
+              _spend_reconcile({"day": day}, {"day_usd_excl_own": 7.50})), (True, 2.50))
+    check("game > user is BROKEN",
+          _spend_reconcile({"day": day}, {"day_usd_excl_own": 12.00})["ok"], False)
+    check("rounding tolerated",
+          _spend_reconcile({"day": day}, {"day_usd_excl_own": 10.005})["ok"], True)
+    check("no day figure -> not checkable",
+          _spend_reconcile({"day": {"ok": False, "reason": "x"}},
+                           {"day_usd_excl_own": 1.0})["ok"], None)
+    check("no burn -> not checkable", _spend_reconcile({"day": day}, None)["ok"], None)
+    check("no excl-own basis -> not checkable, never a drifting compare",
+          _spend_reconcile({"day": day}, {"day_usd": 5.0})["ok"], None)
+
+    print("_ledger_compare")
+    check("agreeing sums pass",
+          _ledger_compare(7.14, 7.145, 3, "2026-09-11", 40)["ok"], True)
+    check("tolerance scales per user ($0.02 gap, 3 users)",
+          _ledger_compare(7.14, 7.16, 3, "2026-09-11", 40)["ok"], True)
+    check("the 2026-09-11 gap ($7.14 vs $20.56) is BROKEN",
+          _ledger_compare(7.14, 20.56, 6, "2026-09-11", 40)["ok"], False)
+    check("stats rows with no ledger behind them is BROKEN",
+          _ledger_compare(0.50, 0.0, 0, "2026-09-11", 4)["ok"], False)
+    check("a charge with no stats row behind it is BROKEN",
+          _ledger_compare(0.0, 0.50, 1, "2026-09-11", 0)["ok"], False)
+    check("nothing on either side -> not checkable",
+          _ledger_compare(0.0, 0.0, 0, "2026-09-11", 0)["ok"], None)
+    check("minimum tolerance is $0.01",
+          _ledger_compare(1.00, 1.005, 1, "2026-09-11", 1)["ok"], True)
+
+    print()
+    if fails:
+        print(f"{len(fails)} FAILURE(S):")
+        for f in fails:
+            print("   " + f)
+        return False
+    print("all checks pass")
+    return True
+
+
 # ─── CLI ─────────────────────────────────────────────────────────────────────
 
 
@@ -825,6 +1321,7 @@ def main():
     sub.add_parser("report", help="Compute + persist a full activity snapshot (JSON)")
     sub.add_parser("show", help="Render the last persisted snapshot, human-readable")
     sub.add_parser("digest", help="Capped digest block from the last snapshot (for notify --digest)")
+    sub.add_parser("selftest", help="Assert the pure spend reducers (no Firestore, no network)")
     args = ap.parse_args()
     if args.cmd == "report":
         res = report()
@@ -847,6 +1344,8 @@ def main():
     elif args.cmd == "digest":
         prev = _prev_snapshot()
         print(render_digest(prev) if prev else "No snapshot yet — run `report` first.")
+    elif args.cmd == "selftest":
+        sys.exit(0 if selftest() else 1)
 
 
 if __name__ == "__main__":

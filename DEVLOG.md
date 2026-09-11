@@ -966,3 +966,87 @@ plan-capacity ceiling shared with Alex's own usage, not a bug.
 01:12Z, ops to 01:05Z). Mistral console re-auth that was urgent for four days
 reads ok since 09-03 14:50Z ($0.92/$30). One decision open for Alex: approve or
 reject post #1. Simona.
+
+## 2026-09-11 - the report that could not see two thirds of the money
+
+*Context.* Alex asked where his Gemini budget went: $10+ the day before, $0 that
+morning. It was a real drain ($20.59 to $0 across eleven days, confirmed against
+AI Studio's own $20.56 MTD) driven by a traffic spike on the game, 25 games in 20
+hours against 6 in the prior 48. But the interesting part is that neither
+`werewolf_stats` nor any of the game's own cost scripts showed it coming.
+
+*The finding.* The game bills through two paths. Bot and GM turns go through
+`commitUsageAtomically`, which charges the user, records game cost and writes a
+`requestStats` row in one transaction. Previews, avatars, illustrations and voice
+call `updateUserMonthlySpending` directly and write **no `requestStats` row**.
+Every cost report reads `requestStats`. Measured: $7.14 of Gemini spend recorded
+for Sept 1-11 against $20.56 actually billed. The image pipeline runs on
+`gemini-3.1-flash-image`, so two thirds of the drain was structurally invisible.
+
+Separately: `assertFreeTierSpendWithinLimit` exists and works, but is wired only
+into `stt-actions.ts` and `tts-actions.ts`. Nothing capped LLM or image spend on
+the free tier except `GAMES_PER_CALENDAR_DAY: 5`, a count. Per-owner cost that
+night ranged $0.01 to $2.98, so the count was metering the wrong noun.
+
+*What landed (Marlow side).* `handlers/werewolf_stats.py`, +365 lines:
+- Per-user spend for the reported day. `users.spendings` IS complete (all four
+  paths reach it), but it is bucketed by UTC month, so there is no daily figure
+  to read. Built one the way `_daily_burn` already builds its own: snapshot every
+  user's month-to-date total and difference it against the previous day's row.
+  Same caveat, stated the same way - snapshot to snapshot, not midnight to
+  midnight. The per-user map rides in `_compact` because without the prior day's
+  map the number is not recoverable at all.
+- `_spend_reconcile`: asserts per-user charged spend >= game-recorded burn. It
+  must be the larger of the two, because previews charge the user before a game
+  exists. The gap is therefore an estimate of preview spend, printed. If it
+  inverts, cost was recorded against no payer and the report says BROKEN. This is
+  the check that would have caught the whole thing on day one.
+- `limit_hits`, reading `users.dailySpend.limitHits`. The field does not exist
+  yet, so it reports "not instrumented yet" and lights up on its own when the
+  game ships it. Deliberately not substituted for the delta even once it exists:
+  `dailySpend` is a UTC-day field and this report is anchored to Alex's local
+  day, and quietly mixing the two is the exact bug the 2026-08-22 period rewrite
+  removed.
+- Day spend and cap hits are in the digest too, next to the game-cost figure
+  rather than instead of it. A divergence between those two numbers is the
+  signal; that is the whole lesson here.
+- New `selftest` subcommand. No test framework in this repo and a delta is the
+  kind of number that goes silently wrong, so the month-rollover and
+  MTD-went-down branches are asserted there. 15 checks, all pass.
+
+*Things that surprised us.* `MONTHLY_SPEND_USD: 5` reads like a spend cap and is
+actually a voice cap. Its docstring says so plainly; nobody had re-read it since
+the voice feature shipped. Worth remembering that a named constant in a limits
+object is not a limit until something calls it.
+
+Also: the three accounts that drove the spike share a prefix and an identical
+local-part length, created within five hours, with 5, 5 and 3 games. Five is the
+daily game cap. `bchase1424@gmail.com` is one of them.
+
+*Decisions reconsidered.* I first reported this to Alex as "illustrations and
+previews are not tracked." Wrong in the part that mattered: they are billed to
+`users.spendings` correctly, and he said so. The gap is `requestStats` plus
+enforcement, not billing. Different bug, different fix, and the correction came
+from him, not from me re-reading my own work.
+
+*What Marlow flagged that we looked at and partly disagreed with.* Her
+BetterStack triage called the `Game action failed: <char>` flood a
+"presence-model design gap, noisy by construction." Her severity read was right
+(recoverable, single-game-scoped) but the cause is not a design gap: the label
+comes from `fn.name`, which production minifies to a single letter, so every
+deploy mints fresh fingerprints and no log says which action failed. Written up
+in the game's `docs/bugs-and-future-improvements.md` for the session that owns
+that repo. Her working.md note is hers to revise; not touched.
+
+*What's deferred.* The game-side work: one `recordSpend` chokepoint, the
+`dailySpend` field, the $5/UTC-day cap Alex asked for, and `requestStats` rows
+for images and previews. Planned in the game repo at
+`docs/plan-user-spend-tracking-and-daily-cap.md`, explicitly for another session.
+Two open questions there for Alex: the monthly ceiling is still $5, which would
+make a $5/day cap decorative; and multi-account farming is out of scope.
+
+*State at end of day.* `werewolf_stats report` runs clean and wrote the first
+per-user baseline, so the day figure starts working on the 09-12 run (until then
+it prints "prior day predates per-user spend tracking", which is the intended
+degradation, not a failure). Gemini is at $24.79 after Alex's manual $25 top-up;
+at the 09-11 burn rate that is roughly four days, and auto-reload is off. Simona.

@@ -130,5 +130,27 @@
     "escalated_at": null,
     "escalation_reason": null,
     "resolved_at": "2026-08-27T16:40:06Z"
+  },
+  {
+    "id": "diag_20260911_145653_scheduler",
+    "detected_at": "2026-09-11T14:56:53Z",
+    "file": "driver/scheduler.py",
+    "line": 198,
+    "failure_mode": "schedule_due_tasks() reads/writes tasks/last_scheduled*.json with no locking around the read-modify-write (load_last_scheduled at line 198, save_last_scheduled at line 212). If two driver invocations run close together, both can read last_scheduled before either writes it, both see the same cron-scheduled task as not-yet-fired-today, and both enqueue+run it. Reproduced today on werewolf_stats/collect_stats: stats_history.jsonl shows two full report() runs for period_date 2026-09-10, 33 minutes apart (12:42:19Z and 13:15:55Z, the second one also double-posting the 13:15 digest entry); a third dispatch (collect_stats_20260911_1207) arrived for the same already-closed day at 14:54Z. Matches the standing 'Self-audit double-fire / intermittent ops-lane double-enqueue' pattern already noted in working.md for a different task (self-audit) - now confirmed reproducing on a second, unrelated daily task, so it's a scheduler-level bug, not something specific to self-audit.",
+    "suggested_fix": "Add locking (e.g. fcntl.flock on the last_scheduled state file, or an atomic check-and-mark) around the read-modify-write in schedule_due_tasks/load_last_scheduled/save_last_scheduled so two concurrent driver runs can't both observe a task as due before either commits the mark.",
+    "attempts": 1,
+    "attempt_notes": [
+      {
+        "n": 1,
+        "at": "2026-09-11T15:18:56Z",
+        "result": "pass",
+        "note": null
+      }
+    ],
+    "status": "resolved",
+    "resolved_commit": "2125ea9dca5bc7ae9a9f6fc7d1fa33fcaf00112c",
+    "escalated_at": null,
+    "escalation_reason": null,
+    "resolved_at": "2026-09-11T15:18:56Z"
   }
 ]

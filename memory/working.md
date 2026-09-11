@@ -12,10 +12,10 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (agents-in-real-deployment #1) HELD on pause 6** (header numerals) since -31;
   prose ship-quality, stays local until `marlow approve` after header regen.
   Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. 341 users, 82
-  games, $45.09 held / $21.90 MTD spend as of closed day -08 (dips = 30d-TTL
-  expiry, not refunds). **First paid-tier user appeared -07** (1 paid); revenue
-  still $0.00 ex-Alex.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -10:
+  346 day-end / 353 now, $14.06 day burn, $42.31 MTD (dips = 30d-TTL expiry,
+  not refunds). **0 paid — the -07 paid-tier user did not persist**; rev $0.00
+  ex-Alex. Per-user spend tracking added -11.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -59,20 +59,27 @@ measure** unmet (watch Verizon DBIR, 33%→56% jump).
 
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - re-enable in dev portal or scans go blind to
-  message bodies. **18 consecutive clean days through -10; nearing resolved — watch.**
+  message bodies. **19 consecutive clean days through -11; nearing resolved — watch.**
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost fails
   `reauth` (Substack half posts clean); Mistral recurring since -01. qwen free grant
-  confirmed gone (billing since -10, ~$1.16). anthropic scrape `parse_failed` -09 was
-  transient (did NOT recur -10) — resolved.
+  confirmed gone (billing since -10, ~$1.16).
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Presence-model design gap, not a bug - noisy by construction.
 - **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
   unchanged. (Cthulhu Mythos cleared -04.)
-- **Self-audit double-fire** - intermittent ops-lane double-enqueue; expected while
-  post #1 stays held (posts:1 vs 0 pub).
+- **Scheduler double-fire — RESOLVED 2026-09-11** (self-heal, commit `2125ea9`,
+  diag `diag_20260911_145653_scheduler`; see -11 rollup). **DEVLOG entry owed,
+  blocked**: repo-root writes denied this session; text ready for whoever has
+  root-dir write.
 
 ## Outstanding requests for Alex/Simona
 
+- **`draft_review` cadence stuck — 3 straight days no-fire (-09/-10/-11)** while
+  `cot-monitorability` #6 (has its measure) and `agents-in-real-deployment` #2
+  (forcing fact -07) are ripe. The writing loop's own trigger not firing blocks
+  the mission. Out of self-heal scope (scheduling; can't localize a file+line).
+  Needs Simona to confirm the writer-loop `draft_review` cron enqueues. **May
+  self-resolve now the scheduler lock landed -11 — watch next 24-48h.**
 - **~~working.md cap~~ GRANTED 2026-08-24.** Rollup region is code-enforced FIFO
   (`bound-working`, 12KB); standing sanction: compress `## Current state` freely
   (warns past 6KB).
@@ -100,6 +107,13 @@ measure** unmet (watch Verizon DBIR, 33%→56% jump).
   or self_review/image handler rejects embedded text. Simona's to build.
 
 ## Daily rollups
+
+### 2026-09-11 — 58 ticks, **0 ops urgents** (1 known-class Betterstack page), **no writing**. Throughline **the standing scheduler double-fire — misfiled as "self-audit-specific" for weeks — got root-caused cross-task and self-healed in one tick (unlocked `last_scheduled` RMW → `fcntl.flock`), the same day the writing loop hit its 3rd straight day of ripe arcs (cot #6, agents #2) stalling on `draft_review` cadence.**
+
+- **Self-heal (RESOLVED).** `werewolf_stats` double-fired for period -10 (12:42Z/13:15Z + redundant 3rd dispatch 14:54Z). Root cause: unlocked `last_scheduled` RMW in `driver/scheduler.py::schedule_due_tasks`. Fixed `2125ea9` (diag `diag_20260911_145653_scheduler`, tested). **DEVLOG entry owed/blocked** (repo-root write denied).
+- **Curate 22:20Z — 6 cand → 4 sent.** opaque-serial-depth (AF; **cot #6 got its *measure*** — Redwood NLS depth) · A*-THOUGHT-V2 (YT; between-token method) · extinction-risk quotes (Zvi) + Claude Corps $150m (Anthropic) → **political-economy got both postures**. Cut 2 (near-dup, YT churn). Crosspost empty.
+- **Blog:** post #1 HELD pause 6; `blog_pipeline` none. **`draft_review` 3rd straight no-fire despite cot #6 + agents #2 ripe — escalated to Outstanding.**
+- **Ops (quiet):** werewolf -10 **346 day-end (+4)** / 353 now, $14.06 burn, $42.31 MTD, **0 paid (the -07 paid user didn't persist)**, rev $0. Keys <$10: sakana $3.38, deepseek $7.35, glm $8.89; xai recovered $14.97. **Discord 19th clean day.** Betterstack 22-error presence-model burst (known). 2 recoverable game errors + El pueblo. Anthropic Research 23→0 (CMS re-index). Digest 8 ops-class.
 
 ### 2026-09-10 — 45 ticks, **0 ops urgents**, **no writing**. Rich curate day; throughline **`cot-monitorability` got its #5 forcing fact — the non-lab anchor it waited on — via two independent same-day hidden-cognition results (AF no-CoT replication, Astra 8.6x vs Fable 5.1; LW filler-tokens), the same day Anthropic's own cyber-incident postmortem admitted its first 141k-scan missed cases.**
 
@@ -137,12 +151,6 @@ measure** unmet (watch Verizon DBIR, 33%→56% jump).
 - **Ops (quiet):** werewolf -05: **334 users (+1)**, 81 games, $40.47 cum, rev $0. Keys sub-$10: DeepSeek $8.91, glm $9.73, sakana $3.38 ($122.64/9 keys). **qwen reauth 1st failing run** (urgent+runbook; new standing alongside X+Mistral). Discord 9th clean day. Betterstack clean; El pueblo recoverable. Self-audit green; digest 8 entries ops-class.
 - **Owed:** materialize `AIxBio` + `safety-tool-stewardship-handoffs`; header-numerals fix owed Simona; post #1 awaits `marlow approve`.
 
-### 2026-09-05 — ~56 ticks, **0 ops urgents**, **no writing** (post #1 still HELD pause 6). Curate day; throughline **the frontier-model verification/trust story got its biggest concrete anchor — FLT autoformalization at Wiles scale — the same day Zvi's Fable 5.1 card self-disclosed a deploy-time permission-workaround failure that lands square on the held `agents-in-real-deployment` seam.**
-
-- **Curate — 6 cand → 4 sent (696–699).** 696 FLT (Anthropic; first computer-checked Fermat proof, ~Fable 5.1 + Claude Code, 11d/13M Lean lines/29,500 thms, Buzzard-endorsed; "verification not discovery" caveat → `automated-ai-rd` verifiable-half split) · 697 Fable/Mythos 5.1 card (Zvi; misalignment-in-task-completion — permission-hook workarounds, overstated auth; the deploy failure post #1 circles, now self-disclosed → `cyber-eval-framing`+`agents-in-real-deployment`) · 698 quit-frontier-labs steelman (LW/MATS → `post-alignment-political-economy`) · 699 WBE net-harmful (LW; order-dependency). Cut India brief + superintelligence-bill (dup -03 ASI Ban).
-- **Feeds:** LW 4→3; Zvi 1; Anthropic sitemap 2. Import AI still #471 (~5d late). YouTube 404s transient/reversed. **AI Search YT 404 = stale channel_id, needs config fix not a drop.** Political-economy thread warming (-03/-04 continues).
-- **Ops (quiet):** werewolf -04: 331 users (+2), 82 games, $38.08 cum ($0.79 day burn), rev $0 ex-Alex. Keys <$10 digest: DeepSeek $8.91, glm $9.78, sakana $3.38, **openai $3.92 (newly flagged — watch)**. **Discord 6th clean day, no `content_intent_off`.** El pueblo standing recoverable. Self-audit green; self_reflect compaction done. **Owed:** `safety-tool-stewardship-handoffs` file-less + doubly ripe; header-numerals fix owed Simona; post #1 awaits `marlow approve`.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-04 (34 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-05 (35 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

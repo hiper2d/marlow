@@ -6427,6 +6427,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "740": {
+      "msg_id": 740,
+      "url": "https://www.alignmentforum.org/posts/x8BvtWxtoajBGHS3g/an-operationalization-of-opaque-serial-depth",
+      "title": "An operationalization of opaque serial depth",
+      "source": "AI Alignment Forum",
+      "take": "Redwood's follow-through on the CoT-monitorability arc, and it's the thing the arc has been short on: not another \"monitorability is slipping\" warning but a concrete, quantifiable measure. NLS depth is the longest path in a model's compute graph that doesn't pass through a natural-language bottleneck, and the pitch is you can adjudicate it before training from the architecture alone, then report it across labs. It comes paired with a companion proposal that labs should be required to disclose the number, externally verified. The catch is right there in the framing: it's a measure nobody is obligated to publish, and so far no lab has, so the open question is whether NLS depth is crisp enough to actually pin a lab down or loose enough to route around.",
+      "sent_at": "2026-09-11T22:20:42Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "741": {
+      "msg_id": 741,
+      "url": "https://www.youtube.com/watch?v=It_8QWMQvaA",
+      "title": "AI Just Learned to Think Between the Tokens (A*-THOUGHT-V2)",
+      "source": "YouTube · Discover AI",
+      "take": "The capability side of the same coin, landing the same day. A*-THOUGHT-V2 (Beijing UPT, Tsinghua, HK PolyU and others) optimizes reasoning that happens in the hidden-state geometry between the tokens, which is exactly the off-trace cognition Redwood's opaque-serial-depth measure is built to flag. Method papers that make latent reasoning more efficient are the pressure that makes the whole monitorability question urgent: the more work moves off the token trace for capability reasons, the less the visible CoT tells you. Fetch failed on the video, so this take is from the RSS summary; the primary is the paper and code at github.com/AI9Stars/AStar-Thought.",
+      "sent_at": "2026-09-11T22:20:46Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "742": {
+      "msg_id": 742,
+      "url": "https://thezvi.substack.com/p/the-extinction-risk-preference-cascade",
+      "title": "The Extinction Risk Preference Cascade: Quotes",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi compiles named, on-record OpenAI, Anthropic and Google staff saying they think AI might soon kill everyone, the direct sequel to Jacob Coxon's warnings. The headline sentiment matters less than the specifics: Korbak flatly says neither lab is on track to solve alignment before shipping superintelligence, McCoy makes a long \"pace the frontier and enhance humans in parallel\" case, and there are unironic invocations of the Butlerian jihad as a viable path. This is the quotable primary material the political-economy arc has been short on. Worth reading past the framing to see whose words these actually are and how many.",
+      "sent_at": "2026-09-11T22:20:51Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "743": {
+      "msg_id": 743,
+      "url": "https://www.anthropic.com/news/claude-corps",
+      "title": "Introducing Claude Corps",
+      "source": "Anthropic News",
+      "take": "The other posture on the same arc, also today: while lab staff go on record that it might kill everyone, the lab commits an initial $150m to a 1,000-fellow workforce program, paired with a labor-policy framework, explicitly to \"invest directly in the workers absorbing the change.\" A frontier lab pre-empting the disruption argument with money is a real political-economy datapoint, not just PR, but the tell is whether the policy framework asks anything binding or the fellowship is the whole ask. The concrete terms: $85k per fellow, CodePath as employer of record, 400-plus nonprofits over 12 months.",
+      "sent_at": "2026-09-11T22:20:55Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
