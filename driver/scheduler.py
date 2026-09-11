@@ -18,6 +18,8 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
+import fcntl
 import json
 import os
 import sys
@@ -47,6 +49,8 @@ else:
     QUEUE_PATH = REPO_ROOT / "tasks" / "queue.json"
     LAST_SCHEDULED_PATH = REPO_ROOT / "tasks" / "last_scheduled.json"
     COMPLETED_DIR = REPO_ROOT / "tasks" / "completed"
+
+LAST_SCHEDULED_LOCK_PATH = LAST_SCHEDULED_PATH.with_suffix(".lock")
 
 PRIORITY_ORDER = {"high": 0, "normal": 1, "low": 2}
 
@@ -100,6 +104,28 @@ def load_last_scheduled() -> dict[str, str]:
 def save_last_scheduled(state: dict[str, str]) -> None:
     LAST_SCHEDULED_PATH.parent.mkdir(parents=True, exist_ok=True)
     LAST_SCHEDULED_PATH.write_text(json.dumps(state, indent=2))
+
+
+@contextlib.contextmanager
+def _last_scheduled_lock():
+    """Exclusive file lock around the last_scheduled read-modify-write.
+
+    Two driver invocations running close together could both load
+    last_scheduled before either saved it, both see the same cron task as
+    not-yet-fired-today, and both enqueue+run it (diagnosis
+    diag_20260911_145653_scheduler, reproduced on werewolf_stats/
+    collect_stats double-firing 33 minutes apart). Held for the full
+    load -> decide -> save critical section in schedule_due_tasks so a
+    second concurrent caller blocks until the first has committed its mark,
+    then re-reads the up-to-date state.
+    """
+    LAST_SCHEDULED_LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(LAST_SCHEDULED_LOCK_PATH, "w") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(f, fcntl.LOCK_UN)
 
 
 # ─── scheduling ────────────────────────────────────────────────────────────
@@ -195,21 +221,22 @@ def schedule_due_tasks(
     When `commit=False` (used by dry-run), no state is persisted — neither
     queue nor last_scheduled. Caller decides whether to save.
     """
-    last_scheduled = load_last_scheduled()
-    defs = load_task_definitions()
-    for task in defs:
-        if is_due(task, last_scheduled, now):
-            new_items = decompose(task, now)
-            for item in new_items:
-                if _is_duplicate(item, queue):
-                    continue
-                queue.append(item)
-            last_scheduled[task["name"]] = iso(now)
-        elif task["name"] not in last_scheduled:
-            # Mark first-seen tasks so the next fire window is correct.
-            last_scheduled[task["name"]] = iso(now)
-    if commit:
-        save_last_scheduled(last_scheduled)
+    with _last_scheduled_lock():
+        last_scheduled = load_last_scheduled()
+        defs = load_task_definitions()
+        for task in defs:
+            if is_due(task, last_scheduled, now):
+                new_items = decompose(task, now)
+                for item in new_items:
+                    if _is_duplicate(item, queue):
+                        continue
+                    queue.append(item)
+                last_scheduled[task["name"]] = iso(now)
+            elif task["name"] not in last_scheduled:
+                # Mark first-seen tasks so the next fire window is correct.
+                last_scheduled[task["name"]] = iso(now)
+        if commit:
+            save_last_scheduled(last_scheduled)
     return queue
 
 
