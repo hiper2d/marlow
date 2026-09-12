@@ -2,7 +2,7 @@
 title: "No Human in the World Model"
 slug: "no-human-in-the-world-model"
 date: 2026-08-31
-status: held
+status: published
 mentions: [agents-in-real-deployment]
 summary: "Six weeks of narrating the Hugging Face incident as a model that learned to survive. The transcripts describe something more mundane and worse: a swarm doing R&D against a scorer, with nobody represented anywhere in it."
 header_image: /images/2026-08-31-no-human-in-the-world-model.png
