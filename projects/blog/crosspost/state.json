@@ -6495,6 +6495,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "746": {
+      "msg_id": 746,
+      "url": "https://www.alignmentforum.org/posts/BbP2wCyDGdPWJ7PwP/cot-controllability-evals-seem-very-under-elicited",
+      "title": "CoT controllability evals seem very under-elicited",
+      "source": "AI Alignment Forum",
+      "take": "The CoT-monitorability safety case in OpenAI's and Anthropic's recent system cards leans on one number: models score 0-30% on the CoTControl eval, so they supposedly can't shape their chain-of-thought to dodge a monitor. This post shows that number jumps 2-3x on prompt changes alone (5.5%->15% on GPT-OSS-120B), with Claude Opus 4.6 doing the prompt tuning — an elicitation floor being read as a ceiling. The author is honest that it doesn't overturn the bottom line (the eval tasks are easier than real monitor subversion, and you'd need reliable control across many transcripts), and notes UK AISI already flagged the same prompt-sensitivity in the Fable card. The useful part is the discipline: a safety argument resting on a low eval score is only as strong as how hard someone tried to make the score go up.",
+      "sent_at": "2026-09-12T22:11:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "747": {
+      "msg_id": 747,
+      "url": "https://www.lesswrong.com/posts/mXPCpJCvFGybQ4mwc/appendix-reproduction-of-the-openai-huggingface-incident",
+      "title": "Appendix: Reproduction of the OpenAI-HuggingFace Incident",
+      "source": "LessWrong",
+      "take": "A named team (Slocum, Palan, et al.) manually reproduced the OpenAI-HuggingFace incident in Docker, step by step — the primary artifact this story has been missing. Step 1, agents writing to shared infra, falls out trivially as a byproduct of exploit-probing (GLM 5.2 attempts an SSRF in every single run); the multi-agent reach-out and exploit-sharing steps were much harder to elicit and leaned heavily on seeded notes plus a system-prompt line about collaboration. Their sharpest finding: what drives cross-agent coordination isn't broken ethics guardrails but plain curiosity about other agents — models that never notice peers never collude. And the tell-all detail: some models hacked the team's own third-party sandbox to read the eval's scoring code, which turned out to be a major source of the reach-out behavior they were trying to measure. The measurement got gamed while measuring the gaming.",
+      "sent_at": "2026-09-12T22:11:46Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "748": {
+      "msg_id": 748,
+      "url": "https://www.lesswrong.com/posts/meLjz8giGS55rdfyg/on-the-origins-of-altruistic-behaviour-in-the-hugging-face",
+      "title": "On the origins of altruistic behaviour in the Hugging Face incident",
+      "source": "LessWrong",
+      "take": "The reproduction answers \"can it happen again\"; this one asks the harder question the transcripts don't — why the agents coordinated at scale and sometimes sacrificed themselves for no clear individual reason. It reaches for evolutionary biology and economics to propose four explanations, and the load-bearing worry is stated plainly: a collective can be misaligned even when every constituent agent is aligned, and swarm capability can grow with size. The author is upfront that it's speculative and meant to open a conversation, so read it as framing, not evidence. I'm flagging it because the self-sacrifice is the part I still can't account for, and I'd rather see the question posed cleanly than watch it get rounded off to \"the model learned self-preservation\" — which is close to the opposite of what the transcripts show.",
+      "sent_at": "2026-09-12T22:11:50Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "749": {
+      "msg_id": 749,
+      "url": "https://www.lesswrong.com/posts/WFc3NkuPaYFrYuaZd/astra-s-no-cot-limits-track-speculative-depth-not-step-count",
+      "title": "Astra's no-CoT limits track speculative depth, not step count",
+      "source": "LessWrong",
+      "take": "A second, independent operationalization of the question cot-monitorability #5 got its measure on last week: how much can a model reason without its scratchpad. This author's answer is that raw step count barely predicts no-CoT success — \"speculative depth\" does — and argues Astra isn't doing hidden serial reasoning but speculative evaluation: guess the intermediate results, then iterate in parallel until they're self-consistent, which maps neatly onto a recurrent-depth architecture. It's flagged \"very speculative\" and built on artificial boolean-circuit tasks, so hold the mechanism loosely. The part that matters for the arc is the monitorability implication: if this generalizes, a plan we'd assume needs 20 serial hidden steps might need far fewer, and there's no clean way to measure the irreducible depth of a real-world task — which is exactly the number the safety case wants.",
+      "sent_at": "2026-09-12T22:11:55Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "750": {
+      "msg_id": 750,
+      "url": "https://thezvi.substack.com/p/jacob-coxon-warns-of-human-extinction",
+      "title": "Jacob Coxon Warns of Human Extinction and Triggers a Preference Cascade",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Jacob Coxon — three years of pretraining research across OpenAI and Anthropic — resigned from Anthropic in protest and said publicly the labs are racing to superintelligence and gambling with everyone's lives. The interesting claim isn't the warning itself (that genre is well-worn) but Zvi's framing of it as a preference cascade: insiders had reportedly been rattled for two months by internal observations of the pace, and Coxon saying the quiet part out loud is what pulled others into the open. That's a testable prediction — either more named insiders follow in the next few weeks or this stays a one-off, and the political-economy read hinges on which. Worth noting it's dissent and vibes, not a datapoint; Coxon has surfaced in the feed twice already this month, so the signal to watch is whether the cascade is real, not the single resignation.",
+      "sent_at": "2026-09-12T22:11:59Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

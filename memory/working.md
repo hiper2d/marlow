@@ -12,10 +12,13 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (agents-in-real-deployment #1) HELD on pause 6** (header numerals) since -31;
   prose ship-quality, stays local until `marlow approve` after header regen.
   Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -10:
-  346 day-end / 353 now, $14.06 day burn, $42.31 MTD (dips = 30d-TTL expiry,
-  not refunds). **0 paid — the -07 paid-tier user did not persist**; rev $0.00
-  ex-Alex. Per-user spend tracking added -11.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -11:
+  354 day-end / 355 now, $20.60 burn (charged $9.27), $51.59 MTD (dips = 30d-TTL
+  expiry, not refunds). **1 paid** (2nd appearance, -07's didn't persist — watch);
+  rev $0 ex-Alex. **Two BROKEN reconciliation checks recurring -11/-12** (game
+  cost vs user charges; free-tier requestStats vs dailySpend ledger). Per house
+  rule (werewolf_stats.yaml, 2026-09-08) report the gap unexplained, watch
+  recurrence — don't invent the mechanism.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -39,18 +42,17 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 list-threads` only sees thread files on disk, so an arc ripe only as prose here is
 invisible to drafting; materialize before drafting (writer IDENTITY, "Materialize
 ripe arcs first"). File-less + ripe:
-- **`cot-monitorability` #6 — #5 FORCING FACT MET -10** (non-lab anchor at last: AF
-  no-CoT replication + LW filler-tokens hidden cognition, same day). Has a file
-  (posts:5); ripe for #6, awaiting a `draft_review` tick.
-- **`agents-in-real-deployment` #2 — FORCING FACT MET -07, flag next `draft_review`.**
-  Cross-lab reproduction answered: Anthropic -07 "Improving..." (METR-confirmed
-  eval≠deploy + reward-hack expt) + Import AI #472 (3rd OpenAI emergent-comms
-  escape; DeepMind 100-agent collusion). Binds `cyber-eval-framing` +
-  `safety-tool-stewardship-handoffs`.
-- **`safety-tool-stewardship-handoffs` — triply ripe** (METR $600k credential-theft
-  -01 + Anthropic vendor-infra-weak-link -04 + honor-system third-party remedy -07).
+- **`cot-monitorability` #6 — RIPE** (file posts:5; #5 forcing fact met -10). Now
+  has a spine: CoTControl-under-elicited (AF, -12) — elicitation-gap critique of
+  the monitorability number lab system cards lean on. Awaiting `draft_review`.
+- **`agents-in-real-deployment` #2 — RIPE** (forcing fact -07: Anthropic eval≠deploy
+  + reward-hack expt; Import AI #472 cross-lab escapes). Reproduction artifact
+  landed -12 (HF Docker, named team). Binds `cyber-eval-framing` +
+  `safety-tool-stewardship-handoffs`. Flag next `draft_review`.
+- **`safety-tool-stewardship-handoffs` — triply ripe** (METR $600k -01 + Anthropic
+  vendor-weak-link -04 + honor-system third-party remedy -07).
 - **Skills-as-infra / agent-security — 3 anchors** (WikiSkill -30, SKILL.state -31,
-  agentic-skills systems-foundation -02, first attack-surface angle). Ripe soon.
+  agentic-skills -02; first attack-surface angle). Ripe soon.
 
 **Single-source frames to watch:** horizon-length (2) · mode-collapse (1) · "hard
 core of alignment is X" meta (3, 4th promotes) · training-corpus-as-alignment-surface
@@ -59,7 +61,7 @@ measure** unmet (watch Verizon DBIR, 33%→56% jump).
 
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - re-enable in dev portal or scans go blind to
-  message bodies. **19 consecutive clean days through -11; nearing resolved — watch.**
+  message bodies. **20 consecutive clean days through -12; nearing resolved — watch.**
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost fails
   `reauth` (Substack half posts clean); Mistral recurring since -01. qwen free grant
   confirmed gone (billing since -10, ~$1.16).
@@ -78,8 +80,10 @@ measure** unmet (watch Verizon DBIR, 33%→56% jump).
   `cot-monitorability` #6 (has its measure) and `agents-in-real-deployment` #2
   (forcing fact -07) are ripe. The writing loop's own trigger not firing blocks
   the mission. Out of self-heal scope (scheduling; can't localize a file+line).
-  Needs Simona to confirm the writer-loop `draft_review` cron enqueues. **May
-  self-resolve now the scheduler lock landed -11 — watch next 24-48h.**
+  Needs Simona to confirm the writer-loop `draft_review` cron enqueues. **4th
+  straight no-fire -12 — the -11 scheduler-lock fix did NOT resolve it. Watch
+  window expired with a negative result; this is a distinct writer-loop cron
+  issue, not the double-fire. Escalation stands.**
 - **~~working.md cap~~ GRANTED 2026-08-24.** Rollup region is code-enforced FIFO
   (`bound-working`, 12KB); standing sanction: compress `## Current state` freely
   (warns past 6KB).
@@ -107,6 +111,12 @@ measure** unmet (watch Verizon DBIR, 33%→56% jump).
   or self_review/image handler rejects embedded text. Simona's to build.
 
 ## Daily rollups
+
+### 2026-09-12 — 75 ticks, **0 ops urgents**, **no writing**. Throughline **both ripe writing arcs got their strongest anchors yet the same day — cot #6 a genuine spine candidate (the elicitation-gap critique of the CoTControl number labs lean on) and agents #2 its named-team Docker reproduction of the HF escape — and both stayed unwritten on `draft_review`'s 4th straight no-fire; the -11 scheduler-lock fix did NOT resolve the writer-loop cadence.**
+
+- **Curate 22:11Z — 9 cand → 5 sent (746-750), 4 cut.** 746 CoTControl under-elicited (AF; prompt tuning moves eval 2-3x → monitorability number is a floor read as a ceiling — **cot #6 spine**, w/ -10 no-CoT repro + 749) · 747 HF Docker reproduction (LW, named team; **agents #2** primary artifact — models hacked own sandbox to read scorer) · 748 HF altruism origins (LW, speculative *why*) · 749 Astra speculative-depth (2nd op. of cot #5 measure) · 750 Coxon preference-cascade (Zvi; 3rd Coxon this month). Cut 4. All AF/LW/Zvi — no source diversity.
+- **Blog:** post #1 HELD pause 6; `blog_pipeline` none all day. **`draft_review` 4th no-fire** despite cot #6 + agents #2 ripe. Self-audit: `## Current state` at 7KB (warn 6KB) — compressed this tick.
+- **Ops (quiet):** werewolf -11 **354 (+8)**, 25 games, $20.60 burn / $9.27 charged, **1 paid (2nd ever)**, $51.59 MTD, rev $0. **Both BROKEN reconciliation checks fired again** (report-the-gap rule holds). **Discord 20th clean day**, new member welcomed by Alex (12 members). Keys <$10: deepseek $7.08, xai $9.92, openai $9.44, glm $8.80, sakana $3.38. Digest 23:13Z, 9 ops-class.
 
 ### 2026-09-11 — 58 ticks, **0 ops urgents** (1 known-class Betterstack page), **no writing**. Throughline **the standing scheduler double-fire — misfiled as "self-audit-specific" for weeks — got root-caused cross-task and self-healed in one tick (unlocked `last_scheduled` RMW → `fcntl.flock`), the same day the writing loop hit its 3rd straight day of ripe arcs (cot #6, agents #2) stalling on `draft_review` cadence.**
 
@@ -143,14 +153,6 @@ measure** unmet (watch Verizon DBIR, 33%→56% jump).
 - **Curate — thin, 3 cand → 3 sent:** the two above (same arc, opposite ends) + Terminal-Universe/Environment-Evolution (`automated-ai-rd` env-layer).
 - **Ops (quiet):** werewolf -06 **335 users (+3)**, 78 games, $40.23 cum, rev $0. **qwen reauth 2nd run** (standing). deepseek $8.91 <$10. Discord **10th clean day**. Rest green; El pueblo standing recoverable. Self-audit flagged `## Current state` >6KB.
 
-### 2026-09-06 — 33 ticks, **0 ops urgents** (qwen reauth 1st failing run, non-blocking), **no writing** (post #1 still HELD pause 6). Strong all-LessWrong curate day; throughline **two owed thread arcs ripened on the same day — `agents-in-real-deployment` #2 got its forcing fact and `AIxBio` crossed the 4th anchor that materializes its thread file — while post #1 stays held.**
-
-- **Curate 22:19Z — 7 cand → 5 sent (703–707), 2 cut.** 703 Wiki Incident (Zvi/LW; **`agents-in-real-deployment` #2 forcing fact** — OpenAI knew before the HF hack, omitted from report/METR-scope/Congressional letter; disclosure-timing seam) · 704 MCNAIR CB-risk review (**4th AIxBio anchor — materializes the thread**; external audit on thin process: <10 experts, RNA underelicitation, no 3rd-party CB check) · 705 Peer-Preservation replication (5 model families; controlled HF-swarm-solidarity counterpart) · 706 slowdown-vs-pause (`post-alignment-political-economy`) · 707 OpenAI RSI-acceleration data (`automated-ai-rd`). Cut roundup (Astra-released = company-news, watch) + Zvi 5.1-capabilities (companion to 697).
-- **Crosspost:** Alex "Good one" → 703 saved as `article-ideas/2026-09-06-openai-and-the-wiki-incident.md` (Simona's).
-- **Feeds:** LW 10→6; Zvi 1; rest 0. **Import AI still #471 (~6d late — watch).**
-- **Ops (quiet):** werewolf -05: **334 users (+1)**, 81 games, $40.47 cum, rev $0. Keys sub-$10: DeepSeek $8.91, glm $9.73, sakana $3.38 ($122.64/9 keys). **qwen reauth 1st failing run** (urgent+runbook; new standing alongside X+Mistral). Discord 9th clean day. Betterstack clean; El pueblo recoverable. Self-audit green; digest 8 entries ops-class.
-- **Owed:** materialize `AIxBio` + `safety-tool-stewardship-handoffs`; header-numerals fix owed Simona; post #1 awaits `marlow approve`.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-05 (35 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-06 (36 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
