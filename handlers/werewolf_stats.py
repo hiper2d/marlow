@@ -1101,6 +1101,31 @@ def render(report: dict) -> str:
 
 # Above these counts, the detail lists collapse to bare counts so a busy day
 # can't flood the digest. Tune via editorial feedback if the cap feels wrong.
+def _paid_tier_line(paid_count: int, paid_revenue_usd: float) -> str | None:
+    """The paid-tier line for the digest. Tier count is NOT revenue.
+
+    `tiers.paid` counts user docs with `tier == "paid"` (Alex already removed).
+    Switching tier is a free one-click button in /profile
+    (ProfileTierCards -> updateUserTier); Stripe only enters later, on a
+    balance top-up. So the count answers "who pressed the button", never "who
+    paid". The old line called that a "real paying customer", fired on
+    2026-09-11 with paid revenue at $0.00, and sent Alex hunting for a Stripe
+    transaction that did not exist.
+
+    The loud alarm now hangs on money - paid-bucket spend above zero, which can
+    only happen after a real top-up is drawn down. A tier flip with no revenue
+    still gets a line, because it is a genuine signal of intent, but a quiet
+    one that says plainly that nobody has paid.
+    """
+    if paid_revenue_usd > 0:
+        return (f"  *** PAID REVENUE: ${paid_revenue_usd:.2f} MTD from "
+                f"{paid_count} paid-tier user(s), Alex excluded - real money ***")
+    if paid_count >= 1:
+        return (f"  Tier: {paid_count} user(s) switched to paid, revenue $0.00 "
+                f"(the switch is free - nobody has topped up)")
+    return None
+
+
 DIGEST_LIST_CAP = 5
 
 
@@ -1115,10 +1140,11 @@ def render_digest(report: dict) -> str:
     the wider terminal render.
 
     Two deliberate omissions:
-    - The `paid` tier and `paid revenue` are NOT reported. The only paid user
-      is Alex himself, so "$0.00 revenue" is noise that reads as a problem
-      every single day. A paid count above 1 IS surfaced, loudly, because that
-      would be the first real paying user.
+    - `paid revenue` is not reported as its own figure while it is $0.00 -
+      daily noise that reads as a problem. The paid TIER is surfaced (see
+      _paid_tier_line), but quietly and labelled as $0.00 revenue, because a
+      tier switch is free and is not a payment. Only revenue above zero gets
+      the loud line.
     - Money is the day-anchored `today_usd`, never the since-last-snapshot
       delta, so an extra manual run cannot shrink the reported day.
     """
@@ -1199,13 +1225,11 @@ def render_digest(report: dict) -> str:
                      f"daily ledger ${lrec.get('daily_ledger_free_usd')} (free tier, UTC "
                      f"{lrec.get('utc_date')}) - a spend path is missing a record")
 
-    # Threshold dropped from >1 to >=1 on 2026-08-22: Alex used to be counted
-    # here, so "more than one" was the test for a stranger paying. He is now
-    # excluded, which makes the very first paid user the milestone. Left at >1
-    # it would have stayed silent for the actual first paying customer.
-    paid = (u.get("tiers") or {}).get("paid") or 0
-    if paid >= 1:
-        lines.append(f"  *** PAID USERS: {paid} - real paying customer(s), Alex excluded ***")
+    r = report.get("user_spend_mtd_usd") or report.get("revenue_mtd_usd") or {}
+    line = _paid_tier_line((u.get("tiers") or {}).get("paid") or 0,
+                           float(r.get("paid") or 0.0))
+    if line:
+        lines.append(line)
 
     emails = u.get("new_day_emails") or []
     if 0 < len(emails) <= DIGEST_LIST_CAP:
@@ -1285,6 +1309,16 @@ def selftest() -> bool:
     check("no burn -> not checkable", _spend_reconcile({"day": day}, None)["ok"], None)
     check("no excl-own basis -> not checkable, never a drifting compare",
           _spend_reconcile({"day": day}, {"day_usd": 5.0})["ok"], None)
+
+    print("_paid_tier_line")
+    check("nobody on the paid tier -> no line", _paid_tier_line(0, 0.0), None)
+    check("tier flip with no money is quiet, and says $0.00",
+          ("***" in (_paid_tier_line(1, 0.0) or ""),
+           "$0.00" in (_paid_tier_line(1, 0.0) or "")), (False, True))
+    check("revenue above zero is the loud line",
+          "*** PAID REVENUE: $4.20" in (_paid_tier_line(1, 4.20) or ""), True)
+    check("revenue with no tier count still reports the money",
+          "*** PAID REVENUE" in (_paid_tier_line(0, 1.00) or ""), True)
 
     print("_ledger_compare")
     check("agreeing sums pass",
