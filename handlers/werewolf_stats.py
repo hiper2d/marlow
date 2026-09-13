@@ -828,6 +828,104 @@ def _save(report: dict) -> None:
         pass
 
 
+# ─── Account farms (device + IP clustering) ──────────────────────────────────
+#
+# Shipped 2026-09-13, the reporting half of the multi-account work. The game now
+# stamps a device id (an httpOnly cookie mirrored into localStorage) and the
+# Vercel-observed client IP onto `devices/{id}` and onto the user doc.
+#
+# WHY: on 2026-09-11 one person ran four Google accounts - `chase.benjamin.j@`
+# plus `bchase1422/1423/1424@`, display names Ben Chase / Tom Petty / Tom Hanks /
+# Tom Clancy - and hopped to the next one nine minutes after the daily cap refused
+# him. $28.62 between them, 41% of the month's free-tier spend. It was only caught
+# because a human eyeballed the surnames. This makes it a query.
+#
+# Both signals are SOFT and this report never treats them as proof. One device
+# with several accounts is also what a family laptop looks like; one IP with
+# several accounts is also what a university or a mobile carrier looks like. The
+# output is a lead to look at, never a verdict, and nothing anywhere acts on it
+# automatically.
+
+DEVICES = "devices"
+# Below this, a shared browser or a shared connection is unremarkable.
+CLUSTER_MIN_ACCOUNTS = 2
+
+
+def _cluster_rows(devices: list[dict], excluded: set[str] | None = None) -> dict:
+    """Pure: fold device docs into the multi-account clusters worth a human look.
+
+    Takes `[{deviceId, users, ips, geo}, ...]` and returns clusters by device and,
+    separately, by IP - an account farm that clears its browser between accounts
+    still shares a connection, so the two views catch different halves of the same
+    behaviour and neither subsumes the other.
+
+    Alex's own account is dropped before counting: he signs in from his own
+    machines constantly and would otherwise sit at the top of this list forever.
+    """
+    excluded = {e.lower() for e in (excluded or set())}
+
+    def keep(emails) -> list[str]:
+        return sorted({e for e in (emails or []) if isinstance(e, str)
+                       and e.lower() not in excluded})
+
+    by_device = []
+    for d in devices:
+        users = keep(d.get("users"))
+        if len(users) >= CLUSTER_MIN_ACCOUNTS:
+            by_device.append({
+                "device_id": d.get("deviceId"),
+                "users": users,
+                "accounts": len(users),
+                "ips": sorted({i for i in (d.get("ips") or []) if isinstance(i, str)}),
+                "geo": d.get("geo") or {},
+            })
+    by_device.sort(key=lambda c: (-c["accounts"], str(c["device_id"])))
+
+    ip_map: dict[str, set[str]] = {}
+    ip_devices: dict[str, set[str]] = {}
+    for d in devices:
+        for ip in (d.get("ips") or []):
+            if not isinstance(ip, str):
+                continue
+            ip_map.setdefault(ip, set()).update(keep(d.get("users")))
+            if d.get("deviceId"):
+                ip_devices.setdefault(ip, set()).add(d["deviceId"])
+    by_ip = [
+        {"ip": ip, "users": sorted(users), "accounts": len(users),
+         "devices": len(ip_devices.get(ip, set()))}
+        for ip, users in ip_map.items() if len(users) >= CLUSTER_MIN_ACCOUNTS
+    ]
+    by_ip.sort(key=lambda c: (-c["accounts"], c["ip"]))
+
+    return {
+        "instrumented": bool(devices),
+        "devices_seen": len(devices),
+        "by_device": by_device,
+        "by_ip": by_ip,
+        # A device that cleared storage shows up as a NEW device id on an OLD ip,
+        # so by_ip catching more accounts than by_device is the signature of
+        # someone resetting their browser between accounts.
+        "storage_resets_suspected": bool(by_ip) and (
+            max((c["accounts"] for c in by_ip), default=0)
+            > max((c["accounts"] for c in by_device), default=0)
+        ),
+    }
+
+
+def _device_clusters(db) -> dict:
+    """Read the `devices` collection and fold it. Fail-soft: a reporting extra
+    must never take the whole snapshot down."""
+    try:
+        docs = [d.to_dict() or {} for d in db.collection(DEVICES).stream()]
+    except Exception as e:  # noqa: BLE001
+        return {"instrumented": False, "reason": f"could not read {DEVICES}: {e}"}
+    if not docs:
+        return {"instrumented": False,
+                "reason": "no device records yet - the game stamps them from the "
+                          "2026-09-13 deploy onward, so this fills in as users return"}
+    return _cluster_rows(docs, EXCLUDED_OWNERS)
+
+
 # ─── Report ──────────────────────────────────────────────────────────────────
 
 
@@ -851,6 +949,7 @@ def report() -> dict:
     reconciliation = _reconcile(period, users)
     spend_reconciliation = _spend_reconcile(user_spend, burn)
     ledger_reconciliation = _daily_ledger_reconcile(db, now)
+    clusters = _device_clusters(db)
 
     result = {
         "ok": True,
@@ -870,6 +969,8 @@ def report() -> dict:
         # free-tier requestStats row today landed in a user's dailySpend ledger.
         "daily_ledger_reconciliation": ledger_reconciliation,
         "daily_burn": burn,   # null on first run (no prior snapshot to diff)
+        # Multi-account leads. Soft signals, never a verdict - see _cluster_rows.
+        "device_clusters": clusters,
         # Never leave a filter implicit — an exclusion nobody can see is how a
         # number ends up meaning something other than its label.
         "excluded": {
@@ -1101,6 +1202,36 @@ def render(report: dict) -> str:
 
 # Above these counts, the detail lists collapse to bare counts so a busy day
 # can't flood the digest. Tune via editorial feedback if the cap feels wrong.
+def _cluster_lines(clusters: dict) -> list[str]:
+    """Digest lines for multi-account leads. Silent when there is nothing to say.
+
+    Worded as an observation, never an accusation: a shared browser is also a
+    family laptop and a shared IP is also a campus. The emails are listed because
+    the whole point is that Alex can judge in two seconds what no rule can.
+    """
+    if not clusters.get("instrumented"):
+        return []
+    out: list[str] = []
+    for c in clusters.get("by_device", [])[:DIGEST_LIST_CAP]:
+        where = c.get("geo") or {}
+        place = ", ".join(x for x in (where.get("city"), where.get("country")) if x)
+        out.append(f"  shared browser: {c['accounts']} accounts"
+                   + (f" ({place})" if place else "")
+                   + " - " + ", ".join(c["users"]))
+    # Only worth printing when it says something the device view did not: the same
+    # accounts on one device would otherwise be reported twice.
+    device_emails = {e for c in clusters.get("by_device", []) for e in c["users"]}
+    for c in clusters.get("by_ip", [])[:DIGEST_LIST_CAP]:
+        if set(c["users"]) <= device_emails:
+            continue
+        out.append(f"  shared connection: {c['accounts']} accounts across "
+                   f"{c['devices']} browser(s) - " + ", ".join(c["users"]))
+    if out and clusters.get("storage_resets_suspected"):
+        out.append("  (more accounts share a connection than share a browser - "
+                   "consistent with clearing storage between accounts)")
+    return out
+
+
 def _paid_tier_line(paid_count: int, paid_revenue_usd: float) -> str | None:
     """The paid-tier line for the digest. Tier count is NOT revenue.
 
@@ -1231,6 +1362,8 @@ def render_digest(report: dict) -> str:
     if line:
         lines.append(line)
 
+    lines.extend(_cluster_lines(report.get("device_clusters") or {}))
+
     emails = u.get("new_day_emails") or []
     if 0 < len(emails) <= DIGEST_LIST_CAP:
         lines.append("  new: " + ", ".join(emails))
@@ -1309,6 +1442,52 @@ def selftest() -> bool:
     check("no burn -> not checkable", _spend_reconcile({"day": day}, None)["ok"], None)
     check("no excl-own basis -> not checkable, never a drifting compare",
           _spend_reconcile({"day": day}, {"day_usd": 5.0})["ok"], None)
+
+    print("_cluster_rows")
+    FARM = [
+        {"deviceId": "dev-A", "ips": ["1.1.1.1"], "geo": {"city": "Tampa", "country": "US"},
+         "users": ["chase.benjamin.j@x", "bchase1423@x", "bchase1424@x"]},
+        {"deviceId": "dev-B", "ips": ["2.2.2.2"], "users": ["solo@x"]},
+    ]
+    c = _cluster_rows(FARM)
+    check("only multi-account devices are reported",
+          [d["device_id"] for d in c["by_device"]], ["dev-A"])
+    check("accounts are listed so a human can judge",
+          c["by_device"][0]["users"],
+          ["bchase1423@x", "bchase1424@x", "chase.benjamin.j@x"])
+    check("a one-account device is not a cluster",
+          any(d["device_id"] == "dev-B" for d in c["by_device"]), False)
+    check("Alex's own account never makes a cluster",
+          _cluster_rows([{"deviceId": "d", "users": ["hiper2d@gmail.com", "someone@x"]}],
+                        {"hiper2d@gmail.com"})["by_device"], [])
+
+    # Same person, storage cleared between accounts: three device ids, one IP.
+    RESET = [
+        {"deviceId": "d1", "ips": ["9.9.9.9"], "users": ["a@x"]},
+        {"deviceId": "d2", "ips": ["9.9.9.9"], "users": ["b@x"]},
+        {"deviceId": "d3", "ips": ["9.9.9.9"], "users": ["c@x"]},
+    ]
+    r = _cluster_rows(RESET)
+    check("no shared BROWSER when storage was cleared each time", r["by_device"], [])
+    check("but the shared CONNECTION still catches all three",
+          (r["by_ip"][0]["accounts"], r["by_ip"][0]["devices"]), (3, 3))
+    check("and the reset pattern is named", r["storage_resets_suspected"], True)
+    check("a plain farm on one browser is not called a reset",
+          _cluster_rows(FARM)["storage_resets_suspected"], False)
+    check("no devices at all -> not instrumented", _cluster_rows([])["instrumented"], False)
+
+    print("_cluster_lines")
+    check("nothing instrumented -> no digest lines", _cluster_lines({"instrumented": False}), [])
+    check("no clusters -> no digest lines",
+          _cluster_lines(_cluster_rows([{"deviceId": "d", "users": ["solo@x"]}])), [])
+    farm_lines = _cluster_lines(_cluster_rows(FARM))
+    check("the farm produces one shared-browser line", len(farm_lines), 1)
+    check("it names the place and every account",
+          ("Tampa" in farm_lines[0], "bchase1424@x" in farm_lines[0]), (True, True))
+    check("the wording observes, never accuses",
+          any(w in farm_lines[0].lower() for w in ("abuse", "cheat", "fraud", "farm")), False)
+    check("an IP cluster already covered by a device cluster is not repeated",
+          len(_cluster_lines(_cluster_rows(FARM))), 1)
 
     print("_paid_tier_line")
     check("nobody on the paid tier -> no line", _paid_tier_line(0, 0.0), None)
