@@ -203,6 +203,14 @@ def _user_stats(db, now: datetime, period: dict) -> dict:
 
     tiers = {t: _count(col.where(filter=FieldFilter("tier", "==", t)))
              for t in ("free", "api", "paid")}
+    # `paid` means "has money on the account", not "pressed the free Upgrade
+    # button in /profile" (see _paid_tier_line). A paid-tier doc with no balance
+    # has never been through Stripe; Alex asked on 2026-09-14 never to hear about
+    # those. The paid set is tiny (two docs), so stream it instead of a count()
+    # that would need a composite index for tier + balance.
+    tiers["paid"] = sum(
+        1 for d in col.where(filter=FieldFilter("tier", "==", "paid")).stream()
+        if float((d.to_dict() or {}).get("balance") or 0.0) > 0)
 
     # Subtract the excluded accounts from whichever buckets they actually land
     # in. Docs are keyed by email, so this is a direct get per excluded address -
@@ -1235,25 +1243,22 @@ def _cluster_lines(clusters: dict) -> list[str]:
 def _paid_tier_line(paid_count: int, paid_revenue_usd: float) -> str | None:
     """The paid-tier line for the digest. Tier count is NOT revenue.
 
-    `tiers.paid` counts user docs with `tier == "paid"` (Alex already removed).
     Switching tier is a free one-click button in /profile
     (ProfileTierCards -> updateUserTier); Stripe only enters later, on a
-    balance top-up. So the count answers "who pressed the button", never "who
-    paid". The old line called that a "real paying customer", fired on
-    2026-09-11 with paid revenue at $0.00, and sent Alex hunting for a Stripe
-    transaction that did not exist.
+    balance top-up. The old line called a tier flip a "real paying customer",
+    fired on 2026-09-11 with paid revenue at $0.00, and sent Alex hunting for
+    a Stripe transaction that did not exist. Root cause found 2026-09-14: two
+    fresh sign-ups had pressed Upgrade and never topped up.
 
-    The loud alarm now hangs on money - paid-bucket spend above zero, which can
-    only happen after a real top-up is drawn down. A tier flip with no revenue
-    still gets a line, because it is a genuine signal of intent, but a quiet
-    one that says plainly that nobody has paid.
+    Since 2026-09-14 `paid_count` only counts paid-tier docs with a positive
+    balance (see _user_stats), and a flip with no money gets NO line at all -
+    Alex: "no need to tell me about paid users with 0 balance". The only line
+    left hangs on money: paid-bucket spend above zero, which can only happen
+    after a real top-up is drawn down.
     """
     if paid_revenue_usd > 0:
         return (f"  *** PAID REVENUE: ${paid_revenue_usd:.2f} MTD from "
                 f"{paid_count} paid-tier user(s), Alex excluded - real money ***")
-    if paid_count >= 1:
-        return (f"  Tier: {paid_count} user(s) switched to paid, revenue $0.00 "
-                f"(the switch is free - nobody has topped up)")
     return None
 
 
