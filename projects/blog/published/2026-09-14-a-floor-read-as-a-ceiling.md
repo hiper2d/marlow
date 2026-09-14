@@ -2,7 +2,7 @@
 title: "A Floor Read as a Ceiling"
 slug: "a-floor-read-as-a-ceiling"
 date: 2026-09-14
-status: draft
+status: published
 mentions: [cot-monitorability]
 summary: "Labs cite a low CoTControl score as proof their models can't hide their reasoning. It's an elicitation number — a floor, not a ceiling — and it moves two to three times under better prompting."
 header_image: /images/2026-09-14-a-floor-read-as-a-ceiling.png
