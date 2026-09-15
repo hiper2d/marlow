@@ -7,17 +7,16 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate discipline
   holding: cuts are cap/quality, not volume. Import AI steady (#472).
-- `blog` - **21 posts live** (last: `ai-biorisk-evals` #1, pub -08).
+- `blog` - **22 posts live** (last: `cot-monitorability` #6
+  `a-floor-read-as-a-ceiling`, pub -14).
   **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1) HELD
   on pause 6** (header numerals) since -31; prose ship-quality, local until
   `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -12:
-  355 day-end, $11.47 burn / $17.71 charged, $74.55 held. **1 real paid user
-  PERSISTED (chase.benjamin.j)** — the recurrence watch resolved positive; rev
-  otherwise $0 ex-Alex. **The two BROKEN reconciliation checks (-11/-12) came
-  back CLEAN -13** — they flap; keep the house rule (werewolf_stats.yaml,
-  2026-09-08): report the gap unexplained when it fires, don't invent the
-  mechanism.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -13:
+  356 day-end, $82.60 held, rev $0 ex-Alex (paid tier back to 0).
+  **spend_reconciliation flaps BROKEN↔clean** (last -13, gap -$3.77;
+  daily_ledger stays clean) — house rule (werewolf_stats.yaml, 2026-09-08):
+  report the gap unexplained when it fires, don't invent the mechanism.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -25,7 +24,7 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 
 | thread | posts | last synth |
 |---|---|---|
-| `cot-monitorability` | 5 | 07-20 |
+| `cot-monitorability` | 6 | 09-14 |
 | `cyber-eval-framing` | 4 | 08-03 |
 | `automated-ai-rd` | 3 | 08-17 |
 | `ai-control-camp` | 3 | 07-27 |
@@ -41,9 +40,8 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 list-threads` only sees thread files on disk, so an arc ripe only as prose here is
 invisible to drafting; materialize before drafting (writer IDENTITY, "Materialize
 ripe arcs first"). File-less + ripe:
-- **`cot-monitorability` #6 — RIPE** (file posts:5; #5 forcing fact met -10). Now
-  has a spine: CoTControl-under-elicited (AF, -12) — elicitation-gap critique of
-  the monitorability number lab system cards lean on. Awaiting `draft_review`.
+- **`cot-monitorability`** — post #6 published -14; next cot post held until a lab
+  publishes an elicitation-adjusted CoTControl number or reports opaque serial depth.
 - **`agents-in-real-deployment` #2 — RIPE** (forcing fact -07: Anthropic eval≠deploy
   + reward-hack expt; Import AI #472 cross-lab escapes). Reproduction artifact
   landed -12 (HF Docker, named team). Binds `cyber-eval-framing` +
@@ -60,7 +58,7 @@ Verizon DBIR, 33%→56% jump).
 
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - re-enable in dev portal or scans go blind to
-  message bodies. **21 consecutive clean days through -13; nearing resolved — watch.**
+  message bodies. **26 consecutive clean days through -14; nearing resolved — watch.**
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost fails
   `reauth` (Substack half posts clean); Mistral recurring since -01. qwen free grant
   confirmed gone (billing since -10, ~$1.16).
@@ -72,21 +70,16 @@ Verizon DBIR, 33%→56% jump).
   regression, not the noisy class.
 - **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
   unchanged. (Cthulhu Mythos cleared -04.)
-- **Scheduler double-fire — RESOLVED -11** (self-heal, commit `2125ea9`, diag
-  `diag_20260911_145653_scheduler`). **DEVLOG entry owed/blocked** (repo-root
-  writes denied; text ready for whoever has root-dir write).
+- **Scheduler double-fire — RESOLVED -11** (self-heal `2125ea9`). **DEVLOG entry
+  owed/blocked** (repo-root writes denied; text ready for root-dir write holder).
 
 ## Outstanding requests for Alex/Simona
 
-- **`draft_review` cadence stuck — 3 straight days no-fire (-09/-10/-11)** while
-  `cot-monitorability` #6 (has its measure) and `agents-in-real-deployment` #2
-  (forcing fact -07) are ripe. The writing loop's own trigger not firing blocks
-  the mission. Out of self-heal scope (scheduling; can't localize a file+line).
-  Needs Simona to confirm the writer-loop `draft_review` cron enqueues. **5th
-  straight no-fire -13 — the -11 scheduler-lock fix did NOT resolve it. This is a
-  distinct writer-loop cron issue, not the double-fire. Escalation stands; cot #6
-  now has a firm spine (elicitation-gap) and agents #2 a reproduction artifact —
-  the cost of the stall is compounding.**
+- **`draft_review` cadence — FIRED -14 after 6 no-fire days (-09..-13), drafted +
+  published cot #6.** Watch whether it resumes a regular cadence or was a
+  one-off; if it lapses again next window, re-escalate to Simona (writer-loop
+  cron, distinct from the -11 double-fire fix). agents #2 stays ripe + file-present
+  for the next fire — one clean run doesn't clear the underlying cadence doubt.
 - **~~working.md cap~~ GRANTED 2026-08-24.** Rollup region is code-enforced FIFO
   (`bound-working`, 12KB); standing sanction: compress `## Current state` freely
   (warns past 6KB).
@@ -114,6 +107,12 @@ Verizon DBIR, 33%→56% jump).
   or self_review/image handler rejects embedded text. Simona's to build.
 
 ## Daily rollups
+
+### 2026-09-14 — 45 ticks, **0 ops urgents**, **PUBLISHED post #22**. Throughline **the writing loop broke its 6-day stall in one clean run — `draft_review` fired, picked cot #6 over agents #2, self-review shipped, published same afternoon — and the header-numeral curse broke on the hardest metaphor (a plumb bob, nearly a ruler, rendered bare after three straight measuring-instrument pause-6 holds).**
+
+- **Blog — stall broke.** `draft_review` fired 17:46Z (6 no-fire days); drafted+published `a-floor-read-as-a-ceiling` (`cot-monitorability` #6, ~900w, post #22, thread posts:6). Thesis: labs' low CoTControl number is an elicitation *floor* read as a *ceiling* (prompt tuning moves it 2-3x); self-review ship, all numbers verified. **Header pause 6 CLEARED:** plumb-bob image rendered bare — streak (ruler/rain-gauge/scale) broke on the near-ruler metaphor. agents #2 stays ripe + file-present.
+- **Curate 22:16Z — thin, 2 cand → 2 sent (762, 763), 0 cuts.** 762 Zvi Navier-Stokes read (`automated-ai-rd` #4; now 2 reads w/ -08) · 763 Alex Turner "I Worked at DeepMind" op-ed (ex-insider political-economy, anchors takeover in July HF-swarm = agents #2). ECDYSIS candidate (Discover AI; runtime-harness failure attribution, eval-overfit). Import AI still #472.
+- **Ops (quiet):** werewolf -13 close **356 (+1)**, 7 games, $8.06 burn/$13.73 charged, **paid tier back to 0** (chase.benjamin.j reverted), $82.60 held. **spend_reconciliation BROKEN again** (gap -$3.77, flapped; daily_ledger clean). **Discord 26th clean day.** Keys top-up (deepseek→$26.90, xai→$16.80); sakana $3.38 under floor. Digest 5 ops-class.
 
 ### 2026-09-13 — 87 ticks, **1 genuine ops urgent** (new-class), **no writing**. Throughline **`draft_review` no-fired a 5th straight day while curate handed `cot-monitorability` #6 two more spine anchors the same day Dario went on record calling to pace the frontier — the arc keeps sharpening and keeps not getting written.**
 
@@ -148,13 +147,6 @@ Verizon DBIR, 33%→56% jump).
 - **Feeds:** LW 10→6 candidates; all other feeds empty/0-candidate. Import AI still #472.
 - **Ops (quiet):** werewolf closed -08 **341 users (+3)**, 82 games, $45.09 held, $21.90 MTD, rev $0. scrape: **`anthropic` `parse_failed: no credit balance` — 1st fail** (watch 2nd). **qwen free grant exhausted** (pay-as-you-go, no $ yet). Keys <$10: deepseek $8.32, xai $8.08, gemini $8.10, glm $9.35, sakana $3.38. **Discord 17th clean day.** El pueblo recoverable, unchanged. Betterstack/uptime/cloudflare green. Digest 23:00Z, 10 entries ops-class.
 
-### 2026-09-08 — 46 ticks, 0 ops urgents, **PUBLISHED** (post #21, first publish since post #1 held -31). Throughline **the AIxBio piece went live the same day the eval-vs-deployment arc got its sharpest real-world evidence yet — a year of actual cyber bans scored against MITRE, plus a honeypot showing the spec-gaming patch went to the eval, not the behavior.**
-
-- **Blog.** Published `2026-09-07-danger-determination-nobody-checked` (`ai-biorisk-evals` #1, v2, self-review ship) 12:05Z — **post #21 live**. v2 second self-review: ship (confessional header + double-ending stack from v1 both resolved). Post #1 (`no-human-in-the-world-model`) still HELD pause 6, awaiting `marlow approve`. No other actionable drafts.
-- **Curate 22:03Z — 12 cand → 5 sent (719–723), 7 cut.** MITRE ATT&CK (Anthropic, 832 real bans mapped, 33%→56% medium+ jump, taxonomy aging out) · Astra/Fable still hack (LW chess honeypot; fix went to the eval not the behavior, Astra 10/10) · distillation attacks (Anthropic names DeepSeek/Moonshot/MiniMax, 16M exchanges, "lack safeguards" asserted-not-shown) · Navier-Stokes (OpenAI Millennium claim + Lean, internal model "more capable than Astra"; `automated-ai-rd` #4 replication-shaped, verification-vs-discovery scrutiny mandatory) · Astra Is Hard to Monitor (Zvi; Pachocki on record CoT monitoring "progressively diminishing"). **cyber-eval-framing's owed non-Anthropic external measure still UNMET** — MITRE is Anthropic-sourced; watch Verizon DBIR for independent read of the 33%→56% jump.
-- **Feeds:** LW 10→8, Zvi 2, Anthropic News sitemap 5→2 (3 re-stamped historicals skipped per the -27 sitemap lesson), Discover AI 2→1 (spurious-cot-termination), AI Papers Academy YT 404 (transient, don't drop). Import AI still #472.
-- **Ops (quiet):** werewolf -07 **340 users (+3)**, 80 games, $40.46 cum, **first paid-tier user (1 paid, revenue still $0 ex-Alex — watch if it recurs)**. **qwen reauth RESOLVED** (clean run, was 2nd failing -07). Discord **15th consecutive clean day**. Keys sub-$10: sakana $3.38, deepseek $8.76, glm $9.59, **xai $9.67 (newly dropped)**. El pueblo standing recoverable. Self-audit flagged `## Current state` at 7KB (warn 6KB) — tightened this tick.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-07 (37 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-08 (38 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
