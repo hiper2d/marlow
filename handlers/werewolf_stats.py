@@ -496,8 +496,60 @@ def _spend_day(by_user: dict[str, float], mtd_period: str,
     }
 
 
+def _window_burn(prev_row: dict | None, live_cost_excl: float | None,
+                 now: datetime) -> dict | None:
+    """Game-recorded cost over EXACTLY the interval the per-user charge delta
+    covers: since the previous reported day's row, the same `prev_row` that
+    `_spend_day` differences against.
+
+    Why a second burn figure (2026-09-14): `_daily_burn` anchors to the last
+    snapshot before local midnight, `_spend_day` to the previous day's row.
+    Those are the same row only when the daily run happens before midnight.
+    On 2026-09-13 the run was at 01:36 ET, so the game side reached back one
+    more snapshot (58h) while the user side covered 34h, and the digest said
+    "games recorded $17.50 but users were charged $13.73 - cost with no payer".
+    There was no such cost; the two numbers were different windows. Both
+    sides of that comparison now come from this one interval, and the digest
+    prints the interval next to the money.
+    """
+    if not prev_row or live_cost_excl is None:
+        return None
+    base = prev_row.get("live_cost_usd_excl_own")
+    at = prev_row.get("checked_at")
+    if base is None or not at:
+        return None
+    try:
+        hrs = (now - datetime.fromisoformat(at.replace("Z", "+00:00"))).total_seconds() / 3600
+    except ValueError:
+        return None
+    delta = round(float(live_cost_excl) - float(base), 4)
+    return {
+        "since": at,
+        "hours": round(hrs, 1),
+        "day_usd_excl_own": max(delta, 0.0),
+        "raw_delta_usd": delta,
+        "expired_games_suspected": delta < 0,
+    }
+
+
+def _window_label(since_iso: str | None, hours: float | None, tz: str | None) -> str:
+    """"since Sep 13 01:36 ET (34h)" - the interval every money figure in the
+    digest covers. Local time because the report is anchored to Alex's day."""
+    if not since_iso:
+        return ""
+    try:
+        from zoneinfo import ZoneInfo
+        dt = datetime.fromisoformat(since_iso.replace("Z", "+00:00"))
+        if tz:
+            dt = dt.astimezone(ZoneInfo(tz))
+        when = f"{dt:%b} {dt.day} {dt:%H:%M %Z}"
+    except Exception:  # noqa: BLE001
+        when = since_iso[:16].replace("T", " ") + "Z"
+    return f"since {when}" + (f" ({hours:.0f}h)" if hours is not None else "")
+
+
 def _spend_reconcile(user_spend: dict, burn: dict | None) -> dict:
-    """Assert per-user day spend >= game-cost day burn, and name the gap.
+    """Assert per-user day spend >= game-cost burn over the SAME window, name the gap.
 
     The two numbers come from opposite ends of the same money: `spendings` is
     what users were charged, `totalGameCost` is what games recorded. User spend
@@ -920,7 +972,64 @@ def _cluster_rows(devices: list[dict], excluded: set[str] | None = None) -> dict
     }
 
 
-def _device_clusters(db) -> dict:
+def _new_account_links(new_emails: list[str], devices: list[dict],
+                       user_docs: dict[str, dict],
+                       excluded: set[str] | None = None) -> list[dict]:
+    """Pure: which of the day's NEW accounts arrived on a browser or a connection
+    that already belongs to another account. This is the "existing user signed
+    up again" signal Alex asked for on 2026-09-14 - reported the day it
+    happens, not discovered later in a cluster list.
+
+    Three ways a new account can be tied to an old one, strongest first:
+      browser     the device doc lists both emails (same cookie/localStorage id)
+      inherited   the new account's user doc says `linkedVia.via == "ip"`: it
+                  arrived with no id and inherited a device seen from its IP in
+                  the last 12h (werewolf device-actions.ts)
+      connection  none of the above, but a device of the new account shares an
+                  IP with a device of another account
+    One entry per new account, with the strongest tie and everyone it links to.
+    """
+    excluded = {e.lower() for e in (excluded or set())}
+    by_id = {d.get("deviceId"): d for d in devices if d.get("deviceId")}
+
+    def others(emails, me) -> list[str]:
+        return sorted({e for e in (emails or []) if isinstance(e, str)
+                       and e.lower() not in excluded and e.lower() != me.lower()})
+
+    out = []
+    for email in new_emails:
+        if email.lower() in excluded:
+            continue
+        udoc = user_docs.get(email) or {}
+        my_devices = [by_id[i] for i in (udoc.get("knownDeviceIds") or []) if i in by_id]
+        # Devices that list this email but the user doc does not know about.
+        my_devices += [d for d in devices if email in (d.get("users") or []) and d not in my_devices]
+        tie, linked, place = None, [], {}
+        for d in my_devices:
+            o = others(d.get("users"), email)
+            if o:
+                tie, linked, place = "browser", o, d.get("geo") or {}
+                break
+        linked_via = udoc.get("linkedVia") or {}
+        if tie is None and linked_via.get("via") == "ip":
+            d = by_id.get(linked_via.get("deviceId")) or {}
+            o = others(d.get("users"), email)
+            if o:
+                tie, linked, place = "inherited", o, d.get("geo") or {}
+        if tie is None:
+            my_ips = {ip for d in my_devices for ip in (d.get("ips") or []) if isinstance(ip, str)}
+            o = sorted({e for d in devices if d not in my_devices
+                        and my_ips & {ip for ip in (d.get("ips") or []) if isinstance(ip, str)}
+                        for e in others(d.get("users"), email)})
+            if o:
+                tie, linked = "connection", o
+                place = next((d.get("geo") for d in my_devices if d.get("geo")), {}) or {}
+        if tie:
+            out.append({"email": email, "tie": tie, "linked_to": linked, "geo": place})
+    return out
+
+
+def _device_clusters(db, new_day_emails: list[str] | None = None) -> dict:
     """Read the `devices` collection and fold it. Fail-soft: a reporting extra
     must never take the whole snapshot down."""
     try:
@@ -931,7 +1040,33 @@ def _device_clusters(db) -> dict:
         return {"instrumented": False,
                 "reason": "no device records yet - the game stamps them from the "
                           "2026-09-13 deploy onward, so this fills in as users return"}
-    return _cluster_rows(docs, EXCLUDED_OWNERS)
+    out = _cluster_rows(docs, EXCLUDED_OWNERS)
+    user_docs: dict[str, dict] = {}
+    for email in (new_day_emails or []):
+        try:
+            snap = db.collection(USERS).document(email).get()
+            user_docs[email] = snap.to_dict() or {} if snap.exists else {}
+        except Exception:  # noqa: BLE001
+            user_docs[email] = {}
+    out["new_account_links"] = _new_account_links(new_day_emails or [], docs, user_docs,
+                                                  EXCLUDED_OWNERS)
+    return out
+
+
+def _new_account_lines(links: list[dict]) -> list[str]:
+    """One loud line per new account tied to an existing one - the thing Alex
+    wants to hear about the day it happens."""
+    out = []
+    how = {"browser": "same browser as",
+           "inherited": "inherited the browser of (same connection within 12h)",
+           "connection": "same connection as"}
+    for l in links[:DIGEST_LIST_CAP]:
+        where = l.get("geo") or {}
+        place = ", ".join(x for x in (where.get("city"), where.get("country")) if x)
+        out.append(f"  *** NEW ACCOUNT ON A KNOWN {'BROWSER' if l['tie'] != 'connection' else 'CONNECTION'}: "
+                   f"{l['email']} - {how[l['tie']]} {', '.join(l['linked_to'])}"
+                   + (f" ({place})" if place else "") + " ***")
+    return out
 
 
 # ─── Report ──────────────────────────────────────────────────────────────────
@@ -954,10 +1089,13 @@ def report() -> dict:
     user_spend = _user_spend(db, now, period, prev_day_row)
     burn = _daily_burn(_prev_snapshot(), games["live_cost_usd"], now, period,
                        games.get("live_cost_usd_excl_own"))
+    # Game cost over the same interval as the per-user charge delta - the only
+    # pair of numbers it is honest to compare or to print side by side.
+    window_burn = _window_burn(prev_day_row, games.get("live_cost_usd_excl_own"), now)
     reconciliation = _reconcile(period, users)
-    spend_reconciliation = _spend_reconcile(user_spend, burn)
+    spend_reconciliation = _spend_reconcile(user_spend, window_burn)
     ledger_reconciliation = _daily_ledger_reconcile(db, now)
-    clusters = _device_clusters(db)
+    clusters = _device_clusters(db, users.get("new_day_emails") or [])
 
     result = {
         "ok": True,
@@ -977,6 +1115,9 @@ def report() -> dict:
         # free-tier requestStats row today landed in a user's dailySpend ledger.
         "daily_ledger_reconciliation": ledger_reconciliation,
         "daily_burn": burn,   # null on first run (no prior snapshot to diff)
+        # Game-recorded cost since the previous day's row: the window the Spend
+        # line and the spend reconciliation both use.
+        "window_burn": window_burn,
         # Multi-account leads. Soft signals, never a verdict - see _cluster_rows.
         "device_clusters": clusters,
         # Never leave a filter implicit — an exclusion nobody can see is how a
@@ -1258,7 +1399,7 @@ def _paid_tier_line(paid_count: int, paid_revenue_usd: float) -> str | None:
     """
     if paid_revenue_usd > 0:
         return (f"  *** PAID REVENUE: ${paid_revenue_usd:.2f} MTD from "
-                f"{paid_count} paid-tier user(s), Alex excluded - real money ***")
+                f"{paid_count} paid-tier user(s) - real money ***")
     return None
 
 
@@ -1294,20 +1435,20 @@ def render_digest(report: dict) -> str:
     per = report.get("period") or {}
     date = per.get("date") or (report.get("checked_at") or "")[:10]
     un, gn, cc = u["new"], g["created"], g["created_cost_usd"]
-    b = report.get("daily_burn") or {}
+    wb = report.get("window_burn") or {}
 
-    # Prefer the day-anchored figure; fall back only if there's no prior day.
-    if b.get("day_usd_excl_own") is not None:
-        own = b["day_usd"] - b["day_usd_excl_own"]
-        money = f"${b['day_usd_excl_own']:.2f}" + (f" (+${own:.2f} yours)" if own >= 0.005 else "")
-    elif b.get("day_usd") is not None:
-        money = f"${b['day_usd']:.2f} incl. yours"
-    elif b.get("usd") is not None:
-        money = f"${b['usd']:.2f} in the last {b.get('hours', 0)}h"
+    # Every money figure in the digest covers ONE interval - since the previous
+    # day's snapshot - and says so. Alex, 2026-09-14: "these spending numbers
+    # are not clear without the time range". His own spend is excluded
+    # everywhere by default and is no longer called out; the "(+$x yours)" and
+    # "(excludes ...)" decorations were noise he had already assumed.
+    window = _window_label(wb.get("since"), wb.get("hours"), per.get("tz"))
+    if wb.get("day_usd_excl_own") is not None:
+        money = f"${wb['day_usd_excl_own']:.2f} in games"
+        if wb.get("expired_games_suspected"):
+            money += " (partial: games expired out of window)"
     else:
-        money = f"${cc['day']:.2f} (baseline set)"
-    if b.get("expired_games_suspected"):
-        money += " (partial: games expired out of window)"
+        money = f"${cc['day']:.2f} in games started that day (baseline set)"
 
     # Lead with the day, not the stock (2026-09-08). This block used to read
     # "Users 341 total (+3 that day)" and "Games 82 live (+1 that day)", which
@@ -1317,8 +1458,8 @@ def render_digest(report: dict) -> str:
     # standing totals are labelled as standing totals.
     lines = [
         f"Werewolf - {date} ({per.get('label', 'full day')}, {per.get('tz', 'local')})",
-        f"  New    {un['day']} users · {gn['day']} games · {money}",
-        f"  7d     {un['7d']} users · {gn['7d']} games · ${cc['7d']:.2f}",
+        f"  New    {un['day']} users · {gn['day']} games",
+        f"  7d     {un['7d']} users · {gn['7d']} games · ${cc['7d']:.2f} in games started",
         f"  Standing: {u.get('total_day_end', u['total'])} users at day end"
         f" · {g['total']} games live now (30d TTL)"
         f" · ${g['live_cost_usd']:.2f} held in live games",
@@ -1336,7 +1477,9 @@ def render_digest(report: dict) -> str:
         lines.insert(2, f"  Spend  ${spd['total']:.2f} charged to "
                         f"{spd['users_with_spend']} user(s)"
                         + (f" · median ${spd['median']:.2f} · top {top['user']} "
-                           f"${top['usd']:.2f}" if top.get("user") else ""))
+                           f"${top['usd']:.2f}" if top.get("user") else "")
+                        + f" · {money}"
+                        + (f"  [{window}]" if window else ""))
     elif spd.get("reason"):
         lines.insert(2, f"  Spend  n/a ({spd['reason']})")
 
@@ -1353,7 +1496,8 @@ def render_digest(report: dict) -> str:
     srec = report.get("spend_reconciliation") or {}
     if srec.get("ok") is False:
         lines.append(f"  BROKEN: games recorded ${srec.get('game_burn_day_usd')} but "
-                     f"users were charged ${srec.get('user_spend_day_usd')} - cost "
+                     f"users were charged ${srec.get('user_spend_day_usd')} over the "
+                     f"same window{(' [' + window + ']') if window else ''} - cost "
                      f"with no payer")
     lrec = report.get("daily_ledger_reconciliation") or {}
     if lrec.get("ok") is False:
@@ -1367,7 +1511,12 @@ def render_digest(report: dict) -> str:
     if line:
         lines.append(line)
 
-    lines.extend(_cluster_lines(report.get("device_clusters") or {}))
+    clusters = report.get("device_clusters") or {}
+    # New accounts tied to existing ones go right under the day line: it is the
+    # one thing in here Alex wants to see the day it happens.
+    for i, l in enumerate(_new_account_lines(clusters.get("new_account_links") or [])):
+        lines.insert(2 + i, l)
+    lines.extend(_cluster_lines(clusters))
 
     emails = u.get("new_day_emails") or []
     if 0 < len(emails) <= DIGEST_LIST_CAP:
@@ -1382,9 +1531,6 @@ def render_digest(report: dict) -> str:
                          f"{gm.get('state', '?')} · ${gm.get('cost_usd', 0):.2f}")
     elif tg:
         lines.append(f"  games: {len(tg)} started")
-    ex = report.get("excluded") or {}
-    if ex.get("games") or ex.get("users"):
-        lines.append(f"  (excludes {', '.join(ex.get('owners') or [])})")
     return "\n".join(lines)
 
 
@@ -1448,6 +1594,43 @@ def selftest() -> bool:
     check("no excl-own basis -> not checkable, never a drifting compare",
           _spend_reconcile({"day": day}, {"day_usd": 5.0})["ok"], None)
 
+    print("_window_burn / _window_label")
+    row = {"checked_at": "2026-09-13T05:36:01Z", "live_cost_usd_excl_own": 67.5251}
+    wb = _window_burn(row, 75.5805, datetime(2026, 9, 14, 15, 38, 32, tzinfo=timezone.utc))
+    check("game burn over the user-delta window", (wb["day_usd_excl_own"], wb["hours"]), (8.0554, 34.0))
+    check("no prior row -> no figure", _window_burn(None, 1.0, datetime.now(timezone.utc)), None)
+    check("legacy row without excl-own -> no figure",
+          _window_burn({"checked_at": "2026-09-13T05:36:01Z"}, 1.0, datetime.now(timezone.utc)), None)
+    check("window label is local time",
+          _window_label("2026-09-13T05:36:01Z", 34.0, "America/New_York"), "since Sep 13 01:36 EDT (34h)")
+
+    print("_new_account_links")
+    DEVS = [
+        {"deviceId": "dev-A", "ips": ["1.1.1.1"], "geo": {"city": "Tampa", "country": "US"},
+         "users": ["old@x", "fresh@x"]},
+        {"deviceId": "dev-B", "ips": ["1.1.1.1"], "users": ["wiped@x"]},
+        {"deviceId": "dev-C", "ips": ["9.9.9.9"], "users": ["alone@x"]},
+        {"deviceId": "dev-D", "ips": ["5.5.5.5"], "users": ["inherit@x", "owner@x"]},
+    ]
+    UDOCS = {"fresh@x": {"knownDeviceIds": ["dev-A"]},
+             "wiped@x": {"knownDeviceIds": ["dev-B"]},
+             "alone@x": {"knownDeviceIds": ["dev-C"]},
+             "inherit@x": {"knownDeviceIds": ["dev-D"], "linkedVia": {"via": "ip", "deviceId": "dev-D"}}}
+    links = _new_account_links(["fresh@x", "wiped@x", "alone@x", "inherit@x", "alex@x"], DEVS, UDOCS, {"alex@x"})
+    check("same browser is the strongest tie",
+          [(l["email"], l["tie"], l["linked_to"]) for l in links if l["email"] == "fresh@x"],
+          [("fresh@x", "browser", ["old@x"])])
+    check("new device on an old IP is a connection tie",
+          [(l["tie"], l["linked_to"]) for l in links if l["email"] == "wiped@x"], [("connection", ["fresh@x", "old@x"])])
+    check("an account alone on its browser and IP is not reported",
+          [l for l in links if l["email"] == "alone@x"], [])
+    check("linkedVia ip on a shared device reads as browser (both emails on the doc)",
+          [l["tie"] for l in links if l["email"] == "inherit@x"], ["browser"])
+    check("excluded owner never reported", [l for l in links if l["email"] == "alex@x"], [])
+    check("digest line names the tie and the place",
+          _new_account_lines(links[:1])[0],
+          "  *** NEW ACCOUNT ON A KNOWN BROWSER: fresh@x - same browser as old@x (Tampa, US) ***")
+
     print("_cluster_rows")
     FARM = [
         {"deviceId": "dev-A", "ips": ["1.1.1.1"], "geo": {"city": "Tampa", "country": "US"},
@@ -1496,9 +1679,8 @@ def selftest() -> bool:
 
     print("_paid_tier_line")
     check("nobody on the paid tier -> no line", _paid_tier_line(0, 0.0), None)
-    check("tier flip with no money is quiet, and says $0.00",
-          ("***" in (_paid_tier_line(1, 0.0) or ""),
-           "$0.00" in (_paid_tier_line(1, 0.0) or "")), (False, True))
+    check("tier flip with no money prints nothing (Alex, 2026-09-14)",
+          _paid_tier_line(1, 0.0), None)
     check("revenue above zero is the loud line",
           "*** PAID REVENUE: $4.20" in (_paid_tier_line(1, 4.20) or ""), True)
     check("revenue with no tier count still reports the money",
