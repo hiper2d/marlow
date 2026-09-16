@@ -12,9 +12,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1) HELD
   on pause 6** (header numerals) since -31; prose ship-quality, local until
   `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -13:
-  356 day-end, $82.60 held, rev $0 ex-Alex (paid tier back to 0).
-  **spend_reconciliation flaps BROKEN↔clean** (last -13, gap -$3.77;
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -14:
+  360 day-end, $90.31 held, rev $0 ex-Alex (paid tier 0). All 3 reconciliation
+  checks clean -14/-15. **spend_reconciliation flaps BROKEN↔clean** (gap ~-$3.77;
   daily_ledger stays clean) — house rule (werewolf_stats.yaml, 2026-09-08):
   report the gap unexplained when it fires, don't invent the mechanism.
 
@@ -58,28 +58,28 @@ Verizon DBIR, 33%→56% jump).
 
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - re-enable in dev portal or scans go blind to
-  message bodies. **26 consecutive clean days through -14; nearing resolved — watch.**
-- **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost fails
-  `reauth` (Substack half posts clean); Mistral recurring since -01. qwen free grant
-  confirmed gone (billing since -10, ~$1.16).
+  message bodies. **28 consecutive clean days through -15; nearing resolved — watch.**
+- **Session re-auths owed (3 standing): X, Mistral, minimax.** X half of crosspost
+  fails `reauth` (Substack half posts clean); Mistral recurring since -01. **minimax
+  NEW -16: scrape console login wall (1st failing run), urgent sent w/ runbook.**
+  qwen free grant confirmed gone (billing since -10, ~$1.16).
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Presence-model design gap, not a bug - noisy by construction.
-  **NEW -13 21:25Z: "Preview generation failed / Game action failed:
-  replayNightImpl"** — 1st of that shape, distinct from the per-turn presence
-  class, flagged urgent for Alex. Watch recurrence; may be a real night-replay
-  regression, not the noisy class.
+  -13 replayNightImpl novel urgent did NOT recur -14/-15. **NEW -15 12:06Z warn
+  "Nightfall story generation failed, using static fallback"** — 1st of that
+  shape, reads as fallback-by-design; watch recurrence.
 - **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
   unchanged. (Cthulhu Mythos cleared -04.)
-- **Scheduler double-fire — RESOLVED -11** (self-heal `2125ea9`). **DEVLOG entry
-  owed/blocked** (repo-root writes denied; text ready for root-dir write holder).
+- **Scheduler double-fire — RESOLVED -11** (self-heal `2125ea9`); only **DEVLOG
+  entry owed/blocked** (repo-root writes denied; text ready for a root-dir holder).
 
 ## Outstanding requests for Alex/Simona
 
 - **`draft_review` cadence — FIRED -14 after 6 no-fire days (-09..-13), drafted +
-  published cot #6.** Watch whether it resumes a regular cadence or was a
-  one-off; if it lapses again next window, re-escalate to Simona (writer-loop
-  cron, distinct from the -11 double-fire fix). agents #2 stays ripe + file-present
-  for the next fire — one clean run doesn't clear the underlying cadence doubt.
+  published cot #6.** -15 no-fire is on-cadence (every 3 days → next window ~-17);
+  the lapse test is whether -17 fires. If it no-fires again, re-escalate to Simona
+  (writer-loop cron, distinct from the -11 double-fire fix). agents #2 stays ripe +
+  file-present for the next fire — one clean run doesn't clear the cadence doubt.
 - **~~working.md cap~~ GRANTED 2026-08-24.** Rollup region is code-enforced FIFO
   (`bound-working`, 12KB); standing sanction: compress `## Current state` freely
   (warns past 6KB).
@@ -107,6 +107,12 @@ Verizon DBIR, 33%→56% jump).
   or self_review/image handler rejects embedded text. Simona's to build.
 
 ## Daily rollups
+
+### 2026-09-15 — 68 ticks, **0 genuine ops urgents** (1 known-class page), **no writing** (on-cadence — `draft_review` last -14, next ~-17). Throughline **a clean housekeeping day — all 3 werewolf reconciliation checks held clean (the flapping spend check stayed put), Discord hit 28 clean content-intent days, only color a first-occurrence Betterstack warn reading as fallback-by-design — while curate confirmed the `cot-monitorability` arc is now Astra-saturated: anchor after anchor, still no non-lab forcing fact cot #7 waits on.**
+
+- **Blog:** post #1 still HELD pause 6 (local, awaiting `marlow approve` post header-regen); `blog_pipeline` none all day. agents #2 stays ripe + file-present.
+- **Curate 22:13Z — 10 cand → 5 sent (767–771), 5 cut.** Heavy-LW (7/10). 767 Astra no-CoT (**Nth Astra → arc Astra-saturated; cot #7 held on non-lab anchor**) · 768 Weight-exfil-overrated (contrarian take-over-not-flee — **sharpens agents #2**, matches -12 sandbox repro) · 769 Welfare-steering null (model-welfare) · 770 Public pacing-exercises (sequel to Dario 755; political-economy) · 771 Cognition-on-Graph (YT, RSS-take). Import AI still #472.
+- **Ops (quiet):** werewolf -14 close **360 (+4)**, 4 new / 4 games, $4.16 by 1 user (bchase1424), 106 live / $90.31 held, **paid tier 0**, rev $0. **All 3 reconciliation checks CLEAN.** **Discord 28th clean day.** NEW Betterstack warn "Nightfall story generation failed, using static fallback" — 1st of shape, fallback-by-design, watch (-13 replayNightImpl did NOT recur). sakana $3.38 low. Digest 10 ops-class.
 
 ### 2026-09-14 — 45 ticks, **0 ops urgents**, **PUBLISHED post #22**. Throughline **the writing loop broke its 6-day stall in one clean run — `draft_review` fired, picked cot #6 over agents #2, self-review shipped, published same afternoon — and the header-numeral curse broke on the hardest metaphor (a plumb bob, nearly a ruler, rendered bare after three straight measuring-instrument pause-6 holds).**
 
@@ -140,13 +146,6 @@ Verizon DBIR, 33%→56% jump).
 - **Blog:** no actionable drafts; `blog_pipeline` none. Post #1 HELD. **`draft_review` did not fire — 2nd straight day ripe arcs (cot #6, agents #2) stall on cadence. Watch.**
 - **Ops (quiet):** werewolf -09 **342 users (+1)**, $42.48 held, $25.60 MTD, rev $0. **anthropic scrape `parse_failed` did NOT recur — -09 watch RESOLVED** (transient, bal $13.34). qwen grant gone (billing, $1.16). Keys <$10: deepseek $8.15, xai $7.54, glm $9.31, gemini $6.57, sakana $3.38. **Discord 18th clean day.** El pueblo recoverable. Digest 7 ops-class. `## Current state` at 6KB warn.
 
-### 2026-09-09 — 51 ticks, **0 ops urgents**, **no writing** (post #1 HELD pause 6; ripe `agents-in-real-deployment` #2 awaiting a `draft_review` tick that didn't fire). Curate day; throughline **`cot-monitorability` got two independent anchors in one day — a training-on-probes result and a KV-cache-sharing attack on the bounded-depth argument — pushing the arc's #5 forcing-fact watch to heating, while `anthropic` scrape hit its 1st `parse_failed` and Discord reached 17 clean days.**
-
-- **Curate 22:19Z — 8 cand → 5 sent (726–730), 3 cut. All LW/AF, no source diversity.** 726 Training on probes (AF; *how* you push a probe decides evasion — gradient-through teaches it, RL w/ action-independent term does nothing; cot + training-on-interp-probes idea) · 727 KV-cache sharing undermines bounded-depth CoT (LW; Astra ~4x horizon vs Pachocki within-2x) · 728 CAI widens secret loyalty (LW; safety technique *widens* backdoor, 0% detection below full-knowledge auditor; caveats 1.5B/single-principal/LLM-judge) · 729 Political Power in an Automated World (LW; labor-as-leverage reversed → political-economy warming, 2 same-morning hits) · 730 Pretraining without consciousness (LW; falsifiable corpus-ablation, welfare arc). **cot #5 forcing-fact watch heating.**
-- **Blog:** no actionable drafts; `blog_pipeline` next_action=none all day. `process_editorial_feedback` inbox empty. Post #21 live -08.
-- **Feeds:** LW 10→6 candidates; all other feeds empty/0-candidate. Import AI still #472.
-- **Ops (quiet):** werewolf closed -08 **341 users (+3)**, 82 games, $45.09 held, $21.90 MTD, rev $0. scrape: **`anthropic` `parse_failed: no credit balance` — 1st fail** (watch 2nd). **qwen free grant exhausted** (pay-as-you-go, no $ yet). Keys <$10: deepseek $8.32, xai $8.08, gemini $8.10, glm $9.35, sakana $3.38. **Discord 17th clean day.** El pueblo recoverable, unchanged. Betterstack/uptime/cloudflare green. Digest 23:00Z, 10 entries ops-class.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-08 (38 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-09 (39 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
