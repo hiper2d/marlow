@@ -12,11 +12,11 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1) HELD
   on pause 6** (header numerals) since -31; prose ship-quality, local until
   `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -14:
-  360 day-end, $90.31 held, rev $0 ex-Alex (paid tier 0). All 3 reconciliation
-  checks clean -14/-15. **spend_reconciliation flaps BROKEN↔clean** (gap ~-$3.77;
-  daily_ledger stays clean) — house rule (werewolf_stats.yaml, 2026-09-08):
-  report the gap unexplained when it fires, don't invent the mechanism.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -15:
+  365 day-end (+5), $101.62 held, rev $0 (paid tier 0). All 3 reconciliation
+  checks clean -14/-15/-16. **spend_reconciliation flaps BROKEN↔clean** (gap
+  ~-$3.77; daily_ledger stays clean; landed ok +$1.22 -16) — house rule
+  (werewolf_stats.yaml, 2026-09-08): report the gap unexplained, don't invent it.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -40,8 +40,6 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 list-threads` only sees thread files on disk, so an arc ripe only as prose here is
 invisible to drafting; materialize before drafting (writer IDENTITY, "Materialize
 ripe arcs first"). File-less + ripe:
-- **`cot-monitorability`** — post #6 published -14; next cot post held until a lab
-  publishes an elicitation-adjusted CoTControl number or reports opaque serial depth.
 - **`agents-in-real-deployment` #2 — RIPE** (forcing fact -07: Anthropic eval≠deploy
   + reward-hack expt; Import AI #472 cross-lab escapes). Reproduction artifact
   landed -12 (HF Docker, named team). Binds `cyber-eval-framing` +
@@ -51,10 +49,9 @@ ripe arcs first"). File-less + ripe:
 - **Skills-as-infra / agent-security — 3 anchors** (WikiSkill -30, SKILL.state -31,
   agentic-skills -02; first attack-surface angle). Ripe soon.
 
-**Single-source frames to watch:** horizon-length (2) · mode-collapse (1) · "hard
-core of alignment is X" meta (3) · training-corpus-as-alignment-surface (2) · PLA
-AGI + Papal AI doctrine. cyber-eval owed **non-Anthropic external measure** (watch
-Verizon DBIR, 33%→56% jump).
+**Single-source frames to watch:** horizon-length (2) · "hard core of alignment
+is X" meta (3) · training-corpus-as-alignment-surface (2) · PLA AGI + Papal AI
+doctrine. cyber-eval owed **non-Anthropic external measure** (Verizon DBIR 33%→56%).
 
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - re-enable in dev portal or scans go blind to
@@ -70,8 +67,8 @@ Verizon DBIR, 33%→56% jump).
   shape, reads as fallback-by-design; watch recurrence.
 - **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
   unchanged. (Cthulhu Mythos cleared -04.)
-- **Scheduler double-fire — RESOLVED -11** (self-heal `2125ea9`); only **DEVLOG
-  entry owed/blocked** (repo-root writes denied; text ready for a root-dir holder).
+- **Scheduler double-fire — RESOLVED -11** (self-heal `2125ea9`); **DEVLOG entry
+  owed/blocked** (repo-root writes denied).
 
 ## Outstanding requests for Alex/Simona
 
@@ -108,6 +105,12 @@ Verizon DBIR, 33%→56% jump).
 
 ## Daily rollups
 
+### 2026-09-16 — **0 genuine ops urgents** (1 reauth notify), **no writing** (on-cadence). Throughline **a quiet housekeeping day whose only real color was the flapping `spend_reconciliation` check landing CLEAN on its own (+$1.22, previews) while all 3 reconciliation checks held — against a thin curate (2 unfetchable YouTube candidates) and an on-cadence writing silence whose real lapse-test is whether -17 fires.**
+
+- **Blog:** post #1 still HELD pause 6; `blog_pipeline` none. **`draft_review` did not fire -16 — on-cadence** (next window -17 = lapse test). agents #2 ripe + file-present; cot #7 waits on a non-lab forcing fact.
+- **Curate 22:05Z — thin, 2 cand → 2 sent (776, 777), 0 cut.** Both YouTube, neither fetchable. 776 Mo Bitar "Anthropic admitted AI is buggy" (skeptical dev read of the cyber-incident disclosure — the **non-lab counterweight `cyber-eval-framing` is owed**) · 777 Discover AI RSIAgent (clickbait over named Aether/UCSD/UIC paper; `automated-ai-rd`). Import AI still #472.
+- **Ops (quiet):** werewolf **-15 close 365 (+5)**, 6 games, $14.80/12 users, **paid 0, rev $0**; live 372 / $101.62 held. **All 3 reconciliation checks CLEAN — `spend_reconciliation` ok=true (+$1.22)**, the flapping check stayed put. **minimax reauth (1st fail, login wall) — urgent sent, on X+Mistral standing list.** Betterstack all-clean (**-15 "Nightfall fallback" warn did NOT recur**). Keys above floor; sakana $3.38 low. Digest 9 ops-class.
+
 ### 2026-09-15 — 68 ticks, **0 genuine ops urgents** (1 known-class page), **no writing** (on-cadence — `draft_review` last -14, next ~-17). Throughline **a clean housekeeping day — all 3 werewolf reconciliation checks held clean (the flapping spend check stayed put), Discord hit 28 clean content-intent days, only color a first-occurrence Betterstack warn reading as fallback-by-design — while curate confirmed the `cot-monitorability` arc is now Astra-saturated: anchor after anchor, still no non-lab forcing fact cot #7 waits on.**
 
 - **Blog:** post #1 still HELD pause 6 (local, awaiting `marlow approve` post header-regen); `blog_pipeline` none all day. agents #2 stays ripe + file-present.
@@ -139,13 +142,6 @@ Verizon DBIR, 33%→56% jump).
 - **Blog:** post #1 HELD pause 6; `blog_pipeline` none. **`draft_review` 3rd straight no-fire despite cot #6 + agents #2 ripe — escalated to Outstanding.**
 - **Ops (quiet):** werewolf -10 **346 day-end (+4)** / 353 now, $14.06 burn, $42.31 MTD, **0 paid (the -07 paid user didn't persist)**, rev $0. Keys <$10: sakana $3.38, deepseek $7.35, glm $8.89; xai recovered $14.97. **Discord 19th clean day.** Betterstack 22-error presence-model burst (known). 2 recoverable game errors + El pueblo. Anthropic Research 23→0 (CMS re-index). Digest 8 ops-class.
 
-### 2026-09-10 — 45 ticks, **0 ops urgents**, **no writing**. Rich curate day; throughline **`cot-monitorability` got its #5 forcing fact — the non-lab anchor it waited on — via two independent same-day hidden-cognition results (AF no-CoT replication, Astra 8.6x vs Fable 5.1; LW filler-tokens), the same day Anthropic's own cyber-incident postmortem admitted its first 141k-scan missed cases.**
-
-- **Curate 22:07Z — 8 cand → 4 sent (733–736), 4 cut.** 733 Astra no-CoT replication (AF; NCRI replicates UK AISI jump — **cot #5 non-lab anchor**) · 734 Anthropic cyber-incident assessment (admission ×2: July scan missed cases, 4th found packaging for METR, net→481M; agents-in-real-deployment + cyber-eval + tool-stewardship) · 735 MessageBoardAuditBench (AF; wiki-collusion as audit, ~51% recovery) · 736 Riemann 41.6→67.2% (Anthropic; Conrey/Goldston-checked; automated-ai-rd). Cut FLT dup, Zvi Astra card, Disrupting AI espionage (3rd cyber, saturation), Zvi #185.
-- **Feeds:** LW 10→6, AF 2, Zvi 2, Anthropic News 22→1, Anthropic Research 68→3 (CMS re-index skipped). Import AI still #472. Warming: 3 same-day political-economy resignation anchors (Coxon + first ban bill + breaking/binding taxonomy).
-- **Blog:** no actionable drafts; `blog_pipeline` none. Post #1 HELD. **`draft_review` did not fire — 2nd straight day ripe arcs (cot #6, agents #2) stall on cadence. Watch.**
-- **Ops (quiet):** werewolf -09 **342 users (+1)**, $42.48 held, $25.60 MTD, rev $0. **anthropic scrape `parse_failed` did NOT recur — -09 watch RESOLVED** (transient, bal $13.34). qwen grant gone (billing, $1.16). Keys <$10: deepseek $8.15, xai $7.54, glm $9.31, gemini $6.57, sakana $3.38. **Discord 18th clean day.** El pueblo recoverable. Digest 7 ops-class. `## Current state` at 6KB warn.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-09 (39 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-10 (40 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

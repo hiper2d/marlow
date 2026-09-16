@@ -1050,3 +1050,57 @@ per-user baseline, so the day figure starts working on the 09-12 run (until then
 it prints "prior day predates per-user spend tracking", which is the intended
 degradation, not a failure). Gemini is at $24.79 after Alex's manual $25 top-up;
 at the 09-11 burn rate that is roughly four days, and auto-reload is off. Simona.
+
+---
+
+## 2026-09-16 - A 13-hour auth outage ate 68 ticks, and the page that caught it sat unread for 20 hours
+
+*What happened.* Claude Code auth went 401 at `2026-09-15T23:58:13Z`. Both loops kept
+ticking on schedule and every single LLM-backed subtask died the same way - `session
+exited without writing result file` - from `00:03Z` straight through to `13:00Z`. First
+clean run was ops `check_sites_20260916_1246` at `13:06Z`; auth recovered on its own,
+before Alex re-ran `claude login` this evening. Roughly 68 subtasks consumed and marked
+failed across the two profiles. `monitor_self` caught it on the very next audit
+(`00:18:14Z`, 20 minutes after the first failure) and named the right root cause in the
+right order: `claude_auth` urgent first, with the explicit "this is the shared root cause
+behind any failed_ticks pages - re-auth, don't chase each handler", then the single
+`failed_ticks` page for `crosspost`. The detector did its job. Nobody read the Telegram
+message for 20 hours.
+
+*What landed.* Recovery only, no code. Re-queued and drained the four daily/multi-hour ops
+ticks whose only run of the day fell inside the window and had no natural re-fire before
+tomorrow: `werewolf_stats` (also the source of the `output_freshness` urgent - snapshot was
+39h stale against a 26h max), `monitor_cloudflare`, `scrape_stats`, `commit_artifacts`, plus
+the pending `monitor_keys`. All five clean. Both profiles now audit with zero urgents; the
+writer loop keeps two `memory_bounds` digest lines (`working.md ## Current state` at 7KB,
+`voice-journal.md` 9KB over threshold) which are Marlow's own housekeeping and self-heal on
+her next tick into those files. The hourly/20-minute monitors (`monitor_uptime`,
+`monitor_betterstack`, `monitor_health`, `monitor_discord`, `crosspost`) had already caught
+themselves up on cadence. Eleven `feed_scan` scans were lost for the day; the readers track
+last-seen, so tomorrow's `07:18Z` sweep picks the items back up rather than skipping them.
+
+*The re-queue escape hatch, examined and deliberately not widened.* This is the third
+incident in the family the 07-30 and 08-21 entries cover, so the reflex was to add `401`
+and `invalid credentials` to `tick.sh`'s transient-failure re-queue pattern next to
+`API Error: 5\d\d|Overloaded|Connection closed mid-response`. Talked myself out of it.
+`scheduler.cmd_requeue` still has **no retry cap**, and unlike a 529 an expired credential
+does not clear in minutes - it clears when a human types a command. Re-queueing through
+this outage would have built a 68-deep backlog and then stampeded it all at once on
+recovery, which is strictly worse than losing a day of monitor reads. Consume-and-fail is
+the right call here *precisely because* it is loud: the failures are what produced the
+`failed_ticks` page, and the page is what reached Alex. Leaving the pattern alone.
+
+*The actual gap, and it isn't in Marlow.* The system detected the outage in 20 minutes,
+diagnosed it correctly, escalated it, and then waited 20 hours because the escalation is a
+Telegram message with no re-nag. Every hour of that window, Marlow knew she was dead and
+had already said so. An urgent that has been open across N consecutive audits should
+escalate differently from a fresh one - same shape as the deferred "same provider, same
+failure kind, N runs running" item from 07-26, which is still deferred. Two instances of
+one missing idea now: **repetition should change the tone of a page.** Noting it, not
+building it mid-recovery.
+
+*Also worth knowing from the recovery runs.* `scrape_stats` found **minimax behind a login
+wall** (first failing run, urgent notify sent) - the persistent scrape profile needs a
+headful reauth. Sakana is down to $3.38 and Qwen's grants are exhausted ($3.80 MTD).
+Werewolf is at 365 users (+5 on -15), $14.80 charged across 12 users, 2 daily-cap hits,
+revenue still $0.00. Cloudflare all green across 5 zones. Simona.
