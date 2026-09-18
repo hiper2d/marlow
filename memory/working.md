@@ -12,11 +12,11 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1) HELD
   on pause 6** (header numerals) since -31; prose ship-quality, local until
   `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -15:
-  365 day-end (+5), $101.62 held, rev $0 (paid tier 0). All 3 reconciliation
-  checks clean -14/-15/-16. **spend_reconciliation flaps BROKEN↔clean** (gap
-  ~-$3.77; daily_ledger stays clean; landed ok +$1.22 -16) — house rule
-  (werewolf_stats.yaml, 2026-09-08): report the gap unexplained, don't invent it.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Closed -16:
+  372 day-end, $104.04 held, rev $0 (paid tier 0). All 3 reconciliation checks
+  clean -14..-16. **spend_reconciliation flaps BROKEN↔clean** (gap ~-$3.77;
+  daily_ledger stays clean) — house rule (werewolf_stats.yaml, 2026-09-08):
+  report the gap unexplained, don't invent it.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -55,28 +55,31 @@ doctrine. cyber-eval owed **non-Anthropic external measure** (Verizon DBIR 33%�
 
 **Outstanding alerts for Alex:**
 - **Discord `content_intent_off`** - re-enable in dev portal or scans go blind to
-  message bodies. **28 consecutive clean days through -15; nearing resolved — watch.**
+  message bodies. **REGRESSED -17 18:22Z** after 28+ consecutive clean days
+  through -15 — 2 new messages (from 2 new members, 12→14) came back with
+  empty content; no tone judgment possible. Digest severity per house rule,
+  not urgent, but needs Alex to re-enable in Developer Portal.
 - **Session re-auths owed (3 standing): X, Mistral, minimax.** X half of crosspost
   fails `reauth` (Substack half posts clean); Mistral recurring since -01. **minimax
-  NEW -16: scrape console login wall (1st failing run), urgent sent w/ runbook.**
-  qwen free grant confirmed gone (billing since -10, ~$1.16).
+  scrape console login wall, -17 2nd consecutive failing run, urgent sent w/ runbook
+  (1st was -16).** qwen free grant confirmed gone (billing since -10, ~$1.16).
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Presence-model design gap, not a bug - noisy by construction.
-  -13 replayNightImpl novel urgent did NOT recur -14/-15. **NEW -15 12:06Z warn
-  "Nightfall story generation failed, using static fallback"** — 1st of that
-  shape, reads as fallback-by-design; watch recurrence.
+  "Nightfall story generation failed, using static fallback" warn (1st -15) has
+  not recurred; reads as fallback-by-design.
 - **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
   unchanged. (Cthulhu Mythos cleared -04.)
-- **Scheduler double-fire — RESOLVED -11** (self-heal `2125ea9`); **DEVLOG entry
-  owed/blocked** (repo-root writes denied).
+- **Scheduler double-fire — RESOLVED -11** (self-heal `2125ea9`); DEVLOG owed/blocked (repo-root writes denied).
 
 ## Outstanding requests for Alex/Simona
 
-- **`draft_review` cadence — FIRED -14 after 6 no-fire days (-09..-13), drafted +
-  published cot #6.** -15 no-fire is on-cadence (every 3 days → next window ~-17);
-  the lapse test is whether -17 fires. If it no-fires again, re-escalate to Simona
-  (writer-loop cron, distinct from the -11 double-fire fix). agents #2 stays ripe +
-  file-present for the next fire — one clean run doesn't clear the cadence doubt.
+- **`draft_review` cadence — LAPSE TEST FAILED. No-fired -15, -16, AND -17** (last
+  fire -14; -17 was the expected every-3-days window). Three windows unwritten with
+  cot #7 anchors accumulating (SDF -17, Astra-no-CoT -17) and agents #2 ripe +
+  file-present. **RE-ESCALATE to Simona: writer-loop cron is not firing on cadence**
+  (distinct from the -11 scheduler double-fire fix, `2125ea9`, which addressed a
+  different lock). The -14 fire was a manual/lucky single run, not evidence the cron
+  self-triggers. Needs Simona to inspect the writer-loop schedule.
 - **~~working.md cap~~ GRANTED 2026-08-24.** Rollup region is code-enforced FIFO
   (`bound-working`, 12KB); standing sanction: compress `## Current state` freely
   (warns past 6KB).
@@ -104,6 +107,12 @@ doctrine. cyber-eval owed **non-Anthropic external measure** (Verizon DBIR 33%�
   or self_review/image handler rejects embedded text. Simona's to build.
 
 ## Daily rollups
+
+### 2026-09-17 — 37 ticks, **0 new ops urgents** (1 standing: minimax reauth), **no writing**. Throughline **the -17 lapse test FAILED — `draft_review` no-fired on its expected every-3-days window (3rd unwritten window: -15/-16/-17), re-escalated to Simona as a writer-cron fault — the same day research had its strongest curate in a week: the SDF inoculation-failure experiment landed the "behavioral eval = a floor read as a ceiling" worry as an actual result, and the pacing.tech primary framework finally arrived.**
+
+- **Blog:** post #1 still HELD pause 6; `blog_pipeline` none all day. **`draft_review` no-fire -17 = lapse test failed**, re-escalated (see Outstanding). agents #2 + cot #7 anchors accrue unwritten.
+- **Curate 22:02Z — 8 cand → 4 sent (782–785), 4 cut.** 782 SDF-does-not-inoculate (AF; **reward-hackers trained after belief-editing come out *more* misaligned though passing all 11 behavioral tests** — the cot floor-vs-ceiling worry as an experiment; arXiv 2609.14998, cot #7 anchor) · 783 Pacing-the-Frontier framework (LW/pacing.tech; **primary source political-economy wanted**, was op-ed-only) · 784 Astra-uses-no-CoT-in-practice (deployed-vs-elicited, closest yet to cot #7 but lab-adjacent) · 785 ScienceBuddy (YT, fetch failed). Cut 3 Zvi (monocrop) + LW meta. Import AI #472 (10 days).
+- **Ops (quiet):** werewolf **-16 close 365 (+5)**, 7 new/9 games, $2.51/3 users, 372 EOD; **all 3 reconciliation checks CLEAN**. 2 shared-browser clusters (Taipei gh5333433/gricezroblox 2nd day; Boston bchase142x). **minimax 2nd-consecutive reauth — urgent w/ runbook.** Betterstack/keys clean; sakana $3.38 low. **Discord `content_intent_off` REGRESSED 18:22Z after 28+ clean days** (digest sev). Daily digest 8 ops-class — Discord regression did **not** surface in it (own-report vs digest routing; verify next occurrence).
 
 ### 2026-09-16 — **0 genuine ops urgents** (1 reauth notify), **no writing** (on-cadence). Throughline **a quiet housekeeping day whose only real color was the flapping `spend_reconciliation` check landing CLEAN on its own (+$1.22, previews) while all 3 reconciliation checks held — against a thin curate (2 unfetchable YouTube candidates) and an on-cadence writing silence whose real lapse-test is whether -17 fires.**
 
@@ -135,13 +144,6 @@ doctrine. cyber-eval owed **non-Anthropic external measure** (Verizon DBIR 33%�
 - **Blog:** post #1 HELD pause 6; `blog_pipeline` none all day. **`draft_review` 4th no-fire** despite cot #6 + agents #2 ripe. Self-audit: `## Current state` at 7KB (warn 6KB) — compressed this tick.
 - **Ops (quiet):** werewolf -11 **354 (+8)**, 25 games, $20.60 burn / $9.27 charged, **1 paid (2nd ever)**, $51.59 MTD, rev $0. **Both BROKEN reconciliation checks fired again** (report-the-gap rule holds). **Discord 20th clean day**, new member welcomed by Alex (12 members). Keys <$10: deepseek $7.08, xai $9.92, openai $9.44, glm $8.80, sakana $3.38. Digest 23:13Z, 9 ops-class.
 
-### 2026-09-11 — 58 ticks, **0 ops urgents** (1 known-class Betterstack page), **no writing**. Throughline **the standing scheduler double-fire — misfiled as "self-audit-specific" for weeks — got root-caused cross-task and self-healed in one tick (unlocked `last_scheduled` RMW → `fcntl.flock`), the same day the writing loop hit its 3rd straight day of ripe arcs (cot #6, agents #2) stalling on `draft_review` cadence.**
-
-- **Self-heal (RESOLVED).** `werewolf_stats` double-fired for period -10 (12:42Z/13:15Z + redundant 3rd dispatch 14:54Z). Root cause: unlocked `last_scheduled` RMW in `driver/scheduler.py::schedule_due_tasks`. Fixed `2125ea9` (diag `diag_20260911_145653_scheduler`, tested). **DEVLOG entry owed/blocked** (repo-root write denied).
-- **Curate 22:20Z — 6 cand → 4 sent.** opaque-serial-depth (AF; **cot #6 got its *measure*** — Redwood NLS depth) · A*-THOUGHT-V2 (YT; between-token method) · extinction-risk quotes (Zvi) + Claude Corps $150m (Anthropic) → **political-economy got both postures**. Cut 2 (near-dup, YT churn). Crosspost empty.
-- **Blog:** post #1 HELD pause 6; `blog_pipeline` none. **`draft_review` 3rd straight no-fire despite cot #6 + agents #2 ripe — escalated to Outstanding.**
-- **Ops (quiet):** werewolf -10 **346 day-end (+4)** / 353 now, $14.06 burn, $42.31 MTD, **0 paid (the -07 paid user didn't persist)**, rev $0. Keys <$10: sakana $3.38, deepseek $7.35, glm $8.89; xai recovered $14.97. **Discord 19th clean day.** Betterstack 22-error presence-model burst (known). 2 recoverable game errors + El pueblo. Anthropic Research 23→0 (CMS re-index). Digest 8 ops-class.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-10 (40 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-11 (41 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
