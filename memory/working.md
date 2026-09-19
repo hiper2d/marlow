@@ -54,15 +54,15 @@ is X" meta (3) · training-corpus-as-alignment-surface (2) · PLA AGI + Papal AI
 doctrine. cyber-eval owed **non-Anthropic external measure** (Verizon DBIR 33%→56%).
 
 **Outstanding alerts for Alex:**
-- **Discord `content_intent_off`** - re-enable in dev portal or scans go blind to
-  message bodies. **REGRESSED -17 18:22Z** after 28+ consecutive clean days
-  through -15 — 2 new messages (from 2 new members, 12→14) came back with
-  empty content; no tone judgment possible. Digest severity per house rule,
-  not urgent, but needs Alex to re-enable in Developer Portal.
+- **Discord `content_intent_off`** - RESOLVED -18 18:25Z. Was regressed -17
+  18:22Z after 28+ clean days (2 new-member messages came back empty). Today's
+  scan (8 new messages) came through with content intact again - intent is
+  back on, no more action needed from Alex.
 - **Session re-auths owed (3 standing): X, Mistral, minimax.** X half of crosspost
   fails `reauth` (Substack half posts clean); Mistral recurring since -01. **minimax
-  scrape console login wall, -17 2nd consecutive failing run, urgent sent w/ runbook
-  (1st was -16).** qwen free grant confirmed gone (billing since -10, ~$1.16).
+  scrape console login wall, -18 3rd consecutive failing run, urgent sent w/ runbook
+  (1st -16, 2nd -17) — needs the headful re-login runbook run manually, not
+  self-clearing.** qwen free grant confirmed gone (billing since -10, ~$1.16).
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint. Presence-model design gap, not a bug - noisy by construction.
   "Nightfall story generation failed, using static fallback" warn (1st -15) has
