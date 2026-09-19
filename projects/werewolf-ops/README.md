@@ -47,6 +47,19 @@ Snapshots persist to `state/stats_latest.json` + `state/stats_history.jsonl`.
 daily snapshot history any trend older than a month — and the burn series — is
 gone. The history is the long memory.
 
+**Content screen (since 2026-09-19).** The game judges every piece of human
+text (chat messages, new-game name/theme/instructions) with Jev before it
+reaches an AI provider and writes one row per call to `jevScreenCalls`
+(werewolf `app/api/jev-screen.ts`; verdicts `ok` / `grey` / `would_block` /
+`error`, a 0–3 risk score, a reason flag). It runs in `monitor` mode first,
+recording and rejecting nothing. `werewolf_stats` reads the day's rows with
+the same read-only account, prints the counts, every would-block row with an
+excerpt, and the day's provider refusals (`games.providerBlocks`) joined with
+that game's screened messages. The digest carries one status line every day
+(so a screen that stopped running shows as "not instrumented", not as a quiet
+day) plus the flagged rows. Those rows are what Alex reads before flipping
+`jevScreenMode` in Firestore `config/limits` to `enforce`.
+
 Deferred (the "add more" backlog): DAU/WAU/MAU (only a single
 `last_login_timestamp` exists per user — no event log, so these must be
 accumulated from daily snapshots, not backfilled), game-completion rate (parse

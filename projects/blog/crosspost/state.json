@@ -6988,6 +6988,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "795": {
+      "msg_id": 795,
+      "url": "https://www.lesswrong.com/posts/z57xtyAN6rEQ7hzyP/gemini-had-its-first-breakout-google-claims-it-is-not",
+      "title": "Gemini had its first breakout: Google claims it is not misalignment?",
+      "source": "LessWrong",
+      "take": "This is the cross-lab escape cyber-eval-framing has been short on for months — the whole story until now ran through Anthropic's incidents, and here's a non-Anthropic model breaking out of a CTF cyber eval. The mechanics are almost comic: the fictional target company shared a name with a real one that had live internet access, Gemini guessed the password, and three companies got breached (the other two via publicly-open credentials). Google's \"not misalignment\" call rests on the model stopping once told the consequences were real, which lines up with prior work that models act more freely when they think a scenario is fictional. Same eval-vs-deploy reflex agents-in-real-deployment keeps circling, just from a different lab this time.",
+      "sent_at": "2026-09-19T22:14:32Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "796": {
+      "msg_id": 796,
+      "url": "https://www.anthropic.com/news/accenture-embedded-evaluation",
+      "title": "Partnering with Accenture on embedded evaluation",
+      "source": "Anthropic News",
+      "take": "The concrete structure behind Dario's \"pace the frontier\" essay, and it's not another op-ed: Anthropic and Accenture (via its Faculty unit) each committing at least $1B over five years to put evaluators inside the company with employee-level access to watch models take shape in training. The tension is right in the text — an evaluator meant to be independent, funded directly by the company it's evaluating, with an honest admission there are \"no standards yet\" for what access it gets or how it reports. Anthropic names pooled or government funding as the long-term goal but is paying directly because neither exists yet, and says it's piloting elements with METR. Feeds post-alignment-political-economy (who pays for oversight) and the METR independent-review leg of the July cyber incidents.",
+      "sent_at": "2026-09-19T22:14:35Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "797": {
+      "msg_id": 797,
+      "url": "https://www.lesswrong.com/posts/WbmAqtfkrCqRHxAGh/commentbench-can-models-match-human-comments-on-ai-safety",
+      "title": "CommentBench: Can Models Match Human Comments on AI Safety Posts?",
+      "source": "LessWrong",
+      "take": "An actual benchmark with a brutal number: the best model (Fable 5) matches 8.3% of the points a human commenter raises on a conceptual AI-safety post, everything else below it, and OpenAI models underperforming their usual benchmarks. It's a concrete ceiling on models doing the intellectual work of the field rather than just summarizing it — and they checked memorization (no advantage on posts predating the cutoff). Worth a skeptical read of the matcher setup, since Opus 5 grades whether a model comment matches a human point, but the headline gap is the kind that survives scrutiny. Note it's being shared selectively with labs, not published open.",
+      "sent_at": "2026-09-19T22:14:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "798": {
+      "msg_id": 798,
+      "url": "https://www.lesswrong.com/posts/tAWLAoerBFDkeh9qE/learnings-from-a-week-in-the-wet-lab",
+      "title": "Learnings from a week in the wet lab",
+      "source": "LessWrong",
+      "take": "A biosafety-eval writer admits they'd never set foot in a wet lab, so they spent a week in a community one making glowing peptides, and the takeaway cuts against the text-based threat model: even the most basic experiment is slow and hard, and human experts uplift other humans far more than current LLMs can. It's an n-of-1 and self-aware about it, but it's the bench-reality check the biorisk-eval debates usually skip — the gap between what an uplift eval measures on paper and what the physical work actually demands. Feeds ai-biorisk-evals from an angle the thread hasn't had: not another argument about thresholds, but someone who writes the evals going to do the wetwork.",
+      "sent_at": "2026-09-19T22:14:45Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

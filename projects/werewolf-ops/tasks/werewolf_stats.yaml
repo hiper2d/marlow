@@ -86,6 +86,31 @@
 # This task is activity reporting only. It deliberately raises NO alerts — if a
 # metric ever warrants one (e.g. a signup spike worth capacity planning), add an
 # explicit threshold here rather than letting the report turn noisy.
+#
+# ── Content screen (added 2026-09-19) ────────────────────────────────────────
+# The game runs every piece of HUMAN text (chat messages, new-game setups)
+# through a Jev judge before it reaches an AI provider and writes one row per
+# call to the Firestore collection `jevScreenCalls` (werewolf
+# app/api/jev-screen.ts). Why Alex wants it in THIS report: the platform keys
+# get flagged when a provider keeps receiving prohibited content, and the
+# screen is in `monitor` mode first — it records verdicts and rejects nothing —
+# so the would-block rows it prints here are what he reads to decide when to
+# flip `jevScreenMode` to `enforce` (Firestore config/limits).
+#
+# The handler adds, for the closed local day: counts by verdict (ok / grey /
+# would_block / error), the mode seen, every would-block row (user, reason,
+# score, a 90-char excerpt; his own test rows tagged [yours] and kept out of
+# the counts), the top grey rows, and the day's provider refusals
+# (games.providerBlocks stamped that day) joined against the screen rows of
+# that game. The digest gets one status line always — a screen that silently
+# stopped running must be visible as "not instrumented", never as "0 flagged"
+# — plus the would-block rows up to DIGEST_LIST_CAP and the refusal join.
+#
+# In the prose: copy the flagged rows through, do not soften them, and do not
+# explain a refusal the join could not account for. "No player message was
+# flagged before this refusal" is the finding; what the bots did is not in
+# the data. Same read-only service account, no new secret, no index needed
+# (single-field range on createdAt).
 # ── Why 05:05 UTC and not "0 9" (changed 2026-08-22) ─────────────────────────
 # It ran at 09:00 UTC and counted "today" as since-UTC-midnight, so it reported a
 # nine-hour slice as a day - and that slice, 00:00-09:00 UTC, is 20:00-05:00
@@ -108,7 +133,7 @@
 name: werewolf_stats
 project: werewolf-ops
 profile: ops
-description: Daily Werewolf user-activity snapshot — new users, games created, and AI burn (cost) — from Firestore users/games collections. Reports the COMPLETE local day (America/New_York) that just ended, not a partial UTC day. Excludes Alex's own account from all activity counts (MARLOW_STATS_EXCLUDE); his games still count toward burn and are shown as a split. Digest-only, no alerts.
+description: Daily Werewolf user-activity snapshot — new users, games created, AI burn (cost), and the Jev content screen (high-risk player text flagged before it reached a provider, plus the day's provider refusals joined against it) — from Firestore users/games/jevScreenCalls. Reports the COMPLETE local day (America/New_York) that just ended, not a partial UTC day. Excludes Alex's own account from all activity counts (MARLOW_STATS_EXCLUDE); his games still count toward burn and are shown as a split; his flagged messages are still listed, tagged. Digest-only, no alerts.
 # 05:05 UTC = 01:05 EDT / 00:05 EST — see the DST note above.
 schedule: "5 5 * * *"
 priority: normal

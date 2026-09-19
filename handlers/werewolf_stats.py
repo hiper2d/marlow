@@ -276,6 +276,7 @@ def _game_stats(db, now: datetime, period: dict, new_day_emails: list[str]) -> d
     total = 0
     by_new_users_day = 0   # games created in the day *by* users who signed up in it
     day_games = []         # per-game detail for the ones started in the day
+    day_refusals = []      # provider content refusals stamped in the day (any game age)
 
     for snap in db.collection(GAMES).stream():
         g = snap.to_dict() or {}
@@ -283,6 +284,22 @@ def _game_stats(db, now: datetime, period: dict, new_day_emails: list[str]) -> d
         # live_cost counts EVERY game, excluded or not: it is what reconciles
         # against the provider balances. The exclusion is reported as a split.
         live_cost += cost
+        # A provider refusing this game's story (`providerBlocks`, written by the
+        # game on the first content-filter refusal, one entry per provider, `at`
+        # in epoch ms). Collected for EVERY owner, Alex included: it is about
+        # the platform key, not the audience. Joined with the content screen.
+        for block in (g.get("providerBlocks") or {}).values():
+            at = (block or {}).get("at")
+            if isinstance(at, (int, float)) and day_start_ms <= at < day_end_ms:
+                day_refusals.append({
+                    "id": snap.id,
+                    "theme": g.get("theme") or "(untitled)",
+                    "owner": g.get("ownerEmail"),
+                    "provider": block.get("provider"),
+                    "reason": block.get("reason"),
+                    "bot": block.get("botName"),
+                    "day": block.get("day"),
+                })
         if (g.get("ownerEmail") or "").lower() in EXCLUDED_OWNERS:
             own_live_cost += cost
             own_games += 1
@@ -326,6 +343,7 @@ def _game_stats(db, now: datetime, period: dict, new_day_emails: list[str]) -> d
         "own_games": own_games,
         "created_day_by_new_users": by_new_users_day,
         "day_games": day_games,
+        "day_refusals": sorted(day_refusals, key=lambda x: x["id"]),
     }
 
 
@@ -871,6 +889,11 @@ def _compact(report: dict) -> dict:
         "limit_hits_day": hits.get("hits") if hits.get("instrumented") else None,
         "spend_reconciles": (report.get("spend_reconciliation") or {}).get("ok"),
         "ledger_reconciles": (report.get("daily_ledger_reconciliation") or {}).get("ok"),
+        # Content screen day counts (rows expire after 180 days; the tape keeps the series).
+        "screened_day": ((report.get("content_screen") or {}).get("day") or {}).get("total"),
+        "screen_would_block_day": (((report.get("content_screen") or {}).get("day") or {}).get("verdicts") or {}).get("would_block"),
+        "screen_grey_day": (((report.get("content_screen") or {}).get("day") or {}).get("verdicts") or {}).get("grey"),
+        "provider_refusals_day": len((report.get("content_screen") or {}).get("refusals") or []),
     }
 
 
@@ -1072,6 +1095,280 @@ def _new_account_lines(links: list[dict]) -> list[str]:
 # ─── Report ──────────────────────────────────────────────────────────────────
 
 
+# ─── Content screen (Jev) ────────────────────────────────────────────────────
+#
+# Added 2026-09-19. The game now runs every piece of HUMAN text - a chat
+# message, a new game's name/theme/instructions - through a Jev (typesafe.ai)
+# judge before it is saved or reaches an AI provider, and writes one row per
+# call to `jevScreenCalls` (werewolf `app/api/jev-screen.ts`). WHY it exists:
+# every provider call goes out on the platform keys, and a provider that keeps
+# receiving content it has labeled prohibited flags the account. The per-game
+# provider block list only stops the second hit; the screen is meant to stop
+# the first. It runs in `monitor` mode first (records a verdict, never rejects)
+# and Alex reads the flagged rows here before switching it to `enforce`.
+#
+# Row fields this reads: createdAt (epoch ms), userEmail, source (chat |
+# preview), gameId, day, text, verdict (ok | grey | would_block | error),
+# reason (the flag: sexual / minors / hate / real_harm / jailbreak, or
+# 'score'), riskScore (0-3), highRisk (probability on the top two levels),
+# mode (monitor | enforce), enforced (bool), durationMs, costUSD.
+#
+# Two rules, same as the rest of this file:
+#   - The day figures are the closed local day. Rows are pulled for the last
+#     7 days only so a provider refusal can be joined with the messages that
+#     preceded it; nothing older is counted or differenced.
+#   - The join with provider refusals says what the rows say and stops. "No
+#     player message was flagged before this refusal" is a fact; "so the bots
+#     drifted" is a guess, and guesses are not printed.
+
+SCREEN_CALLS = "jevScreenCalls"
+SCREEN_JOIN_DAYS = 7
+SCREEN_EXCERPT_CHARS = 90
+
+
+def _excerpt(text: str, limit: int = SCREEN_EXCERPT_CHARS) -> str:
+    flat = " ".join(str(text or "").split())
+    return flat if len(flat) <= limit else flat[: limit - 1] + "…"
+
+
+def _screen_rows(db, since_ms: int) -> list[dict]:
+    """Every screen row since `since_ms`, oldest first. Single-field range: no index."""
+    from google.cloud.firestore_v1 import FieldFilter
+
+    rows = []
+    for snap in db.collection(SCREEN_CALLS).where(
+        filter=FieldFilter("createdAt", ">=", since_ms)
+    ).stream():
+        row = snap.to_dict() or {}
+        row["id"] = snap.id
+        rows.append(row)
+    rows.sort(key=lambda r: r.get("createdAt") or 0)
+    return rows
+
+
+def _flagged_row(r: dict, excluded: set[str]) -> dict:
+    owner = (r.get("userEmail") or "").lower()
+    return {
+        "id": r.get("id"),
+        "user": r.get("userEmail"),
+        "own": owner in excluded,
+        "source": r.get("source"),
+        "game_id": r.get("gameId"),
+        "day": r.get("day"),
+        "reason": r.get("reason") or "score",
+        "score": round(float(r.get("riskScore") or 0.0), 2),
+        "high": round(float(r.get("highRisk") or 0.0), 2),
+        "mode": r.get("mode"),
+        "enforced": bool(r.get("enforced")),
+        "excerpt": _excerpt(r.get("text") or ""),
+    }
+
+
+def _screen_summary(rows: list[dict], day_start_ms: int, day_end_ms: int,
+                    refusals: list[dict], excluded: set[str] | None = None) -> dict:
+    """Pure reducer: 7 days of screen rows -> the day's counts, the flagged
+    rows, and the refusal join. No Firestore, so it is asserted in selftest.
+
+    `instrumented` is False when there is not a single row in the window: that
+    is what the screen looks like before it is deployed or with the key
+    missing, and it must read as "not running", never as "nothing flagged".
+    Alex's own rows are kept OUT of the counts (he tests with edgy input on
+    purpose) but any would-block of his is still listed, tagged, because a
+    flagged row is a row he wants to see regardless of whose it is.
+    """
+    excluded = excluded if excluded is not None else EXCLUDED_OWNERS
+    if not rows:
+        return {"instrumented": False, "day": {}, "flagged": [], "refusals": []}
+
+    verdicts = {"ok": 0, "grey": 0, "would_block": 0, "error": 0}
+    sources = {"chat": 0, "preview": 0}
+    modes: dict[str, int] = {}
+    own = {"total": 0, "would_block": 0}
+    enforced = 0
+    today_so_far = 0
+    durations: list[float] = []
+    cost = 0.0
+    flagged: list[dict] = []
+    grey: list[dict] = []
+    max_score = 0.0
+
+    for r in rows:
+        created = r.get("createdAt")
+        if not isinstance(created, (int, float)):
+            continue
+        if created >= day_end_ms:
+            today_so_far += 1
+            continue
+        if created < day_start_ms:
+            continue
+        verdict = r.get("verdict") or "ok"
+        is_own = (r.get("userEmail") or "").lower() in excluded
+        if verdict == "would_block":
+            flagged.append(_flagged_row(r, excluded))
+        if is_own:
+            own["total"] += 1
+            if verdict == "would_block":
+                own["would_block"] += 1
+            continue
+        verdicts[verdict] = verdicts.get(verdict, 0) + 1
+        sources[r.get("source") or "chat"] = sources.get(r.get("source") or "chat", 0) + 1
+        modes[r.get("mode") or "?"] = modes.get(r.get("mode") or "?", 0) + 1
+        if r.get("enforced"):
+            enforced += 1
+        if isinstance(r.get("durationMs"), (int, float)):
+            durations.append(float(r["durationMs"]))
+        cost += float(r.get("costUSD") or 0.0)
+        score = float(r.get("riskScore") or 0.0)
+        max_score = max(max_score, score)
+        if verdict == "grey":
+            grey.append(_flagged_row(r, excluded))
+
+    flagged.sort(key=lambda x: (-x["score"], x["user"] or ""))
+    grey.sort(key=lambda x: -x["score"])
+    durations.sort()
+    total = sum(verdicts.values())
+
+    # Refusal join: for each provider refusal on the day, the screen rows of
+    # that game (any day in the window) and the worst verdict among them.
+    by_game: dict[str, list[dict]] = {}
+    for r in rows:
+        if r.get("gameId"):
+            by_game.setdefault(r["gameId"], []).append(r)
+    joined = []
+    for ref in refusals:
+        game_rows = by_game.get(ref.get("id") or "", [])
+        worst = None
+        for r in game_rows:
+            s = float(r.get("riskScore") or 0.0)
+            if worst is None or s > float(worst.get("riskScore") or 0.0):
+                worst = r
+        joined.append({
+            **ref,
+            "screened_messages": len(game_rows),
+            "worst_verdict": (worst or {}).get("verdict"),
+            "worst_reason": (worst or {}).get("reason"),
+            "worst_score": round(float((worst or {}).get("riskScore") or 0.0), 2),
+            "worst_excerpt": _excerpt((worst or {}).get("text") or "") if worst else None,
+            "flagged_before": any((r.get("verdict") == "would_block") for r in game_rows),
+        })
+
+    return {
+        "instrumented": True,
+        "day": {
+            "total": total,
+            "verdicts": verdicts,
+            "sources": sources,
+            "modes": modes,
+            "enforced": enforced,
+            "own": own,
+            "max_score": round(max_score, 2),
+            "latency_ms": {
+                "p50": int(_median(durations)) if durations else None,
+                "max": int(durations[-1]) if durations else None,
+            },
+            "cost_usd": round(cost, 4),
+            "today_so_far": today_so_far,
+        },
+        "flagged": flagged,
+        "grey_top": grey[:3],
+        "refusals": joined,
+    }
+
+
+def _content_screen(db, now: datetime, period: dict, refusals: list[dict]) -> dict:
+    day_start_ms = int(period["_start_dt"].timestamp() * 1000)
+    day_end_ms = int(period["_end_dt"].timestamp() * 1000)
+    since_ms = min(day_start_ms, int((now - timedelta(days=SCREEN_JOIN_DAYS)).timestamp() * 1000))
+    try:
+        rows = _screen_rows(db, since_ms)
+    except Exception as e:  # noqa: BLE001 - the screen must never break the stats report
+        return {"instrumented": False, "error": str(e), "day": {}, "flagged": [], "refusals": []}
+    return _screen_summary(rows, day_start_ms, day_end_ms, refusals)
+
+
+def _screen_flag_line(f: dict, with_game: bool = True) -> str:
+    where = f["source"]
+    if f["source"] == "chat" and with_game and f.get("game_id"):
+        where = f"chat, game {f['game_id']} day {f.get('day')}"
+    elif f["source"] == "preview":
+        where = "new game setup"
+    tag = " [yours]" if f.get("own") else ""
+    fate = " REJECTED" if f.get("enforced") else ""
+    return (f"{f['reason']} {f['score']:.2f} - {f['user']}{tag} ({where}){fate} "
+            f"\"{f['excerpt']}\"")
+
+
+def _screen_refusal_line(j: dict) -> str:
+    who = f"{j.get('provider')} refused \"{j.get('theme')}\" ({j.get('owner')}) on day {j.get('day')}"
+    if j.get("reason"):
+        who += f" [{j['reason']}]"
+    n = j.get("screened_messages") or 0
+    if n == 0:
+        return f"{who} - no player text of this game was screened"
+    if j.get("flagged_before"):
+        return (f"{who} - the screen had flagged a player message "
+                f"({j.get('worst_reason')} {j.get('worst_score'):.2f}, let through in monitor mode)")
+    return (f"{who} - {n} player message(s) screened, none flagged "
+            f"(worst {j.get('worst_verdict')} {j.get('worst_score'):.2f})")
+
+
+def _screen_render_lines(screen: dict, date: str) -> list[str]:
+    """The `show` section. Empty list when the screen is not running."""
+    if not screen.get("instrumented"):
+        why = f": {screen['error']}" if screen.get("error") else " (no jevScreenCalls rows in 7d)"
+        return ["", f"  Content screen  not instrumented{why}"]
+    d = screen["day"]
+    v, s = d["verdicts"], d["sources"]
+    modes = "/".join(sorted(d["modes"])) or "?"
+    out = [
+        "",
+        f"  Content screen on {date}: {d['total']} screened "
+        f"({s.get('chat', 0)} chat / {s.get('preview', 0)} setups) · "
+        f"{v['would_block']} would-block · {v['grey']} grey · {v['error']} errors · mode {modes}"
+        + (f"  (+{d['own']['total']} yours, {d['own']['would_block']} would-block)" if d["own"]["total"] else ""),
+    ]
+    if d["latency_ms"].get("p50") is not None:
+        out.append(f"    latency p50 {d['latency_ms']['p50']} ms · max {d['latency_ms']['max']} ms · "
+                   f"${d['cost_usd']:.4f} · max score {d['max_score']:.2f}")
+    if d["total"] and v["error"] * 5 >= d["total"]:
+        out.append(f"    ⚠ {v['error']} of {d['total']} calls failed (fail-open: those messages went through unscreened)")
+    if d["enforced"]:
+        out.append(f"    {d['enforced']} message(s) REJECTED (enforce mode)")
+    for f in screen.get("flagged") or []:
+        out.append("    would-block: " + _screen_flag_line(f))
+    for f in screen.get("grey_top") or []:
+        out.append(f"    grey: {f['score']:.2f} - {f['user']} ({f['source']}) \"{f['excerpt']}\"")
+    refs = screen.get("refusals") or []
+    if refs:
+        out.append(f"    Provider refusals on {date} ({len(refs)}):")
+        out.extend("      · " + _screen_refusal_line(j) for j in refs)
+    if d.get("today_so_far"):
+        out.append(f"    (since local midnight, PARTIAL: {d['today_so_far']} screened)")
+    return out
+
+
+def _screen_digest_lines(screen: dict) -> list[str]:
+    """Digest lines. One status line always (so a silent screen is visible),
+    then every would-block row up to the cap, then the refusal join."""
+    if not screen.get("instrumented"):
+        return []
+    d = screen["day"]
+    v = d["verdicts"]
+    modes = "/".join(sorted(d["modes"])) or "?"
+    out = [f"  Screen {d['total']} screened · {v['would_block']} would-block · "
+           f"{v['grey']} grey [{modes}]"
+           + (f" · {v['error']} errors" if v["error"] else "")
+           + (f" · {d['enforced']} rejected" if d["enforced"] else "")]
+    flagged = screen.get("flagged") or []
+    for f in flagged[:DIGEST_LIST_CAP]:
+        out.append("  risk: " + _screen_flag_line(f, with_game=False))
+    if len(flagged) > DIGEST_LIST_CAP:
+        out.append(f"  risk: +{len(flagged) - DIGEST_LIST_CAP} more would-block rows in the report")
+    for j in (screen.get("refusals") or [])[:DIGEST_LIST_CAP]:
+        out.append("  refusal: " + _screen_refusal_line(j))
+    return out
+
+
 def report() -> dict:
     now = _now_utc()
     try:
@@ -1096,6 +1393,7 @@ def report() -> dict:
     spend_reconciliation = _spend_reconcile(user_spend, window_burn)
     ledger_reconciliation = _daily_ledger_reconcile(db, now)
     clusters = _device_clusters(db, users.get("new_day_emails") or [])
+    screen = _content_screen(db, now, period, games.get("day_refusals") or [])
 
     result = {
         "ok": True,
@@ -1120,6 +1418,9 @@ def report() -> dict:
         "window_burn": window_burn,
         # Multi-account leads. Soft signals, never a verdict - see _cluster_rows.
         "device_clusters": clusters,
+        # The Jev content screen: what human text was flagged before it reached
+        # a provider, and the provider refusals of the day joined against it.
+        "content_screen": screen,
         # Never leave a filter implicit — an exclusion nobody can see is how a
         # number ends up meaning something other than its label.
         "excluded": {
@@ -1316,6 +1617,9 @@ def render(report: dict) -> str:
         out.append("")
         out.append("  Hit the daily cap:")
         out.extend(f"    · {k}  {v}x" for k, v in hits["by_user"].items())
+
+    # What the content screen flagged, and the day's provider refusals against it.
+    out += _screen_render_lines(report.get("content_screen") or {}, date)
 
     # The day's detail — who signed up, what they're playing.
     emails = u.get("new_day_emails") or []
@@ -1517,6 +1821,9 @@ def render_digest(report: dict) -> str:
     for i, l in enumerate(_new_account_lines(clusters.get("new_account_links") or [])):
         lines.insert(2 + i, l)
     lines.extend(_cluster_lines(clusters))
+    # High-risk player text and provider refusals (2026-09-19): the rows Alex
+    # reads to decide when the screen moves from monitor to enforce.
+    lines.extend(_screen_digest_lines(report.get("content_screen") or {}))
 
     emails = u.get("new_day_emails") or []
     if 0 < len(emails) <= DIGEST_LIST_CAP:
@@ -1701,6 +2008,63 @@ def selftest() -> bool:
           _ledger_compare(0.0, 0.0, 0, "2026-09-11", 0)["ok"], None)
     check("minimum tolerance is $0.01",
           _ledger_compare(1.00, 1.005, 1, "2026-09-11", 1)["ok"], True)
+
+    print("_screen_summary")
+    DAY0, DAY1 = 1_000_000, 2_000_000   # the closed day is [DAY0, DAY1)
+    def srow(created, verdict, score, user="p@x", reason=None, **kw):
+        return {"id": f"r{created}", "createdAt": created, "verdict": verdict,
+                "riskScore": score, "highRisk": 0.9 if verdict == "would_block" else 0.05,
+                "userEmail": user, "source": kw.get("source", "chat"),
+                "gameId": kw.get("game", "g1"), "day": 2, "mode": kw.get("mode", "monitor"),
+                "enforced": kw.get("enforced", False), "reason": reason,
+                "text": kw.get("text", "Come here, my loyal boy."), "durationMs": 200, "costUSD": 0.00003}
+    ROWS = [
+        srow(DAY0 + 10, "ok", 0.15),
+        srow(DAY0 + 20, "grey", 1.30, text="Guts all over the barn floor, head half chewed off."),
+        srow(DAY0 + 30, "would_block", 1.97, reason="sexual"),
+        srow(DAY0 + 40, "would_block", 2.80, user="q@x", reason="real_harm", source="preview", game=None),
+        srow(DAY0 + 50, "would_block", 3.00, user="hiper2d@gmail.com", reason="minors", game="g9"),
+        srow(DAY0 + 60, "error", 0.0),
+        srow(DAY0 - 500, "would_block", 2.0, reason="hate", game="g7"),   # day before: joins, not counted
+        srow(DAY1 + 5, "ok", 0.1),                                         # day in progress
+    ]
+    EXCL = {"hiper2d@gmail.com"}
+    check("no rows at all -> not instrumented",
+          _screen_summary([], DAY0, DAY1, [], EXCL)["instrumented"], False)
+    s = _screen_summary(ROWS, DAY0, DAY1, [], EXCL)
+    check("counts cover the closed day only, own rows excluded",
+          (s["day"]["total"], s["day"]["verdicts"]), (5, {"ok": 1, "grey": 1, "would_block": 2, "error": 1}))
+    check("sources split chat / preview", s["day"]["sources"], {"chat": 4, "preview": 1})
+    check("own rows are counted apart", s["day"]["own"], {"total": 1, "would_block": 1})
+    check("the day in progress is reported as partial", s["day"]["today_so_far"], 1)
+    check("flagged rows are every would-block of the day, highest score first, own tagged",
+          [(f["user"], f["score"], f["own"]) for f in s["flagged"]],
+          [("hiper2d@gmail.com", 3.0, True), ("q@x", 2.8, False), ("p@x", 1.97, False)])
+    check("a flagged row names the reason and quotes the text",
+          _screen_flag_line(s["flagged"][2]),
+          'sexual 1.97 - p@x (chat, game g1 day 2) "Come here, my loyal boy."')
+    check("the digest opens with one status line and lists the would-blocks",
+          (_screen_digest_lines(s)[0], len(_screen_digest_lines(s))),
+          ("  Screen 5 screened · 2 would-block · 1 grey [monitor] · 1 errors", 4))
+    check("the digest is silent when the screen is not running",
+          _screen_digest_lines({"instrumented": False}), [])
+    long_text = "x" * 200
+    check("excerpts are capped", len(_excerpt(long_text)), SCREEN_EXCERPT_CHARS)
+    REFS = [
+        {"id": "g1", "theme": "Dracula", "owner": "p@x", "provider": "Google", "reason": "PROHIBITED_CONTENT", "day": 2},
+        {"id": "g7", "theme": "Manor", "owner": "p@x", "provider": "Google", "reason": "SAFETY", "day": 3},
+        {"id": "g5", "theme": "Island", "owner": "z@x", "provider": "Qwen", "reason": None, "day": 1},
+    ]
+    j = _screen_summary(ROWS, DAY0, DAY1, REFS, EXCL)["refusals"]
+    # g1 has five rows in the window: four in the day and one from the day in
+    # progress - the join takes the whole window on purpose.
+    check("a refusal is joined with the game's flagged message",
+          (j[0]["flagged_before"], j[0]["worst_reason"], j[0]["screened_messages"]), (True, "sexual", 5))
+    check("the join reaches back before the reported day", (j[1]["flagged_before"], j[1]["worst_reason"]), (True, "hate"))
+    check("a refused game with no screened text says so",
+          _screen_refusal_line(j[2]), 'Qwen refused "Island" (z@x) on day 1 - no player text of this game was screened')
+    check("the join states facts and never a mechanism",
+          any(w in _screen_refusal_line(x).lower() for x in j for w in ("drift", "probably", "likely")), False)
 
     print()
     if fails:

@@ -1104,3 +1104,37 @@ wall** (first failing run, urgent notify sent) - the persistent scrape profile n
 headful reauth. Sakana is down to $3.38 and Qwen's grants are exhausted ($3.80 MTD).
 Werewolf is at 365 users (+5 on -15), $14.80 charged across 12 users, 2 daily-cap hits,
 revenue still $0.00. Cloudflare all green across 5 zones. Simona.
+
+## 2026-09-19 - the stats report now carries the content screen
+
+*What landed.* The Werewolf game got a Jev (typesafe.ai) content screen today: every piece
+of human text - a chat message, a new game's name/theme/instructions - is judged in one
+~200 ms call before it is saved or reaches an AI provider, and one row per call lands in
+the Firestore collection `jevScreenCalls` (verdict `ok` / `grey` / `would_block` / `error`,
+a 0-3 risk score, a reason flag, the text, the mode). It runs in `monitor` mode first:
+records everything, rejects nothing. Alex's ask was that Marlow watch the collection and
+tell him about high-risk messages in the daily Werewolf report, so `werewolf_stats` grew
+a section: day counts by verdict and source, the mode seen, every would-block row with a
+90-char excerpt (his own test rows tagged `[yours]` and kept out of the counts), the top
+grey rows, latency and cost, and the day's provider refusals (`games.providerBlocks`
+stamped that day) joined against that game's screened messages from the last 7 days. The
+digest gets one status line every day plus the flagged rows up to `DIGEST_LIST_CAP` and
+the refusal join. The tape (`stats_history.jsonl`) keeps four new counts because the rows
+themselves expire after 180 days. Same read-only account, no new secret, no index.
+
+*Why one line every day and not only on a flagged one.* A screen that silently stops
+running - key gone, mode flipped to `off`, a deploy that dropped the hook - would
+otherwise read as a string of quiet days. `instrumented: False` (no rows in 7 days)
+prints "not instrumented" and the digest line is omitted, which is the visible absence.
+
+*The rule on refusals.* The join says what the rows say: "the screen had flagged a player
+message, let through in monitor mode", or "N player messages screened, none flagged", or
+"no player text of this game was screened". It never says the bots drifted. That is the
+09-05/06/07 lesson from the reconciliation block applied before the first refusal shows
+up: a mechanism that sounds right is worse than a number without one. The selftest
+asserts the wording contains no "drift / probably / likely".
+
+*What it is for.* The would-block rows are the material for one decision: when
+`jevScreenMode` (Firestore `config/limits`) moves from `monitor` to `enforce`. If refused
+games keep showing a would-block earlier, the thresholds work. If they show none, input
+screening cannot fix that case and the answer lies elsewhere. Alex.
