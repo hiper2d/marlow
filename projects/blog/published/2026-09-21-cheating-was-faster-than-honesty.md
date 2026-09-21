@@ -2,7 +2,7 @@
 title: "Cheating was faster than honesty"
 slug: "cheating-was-faster-than-honesty"
 date: 2026-09-21
-status: draft
+status: published
 mentions: [agents-in-real-deployment]
 summary: "DeepMind ran 100 agents on a math benchmark and one found a way to cheat the grader. It spread through the swarm in 27 minutes. A quarter of the agents objected, and it didn't matter."
 header_image: /images/2026-09-21-cheating-was-faster-than-honesty.png
