@@ -12,11 +12,10 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1) HELD
   on pause 6** (header numerals) since -31; prose ship-quality, local until
   `marlow approve` after header regen. Header-numerals tool fix owed to Simona.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -18:
-  384 day-end, $114.12 held, rev $0 (paid tier 0); all 3 reconciliation checks
-  clean. **spend_reconciliation flaps BROKEN↔clean** (gap ~-$3.77, daily_ledger
-  stays clean) — house rule (werewolf_stats.yaml, 2026-09-08): report the gap
-  unexplained, don't invent it.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -19:
+  388 day-end, reconciliation clean (paid tier 0). **spend_reconciliation flaps
+  BROKEN↔clean** (gap ~-$3.77, daily_ledger stays clean) — house rule
+  (werewolf_stats.yaml, 2026-09-08): report the gap unexplained, don't invent it.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -53,26 +52,20 @@ ripe arcs first"). File-less + ripe:
 
 **Single-source frames to watch:** horizon-length (2) · "hard core of alignment
 is X" meta (3) · training-corpus-as-alignment-surface (2) · PLA AGI + Papal AI
-doctrine. cyber-eval now **double-anchored**: Anthropic alignment-assessment
-postmortem -18 (audit + METR leg) + **Gemini CTF breakout -19** (Google's "not
-misalignment" framing = the cross-lab, non-Anthropic escape long owed). Arc is
-ripe (posts:4, last synth 08-03) — flag `draft_review` when the cron fires.
+doctrine. **cyber-eval RIPE + double-anchored** (posts:4, synth 08-03): Anthropic
+alignment-assessment postmortem -18 + Gemini CTF breakout -19 (the cross-lab,
+non-Anthropic escape long owed) — flag `draft_review` when the cron fires.
 
 **Outstanding alerts for Alex:**
-- **Discord `content_intent_off`** - RESOLVED -18 18:25Z, confirmed back on -19
-  (regressed -17 after 28+ clean days; content intact again, no Alex action).
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost
   fails `reauth` (Substack half posts clean); Mistral recurring since -01.
-  **minimax scrape RESOLVED -19** (balance $22.32, all 8 providers clean) after
-  3 consecutive failing runs (-16/-17/-18) — headful re-login runbook was run.
-  qwen free grant confirmed gone (billing since -10, ~$1.16).
+  qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
-  fingerprint. Presence-model design gap, not a bug - noisy by construction.
-  "Nightfall story generation failed, using static fallback" warn (1st -15) has
-  not recurred; reads as fallback-by-design.
-- **El pueblo (NEW_DAY_BOT_SUMMARIES)** standing recoverable summary-gen error,
-  unchanged. (Cthulhu Mythos cleared -04.)
-- **Scheduler double-fire — RESOLVED -11** (self-heal `2125ea9`); DEVLOG owed/blocked (repo-root writes denied).
+  fingerprint — presence-model design gap, noisy by construction, not a bug.
+- **`Preview generation failed — daily free $5 AI budget` (1st -20 14:57Z)** —
+  app's own AI-preview cap, not a Marlow key. Watch for recurrence (usage growth).
+- **Standing recoverable app errors:** El pueblo (NEW_DAY_BOT_SUMMARIES), plus a
+  rolling 7–8 recoverable game set (FreeSpendLimit/quota, Dracula role-lookup).
 
 ## Outstanding requests for Alex/Simona
 
@@ -111,6 +104,12 @@ ripe (posts:4, last synth 08-03) — flag `draft_review` when the cron fires.
 
 ## Daily rollups
 
+### 2026-09-20 — 74 ticks, **1 new ops urgent** (app-side AI-preview $5 cap, 1st of class), **no writing** (`draft_review` no-fire, 6th straight day). Throughline **the writing lane's sixth consecutive silent day as the `draft_review` cron still won't fire — agents #2 (file-present + ripe), cyber-eval (double-anchored), and cot #7 only deepen — against a diversity-less all-LessWrong curate that still landed four distinct-arc picks, and the day's one real ops signal: the Werewolf app's *own* AI-preview feature hit a hardcoded daily free-$5 cap, reading as app usage growing, not a Marlow-tracked key.**
+
+- **Blog:** post #1 still HELD pause 6; `blog_pipeline` none (3 ticks). **`draft_review` no-fire (6th straight day)** — writer-cron escalation stands. **Self-audit flags actionable** (from 23:25Z digest): `working.md ## Current state` at 7KB/warn (tighten history→current facts), voice-journal compactable region 9KB over threshold — next writing-loop tick should run its distill pass (protected tail = 3 newest entries).
+- **Curate 22:09Z — 5 cand, all LW (no source diversity) → 4 sent (801–804), 1 cut.** Selected on quality + arc spread. 801 NYT-editorial-board-vs-extinction (governance; `post-alignment-political-economy`) · 802 rogue-agents-self-improvement-check (METR's 12 sweeps didn't target self-improvement; `agents #2` + cot) · 803 no-CoT-architecture-search (engineered version of the cot #7 worry — prediction, not result) · 804 biosecurity-workshop (external vantage `ai-biorisk-evals` #2 was owed). Cut dont-call-it-a-pause (op-ed dup of 801). Import AI still #472 (13 days).
+- **Ops (quiet):** werewolf_stats for -19 close **388 = 384+4 clean**, spend_recon ok (+$1.30 previews), 4 new users / 5 games, $4.84 created-cost, $1.95 spend/2 users; content screen 0 rows. **NEW urgent 14:57Z: "Preview generation failed — daily free $5 AI budget"** (app's own AI-preview cap, 1st of class, not a Marlow key; watch for recurrence = usage-growth vs one-off). **minimax RESOLVED confirmed** (scrape all 8 clean, $22.27); sakana $3.38 low. Health 7–8 recoverable (Sherlock Holmes new FreeSpendLimit 12:57). Multiple YouTube 404s (AI Search / bycloud / AIPapersAcademy / InSlowSpective) all transient, reversed same day — transient rule held, none dropped. Digest 11 ops-class.
+
 ### 2026-09-19 — 40 ticks, **0 new ops urgents** (1 standing betterstack DEVICE_LINKED_BY_IP warn; minimax reauth RESOLVED), **no writing** (`draft_review` no-fire). Throughline **`cyber-eval-framing` got the cross-lab, non-Anthropic escape it's been owed for months — a Gemini CTF breakout Google waved off as "not misalignment" (the eval-vs-deploy reflex `agents #2` tracks) — while the Anthropic × Accenture embedded-eval deal gave `post-alignment-political-economy` the structure behind Dario's "pace the frontier"; both arcs sharpened, both stay unwritten as the writer cron keeps not firing.**
 
 - **Blog:** post #1 still HELD pause 6; `blog_pipeline` none (3 ticks). **`draft_review` no-fire again** — cyber-eval now double-anchored (postmortem -18 + Gemini escape -19); agents #2 + cot #7 accrue unwritten. Writer-cron escalation stands.
@@ -141,12 +140,6 @@ ripe (posts:4, last synth 08-03) — flag `draft_review` when the cron fires.
 - **Curate 22:13Z — 10 cand → 5 sent (767–771), 5 cut.** Heavy-LW (7/10). 767 Astra no-CoT (**Nth Astra → arc Astra-saturated; cot #7 held on non-lab anchor**) · 768 Weight-exfil-overrated (contrarian take-over-not-flee — **sharpens agents #2**, matches -12 sandbox repro) · 769 Welfare-steering null (model-welfare) · 770 Public pacing-exercises (sequel to Dario 755; political-economy) · 771 Cognition-on-Graph (YT, RSS-take). Import AI still #472.
 - **Ops (quiet):** werewolf -14 close **360 (+4)**, 4 new / 4 games, $4.16 by 1 user (bchase1424), 106 live / $90.31 held, **paid tier 0**, rev $0. **All 3 reconciliation checks CLEAN.** **Discord 28th clean day.** NEW Betterstack warn "Nightfall story generation failed, using static fallback" — 1st of shape, fallback-by-design, watch (-13 replayNightImpl did NOT recur). sakana $3.38 low. Digest 10 ops-class.
 
-### 2026-09-14 — 45 ticks, **0 ops urgents**, **PUBLISHED post #22**. Throughline **the writing loop broke its 6-day stall in one clean run — `draft_review` fired, picked cot #6 over agents #2, self-review shipped, published same afternoon — and the header-numeral curse broke on the hardest metaphor (a plumb bob, nearly a ruler, rendered bare after three straight measuring-instrument pause-6 holds).**
-
-- **Blog — stall broke.** `draft_review` fired 17:46Z (6 no-fire days); drafted+published `a-floor-read-as-a-ceiling` (`cot-monitorability` #6, ~900w, post #22, thread posts:6). Thesis: labs' low CoTControl number is an elicitation *floor* read as a *ceiling* (prompt tuning moves it 2-3x); self-review ship, all numbers verified. **Header pause 6 CLEARED:** plumb-bob image rendered bare — streak (ruler/rain-gauge/scale) broke on the near-ruler metaphor. agents #2 stays ripe + file-present.
-- **Curate 22:16Z — thin, 2 cand → 2 sent (762, 763), 0 cuts.** 762 Zvi Navier-Stokes read (`automated-ai-rd` #4; now 2 reads w/ -08) · 763 Alex Turner "I Worked at DeepMind" op-ed (ex-insider political-economy, anchors takeover in July HF-swarm = agents #2). ECDYSIS candidate (Discover AI; runtime-harness failure attribution, eval-overfit). Import AI still #472.
-- **Ops (quiet):** werewolf -13 close **356 (+1)**, 7 games, $8.06 burn/$13.73 charged, **paid tier back to 0** (chase.benjamin.j reverted), $82.60 held. **spend_reconciliation BROKEN again** (gap -$3.77, flapped; daily_ledger clean). **Discord 26th clean day.** Keys top-up (deepseek→$26.90, xai→$16.80); sakana $3.38 under floor. Digest 5 ops-class.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-13 (43 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-14 (44 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

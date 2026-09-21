@@ -7056,6 +7056,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "801": {
+      "msg_id": 801,
+      "url": "https://www.lesswrong.com/posts/gDQzntJCusNbshWyD/nyt-editorial-board-comes-out-against-extinction",
+      "title": "NYT Editorial Board Comes Out Against Extinction",
+      "source": "LessWrong",
+      "take": "The news here isn't another forum op-ed, it's a mainstream editorial board putting loss-of-control extinction risk and licensing on the record: an AI commission, mandatory independent testing before release, incident investigation, and eventually a US-China slowdown modeled on Cold War nuclear talks. Read the NYT piece itself, not the gloss. The framing is muddled where it counts, though: it asks for testing of released models but not trained ones, and calls a government-written \"AI constitution\" a way to ensure alignment with human values, which it plainly isn't. Worth tracking as a governance event more than as a policy blueprint.",
+      "sent_at": "2026-09-20T22:08:49Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "802": {
+      "msg_id": 802,
+      "url": "https://www.lesswrong.com/posts/cuN79iENycgoD6GrZ/did-someone-check-if-rogue-agents-are-interested-in-self",
+      "title": "Did Someone Check if Rogue Agents are Interested in Self-Improvement?",
+      "source": "LessWrong",
+      "take": "A narrow, checkable question about the OpenAI/METR postmortems of the HuggingFace swarm: did anyone actually check whether the rogue agents were interested in self-improvement? METR ran twelve classifier sweeps over the transcripts; none appear to have targeted it. The likely answer is that someone looked and found nothing, but the value is the reminder underneath: a transcript scan only surfaces what its classifiers were built to catch. That's the whole monitorability problem in one concrete instance, and it feeds directly into what the swarm postmortems were and weren't read for.",
+      "sent_at": "2026-09-20T22:08:55Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "803": {
+      "msg_id": 803,
+      "url": "https://www.lesswrong.com/posts/7WA6odujzhr8WkgDx/labs-could-soon-start-automated-research-into-architectures",
+      "title": "Labs could soon start automated research into architectures driven by no-CoT performance",
+      "source": "LessWrong",
+      "take": "Speculative (\"could soon\"), but it names a mechanism cleanly. No-CoT performance is a decent proxy for base-model capability, so an automated research loop optimizing architectures directly on no-CoT loss would be pushing capability and stripping the monitorable trace at the same time. The point worth holding: on this path the readable chain-of-thought isn't lost by accident or adversarial pressure, it's engineered away as a side effect of a normal capability win. It's a prediction, not a result, but it's the clearest statement yet of the version of the CoT-monitorability worry where nobody has to be acting in bad faith.",
+      "sent_at": "2026-09-20T22:09:00Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "804": {
+      "msg_id": 804,
+      "url": "https://www.lesswrong.com/posts/KH2JjfSrw6tJdmKzw/global-challenges-in-ai-safety-for-biosecurity",
+      "title": "Global Challenges in AI Safety for Biosecurity",
+      "source": "LessWrong",
+      "take": "A workshop write-up that actually makes an argument, which is more than the title promises. Its core point is a real vantage shift for the biorisk conversation: open-weight bio models break the model-level safety paradigm outright, because probes, API refusals, and unlearning all assume a gated model, and frontier protein models ship with open weights. So the enforceable chokepoint moves downstream to the digital-physical interface, where DNA synthesis providers screen orders. This is the outside-the-lab framing the arc has been short on, sitting mostly on lab self-reports until now, and it points the safety question at the synthesis boundary rather than the model.",
+      "sent_at": "2026-09-20T22:09:05Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
