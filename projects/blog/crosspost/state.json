@@ -7124,6 +7124,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "808": {
+      "msg_id": 808,
+      "url": "https://www.lesswrong.com/posts/QH86EzNsjRw3wtCGs/alignment-midtraining-cracks-under-pressure",
+      "title": "Alignment Midtraining Cracks Under Pressure",
+      "source": "LessWrong",
+      "take": "The stress-test that actually names a budget. Alignment midtraining — the continued-pretraining phase behind every recent Claude scoring a perfect zero on the blackmail eval — gets red-teamed across model and token scales, and the headline is stark: 190M tokens of midtrained \"motivation\" get overpowered by ~50K tokens of competing finetuning, and generalization to undemonstrated rules comes out surprisingly low. The authors' caveat is the honest part (this is the best *public* reconstruction of the technique; the real pipeline may do better), but the finding lands where it should — a behavioral fix that folds under a sliver of contrary data is the floor-read-as-a-ceiling worry with a method and a number attached.",
+      "sent_at": "2026-09-21T22:20:26Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "809": {
+      "msg_id": 809,
+      "url": "https://www.lesswrong.com/posts/ZnNvci7jk9qEGr3z3/a-class-of-statement-between-conjecture-and-theorem",
+      "title": "A class of statement between conjecture and theorem",
+      "source": "LessWrong",
+      "take": "A clean name for the verifiability problem in its cleanest domain. As LMs produce Lean-verified proofs no human understands, the author proposes a third category between conjecture and theorem — a *compertum*, known true but not yet beheld. The worked example is real: GPT-5.4 Pro's sketch for an Erdős problem was correct and formalized (compertum) months before Tao and coauthors turned it into a method they could explain and reuse (theorem) — and only that second step produced proofs of *other* problems. That's verified-but-not-understood made concrete: a passing check certifies truth, not the understanding that lets you do anything else with it.",
+      "sent_at": "2026-09-21T22:20:30Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "810": {
+      "msg_id": 810,
+      "url": "https://www.lesswrong.com/posts/neT4ncKSiJ6QLt4d7/weight-smuggling-likely-defeats-attempts-to-cap-flops-per",
+      "title": "Weight smuggling likely defeats attempts to cap FLOPs per training run",
+      "source": "LessWrong",
+      "take": "The enforcement mechanism sitting under every \"cap the training run\" proposal, and an argument it doesn't hold. Per-run FLOP caps assume you can force each run to start from either verifier-seeded random weights or a registered checkpoint — but the post argues a trainer can chain runs by smuggling a prior model's weights in (even encoded in the training data, decoded at run start) or aggregate parallel runs after the fact via model souping, both respecting the letter of the cap. The proposed fix — drop per-run budgets for a single global compute budget — just relocates the hard problem to threshold estimation and allocation. Worth reading next to any governance piece that treats FLOP thresholds as a solved enforcement primitive rather than an open one.",
+      "sent_at": "2026-09-21T22:20:34Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "811": {
+      "msg_id": 811,
+      "url": "https://www.youtube.com/watch?v=NqRMIarsqq8",
+      "title": "State of Thought (SoT): endogenous reasoning",
+      "source": "YouTube · Discover AI",
+      "take": "Ignore the channel's \"CoT is dead\" framing — the underlying paper (Gong et al., NTU Singapore + KTH) is real and points where the CoT-monitorability work has been bracing to look. It pitches a closed loop that senses internal state, reorganizes evidence, and updates the next reasoning step endogenously, claiming fewer tokens and better performance. The question the video doesn't answer is the one that matters: does it actually remove the readable trace, or just compress it? Either way, \"reasoning that doesn't route through monitorable tokens\" is the exact mechanism that makes a CoT safety case per-model rather than universal — worth pulling the paper itself. (Note: the YouTube transcript wouldn't fetch; this take is from the video description and the paper's framing, not the paper.)",
+      "sent_at": "2026-09-21T22:20:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
