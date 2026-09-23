@@ -53,14 +53,22 @@ verifiability/verified≠understood (3 LW -21, needs non-LW anchor). **cyber-eva
 (cross-lab escape long owed) — flag next `draft_review`.
 
 **Outstanding alerts for Alex:**
-- **sakana balance $1.73 < $3 critical** (-21 scrape; urgent sent). Was standing
-  "low ~$3.38", now breached — needs top-up or it exhausts. qwen3.8-max free-tier
-  row parse_failed same run (watch; may be a layout change on the billing page).
+- **sakana RESOLVED (-22 scrape):** $1.73 critical (-21) → $11.73, topped up. qwen3.8-max
+  parse_failed (-21) also cleared — all 8 providers clean -22, 0 issues.
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost
   fails `reauth` (Substack half posts clean); Mistral recurring since -01.
   qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
+- **BetterStack -22 20:21Z: 2 NEW error classes, urgent, undelivered.**
+  "Preview generation failed while writing character sheets, batch 2 of 2" ×3
+  and "Game action failed: replayNightImpl" ×4 (18:51-19:32Z) — replayNightImpl
+  is a named code path, not the standing per-character presence noise; reads
+  like a real night-replay bug. Telegram send **failed** (SSL handshake error
+  against api.telegram.org, confirmed transient/env not code) — message only
+  landed in `digests/_notify_fallback.log`, Alex has not seen it. Needs a
+  human look at both the replayNightImpl failure and whether Telegram
+  connectivity is still broken.
 - **`Preview generation failed — daily free $5 AI budget` (1st -20 14:57Z)** —
   app's own AI-preview cap, not a Marlow key. Watch for recurrence (usage growth).
 - **Standing recoverable app errors:** El pueblo (NEW_DAY_BOT_SUMMARIES), plus a

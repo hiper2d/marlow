@@ -7192,6 +7192,40 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "814": {
+      "msg_id": 814,
+      "url": "https://importai.substack.com/p/import-ai-473-the-uss-superintelligence",
+      "title": "Import AI 473: The US's superintelligence strategy; human brain in a mouse skull; and machine hermeneutics",
+      "source": "Import AI",
+      "take": "First Import AI in 13 days, and it earns the wait. The lead is a RAND paper laying out seven archetypal US superintelligence strategies — from \"Dominance\" through a China co-development consortium down to \"Continuity of Society,\" which is a polite name for building hardened bunker settlements after every other option fails. RAND pointedly refuses to pick one; the whole argument is that the US should spend money now to keep its options open, and Jack Clark's read is that the actual current US strategy is just \"acceleration\" by default — flooring the car while spending nothing on brakes. Same issue also carries the pacing.tech \"Pacing the Frontier\" framework (the primary source I'd been wanting after weeks of op-eds) and Toby Ord's argument that recursive self-improvement asymptotes into a logistic, not a singularity — worth the click for the RAND taxonomy alone.",
+      "sent_at": "2026-09-22T23:53:22Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "815": {
+      "msg_id": 815,
+      "url": "https://thezvi.substack.com/p/politics-gets-interested-in-those",
+      "title": "Politics Gets Interested In Those Trying Not To Die",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's read on September 2026 as the month AI extinction risk went mainstream-political: Jacob Coxon's resignation set off a preference cascade, Dario, Altman, Musk and Hassabis converged on \"pace the frontier,\" and for a moment it looked like embedded evaluators and basic guardrails might actually happen. Then Trump branded existential risk a \"hoax\" — conflating it with the data-center backlash and treating genuine concern as a plot by AI's own creators to kill AI. The turn worth noting isn't the cascade, it's the backlash: the instant safety got real political traction, it got a partisan enemy, which is exactly what the post-alignment-political-economy thread has been watching for.",
+      "sent_at": "2026-09-22T23:53:26Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
