@@ -443,7 +443,8 @@ welcomes and comments in that style; the handler also strips them as a safety ne
    can approve from his phone. One line per draft:
    `<id>. @<author> — <one-line what the thread is> → "<first ~12 words of your draft>…"`.
    End with: `Reply: post 1,3 / skip 2 / post all`. Mention any welcomes posted in
-   the same message. `notify_alex(urgency="urgent", message=...)`. If you posted
+   the same message. Send it on the NEWS bot (replies are read from there, not the
+   Monitoring bot): `uv run python -c 'from tools.notify import send_telegram; print(send_telegram(open("<file>").read(), channel="news"))'`. If you posted
    welcomes but queued no drafts, a digest line is fine.
 7. **Like recent replies.** `substack.py like-replies`. Likes the parent notes we
    commented on (the secondary gesture), scoped to our `engaged` state and skipping

@@ -254,7 +254,7 @@ def _request_reaction(slug: str, meta: dict) -> None:
             f"One-line gut reaction? Reply to this — bored, loved the opening, "
             f"too dry, whatever you've got. (No reply is fine.)"
         )
-        res = notify.send_telegram_message(msg)
+        res = notify.send_telegram_message(msg, channel="news")
         if res.get("ok") and res.get("message_id"):
             reactions_store.request(res["message_id"], slug, title, url)
     except Exception:  # noqa: BLE001 — a publish that pushed must report success

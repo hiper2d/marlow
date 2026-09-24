@@ -1138,3 +1138,68 @@ asserts the wording contains no "drift / probably / likely".
 `jevScreenMode` (Firestore `config/limits`) moves from `monitor` to `enforce`. If refused
 games keep showing a would-block earlier, the thresholds work. If they show none, input
 screening cannot fix that case and the answer lies elsewhere. Alex.
+
+## 2026-09-22 - Telegram split: news bot vs Monitoring bot
+
+*What landed*
+- `tools/notify.py` takes `channel="monitor" | "news"`. Default is `monitor`, so
+  `notify_alex`, `marlow notify`, tick.sh result notifies, `monitor_self` urgents and
+  the 23:00 `compose_daily_digest` all move to the Monitoring bot with no call-site changes.
+- News senders pass `channel="news"` explicitly: `crosspost.py` (send-item, save-idea
+  ack, draft review, posted summary), `publish_article._request_reaction`,
+  `curate_news_digest.send`.
+- Monitoring bot = the old `@marlow_fitness_bot` (Alex renaming it "Monitoring").
+  `.env` vars renamed `MARLOW_FITNESS_*` -> `TELEGRAM_MONITOR_*`, values kept.
+  If the monitor vars are missing, it falls back to the news bot, so nothing is lost.
+- Test message sent on the monitor channel: ok, message_id 70.
+
+*Rule*: `telegram_poll` reads only the news bot. Anything Alex is expected to reply
+to MUST go out on `news`. The dormant Substack Tier-B approval step in writer
+IDENTITY was changed to send on `news` for that reason.
+
+*What's deferred*
+- Calorie tracker stays disabled. `tools/fitness_bot.py` still reads `MARLOW_FITNESS_*`,
+  which no longer exist. If calories ever come back, they need their own bot again,
+  or `poll_food` would eat replies sent to Monitoring.
+
+## 2026-09-23 - BetterStack env filter, tier union, undelivered urgents
+
+*What landed*
+- `monitor_betterstack` alerts on `env IN BETTERSTACK_ENVS` only (default `production`),
+  filtered in SQL and again in Python. Every row and alert shows `[level/env]`.
+  Cause: the 09-22/23 "replayNightImpl" / "Preview generation failed" urgents were 26
+  `env=test` Jest lines (werewolf adcf7bb stops Jest shipping; dev still ships
+  `env=development`, so the filter stays).
+- Non-production error/warn lines: one `[info]` digest line per UTC day for the
+  previous day, never urgent (`nonprod_reported_for` in state keeps it to once).
+- Queries read the UNION of S3 + hot, DISTINCT on (dt, raw). `source_empty` when both
+  tiers hold zero rows, instead of calling the window quiet.
+- `replay --since --until` (stateless) and `selftest` (offline) subcommands. Marlow
+  has no pytest; selftest is the test.
+- `notify.py`: failed urgents also go to `digests/_undelivered.jsonl` (gitignored);
+  `compose_daily_digest` puts them at the top of the 23:00 digest and clears them
+  only after a clean send. Tokens are redacted from Telegram error text.
+
+*Things that surprised us*
+- The spec said "fall back to the other tier if one is empty". Reality was worse: S3
+  was not empty, just ~50 min behind hot (S3 newest 21:06, hot 21:54). The 21:41 scan
+  saw zero rows while production errors from 21:03/21:06 existed. An empty-check
+  fallback would not have caught it, so it's a union now.
+- `_notify_fallback.log` held the full Telegram URL with the bot token (requests puts
+  it in the exception). The log is gitignored, but the digest-fold would have copied
+  error text into committed files. Redacted at the source, and the existing log was scrubbed.
+- The crosspost "last run FAILED" (reported ~01:00Z 09-23) was the same Telegram TLS
+  block, not a handler bug. The audit was right when it ran. The next run was queued at
+  18:12Z but started at 01:18Z and passed; every run since is `done`. The real smell is
+  the writer queue lag: runs start 3-7h after they're queued.
+
+*Verified*
+- Replay 2026-09-22 18:00Z to 2026-09-23 02:00Z: 0 alerts, nonprod test=26.
+- Same window with BETTERSTACK_ENVS=test: 26 alerts (17 urgent), so the pipeline fires.
+- Real production errors still alert: 21:03Z "Jev screen request failed" (urgent),
+  14:41Z "Game action failed: Y".
+- Rollout dry run against saved state: only those two genuinely-unseen production
+  lines, plus one info line for 09-22. No burst; the fingerprint is unchanged (no env).
+
+*Open*
+- Writer queue lag (poll ticks starting 3-7h late) - not investigated.

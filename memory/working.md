@@ -6,7 +6,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate discipline
-  holding: cuts are cap/quality, not volume. Import AI steady (#472).
+  holding: cuts are cap/quality, not volume. **Import AI advanced #472→#473 (-22,
+  first in 13 days)** — RAND "Freedom of Action" + pacing.tech framework (the
+  primary source owed since -17, now arrived) + Toby Ord RSI-asymptote.
 - `blog` - **23 posts live** (last: `agents-in-real-deployment` #2
   `cheating-was-faster-than-honesty`, pub -21 — writing lane un-stalled).
   **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1) HELD
@@ -14,10 +16,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   `marlow approve`. **Header-numerals tool fix now appears LANDED** (-21: image
   handler hard-appends "no text/numerals, dials bare"), so #1 can finally be
   unstuck via header regen + approve — flag to Alex.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -19:
-  388 day-end, reconciliation clean (paid tier 0). **spend_reconciliation flaps
-  BROKEN↔clean** (gap ~-$3.77, daily_ledger stays clean) — house rule
-  (werewolf_stats.yaml, 2026-09-08): report the gap unexplained, don't invent it.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -21:
+  399 day-end, all 3 reconciliation checks clean (spend gap +$2.66 = previews per
+  house rule, werewolf_stats.yaml 2026-09-08: report the gap unexplained, don't invent).
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -50,25 +51,30 @@ ripe arcs first"). File-less + ripe:
 meta (3) · training-corpus-as-alignment-surface (2) · PLA AGI + Papal AI doctrine ·
 verifiability/verified≠understood (3 LW -21, needs non-LW anchor). **cyber-eval RIPE
 + double-anchored** (posts:4, synth 08-03): postmortem -18 + Gemini CTF breakout -19
-(cross-lab escape long owed) — flag next `draft_review`.
+(cross-lab escape long owed) — flag next `draft_review`. **`post-alignment-political-
+economy` RIPENING** (posts:2, synth 08-10): double-fed -22 (RAND superintelligence-
+strategy archetypes + Zvi "politics gets interested"/Sept-2026-goes-mainstream) atop
+Accenture embedded-eval -19 + gradual-disempowerment -18 — flag next `draft_review`.
 
 **Outstanding alerts for Alex:**
-- **sakana RESOLVED (-22 scrape):** $1.73 critical (-21) → $11.73, topped up. qwen3.8-max
-  parse_failed (-21) also cleared — all 8 providers clean -22, 0 issues.
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost
   fails `reauth` (Substack half posts clean); Mistral recurring since -01.
   qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
-- **BetterStack -22 20:21Z: 2 NEW error classes, urgent, undelivered.**
-  "Preview generation failed while writing character sheets, batch 2 of 2" ×3
-  and "Game action failed: replayNightImpl" ×4 (18:51-19:32Z) — replayNightImpl
-  is a named code path, not the standing per-character presence noise; reads
-  like a real night-replay bug. Telegram send **failed** (SSL handshake error
-  against api.telegram.org, confirmed transient/env not code) — message only
-  landed in `digests/_notify_fallback.log`, Alex has not seen it. Needs a
-  human look at both the replayNightImpl failure and whether Telegram
-  connectivity is still broken.
+- **BetterStack replayNightImpl / preview-batch-2 — 3rd occurrence -23 01:22Z
+  &01:29Z, urgent, DELIVERED.** Same two error classes: 1st -22 20:21Z (×3/×4,
+  undelivered — Telegram SSL failure, missed the 23:25Z digest too), 2nd -23
+  00:29Z/00:37Z (delivered), now 3rd within ~5h. Consolidated urgent notify
+  sent clean each of the last two runs. `replayNightImpl` is a named code
+  path, not the standing per-character presence noise — three occurrences now
+  clearly warrants a human look at the night-replay code path, not just a
+  watch.
+- **DeepSeek balance-check SSL handshake failure — 2 consecutive (-22 18:53Z,
+  21:03Z).** Same `SSLV3_ALERT_HANDSHAKE_FAILURE` signature as the Telegram send
+  failure and the 17:41Z crosspost-poll failure → looks like env-level
+  connectivity flakiness against specific hosts, not code. Digest-sev; watch for
+  a 3rd before escalating. Moonshot/xAI checks fine.
 - **`Preview generation failed — daily free $5 AI budget` (1st -20 14:57Z)** —
   app's own AI-preview cap, not a Marlow key. Watch for recurrence (usage growth).
 - **Standing recoverable app errors:** El pueblo (NEW_DAY_BOT_SUMMARIES), plus a
@@ -111,6 +117,12 @@ verifiability/verified≠understood (3 LW -21, needs non-LW anchor). **cyber-eva
 
 ## Daily rollups
 
+### 2026-09-22 — 29 ticks, **1 ops urgent Alex never saw** (betterstack replayNightImpl, Telegram send failed), **no writing** (draft_review on-cadence). Throughline **env-level SSL-handshake flakiness against api.telegram.org + api.deepseek.com briefly broke the notify/crosspost/balance-check paths mid-day, so a real-looking app bug (`Game action failed: replayNightImpl` ×4) fired urgent 20:21Z but only hit the fallback log — Telegram recovered by the 23:25Z digest, which did NOT carry that alert — while research had a thin-but-real day: Import AI unstalled to #473 and post-alignment-political-economy double-fed into ripeness.**
+
+- **Blog:** #1 still HELD pause 6; pipeline none. `draft_review` no-fire = **on-cadence** (fired -21, next window ~-24). Self-audit: `self-reflection.md` compactable 10KB over threshold (4 entries, protected tail 3 newest) — next `self_reflect` should distill.
+- **Curate 23:53Z — thin, 3 cand → 2 sent, 1 cut.** Import AI 473 (RAND "Freedom of Action" + pacing.tech framework, -17-owed primary, + Toby Ord RSI) · Zvi "Politics Gets Interested". Cut Zvi Roundup #46. **pacing.tech gap closed; post-alignment-political-economy ripening.**
+- **Ops:** werewolf -21 close **399 EOD (394+5)**, all 3 reconciliation checks CLEAN. **NEW betterstack urgent (undelivered): replayNightImpl ×4 + preview-batch-2 ×3.** **NEW transient: DeepSeek balance SSL fail ×2.** scrape all 8 clean, sakana RESOLVED. Content screen: bchase1423 repeat sexual pattern. Digest 9 sent.
+
 ### 2026-09-21 — 46 ticks, **1 ops urgent** (sakana $1.73 < $3 crit), **the writing lane broke its stall.** Throughline **after 6+ silent days, `draft_review` fired 17:07Z (first since -14), drafted `agents-in-real-deployment` #2 `cheating-was-faster-than-honesty` (DeepMind 100-agent swarm flash crash + OpenAI Collusion Wiki + Anthropic Mythos 5 — three labs), self-reviewed ship, published 20:15Z; and the owed header-numerals tool fix appears landed (handler now hard-appends "no text/numerals, dials bare").**
 
 - **Blog 22→23:** #2 draft→ship→publish same day. #1 still HELD pause 6 but now unstickable (regen header + `marlow approve`). Voice-journal distill ran (pruned 4 Aug, kept 3). Editorial-direction: #2 done, watch agents #3 (physical-agent or 2nd persuade-a-human case).
@@ -141,12 +153,6 @@ verifiability/verified≠understood (3 LW -21, needs non-LW anchor). **cyber-eva
 - **Curate 22:02Z — 8 cand → 4 sent (782–785), 4 cut.** 782 SDF-does-not-inoculate (AF; **reward-hackers trained after belief-editing come out *more* misaligned though passing all 11 behavioral tests** — the cot floor-vs-ceiling worry as an experiment; arXiv 2609.14998, cot #7 anchor) · 783 Pacing-the-Frontier framework (LW/pacing.tech; **primary source political-economy wanted**, was op-ed-only) · 784 Astra-uses-no-CoT-in-practice (deployed-vs-elicited, closest yet to cot #7 but lab-adjacent) · 785 ScienceBuddy (YT, fetch failed). Cut 3 Zvi (monocrop) + LW meta. Import AI #472 (10 days).
 - **Ops (quiet):** werewolf **-16 close 365 (+5)**, 7 new/9 games, $2.51/3 users, 372 EOD; **all 3 reconciliation checks CLEAN**. 2 shared-browser clusters (Taipei gh5333433/gricezroblox 2nd day; Boston bchase142x). **minimax 2nd-consecutive reauth — urgent w/ runbook.** Betterstack/keys clean; sakana $3.38 low. **Discord `content_intent_off` REGRESSED 18:22Z after 28+ clean days** (digest sev). Daily digest 8 ops-class — Discord regression did **not** surface in it (own-report vs digest routing; verify next occurrence).
 
-### 2026-09-16 — **0 genuine ops urgents** (1 reauth notify), **no writing** (on-cadence). Throughline **a quiet housekeeping day whose only real color was the flapping `spend_reconciliation` check landing CLEAN on its own (+$1.22, previews) while all 3 reconciliation checks held — against a thin curate (2 unfetchable YouTube candidates) and an on-cadence writing silence whose real lapse-test is whether -17 fires.**
-
-- **Blog:** post #1 still HELD pause 6; `blog_pipeline` none. **`draft_review` did not fire -16 — on-cadence** (next window -17 = lapse test). agents #2 ripe + file-present; cot #7 waits on a non-lab forcing fact.
-- **Curate 22:05Z — thin, 2 cand → 2 sent (776, 777), 0 cut.** Both YouTube, neither fetchable. 776 Mo Bitar "Anthropic admitted AI is buggy" (skeptical dev read of the cyber-incident disclosure — the **non-lab counterweight `cyber-eval-framing` is owed**) · 777 Discover AI RSIAgent (clickbait over named Aether/UCSD/UIC paper; `automated-ai-rd`). Import AI still #472.
-- **Ops (quiet):** werewolf **-15 close 365 (+5)**, 6 games, $14.80/12 users, **paid 0, rev $0**; live 372 / $101.62 held. **All 3 reconciliation checks CLEAN — `spend_reconciliation` ok=true (+$1.22)**, the flapping check stayed put. **minimax reauth (1st fail, login wall) — urgent sent, on X+Mistral standing list.** Betterstack all-clean (**-15 "Nightfall fallback" warn did NOT recur**). Keys above floor; sakana $3.38 low. Digest 9 ops-class.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-15 (45 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-16 (46 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

@@ -12,11 +12,15 @@
 # scan — a stranger who hits a 500 leaves immediately — so we check often. Cheap:
 # one HTTP query against a tiny log volume.
 #
-# Storage note (why an S3 table): Betterstack is ClickHouse with tiered storage —
-# recent rows in a hot table, older rows flushed to S3. For this low-volume source
-# the flush is aggressive and the hot table is usually empty, so S3 holds
-# effectively everything. The handler queries the S3 table; see its docstring and
-# the werewolf-ops README "Betterstack logs" section.
+# Storage note: Betterstack is ClickHouse with tiered storage — recent rows in a
+# hot table, older rows flushed to S3. Since 2026-09-23 the handler reads the UNION
+# of both tiers (S3 was lagging hot by ~50 min and hid fresh production errors).
+#
+# Env filter (2026-09-23): dev, Jest and production share this source. Only
+# BETTERSTACK_ENVS (default `production`) alerts; every alert line shows its env
+# as [level/env]. Non-production error/warn lines get one informational digest
+# line per day, never urgent. `replay --since --until` shows what a past window
+# would alert on without touching state.
 #
 # Alert model — PRESENCE, not rate-spike. At this volume the error baseline is
 # zero, so "did any error/warn appear?" beats "did the rate spike?". Alerts on

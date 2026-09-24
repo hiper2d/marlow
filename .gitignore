@@ -41,6 +41,7 @@ projects/blog/site/node_modules/
 
 # Notify fallback log (only created when Telegram delivery fails)
 digests/_notify_fallback.log
+digests/_undelivered.jsonl
 
 # Per-feed last-seen state (runtime; fresh clone re-scans cold)
 projects/research/threads/_feed_state.json

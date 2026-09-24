@@ -134,7 +134,7 @@ def send(date: str) -> dict:
     total = len(chunks)
     for i, chunk in enumerate(chunks, 1):
         prefix = f"[{i}/{total}] " if total > 1 else ""
-        ok, detail = notify.send_telegram(prefix + chunk)
+        ok, detail = notify.send_telegram(prefix + chunk, channel="news")
         (sent if ok else failed).append({"chunk": i, "detail": detail})
     return {
         "date": date,

@@ -102,8 +102,29 @@ def _with_budget(message: str) -> str:
     return f"{message.rstrip()}\n\n━━━ API budget ━━━\n\n{block}"
 
 
-def assemble(date: str) -> tuple[str, int]:
-    """Read today's digest file, return (message_to_send, entry_count)."""
+def _undelivered_block(pending: list[dict]) -> str:
+    """Urgents Telegram refused earlier (see notify.UNDELIVERED). Goes at the top:
+    they were meant to page Alex and didn't."""
+    lines = [f"━━━ Undelivered urgent alerts ({len(pending)}) ━━━", ""]
+    for e in pending:
+        lines.append(f"[{str(e.get('ts', '?'))[:16].replace('T', ' ')} UTC] {e.get('message', '').strip()}")
+        lines.append("")
+    return "\n".join(lines).rstrip()
+
+
+def _with_undelivered(message: str, pending: list[dict]) -> str:
+    return f"{_undelivered_block(pending)}\n\n{message}" if pending else message
+
+
+def assemble(date: str, pending: list[dict] | None = None) -> tuple[str, int]:
+    """Read today's digest file, return (message_to_send, entry_count).
+    `pending` = undelivered urgents to lead with; each counts as an entry."""
+    pending = pending or []
+    message, count = _assemble_body(date)
+    return _with_undelivered(message, pending), count + len(pending)
+
+
+def _assemble_body(date: str) -> tuple[str, int]:
     path = DIGEST_DIR / f"{date}.md"
     if not path.exists():
         return _with_budget(_quiet_day_message(date)), 0
@@ -120,7 +141,8 @@ def assemble(date: str) -> tuple[str, int]:
 
 def send_digest(date: str) -> dict:
     """Assemble and send today's digest. Returns a result dict."""
-    message, entry_count = assemble(date)
+    pending = notify.read_undelivered()
+    message, entry_count = assemble(date, pending)
     chunks = _chunk(message)
     sent = []
     failed = []
@@ -129,9 +151,12 @@ def send_digest(date: str) -> dict:
         prefix = f"[{i}/{total}] " if total > 1 else ""
         ok, detail = notify.send_telegram(prefix + chunk)
         (sent if ok else failed).append({"chunk": i, "detail": detail})
+    if pending and not failed:
+        notify.clear_undelivered(pending)
     return {
         "date": date,
         "entry_count": entry_count,
+        "undelivered_folded": len(pending) if not failed else 0,
         "chunks_sent": len(sent),
         "chunks_failed": len(failed),
         "details": {"sent": sent, "failed": failed},
@@ -150,7 +175,7 @@ def cmd_send(args):
 
 def cmd_preview(args):
     date = args.date or _today()
-    message, entry_count = assemble(date)
+    message, entry_count = assemble(date, notify.read_undelivered())
     chunks = _chunk(message)
     print(f"Date:        {date}")
     print(f"Entries:     {entry_count}")

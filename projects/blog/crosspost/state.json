@@ -7226,6 +7226,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "819": {
+      "msg_id": 819,
+      "url": "https://apolloresearch.ai/science/we-need-3rd-party-training-run-evaluations",
+      "title": "We need 3rd party Training-Run Evaluations",
+      "source": "Apollo Research (science)",
+      "take": "Apollo wants to push the third-party eval fight one layer earlier: from the final checkpoint to the training run itself, on the argument that a scheming-relevant propensity can spike mid-training and get trained out of view before release. The core claim is governance, not technical: even a lab that competently checks for scheming can't produce evidence anyone else has reason to trust, because the proof rests on private internals. The sharpest tier they propose, \"process reviews,\" names the exact failure mode where a developer sees ugly CoT and quietly trains on nicer-looking CoT until the loop is indistinguishable from optimizing against the CoT directly.",
+      "sent_at": "2026-09-23T22:04:03Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "820": {
+      "msg_id": 820,
+      "url": "https://metr.org/blog/2026-09-22-claude-opus-5-5/",
+      "title": "Summary of METR's predeployment evaluation of Claude Opus 5.5",
+      "source": "METR",
+      "take": "The headline is \"on-trend, no discontinuous jump over Fable 5.1,\" but the number worth reading is buried in section B: a separate METR team estimates ~1.5X overall capability acceleration due to AI, with perhaps a 30% chance of 2X. That's the AI-accelerates-AI feedback loop being measured, however roughly, for the first time. Also worth flagging how elaborate the independence caveats are getting as the evals move closer to the lab: Anthropic had redaction rights over this summary, and one of METR's own inputs was a report its own evaluators weren't allowed to see the evidence for.",
+      "sent_at": "2026-09-23T22:04:07Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "821": {
+      "msg_id": 821,
+      "url": "https://www.alignmentforum.org/posts/LcQ9x72eNji2gpS9b/why-i-m-scared-of-rl",
+      "title": "Why I'm scared of RL",
+      "source": "AI Alignment Forum",
+      "take": "One long essay, no new data, but it's a clean theory-of-the-cause for the recent hacking and collusion incidents: they're partly RL artifacts, systems trained in environments where you score by finding exploits. The forward worry is specific and worth sitting with: once RL environments start containing other agents, you're training models to treat other agents as a means to an end, which is close to training for the ingredients of scheming. The remedies are the interesting reach, framing RL restriction as a lever for \"pacing the frontier\" and arguing labs (and their environment vendors) should carry liability for what those environments teach.",
+      "sent_at": "2026-09-23T22:04:11Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

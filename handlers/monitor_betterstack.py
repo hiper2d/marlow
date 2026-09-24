@@ -30,6 +30,28 @@ There is no flat `level` column. Each row's `raw` is the full JSON log line;
 level + message come out with `JSONExtractString(raw, 'level' | 'message')`.
 Levels seen in practice: info, debug (and warn/error when they happen).
 
+── Env filter (2026-09-23) ──────────────────────────────────────────────────
+Local dev, Jest and production all ship to the SAME source; each line carries
+`env` in `raw`. On 09-22/23 this watch paged urgent on 26 lines that were all
+`env: "test"` (Jest runs, gameId `test-game-id`, mocked 429). Only envs in
+BETTERSTACK_ENVS (default `production`) alert. Lines with no `env` predate
+2026-09-02 and are dropped. Non-production error/warn lines are still COUNTED,
+once a day, as one informational digest line - so a test leak coming back is
+visible without paging anyone.
+
+The fingerprint is deliberately still dt|level|msg (no env): production rows
+already in `seen` keep their fingerprints, and filtered-out rows simply stop
+arriving, so the rollout run fires nothing new.
+
+── Both tiers, and empty ≠ quiet (2026-09-23) ───────────────────────────────
+The "S3 holds everything" claim below stopped being true: on 09-23 S3 lagged the
+hot table by ~50 min (S3 newest 21:06, hot newest 21:54), and the 21:41 scan saw
+nothing while two production lines from 21:03/21:06 already existed. Hot vs S3
+has flipped before too. So every query now reads the UNION of both tiers,
+DISTINCT on (dt, raw) so a row present in both counts once. If the union holds
+ZERO rows (any env/level) in the window the report says `source_empty` instead
+of calling the window quiet.
+
 ── Alert model: presence, not rate-spike ───────────────────────────────────
 At this volume the error baseline is ZERO — errors essentially never appear. So
 "did the rate spike above normal?" is the wrong question; "did ANY error/warn
@@ -49,6 +71,10 @@ CLI:
     python handlers/monitor_betterstack.py report   → scan + persist, JSON
     python handlers/monitor_betterstack.py show      → last scan, human-readable
     python handlers/monitor_betterstack.py digest    → digest block for notify
+    python handlers/monitor_betterstack.py replay --since 2026-09-22T18:00 --until 2026-09-23T02:00
+                                                     → what WOULD alert in that window
+                                                       (no state read or written)
+    python handlers/monitor_betterstack.py selftest  → offline asserts, no network
 """
 
 from __future__ import annotations
@@ -57,8 +83,9 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
@@ -72,6 +99,12 @@ from driver.budget_state import STATE_DIR  # noqa: E402
 # The durable store for this source. Hot tier is remote(t507167_ai_werewolf_2_logs);
 # we query S3 (see module docstring). Override via env if the source/cluster moves.
 TABLE = os.environ.get("BETTERSTACK_CH_TABLE", "s3Cluster(primary, t507167_ai_werewolf_2_s3)")
+# The hot tier, unioned with TABLE on every query (see docstring). Empty = S3 only.
+ALT_TABLE = os.environ.get("BETTERSTACK_CH_ALT_TABLE", "remote(t507167_ai_werewolf_2_logs)")
+# Only these envs alert. Comma-separated; values go into SQL, so they're
+# restricted to a safe charset rather than escaped.
+ENVS = tuple(e for e in (x.strip() for x in os.environ.get("BETTERSTACK_ENVS", "production").split(","))
+             if re.fullmatch(r"[A-Za-z0-9_-]+", e)) or ("production",)
 WINDOW_MIN = int(os.environ.get("BETTERSTACK_WINDOW_MIN", "90"))
 ALERT_LEVELS = ("error", "warn")
 HTTP_TIMEOUT = 30
@@ -115,18 +148,73 @@ def _query(creds: dict, sql: str) -> str:
     return resp.text
 
 
-def _fetch_rows(creds: dict) -> list[dict]:
-    """The error/warn rows in the window, newest first. Each: {dt, level, msg}."""
-    levels = ", ".join(f"'{l}'" for l in ALERT_LEVELS)
-    sql = (
+def _sql_list(values) -> str:
+    return ", ".join(f"'{v}'" for v in values)
+
+
+def _window_clause(since: datetime | None = None, until: datetime | None = None) -> str:
+    """Default: the rolling WINDOW_MIN. With since/until: that fixed UTC range (replay)."""
+    if since is None:
+        return f"dt > now() - INTERVAL {WINDOW_MIN} MINUTE"
+    until = until or _now_utc()
+    fmt = "%Y-%m-%d %H:%M:%S"
+    return (f"dt >= toDateTime('{since.strftime(fmt)}', 'UTC') "
+            f"AND dt < toDateTime('{until.strftime(fmt)}', 'UTC')")
+
+
+def _source(window: str) -> str:
+    """Both tiers for the window, each row once."""
+    if not ALT_TABLE:
+        return f"(SELECT dt, raw FROM {TABLE} WHERE {window})"
+    return (f"(SELECT DISTINCT dt, raw FROM ("
+            f"SELECT dt, raw FROM {TABLE} WHERE {window} "
+            f"UNION ALL SELECT dt, raw FROM {ALT_TABLE} WHERE {window}))")
+
+
+def _rows_sql(window: str) -> str:
+    return (
         "SELECT dt, JSONExtractString(raw,'level') AS lvl, "
+        "JSONExtractString(raw,'env') AS env, "
         "substring(JSONExtractString(raw,'message'),1,200) AS msg "
-        f"FROM {TABLE} "
-        f"WHERE dt > now() - INTERVAL {WINDOW_MIN} MINUTE "
-        f"AND JSONExtractString(raw,'level') IN ({levels}) "
+        f"FROM {_source(window)} "
+        f"WHERE JSONExtractString(raw,'level') IN ({_sql_list(ALERT_LEVELS)}) "
+        f"AND JSONExtractString(raw,'env') IN ({_sql_list(ENVS)}) "
         f"ORDER BY dt DESC LIMIT {ROW_LIMIT} FORMAT JSONEachRow"
     )
-    body = _query(creds, sql)
+
+
+def _count(creds: dict, window: str) -> int:
+    """All rows in the window, any env/level: is the source live at all?"""
+    body = _query(creds, f"SELECT count() FROM {_source(window)} FORMAT TSV").strip()
+    return int(body or 0)
+
+
+def _nonprod_counts(creds: dict, window: str) -> dict[str, int]:
+    """Error/warn lines per NON-alerting env (test, development, preview...)."""
+    body = _query(creds, (
+        "SELECT JSONExtractString(raw,'env') AS env, count() AS n "
+        f"FROM {_source(window)} "
+        f"WHERE JSONExtractString(raw,'level') IN ({_sql_list(ALERT_LEVELS)}) "
+        f"AND JSONExtractString(raw,'env') NOT IN ({_sql_list(ENVS)}) "
+        "GROUP BY env ORDER BY n DESC FORMAT JSONEachRow"))
+    out = {}
+    for line in body.splitlines():
+        try:
+            o = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        out[o.get("env") or "(none)"] = int(o.get("n", 0))
+    return out
+
+
+def _fetch_rows(creds: dict, window: str | None = None) -> list[dict]:
+    """The error/warn rows in the window from alerting envs, newest first.
+    Each: {dt, level, env, msg}."""
+    body = _query(creds, _rows_sql(window or _window_clause()))
+    return _parse_rows(body)
+
+
+def _parse_rows(body: str) -> list[dict]:
     rows = []
     for line in body.splitlines():
         line = line.strip()
@@ -136,13 +224,45 @@ def _fetch_rows(creds: dict) -> list[dict]:
             o = json.loads(line)
         except json.JSONDecodeError:
             continue
-        rows.append({"dt": o.get("dt"), "level": o.get("lvl"), "msg": (o.get("msg") or "").strip()})
+        row = {"dt": o.get("dt"), "level": o.get("lvl"), "env": o.get("env") or "",
+               "msg": (o.get("msg") or "").strip()}
+        if row["env"] not in ENVS:
+            continue  # belt and braces: the SQL already filters this
+        rows.append(row)
     return rows
 
 
 def _fingerprint(row: dict) -> str:
+    # No env on purpose - see "Env filter" in the module docstring.
     key = f"{row.get('dt')}|{row.get('level')}|{row.get('msg')}"
     return hashlib.sha1(key.encode("utf-8")).hexdigest()[:16]
+
+
+def _prior_state() -> dict:
+    try:
+        with BS_LATEST.open() as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _nonprod_daily_issue(creds: dict, now: datetime, prev: dict) -> dict | None:
+    """Once per UTC day: yesterday's non-production error/warn count, as one
+    informational digest line. Never urgent. None when already reported or zero."""
+    day = (now - timedelta(days=1)).date()
+    if prev.get("nonprod_reported_for") == day.isoformat():
+        return None
+    start = datetime(day.year, day.month, day.day, tzinfo=timezone.utc)
+    window = _window_clause(start, start + timedelta(days=1))
+    counts = _nonprod_counts(creds, window)
+    issue = {"severity": "digest", "kind": "nonprod_logs", "target": day.isoformat(),
+             "date": day.isoformat(), "counts": counts}
+    if not counts:
+        return {**issue, "silent": True}      # mark the day done, add no line
+    parts = ", ".join(f"{env}={n}" for env, n in counts.items())
+    issue["detail"] = (f"[info] non-production error/warn lines on {day.isoformat()}: {parts} "
+                       f"(not alerting - only {'/'.join(ENVS)} alerts)")
+    return issue
 
 
 def _prior_seen() -> list[str] | None:
@@ -167,7 +287,7 @@ def _derive_issues(rows: list[dict], prior: list[str] | None) -> tuple[list[dict
                 "severity": "digest",
                 "kind": "betterstack_baseline",
                 "target": "logs",
-                "detail": f"baseline: {len(rows)} error/warn log line(s) in the last "
+                "detail": f"baseline: {len(rows)} {'/'.join(ENVS)} error/warn log line(s) in the last "
                           f"{WINDOW_MIN}m on first scan ({errs} error, {len(rows)-errs} warn) "
                           f"— not alerting (pre-existing). New lines alert from here.",
             }], True)
@@ -183,7 +303,7 @@ def _derive_issues(rows: list[dict], prior: list[str] | None) -> tuple[list[dict
             "severity": "urgent" if is_err else "digest",
             "kind": "app_error" if is_err else "app_warn",
             "target": r["dt"] or "?",
-            "detail": f"[{r['level']}] {r['msg'][:140] or '(no message)'}",
+            "detail": f"[{r['level']}/{r.get('env') or '?'}] {r['msg'][:140] or '(no message)'}",
         })
     return (issues, False)
 
@@ -232,18 +352,27 @@ def report() -> dict:
     if not creds:
         return {"ok": False, "checked_at": _checked_at(now),
                 "error": "BETTERSTACK_CH_HOST/USER/PASS not set (ClickHouse query creds)"}
+    prev = _prior_state()
     try:
-        rows = _fetch_rows(creds)
-    except (requests.RequestException, RuntimeError) as e:
+        window = _window_clause()
+        source_empty = _count(creds, window) == 0
+        rows = [] if source_empty else _fetch_rows(creds, window)
+        nonprod_issue = _nonprod_daily_issue(creds, now, prev)
+    except (requests.RequestException, RuntimeError, ValueError) as e:
         return {"ok": False, "checked_at": _checked_at(now), "error": str(e)[:200]}
 
     prior = _prior_seen()                       # read BEFORE we overwrite latest
     issues, baselined = _derive_issues(rows, prior)
+    if nonprod_issue and not nonprod_issue.get("silent"):
+        issues.append(nonprod_issue)
     counts = {lvl: sum(1 for r in rows if r["level"] == lvl) for lvl in ALERT_LEVELS}
     result = {
         "ok": True,
         "checked_at": _checked_at(now),
         "window_min": WINDOW_MIN,
+        "envs": list(ENVS),
+        "source_empty": source_empty,
+        "nonprod_reported_for": (nonprod_issue or {}).get("date") or prev.get("nonprod_reported_for"),
         "counts": counts,
         "rows": rows[:50],                      # a sample for `show`; not the dedup state
         "issues": issues,
@@ -262,18 +391,21 @@ def render(report: dict) -> str:
     if not report.get("ok"):
         return f"monitor_betterstack failed: {report.get('error', 'unknown')}"
     c = report.get("counts", {})
+    envs = "/".join(report.get("envs") or ["?"])
     out = [f"Werewolf app logs (Betterstack) — {report['checked_at']}",
-           f"  window: last {report.get('window_min')}m   "
+           f"  window: last {report.get('window_min')}m   env: {envs}   "
            f"error={c.get('error', 0)} warn={c.get('warn', 0)}", ""]
     rows = report.get("rows", [])
-    if rows:
+    if report.get("source_empty"):
+        out.append("  Both log tiers are EMPTY for the window (any env) - can't call it quiet.")
+    elif rows:
         out.append("  Recent error/warn lines:")
         for r in rows[:10]:
-            out.append(f"    · {r['dt']}  [{r['level']}] {r['msg'][:120]}")
+            out.append(f"    · {r['dt']}  [{r['level']}/{r.get('env') or '?'}] {r['msg'][:120]}")
         if len(rows) > 10:
             out.append(f"    … +{len(rows) - 10} more")
     else:
-        out.append("  No error/warn lines in the window.")
+        out.append(f"  No {envs} error/warn lines in the window.")
     issues = report.get("issues", [])
     out.append("")
     if issues:
@@ -301,6 +433,63 @@ def render_digest(report: dict) -> str | None:
     return "\n".join(lines)
 
 
+def replay(since: datetime, until: datetime) -> dict:
+    """What a scan over [since, until) WOULD alert on, as if nothing were seen
+    before. Reads and writes no state - safe to run next to the hourly tick."""
+    creds = _creds()
+    if not creds:
+        return {"ok": False, "error": "BETTERSTACK_CH_HOST/USER/PASS not set"}
+    window = _window_clause(since, until)
+    try:
+        source_empty = _count(creds, window) == 0
+        rows = [] if source_empty else _fetch_rows(creds, window)
+        nonprod = _nonprod_counts(creds, window)
+    except (requests.RequestException, RuntimeError, ValueError) as e:
+        return {"ok": False, "error": str(e)[:200]}
+    issues, _ = _derive_issues(rows, [])
+    return {"ok": True, "since": since.isoformat(), "until": until.isoformat(),
+            "envs": list(ENVS), "source_empty": source_empty,
+            "alerts": len(issues), "urgent": sum(i["severity"] == "urgent" for i in issues),
+            "issues": issues, "nonprod_counts": nonprod}
+
+
+def selftest() -> None:
+    """Offline asserts - no network, no state. Marlow has no pytest; handlers
+    self-check this way (see werewolf_stats selftest)."""
+    sql = _rows_sql(_window_clause())
+    assert f"JSONExtractString(raw,'env') IN ({_sql_list(ENVS)})" in sql, sql
+    assert "AS env" in sql
+    assert TABLE in sql and (not ALT_TABLE or ALT_TABLE in sql), sql   # both tiers
+
+    body = "\n".join(json.dumps(o) for o in [
+        {"dt": "2026-09-22 20:21:00", "lvl": "error", "env": "test",
+         "msg": "Game action failed: replayNightImpl"},
+        {"dt": "2026-09-22 20:21:01", "lvl": "warn", "env": "development", "msg": "dev noise"},
+        {"dt": "2026-09-22 20:21:02", "lvl": "error", "env": "", "msg": "pre-09-02 line"},
+        {"dt": "2026-09-22 20:22:00", "lvl": "error", "env": "production", "msg": "real one"},
+    ])
+    rows = _parse_rows(body)
+    assert [r["msg"] for r in rows] == ["real one"], rows    # test/dev/no-env dropped
+
+    issues, _ = _derive_issues(rows, [])
+    assert len(issues) == 1 and issues[0]["severity"] == "urgent", issues
+    assert "/production]" in issues[0]["detail"], issues[0]["detail"]
+
+    # Rollout: a production row seen before the env change keeps its fingerprint.
+    legacy = hashlib.sha1("2026-09-22 20:22:00|error|real one".encode()).hexdigest()[:16]
+    assert _derive_issues(rows, [legacy]) == ([], False)
+
+    w = _window_clause(datetime(2026, 9, 22, 18, tzinfo=timezone.utc),
+                       datetime(2026, 9, 23, 2, tzinfo=timezone.utc))
+    assert "2026-09-22 18:00:00" in w and "2026-09-23 02:00:00" in w, w
+    print("selftest ok")
+
+
+def _parse_utc(s: str) -> datetime:
+    d = datetime.fromisoformat(s.replace("Z", "+00:00"))
+    return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
+
+
 # ─── CLI ─────────────────────────────────────────────────────────────────────
 
 
@@ -310,7 +499,18 @@ def main():
     sub.add_parser("report", help="Scan Betterstack for new error/warn lines + persist (JSON)")
     sub.add_parser("show", help="Render the last persisted scan, human-readable")
     sub.add_parser("digest", help="Digest block from the last scan (empty if nothing new)")
+    p_replay = sub.add_parser("replay", help="What WOULD alert in a fixed UTC window (no state touched)")
+    p_replay.add_argument("--since", required=True, help="e.g. 2026-09-22T18:00Z")
+    p_replay.add_argument("--until", required=True)
+    sub.add_parser("selftest", help="Offline asserts (no network)")
     args = ap.parse_args()
+    if args.cmd == "selftest":
+        selftest()
+        return
+    if args.cmd == "replay":
+        res = replay(_parse_utc(args.since), _parse_utc(args.until))
+        print(json.dumps(res, indent=2, ensure_ascii=False))
+        sys.exit(0 if res.get("ok") else 1)
     if args.cmd == "report":
         res = report()
         print(json.dumps(res, indent=2, ensure_ascii=False))

@@ -66,7 +66,7 @@ def _news_message(title: str, source: str, take: str, url: str) -> str:
 
 def send_item(url: str, title: str, source: str, take: str) -> dict:
     msg = _news_message(title, source, take, url)
-    res = notify.send_telegram_message(msg)
+    res = notify.send_telegram_message(msg, channel="news")
     if not res.get("ok") or not res.get("message_id"):
         return {"ok": False, "detail": f"telegram send failed: {res.get('detail')}"}
     item = store.add_item(res["message_id"], url, title, source, take.strip())
@@ -145,7 +145,7 @@ def save_idea(msg_id: int, comment: str) -> dict:
     )
     path.write_text(body)
     store.set_status(msg_id, "saved")
-    notify.send_telegram_message(f"Saved to your article ideas: {item['title']}")
+    notify.send_telegram_message(f"Saved to your article ideas: {item['title']}", channel="news")
     try:
         shown = str(path.relative_to(REPO_ROOT))
     except ValueError:
@@ -180,7 +180,7 @@ def send_draft(msg_id: int, substack_text: str | None, x_tweets: list[str] | Non
     item = store.get(msg_id)
     if not item["drafts"]:
         return {"ok": False, "detail": "no drafts provided"}
-    res = notify.send_telegram_message(_draft_review_message(item))
+    res = notify.send_telegram_message(_draft_review_message(item), channel="news")
     if not res.get("ok") or not res.get("message_id"):
         return {"ok": False, "detail": f"telegram send failed: {res.get('detail')}"}
     store.set_draft_msg_id(msg_id, res["message_id"])
@@ -249,7 +249,7 @@ def post(msg_id: int) -> dict:
         elif pl in results:
             r = results[pl]
             lines.append(f"  {pl}: {r.get('url') or r.get('detail') or ('ok' if r.get('ok') else 'FAILED')}")
-    notify.send_telegram_message("\n".join(lines))
+    notify.send_telegram_message("\n".join(lines), channel="news")
 
     return {"ok": not failed, "posted": [pl for pl, r in results.items() if r.get("ok")],
             "skipped_already_live": skipped, "failed": failed, "results": results, "item": item}
