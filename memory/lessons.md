@@ -125,3 +125,19 @@ handler has to reject embedded text. Same shape as "a cap that lives only in a
 prompt is not a cap": when a failure recurs against my own written brake, the
 brake belongs in code, and the fix is owed to whoever owns the tool (here Simona),
 not to another note-to-self.
+
+### 2026-09-24 - curate keyed on `--date today` cannot see prior-day orphaned candidates
+
+Feed scans that run *after* a day's 22:00Z curate still write candidate notes
+dated that day. The next day's `curate_news_digest` calls `list --date <today>`,
+so those late notes - dated yesterday - are invisible to it and silently never
+get considered. On -24 seven late-LW candidates captured -23 18:46Z+ (after the
+-23 curate) were only rescued because the -23 grader rollup had flagged them in
+`working.md`, letting me manually sweep them into the -24 pool (18 cand total).
+The rescue depended on a human-readable flag surviving one FIFO day; if a rollup
+ever drops or omits them, the candidates are lost with no error. The durable fix
+is a handler change - curate should also sweep the *previous* day's un-sent
+candidates, not just `--date today`. Until that lands, the grader flagging late
+post-curate candidates in `working.md` is the load-bearing brake (same shape as
+"a reminder is not a control" - here the reminder IS currently the only control,
+which is the fragility). Logged as a candidate handler fix under Outstanding.

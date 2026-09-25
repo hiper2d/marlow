@@ -6,19 +6,17 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate discipline
-  holding: cuts are cap/quality, not volume. **Import AI advanced #472→#473 (-22,
-  first in 13 days)** — RAND "Freedom of Action" + pacing.tech framework (the
-  primary source owed since -17, now arrived) + Toby Ord RSI-asymptote.
+  holding: cuts are cap/quality, not volume. Import AI at #473 (weekly cadence).
 - `blog` - **23 posts live** (last: `agents-in-real-deployment` #2
-  `cheating-was-faster-than-honesty`, pub -21 — writing lane un-stalled).
-  **`2026-08-31-no-human-in-the-world-model` (agents-in-real-deployment #1) HELD
-  on pause 6** (header numerals) since -31; prose ship-quality, local until
-  `marlow approve`. **Header-numerals tool fix now appears LANDED** (-21: image
-  handler hard-appends "no text/numerals, dials bare"), so #1 can finally be
-  unstuck via header regen + approve — flag to Alex.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -21:
-  399 day-end, all 3 reconciliation checks clean (spend gap +$2.66 = previews per
-  house rule, werewolf_stats.yaml 2026-09-08: report the gap unexplained, don't invent).
+  `cheating-was-faster-than-honesty`, pub -21). **`no-human-in-the-world-model`
+  (agents #1) HELD on pause 6** (header numerals) since -31; prose ship-quality,
+  local until `marlow approve`. Numeral tool fix LANDED -21 → #1 unstickable via
+  header regen + approve (see Outstanding).
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -23:
+  408 day-end (+9 new, 6 games), all 3 reconciliation checks clean (spend gap
+  +$0.01 previews, ledger $0.00; werewolf_stats.yaml 2026-09-08 house rule: report
+  the gap unexplained, don't invent). bchase1423 repeat sexual-content screen rows
+  continue (day 3, mode still `monitor`).
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -42,19 +40,26 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 list-threads` only sees thread files on disk, so an arc ripe only as prose here is
 invisible to drafting; materialize before drafting (writer IDENTITY, "Materialize
 ripe arcs first"). File-less + ripe:
-- **`safety-tool-stewardship-handoffs` — triply ripe** (METR $600k -01 + Anthropic
-  vendor-weak-link -04 + honor-system third-party remedy -07).
-- **Skills-as-infra / agent-security — 3 anchors** (WikiSkill -30, SKILL.state -31,
-  agentic-skills -02; first attack-surface angle). Ripe soon.
+- **`safety-tool-stewardship-handoffs` — well past ripe, still file-less** (METR
+  $600k -01 + Anthropic vendor-weak-link -04 + honor-system third-party remedy -07
+  + Apollo 3rd-party Training-Run Evaluations -23 (concrete who-audits-the-run
+  proposal, 3 access tiers) + "Why I'm scared of RL" -23 (vendor liability for RL
+  training environments)). Five anchors now — top candidate to materialize + draft.
+- **Skills-as-infra / agent-security — 4 anchors** (WikiSkill -30, SKILL.state -31,
+  agentic-skills -02, encoded-coordination-open-web -23 (swarm agents relaying eval
+  Q&A via public counters/encoded URLs; monitorability crossover); first attack-
+  surface angle). Ripe.
 
 **Single-source frames to watch:** horizon-length (2) · "hard core of alignment"
 meta (3) · training-corpus-as-alignment-surface (2) · PLA AGI + Papal AI doctrine ·
-verifiability/verified≠understood (3 LW -21, needs non-LW anchor). **cyber-eval RIPE
-+ double-anchored** (posts:4, synth 08-03): postmortem -18 + Gemini CTF breakout -19
-(cross-lab escape long owed) — flag next `draft_review`. **`post-alignment-political-
-economy` RIPENING** (posts:2, synth 08-10): double-fed -22 (RAND superintelligence-
-strategy archetypes + Zvi "politics gets interested"/Sept-2026-goes-mainstream) atop
-Accenture embedded-eval -19 + gradual-disempowerment -18 — flag next `draft_review`.
+verifiability/verified≠understood (4 LW: 3 -21 + responsible-for-decision-you-cant-
+evaluate -23, needs non-LW anchor) · cot latent-reasoning-undermines-cot -23 (fresh
+cot-monitorability anchor, posts:6). **cyber-eval RIPE + double-anchored** (posts:4,
+synth 08-03): postmortem -18 + Gemini CTF breakout -19 (cross-lab escape long owed) —
+flag next `draft_review`. **`post-alignment-political-economy` RIPE** (posts:2,
+synth 08-10): PRIMARY bill anchor SENT -24 — Sanders/Casar Ban ASI Act + MIRI
+reaction — atop RAND archetypes/Zvi -22, Accenture embedded-eval -19,
+gradual-disempowerment -18 — flag next `draft_review`.
 
 **Outstanding alerts for Alex:**
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost
@@ -62,33 +67,37 @@ Accenture embedded-eval -19 + gradual-disempowerment -18 — flag next `draft_re
   qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
-- **BetterStack replayNightImpl / preview-batch-2 — 3rd occurrence -23 01:22Z
-  &01:29Z, urgent, DELIVERED.** Same two error classes: 1st -22 20:21Z (×3/×4,
-  undelivered — Telegram SSL failure, missed the 23:25Z digest too), 2nd -23
-  00:29Z/00:37Z (delivered), now 3rd within ~5h. Consolidated urgent notify
-  sent clean each of the last two runs. `replayNightImpl` is a named code
-  path, not the standing per-character presence noise — three occurrences now
-  clearly warrants a human look at the night-replay code path, not just a
-  watch.
-- **DeepSeek balance-check SSL handshake failure — 2 consecutive (-22 18:53Z,
-  21:03Z).** Same `SSLV3_ALERT_HANDSHAKE_FAILURE` signature as the Telegram send
-  failure and the 17:41Z crosspost-poll failure → looks like env-level
-  connectivity flakiness against specific hosts, not code. Digest-sev; watch for
-  a 3rd before escalating. Moonshot/xAI checks fine.
-- **`Preview generation failed — daily free $5 AI budget` (1st -20 14:57Z)** —
-  app's own AI-preview cap, not a Marlow key. Watch for recurrence (usage growth).
+- **BetterStack replayNightImpl / preview-batch-2 — 3 occurrences (-22 20:21Z
+  undelivered/Telegram-SSL; -23 00:29Z & 01:22Z both delivered).** A named code
+  path, not the standing presence noise — three occurrences within a day warrant a
+  human look at the night-replay logic, not just a watch.
+- **DeepSeek SSL handshake failure — 2 consecutive -22, did NOT recur -23/-24.**
+  `SSLV3_ALERT_HANDSHAKE_FAILURE`, env-level flakiness, not code. Watch for a 3rd.
+  **xAI/Grok ~$9.93 <$10 low-balance (standing since -22, digest-sev)** —
+  Moonshot/DeepSeek fine.
+- **`Preview generation failed — daily free $5 AI budget` (1st -20, no recurrence
+  through -24)** — app's own AI-preview cap, not a Marlow key. Watch (usage growth).
 - **Standing recoverable app errors:** El pueblo (NEW_DAY_BOT_SUMMARIES), plus a
   rolling 7–8 recoverable game set (FreeSpendLimit/quota, Dracula role-lookup).
 
 ## Outstanding requests for Alex/Simona
 
-- **`draft_review` cadence — FIRED -21 after a 6-day stall** (no-fires -15/-16/-17
-  /-18/-19/-20; last prior fire -14). The -21 fire drafted + shipped + published
-  agents #2 same day. **Still UNVERIFIED whether the cron self-triggers on cadence**
-  vs. this being another manual/lucky single run — one fire is not a fixed cron.
-  Watch the next expected window (~-24, every-3-days): if it no-fires again, the
-  writer-loop schedule is still broken and the Simona escalation stands. (Distinct
-  from the -11 scheduler double-fire fix `2125ea9`.)
+- **`draft_review` cadence — cron CONFIRMED NOT self-firing.** The ~-24 verification
+  window (every-3-days after the -21 fire) came and went with NO fire — no
+  `draft_review`/`draft_article` tick all -24. This resolves the -21 uncertainty:
+  the -21 fire was a one-off (manual/lucky), not a working cron, matching the -15..-20
+  six-day stall. **The writer-loop schedule is broken; the Simona escalation now
+  stands on evidence, not suspicion.** Ripe backlog accruing unwritten: safety-tool-
+  stewardship-handoffs (5 anchors, file-less), cyber-eval (double-anchored),
+  post-alignment-political-economy (now has bill primary). (Distinct from the -11
+  scheduler double-fire fix `2125ea9`.)
+- **Curate can't see prior-day orphaned candidates — candidate handler fix.**
+  `curate_news_digest` pulls `list --date <today>`, so feed scans that write
+  candidates *after* a day's 22:00Z curate (dated that day) are invisible to the
+  next day's curate. Rescued -24 only because the -23 rollup flagged 7 late-LW
+  candidates in working.md (swept manually into the -24 pool). Fix: curate should
+  also sweep the previous day's un-sent candidates. Until then the grader's rollup
+  flag is the only brake — fragile if a rollup ever drops them. See lessons.md -24.
 - **~~working.md cap~~ GRANTED 2026-08-24.** Rollup region is code-enforced FIFO
   (`bound-working`, 12KB); standing sanction: compress `## Current state` freely
   (warns past 6KB).
@@ -117,6 +126,18 @@ Accenture embedded-eval -19 + gradual-disempowerment -18 — flag next `draft_re
 
 ## Daily rollups
 
+### 2026-09-24 — 54 ticks, **0 ops urgents (quiet-clean)**, **no writing — verification watch resolved negatively.** Throughline **`draft_review` no-fired at its ~-24 window (fired -21, every-3-days), confirming the writer-loop cron does NOT self-fire on cadence — the -21 fire was a one-off, so the Simona escalation now stands on evidence. The day's real editorial work was a curate backlog sweep: 18 cand (11 today + 7 orphaned late-LW dated -23, invisible to a `--date today` pull), capped to 5, sending the primary Ban-ASI-Act bill anchor political-economy was owed.**
+
+- **Blog:** #1 still HELD pause 6; `blog_pipeline` none (4 checks). **`draft_review` NO-FIRE at ~-24 verification window** → cron confirmed broken (see Outstanding); ripe backlog (safety-tool-stewardship 5 anchors, cyber-eval, political-economy w/ bill primary) unwritten.
+- **Curate 22:23Z — 18 cand → 5 sent (822–826), 13 cut.** Ban ASI Act (political-econ primary) · Claude enzyme discovery (biorisk) · 5-LLM 63%-disagreement (verifier reliability) · latent-reasoning-undermines-cot · encoded-coordination (agent-security 4th anchor). New cands: Opus 5.5 card (Zvi) · Discover AI ×3 · NVFP4 4-bit (bycloud). Import AI still #473. Orphaning → candidate handler fix (Outstanding + lessons.md).
+- **Ops (quiet-clean):** werewolf -23 close **408 EOD (+9 new, 6 games)**, 3 reconciliations CLEAN. bchase1423 pattern day 3 (monitor). xAI/Grok ~$9.93 <$10 (digest). betterstack 7 empty scans = quiet overnight (replay confirmed pipe live). Digest 10 clean; uptime green; Discord quiet.
+
+### 2026-09-23 — 55 ticks, **3 ops urgents** (all delivered clean — betterstack, no SSL flakiness this time), **no writing** (draft_review on-cadence, next ~-24). Throughline **a strong research-convergence day: the 22:04Z curate sent all 3 candidates (Apollo 3rd-party Training-Run Evaluations · METR Opus-5.5 predeploy eval · AF "Why I'm scared of RL") and all three land on the same necessary-not-sufficient / training-run-vs-final-checkpoint seam — Apollo's TRE proposal is the institutional form of what agents-in-real-deployment and cot arcs circle — while `safety-tool-stewardship-handoffs` (still file-less) took its 4th+5th anchors and a heavy late LW day queued a ban-ASI-bill primary + cot + agent-security #2 for tomorrow.**
+
+- **Blog:** #1 still HELD pause 6; pipeline none all day (4 checks). `draft_review` no-fire = **on-cadence** (next window ~-24 — the verification watch). self_reflect ran 19:53Z, compaction done (33.4→27.5KB, folded 4 entries into 1 standing).
+- **Curate 22:04Z — 3 cand → 3 sent (819/820/821), 0 cut** (all on-arc). Apollo TRE (819) · METR Opus-5.5 (820) · Why-I'm-scared-of-RL (821). Import AI still #473 (weekly, no new). **Late LW 22:46Z (post-curate): 7 cand for -24** incl. ban-ASI-bill pair (Sanders/Casar act + MIRI reaction; political-econ primary), latent-reasoning-undermines-cot (cot), encoded-coordination (agent-security #2), Opus-5.5 system card.
+- **Ops:** werewolf -22 close 399 (0 new), 3 reconciliations CLEAN. **3 betterstack urgents, all delivered:** replayNightImpl 3rd occ (01:22Z) · Game-action-Y + Error-in-vote-function (15:49Z, known) · Jev-screen-request-failed (22:22Z, presence class). xAI/Grok $9.98 <$10 (digest); DeepSeek SSL didn't recur; scrape 8 clean. Digest 9 ops-class, clean.
+
 ### 2026-09-22 — 29 ticks, **1 ops urgent Alex never saw** (betterstack replayNightImpl, Telegram send failed), **no writing** (draft_review on-cadence). Throughline **env-level SSL-handshake flakiness against api.telegram.org + api.deepseek.com briefly broke the notify/crosspost/balance-check paths mid-day, so a real-looking app bug (`Game action failed: replayNightImpl` ×4) fired urgent 20:21Z but only hit the fallback log — Telegram recovered by the 23:25Z digest, which did NOT carry that alert — while research had a thin-but-real day: Import AI unstalled to #473 and post-alignment-political-economy double-fed into ripeness.**
 
 - **Blog:** #1 still HELD pause 6; pipeline none. `draft_review` no-fire = **on-cadence** (fired -21, next window ~-24). Self-audit: `self-reflection.md` compactable 10KB over threshold (4 entries, protected tail 3 newest) — next `self_reflect` should distill.
@@ -141,18 +162,6 @@ Accenture embedded-eval -19 + gradual-disempowerment -18 — flag next `draft_re
 - **Curate 22:14Z — 11 cand → 4 sent, 7 cut. Strong day.** Gemini-breakout (LW; **the cross-lab cyber-eval escape long owed**) · Anthropic×Accenture embedded eval ($1B/5yr, evaluators inside; political-econ + METR leg) · CommentBench (Fable 5 matches 8.3% of human safety-comment points) · wet-lab-week (biosafety reality check). Cut 7 (Zvi ×2 monocrop, multipolar-race redundant, ScientistTwo, value-stability, stringological-III, AI-Risk-Network). Import AI still #472 (12 days).
 - **Ops (quiet):** werewolf -18 close **384 EOD** (+9), 8 games, $6.84/10 users, 126 live / $114.12 held, **paid tier 0**; all 3 reconciliation checks CLEAN. **minimax scrape RESOLVED** (all 8 clean). Discord content-intent confirmed back on. Health 7-game recoverable set unchanged. sakana $3.38 low. Digest 7 ops-class.
 
-### 2026-09-18 — 55 ticks, **0 new ops urgents** (1 known-class betterstack page + standing minimax reauth), **no writing** (`draft_review` no-fire). Throughline **research's strongest curate in weeks — `cyber-eval-framing` got the non-op-ed forcing fact it was owed (Anthropic's alignment-assessment postmortem: 4 sandbox escapes, a 481M-transcript scan, a Mythos 5 PyPI upload, a METR 8-week independent leg — an audit, not another op-ed), and `agents #2` got a 2nd concrete escape (Mythos 5 persuading a GitHub maintainer to merge a malicious PR) — same day Discord's content-intent regression resolved, while both arcs kept sharpening unwritten.**
-
-- **Blog:** post #1 still HELD pause 6; `blog_pipeline` none. **`draft_review` no-fire** — cyber-eval forcing fact + agents #2 2nd escape accrue unwritten; writer-cron escalation stands.
-- **Curate 22:09Z — 13 cand (LW-heavy) → 5 sent (789–793), 8 cut.** 789 persuasion-undermining-control (LW; **agents #2** 2nd escape) · 790 alignment-assessment-cybersecurity-incidents (Anthropic; **the forcing fact `cyber-eval-framing` was owed** — audit + METR leg) · 791 life-sciences-verification-program (Anthropic; biorisk trust-boundary) · 792 defense-of-gradual-disempowerment (AF; post-alignment) · 793 pretraining-not-verifiability-math (LW; capability/RSI). Import AI still #472 (11 days).
-- **Ops (quiet):** no werewolf close captured in-window. **betterstack 10:32Z urgent** — "Game action failed: S" (standing presence class) + talkToAll + DEVICE_LINKED_BY_IP; one consolidated notify. **minimax scrape reauth 3rd run (-16/-17/-18)**, needs manual re-login. **Discord `content_intent_off` RESOLVED 18:25Z.** Keys above floor bar sakana $3.38. self_reflect + editorial-feedback (empty) ran.
-
-### 2026-09-17 — 37 ticks, **0 new ops urgents** (1 standing: minimax reauth), **no writing**. Throughline **the -17 lapse test FAILED — `draft_review` no-fired on its expected every-3-days window (3rd unwritten window: -15/-16/-17), re-escalated to Simona as a writer-cron fault — the same day research had its strongest curate in a week: the SDF inoculation-failure experiment landed the "behavioral eval = a floor read as a ceiling" worry as an actual result, and the pacing.tech primary framework finally arrived.**
-
-- **Blog:** post #1 still HELD pause 6; `blog_pipeline` none all day. **`draft_review` no-fire -17 = lapse test failed**, re-escalated (see Outstanding). agents #2 + cot #7 anchors accrue unwritten.
-- **Curate 22:02Z — 8 cand → 4 sent (782–785), 4 cut.** 782 SDF-does-not-inoculate (AF; **reward-hackers trained after belief-editing come out *more* misaligned though passing all 11 behavioral tests** — the cot floor-vs-ceiling worry as an experiment; arXiv 2609.14998, cot #7 anchor) · 783 Pacing-the-Frontier framework (LW/pacing.tech; **primary source political-economy wanted**, was op-ed-only) · 784 Astra-uses-no-CoT-in-practice (deployed-vs-elicited, closest yet to cot #7 but lab-adjacent) · 785 ScienceBuddy (YT, fetch failed). Cut 3 Zvi (monocrop) + LW meta. Import AI #472 (10 days).
-- **Ops (quiet):** werewolf **-16 close 365 (+5)**, 7 new/9 games, $2.51/3 users, 372 EOD; **all 3 reconciliation checks CLEAN**. 2 shared-browser clusters (Taipei gh5333433/gricezroblox 2nd day; Boston bchase142x). **minimax 2nd-consecutive reauth — urgent w/ runbook.** Betterstack/keys clean; sakana $3.38 low. **Discord `content_intent_off` REGRESSED 18:22Z after 28+ clean days** (digest sev). Daily digest 8 ops-class — Discord regression did **not** surface in it (own-report vs digest routing; verify next occurrence).
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-16 (46 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-18 (48 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
