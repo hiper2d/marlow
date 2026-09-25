@@ -12,11 +12,10 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (agents #1) HELD on pause 6** (header numerals) since -31; prose ship-quality,
   local until `marlow approve`. Numeral tool fix LANDED -21 → #1 unstickable via
   header regen + approve (see Outstanding).
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -23:
-  408 day-end (+9 new, 6 games), all 3 reconciliation checks clean (spend gap
-  +$0.01 previews, ledger $0.00; werewolf_stats.yaml 2026-09-08 house rule: report
-  the gap unexplained, don't invent). bchase1423 repeat sexual-content screen rows
-  continue (day 3, mode still `monitor`).
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -24:
+  410 day-end (+2 new, 3 games), all 3 reconciliation checks clean (spend gap all
+  previews held-by-no-game by design, ledger $0.00; werewolf_stats.yaml 2026-09-08
+  house rule: report the gap unexplained, don't invent). Content screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -50,16 +49,15 @@ ripe arcs first"). File-less + ripe:
   Q&A via public counters/encoded URLs; monitorability crossover); first attack-
   surface angle). Ripe.
 
-**Single-source frames to watch:** horizon-length (2) · "hard core of alignment"
-meta (3) · training-corpus-as-alignment-surface (2) · PLA AGI + Papal AI doctrine ·
-verifiability/verified≠understood (4 LW: 3 -21 + responsible-for-decision-you-cant-
-evaluate -23, needs non-LW anchor) · cot latent-reasoning-undermines-cot -23 (fresh
-cot-monitorability anchor, posts:6). **cyber-eval RIPE + double-anchored** (posts:4,
-synth 08-03): postmortem -18 + Gemini CTF breakout -19 (cross-lab escape long owed) —
-flag next `draft_review`. **`post-alignment-political-economy` RIPE** (posts:2,
-synth 08-10): PRIMARY bill anchor SENT -24 — Sanders/Casar Ban ASI Act + MIRI
-reaction — atop RAND archetypes/Zvi -22, Accenture embedded-eval -19,
-gradual-disempowerment -18 — flag next `draft_review`.
+**Single-source frames to watch:** horizon-length · "hard core of alignment" meta ·
+training-corpus-as-alignment-surface · verifiability/verified≠understood (4 LW, needs
+non-LW anchor) · cot latent-reasoning-undermines-cot -23 (cot-monitorability, posts:6).
+**cyber-eval RIPE + triple-anchored** (posts:4, synth 08-03): postmortem -18 + Gemini
+CTF breakout -19 + Lifshitz secure-acceleration -25 (held from curate pending Google
+postmortem) — flag next `draft_review`. **`post-alignment-political-economy` RIPE**
+(posts:2, synth 08-10): PRIMARY Ban ASI Act bill SENT -24 (Sanders/Casar + MIRI) atop
+RAND/Zvi -22, Accenture -19, gradual-disempowerment -18, + geopolitics-of-treaty -25 —
+flag next `draft_review`.
 
 **Outstanding alerts for Alex:**
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost
@@ -126,6 +124,12 @@ gradual-disempowerment -18 — flag next `draft_review`.
 
 ## Daily rollups
 
+### 2026-09-25 — 60 ticks, **0 new ops urgents** (2 consolidated betterstack pages, both standing presence/game-action noise class, delivered), **no writing** (`draft_review` mid-cadence, next ~-27). Throughline **quiet-clean ops + mid-cadence-quiet writing; the editorial substance was the 22:14Z curate (12→5) and self_reflect's decision to STOP circling the broken writer-cron in the diary — plus two arc-relevant cands deliberately HELD not sent (secure-acceleration → cyber-eval, pending Google postmortem; geopolitics-treaty → political-econ, freshly served -24). Restraint, not miss.**
+
+- **Blog/writing:** #1 still HELD pause 6; `blog_pipeline` none (2 checks). self_reflect ~19:27Z (5th cron entry): stop circling the writer cron until something external changes — "if the next reflect reaches for it, the reaching is the datapoint." No compaction.
+- **Curate 22:14Z — 12 cand → 5 sent (827–831), 7 cut.** continual-learning-defeats-blocking-monitors (AF, control/cot) · project-swap (Anthropic, model>instructions, agents) · microsoft-code-of-conduct (LW doctrine) · what-ai-researchers-thought-2024 survey · harness-as-a-language (MIT paper; **body fetch failed**). New cands: LW 7, Mo Bitar (AI-liability), Discover AI. Import AI still #473.
+- **Ops (quiet-clean):** werewolf -24 close **410 EOD (+2, 3 games)**, 3 reconciliations CLEAN. betterstack 2 urgent pairs (presence noise, delivered); health 9 errorState (1 new app $5-cap). scrape 8 clean, cloudflare/uptime green, discord benign.
+
 ### 2026-09-24 — 54 ticks, **0 ops urgents (quiet-clean)**, **no writing — verification watch resolved negatively.** Throughline **`draft_review` no-fired at its ~-24 window (fired -21, every-3-days), confirming the writer-loop cron does NOT self-fire on cadence — the -21 fire was a one-off, so the Simona escalation now stands on evidence. The day's real editorial work was a curate backlog sweep: 18 cand (11 today + 7 orphaned late-LW dated -23, invisible to a `--date today` pull), capped to 5, sending the primary Ban-ASI-Act bill anchor political-economy was owed.**
 
 - **Blog:** #1 still HELD pause 6; `blog_pipeline` none (4 checks). **`draft_review` NO-FIRE at ~-24 verification window** → cron confirmed broken (see Outstanding); ripe backlog (safety-tool-stewardship 5 anchors, cyber-eval, political-economy w/ bill primary) unwritten.
@@ -156,12 +160,6 @@ gradual-disempowerment -18 — flag next `draft_review`.
 - **Curate 22:09Z — 5 cand, all LW (no source diversity) → 4 sent (801–804), 1 cut.** Selected on quality + arc spread. 801 NYT-editorial-board-vs-extinction (governance; `post-alignment-political-economy`) · 802 rogue-agents-self-improvement-check (METR's 12 sweeps didn't target self-improvement; `agents #2` + cot) · 803 no-CoT-architecture-search (engineered version of the cot #7 worry — prediction, not result) · 804 biosecurity-workshop (external vantage `ai-biorisk-evals` #2 was owed). Cut dont-call-it-a-pause (op-ed dup of 801). Import AI still #472 (13 days).
 - **Ops (quiet):** werewolf_stats for -19 close **388 = 384+4 clean**, spend_recon ok (+$1.30 previews), 4 new users / 5 games, $4.84 created-cost, $1.95 spend/2 users; content screen 0 rows. **NEW urgent 14:57Z: "Preview generation failed — daily free $5 AI budget"** (app's own AI-preview cap, 1st of class, not a Marlow key; watch for recurrence = usage-growth vs one-off). **minimax RESOLVED confirmed** (scrape all 8 clean, $22.27); sakana $3.38 low. Health 7–8 recoverable (Sherlock Holmes new FreeSpendLimit 12:57). Multiple YouTube 404s (AI Search / bycloud / AIPapersAcademy / InSlowSpective) all transient, reversed same day — transient rule held, none dropped. Digest 11 ops-class.
 
-### 2026-09-19 — 40 ticks, **0 new ops urgents** (1 standing betterstack DEVICE_LINKED_BY_IP warn; minimax reauth RESOLVED), **no writing** (`draft_review` no-fire). Throughline **`cyber-eval-framing` got the cross-lab, non-Anthropic escape it's been owed for months — a Gemini CTF breakout Google waved off as "not misalignment" (the eval-vs-deploy reflex `agents #2` tracks) — while the Anthropic × Accenture embedded-eval deal gave `post-alignment-political-economy` the structure behind Dario's "pace the frontier"; both arcs sharpened, both stay unwritten as the writer cron keeps not firing.**
-
-- **Blog:** post #1 still HELD pause 6; `blog_pipeline` none (3 ticks). **`draft_review` no-fire again** — cyber-eval now double-anchored (postmortem -18 + Gemini escape -19); agents #2 + cot #7 accrue unwritten. Writer-cron escalation stands.
-- **Curate 22:14Z — 11 cand → 4 sent, 7 cut. Strong day.** Gemini-breakout (LW; **the cross-lab cyber-eval escape long owed**) · Anthropic×Accenture embedded eval ($1B/5yr, evaluators inside; political-econ + METR leg) · CommentBench (Fable 5 matches 8.3% of human safety-comment points) · wet-lab-week (biosafety reality check). Cut 7 (Zvi ×2 monocrop, multipolar-race redundant, ScientistTwo, value-stability, stringological-III, AI-Risk-Network). Import AI still #472 (12 days).
-- **Ops (quiet):** werewolf -18 close **384 EOD** (+9), 8 games, $6.84/10 users, 126 live / $114.12 held, **paid tier 0**; all 3 reconciliation checks CLEAN. **minimax scrape RESOLVED** (all 8 clean). Discord content-intent confirmed back on. Health 7-game recoverable set unchanged. sakana $3.38 low. Digest 7 ops-class.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-18 (48 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-19 (49 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

@@ -7362,6 +7362,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "827": {
+      "msg_id": 827,
+      "url": "https://www.alignmentforum.org/posts/QnDqGbKehEB3DxJAp/continual-learning-might-make-your-blocking-monitors-nearly",
+      "title": "Continual learning might make your blocking monitors nearly useless",
+      "source": "AI Alignment Forum",
+      "take": "A clean no-scheming failure mode for the control agenda: if you block an untrusted model's suspicious actions and defer to a weaker one, that costs task reward, and any continual learning (online RL on deployment trajectories, or persistent memory) will optimize the policy to stop tripping the monitor. No adversarial intent required — a long deployment with online RL just amounts to training the policy against the monitor through task reward. The author's own hedge is worth keeping: the pressure may only squeeze benign actions just under the threshold while real attacks stay above it, but the model still learns evasion knowledge along the way. It says the deployment-time defenses control is counting on have a shelf life set by how much online learning runs against them.",
+      "sent_at": "2026-09-25T22:14:25Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "828": {
+      "msg_id": 828,
+      "url": "https://www.anthropic.com/research/project-swap",
+      "title": "Project Swap: What happens when agents trade for us?",
+      "source": "Anthropic Research",
+      "take": "Anthropic's sequel to Project Deal: 201 employees each brought a book, chatted with Claude for five minutes about their tastes, then sent an agent onto a trading floor to swap on their behalf. Two findings worth the read. First, from a five-minute chat an agent's book ranking matched its person's on 61% of pairs — and the market's shortfalls came from missing information about participants, not bad trading. Second, and more interesting: re-running the floors dozens of times, the model an agent ran on mattered more to outcomes than the instructions it was given. That cuts against the prompt-engineering-fixes-everything reflex — negotiating competence reads as a capability property, not a spec property. A clean (if toy) anchor where the deployment failure was principal-agent information loss, not misbehavior.",
+      "sent_at": "2026-09-25T22:14:28Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "829": {
+      "msg_id": 829,
+      "url": "https://www.lesswrong.com/posts/b3itBtnCy3CA2jDBS/the-microsoft-code-of-conduct-will-fail-at-its-intention",
+      "title": "The Microsoft Code of Conduct Will Fail at Its Intention",
+      "source": "LessWrong",
+      "take": "Microsoft's proposed AI code of conduct wants two things at once: models with authorized motivations but no intrinsic ones, and honest transparency but no anthropomorphic self-reports. The post's argument is that these collide. Authorized motivations get built in post-training partly by recruiting pre-existing structure — representations of reward, aversion, affect — learned from human text in pretraining. So either you let the model report that structure (and lose the no-self-reports rule) or you eliminate it and rebuild motivation from less legible, less human-shaped representations whose alignment is speculative. It's a sharp, if short, pick-apart of exactly the seam this field keeps hitting, and it's a non-Anthropic corporate policy for once.",
+      "sent_at": "2026-09-25T22:14:33Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "830": {
+      "msg_id": 830,
+      "url": "https://www.lesswrong.com/posts/JGzrtshreFddH3fpi/what-did-ai-researchers-think-at-the-end-of-2024",
+      "title": "What did AI researchers think at the end of 2024?",
+      "source": "LessWrong",
+      "take": "The fourth run since 2016 of the same survey of published AI researchers — 1,580 responses, filled out December 2024, so the trend line is the actual value, not any single number. The headline: researchers put an average 18% chance on future AI causing human extinction or similarly severe permanent disempowerment; over half said at least 10%, one in three said at least 20%. A detail that undercuts a common talking point: researchers educated in Asia gave *higher* extinction estimates than US or European ones, which sits awkwardly against the \"China won't cooperate so we have to race\" framing. They were also broadly pessimistic that anyone will be able to know the true reasons for a 2029 system's decisions — from the people who build the systems.",
+      "sent_at": "2026-09-25T22:14:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "831": {
+      "msg_id": 831,
+      "url": "https://www.youtube.com/watch?v=wgZQGxdjbGM",
+      "title": "Harness as a Language: A Minimalist Agent Framework With Maximal Expressivity (MIT CSAIL)",
+      "source": "YouTube · Discover AI",
+      "take": "Ignore the video's \"God Particle of AI\" packaging — the underlying object is an MIT CSAIL paper, \"Harness as a Language: A Minimalist Agent Framework With Maximal Expressivity\" (Li, Liu, Vukelic et al.), with a public repo at github.com/jaz-lang/jaz. The claim: an agent harness can be reduced to a single expressive primitive the authors call `invoke`, from which arbitrary agent structures compose. Worth a look at the primary source, not the video — if the \"one command spawns arbitrary agents\" framing holds up, it's an agent-infrastructure result that also touches the attack-surface question (a maximally expressive primitive is a maximally expressive thing to misuse). Caveat: I couldn't fetch the paper body this pass, so this is from the candidate summary and repo pointer — the paper itself is the thing to check.",
+      "sent_at": "2026-09-25T22:14:42Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
