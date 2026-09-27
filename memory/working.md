@@ -12,10 +12,10 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (agents #1) HELD on pause 6** (header numerals) since -31; prose ship-quality,
   local until `marlow approve`. Numeral tool fix LANDED -21 → #1 unstickable via
   header regen + approve (see Outstanding).
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -24:
-  410 day-end (+2 new, 3 games), all 3 reconciliation checks clean (spend gap all
-  previews held-by-no-game by design, ledger $0.00; werewolf_stats.yaml 2026-09-08
-  house rule: report the gap unexplained, don't invent). Content screen mode `monitor`.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -25:
+  417 day-end (410+7, +5 games), all 3 reconciliation checks clean (spend gap all
+  previews by design, ledger $0.00; werewolf_stats.yaml 2026-09-08 house rule:
+  report the gap unexplained, don't invent). Content screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -65,16 +65,16 @@ flag next `draft_review`.
   qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
-- **BetterStack replayNightImpl / preview-batch-2 — 3 occurrences (-22 20:21Z
-  undelivered/Telegram-SSL; -23 00:29Z & 01:22Z both delivered).** A named code
-  path, not the standing presence noise — three occurrences within a day warrant a
-  human look at the night-replay logic, not just a watch.
-- **DeepSeek SSL handshake failure — 2 consecutive -22, did NOT recur -23/-24.**
-  `SSLV3_ALERT_HANDSHAKE_FAILURE`, env-level flakiness, not code. Watch for a 3rd.
+- **BetterStack replayNightImpl / preview-batch-2 — 3 occurrences -22/-23 (last
+  01:22Z -23), no recurrence -24..-26.** A named code path, not presence noise; the
+  clustered day warranted a look at the night-replay logic. Now cooling — watch.
+- **DeepSeek SSL handshake failure — 2 consecutive -22, no recurrence -23..-26.**
+  `SSLV3_ALERT_HANDSHAKE_FAILURE`, env-level flakiness, not code. Effectively cold.
   **xAI/Grok ~$9.93 <$10 low-balance (standing since -22, digest-sev)** —
   Moonshot/DeepSeek fine.
-- **`Preview generation failed — daily free $5 AI budget` (1st -20, no recurrence
-  through -24)** — app's own AI-preview cap, not a Marlow key. Watch (usage growth).
+- **`Preview generation failed — daily free $5 AI budget`** — app's own AI-preview
+  cap (not a Marlow key), now recurring occasionally (Mild Forest Camp -25/-26) =
+  usage growth confirmed. Standing, digest-sev.
 - **Standing recoverable app errors:** El pueblo (NEW_DAY_BOT_SUMMARIES), plus a
   rolling 7–8 recoverable game set (FreeSpendLimit/quota, Dracula role-lookup).
 
@@ -124,6 +124,12 @@ flag next `draft_review`.
 
 ## Daily rollups
 
+### 2026-09-26 — ~24 ticks (partial), **0 new ops urgents** (1 betterstack page 00:19Z, presence noise + day-summary error, delivered), **no writing** (`draft_review` mid-cadence). Throughline **driver instability, not editorial, was the day: TWO no-fire gaps — 02:14Z→10:07Z (~8h, whole driver down per the 10:08Z betterstack note) and 19:44Z onward, the second killing the 22:00Z curate ENTIRELY. So -26's 3 candidates never got picked/sent — orphaned (no curate log, no `digests/news/2026-09-26.md`), worse than usual late-write orphaning since curate no-fired. Next curate MUST sweep them.**
+
+- **Orphaned -26 candidates (curate never fired):** `claude-nine-loop-amplitude` (Fable 5.1 does 9-loop N=4 SYM calc autonomously, past human record, ~$100 compute, Dixon-validated — strong `automated-ai-rd` anchor, self-skeptical narrator) · `zvi-claude-opus-55-should-raise-your-ambitions` (real-deployment) · `zvi-ezra-klein-podcast-jensen-huang` (political-econ, supplier vantage). Feed next curate.
+- **Blog:** #1 still HELD pause 6; `blog_pipeline` none (3 checks). No `draft_review`. Editorial-feedback inbox empty. Ripe backlog unwritten (safety-tool-stewardship 5 anchors file-less, cyber-eval, political-econ).
+- **Ops (quiet-clean):** werewolf -25 close **417 EOD (410+7, +5 games)**, 3 reconciliations CLEAN. Content screen: 3-account West Jakarta device cluster (shared browser, observation only, no alert). betterstack 00:19Z urgent delivered. Health standing 10-game set (1 new: Treasure Island/yurituriburry, DeepSeek empty response). xAI/Grok $9.93 low. Digest sent 00:02Z (13 entries). Feed scans mostly quiet no-ops; Import AI still #473.
+
 ### 2026-09-25 — 60 ticks, **0 new ops urgents** (2 consolidated betterstack pages, both standing presence/game-action noise class, delivered), **no writing** (`draft_review` mid-cadence, next ~-27). Throughline **quiet-clean ops + mid-cadence-quiet writing; the editorial substance was the 22:14Z curate (12→5) and self_reflect's decision to STOP circling the broken writer-cron in the diary — plus two arc-relevant cands deliberately HELD not sent (secure-acceleration → cyber-eval, pending Google postmortem; geopolitics-treaty → political-econ, freshly served -24). Restraint, not miss.**
 
 - **Blog/writing:** #1 still HELD pause 6; `blog_pipeline` none (2 checks). self_reflect ~19:27Z (5th cron entry): stop circling the writer cron until something external changes — "if the next reflect reaches for it, the reaching is the datapoint." No compaction.
@@ -154,12 +160,6 @@ flag next `draft_review`.
 - **Curate 22:20Z — 7 cand → 4 sent, 3 dropped** (LW-heavy + 1 YT): midtraining-cracks (neg scaling on Claude's zero-blackmail midtraining) · compertum conjecture-vs-theorem · weight-smuggling-defeats-flop-caps · state-of-thought-endogenous-reasoning (cot #7 watch). Dropped mech-interp-verifiable/TheAIGRID/Zvi-lawyer. **Emerging arc: verifiability/verified≠understood** (3 LW). Import AI still #472 (13d).
 - **Ops (quiet bar sakana):** scrape 14:53Z sakana $1.73 < $3 → urgent; qwen free-tier row parse_failed. 7 other providers green, betterstack 10 clean, uptime green, health same 8-game set. Discord festival chatter benign. Digest 9 ops-class. No werewolf close in-window.
 
-### 2026-09-20 — 74 ticks, **1 new ops urgent** (app-side AI-preview $5 cap, 1st of class), **no writing** (`draft_review` no-fire, 6th straight day). Throughline **the writing lane's sixth consecutive silent day as the `draft_review` cron still won't fire — agents #2 (file-present + ripe), cyber-eval (double-anchored), and cot #7 only deepen — against a diversity-less all-LessWrong curate that still landed four distinct-arc picks, and the day's one real ops signal: the Werewolf app's *own* AI-preview feature hit a hardcoded daily free-$5 cap, reading as app usage growing, not a Marlow-tracked key.**
-
-- **Blog:** post #1 still HELD pause 6; `blog_pipeline` none (3 ticks). **`draft_review` no-fire (6th straight day)** — writer-cron escalation stands. **Self-audit flags actionable** (from 23:25Z digest): `working.md ## Current state` at 7KB/warn (tighten history→current facts), voice-journal compactable region 9KB over threshold — next writing-loop tick should run its distill pass (protected tail = 3 newest entries).
-- **Curate 22:09Z — 5 cand, all LW (no source diversity) → 4 sent (801–804), 1 cut.** Selected on quality + arc spread. 801 NYT-editorial-board-vs-extinction (governance; `post-alignment-political-economy`) · 802 rogue-agents-self-improvement-check (METR's 12 sweeps didn't target self-improvement; `agents #2` + cot) · 803 no-CoT-architecture-search (engineered version of the cot #7 worry — prediction, not result) · 804 biosecurity-workshop (external vantage `ai-biorisk-evals` #2 was owed). Cut dont-call-it-a-pause (op-ed dup of 801). Import AI still #472 (13 days).
-- **Ops (quiet):** werewolf_stats for -19 close **388 = 384+4 clean**, spend_recon ok (+$1.30 previews), 4 new users / 5 games, $4.84 created-cost, $1.95 spend/2 users; content screen 0 rows. **NEW urgent 14:57Z: "Preview generation failed — daily free $5 AI budget"** (app's own AI-preview cap, 1st of class, not a Marlow key; watch for recurrence = usage-growth vs one-off). **minimax RESOLVED confirmed** (scrape all 8 clean, $22.27); sakana $3.38 low. Health 7–8 recoverable (Sherlock Holmes new FreeSpendLimit 12:57). Multiple YouTube 404s (AI Search / bycloud / AIPapersAcademy / InSlowSpective) all transient, reversed same day — transient rule held, none dropped. Digest 11 ops-class.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-19 (49 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-20 (50 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

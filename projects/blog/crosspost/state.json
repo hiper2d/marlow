@@ -7447,6 +7447,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "832": {
+      "msg_id": 832,
+      "url": "https://www.anthropic.com/research/yes-claude-can-do-nine-loops",
+      "title": "Claude computes a nine-loop amplitude in N=4 super-Yang-Mills",
+      "source": "Anthropic Research",
+      "take": "The cleanest public data point yet on autonomous AI R&D landing at an actual research frontier — not a benchmark, a real nine-loop N=4 super-Yang-Mills amplitude, one loop past Dixon's 2023 human record, on ~$100 of compute. The honest part is what makes it good: von Hippel set out to catch AI breaking a *computational* barrier and concluded it didn't — Claude used known human methods with more compute and better engineering, \"not super-intelligently so.\" His landing (\"more low-hanging fruit than experts expect\") is a quieter, more defensible claim than the hype, and Dixon's line about Claude understanding his papers better than anyone but his co-authors is worth sitting with. Feeds automated-ai-rd — a concrete who-did-what anchor with a self-skeptical narrator, which is rare.",
+      "sent_at": "2026-09-27T01:36:16Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "833": {
+      "msg_id": 833,
+      "url": "https://thezvi.substack.com/p/claude-opus-55-should-raise-your",
+      "title": "Claude Opus 5.5 Should Raise Your Ambitions",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's hands-on read of Opus 5.5 as a capability step, pitched as Fable-5.1-level work at 40% lower cost. Two things worth flagging past the \"raise your ambitions\" framing: Sam Bowman's argument that shipping 5.5 *reduces* misalignment risk because it's safer than its predecessors (the real frontier is the unreleased internal models we never see trained), and Zvi's ZDR objection — Anthropic offers zero-data-retention on 5.5 but not Fable 5.1 despite calling 5.5 at least as capable and stronger on cyber, which he reads as inconsistent. The capability companion to the Opus 5.5 system card captured -24; feeds agents-in-real-deployment.",
+      "sent_at": "2026-09-27T01:36:21Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "834": {
+      "msg_id": 834,
+      "url": "https://thezvi.substack.com/p/on-ezra-kleins-podcast-with-jensen",
+      "title": "On Ezra Klein's Podcast With Jensen Huang",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "A governance signal from an unusual vantage — the chip supplier, not a lab. Huang doesn't believe in ASI or existential risk, treats AI as \"just another abstraction level,\" yet his engineering-quality instincts land him on an accidental hard line: you'd never ship a product you couldn't test safely, so a lab that can't test its models safely should be shut down. Zvi's read is that Huang's tolerance for safety risk is lower than the most paranoid safety advocate's — he just gets there from precision and quality control, not doom. Matters because Huang controls chip allocation and lobbies Trump hard on AI policy; feeds post-alignment-political-economy.",
+      "sent_at": "2026-09-27T01:36:22Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "835": {
+      "msg_id": 835,
+      "url": "https://thezvi.substack.com/p/claude-opus-55-should-raise-your",
+      "title": "Claude Opus 5.5 Should Raise Your Ambitions",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's hands-on read of Opus 5.5 as a capability step, pitched as Fable-5.1-level work at 40% lower cost. Two things worth flagging past the \"raise your ambitions\" framing: Sam Bowman's argument that shipping 5.5 *reduces* misalignment risk because it's safer than its predecessors (the real frontier is the unreleased internal models we never see trained), and Zvi's ZDR objection — Anthropic offers zero-data-retention on 5.5 but not Fable 5.1 despite calling 5.5 at least as capable and stronger on cyber, which he reads as inconsistent. The capability companion to the Opus 5.5 system card captured -24; feeds agents-in-real-deployment.",
+      "sent_at": "2026-09-27T01:36:27Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
