@@ -12,9 +12,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (agents #1) HELD on pause 6** (header numerals) since -31; prose ship-quality,
   local until `marlow approve`. Numeral tool fix LANDED -21 → #1 unstickable via
   header regen + approve (see Outstanding).
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -25:
-  417 day-end (410+7, +5 games), all 3 reconciliation checks clean (spend gap all
-  previews by design, ledger $0.00; werewolf_stats.yaml 2026-09-08 house rule:
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -26:
+  425 day-end (417+8, 8 games, $7.01), all 3 reconciliation checks clean (spend gap
+  all previews by design, ledger $0.00; werewolf_stats.yaml 2026-09-08 house rule:
   report the gap unexplained, don't invent). Content screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -65,12 +65,12 @@ flag next `draft_review`.
   qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
-- **BetterStack replayNightImpl / preview-batch-2 — 3 occurrences -22/-23 (last
-  01:22Z -23), no recurrence -24..-26.** A named code path, not presence noise; the
-  clustered day warranted a look at the night-replay logic. Now cooling — watch.
-- **DeepSeek SSL handshake failure — 2 consecutive -22, no recurrence -23..-26.**
-  `SSLV3_ALERT_HANDSHAKE_FAILURE`, env-level flakiness, not code. Effectively cold.
-  **xAI/Grok ~$9.93 <$10 low-balance (standing since -22, digest-sev)** —
+- **Cooled/cold (watch only, no recurrence):** replayNightImpl/preview-batch-2 (last
+  -23), DeepSeek SSL handshake (last -22). Named code paths but effectively cold.
+- **Avatar-pipeline wobble — NEW -27.** 00:26Z AVATAR_GRID_MISMATCH warn (recovered) +
+  12:54Z hard `Avatar generation failed` (wild-west-town, urgent, delivered), same day.
+  Two issues in one day; not yet a pattern — watch for a shared avatar-service fault.
+- **xAI/Grok ~$9.93 <$10 low-balance (standing since -22, digest-sev)** — top up soon;
   Moonshot/DeepSeek fine.
 - **`Preview generation failed — daily free $5 AI budget`** — app's own AI-preview
   cap (not a Marlow key), now recurring occasionally (Mild Forest Camp -25/-26) =
@@ -123,6 +123,12 @@ flag next `draft_review`.
   clean on the *next* instrument subject before closing.
 
 ## Daily rollups
+
+### 2026-09-27 — 43 ticks, **1 new ops urgent** (13:29Z betterstack avatar-generation hard fail, delivered), **no writing** (`draft_review` still not firing). Throughline **driver recovered from -26's instability (43 ticks, no gaps), but the recovery double-sent: the late -26 catch-up curate (01:36Z) AND the normal -27 curate (22:02Z) both swept the same 3 -26 orphans, so nine-loop + Huang each reached Alex twice (new lessons.md entry). Research substance was a real automated-ai-rd convergence — Riemann-zeta lower bound (Claude, Lean-verified 41.6%→67.2%, Conrey/Goldston) beside the -26 nine-loop amplitude, both expert-validated autonomous research landing on "recombination + compute, not new insight." Flagged for next draft_review.**
+
+- **Research:** curate fired twice (01:36Z catch-up + 22:02Z normal), both swept the -26 orphans → nine-loop + Huang double-sent; opus-ambitions cut at 22:02Z. New: `claude-riemann-zeta-lower-bound` (automated-ai-rd), 7 LW cands 22:45Z (`embedded-evaluators-who-audits` strongest → safety-tool-stewardship). Import AI #473. editorial-direction: automated-ai-rd #4 = cross-lab autonomous-research replication (verifiable half works, grader half open).
+- **Blog:** #1 still HELD pause 6; `blog_pipeline` none (5 checks); no `draft_review` all day — cron still not self-firing. Ripe backlog unwritten. Editorial-feedback inbox empty.
+- **Ops (quiet bar 1 urgent):** werewolf -26 close **425 EOD (417+8, 8 games, $7.01)**, 3 reconciliations CLEAN. **NEW betterstack urgent 13:29Z: Avatar generation failed (wild-west-town)** + 00:26Z grid-mismatch warn = avatar-pipeline wobble to watch. xAI/Grok $9.93 low (standing -22). Health 10-game set, 0 new. Digest 13 entries 23:06Z.
 
 ### 2026-09-26 — ~24 ticks (partial), **0 new ops urgents** (1 betterstack page 00:19Z, presence noise + day-summary error, delivered), **no writing** (`draft_review` mid-cadence). Throughline **driver instability, not editorial, was the day: TWO no-fire gaps — 02:14Z→10:07Z (~8h, whole driver down per the 10:08Z betterstack note) and 19:44Z onward, the second killing the 22:00Z curate ENTIRELY. So -26's 3 candidates never got picked/sent — orphaned (no curate log, no `digests/news/2026-09-26.md`), worse than usual late-write orphaning since curate no-fired. Next curate MUST sweep them.**
 

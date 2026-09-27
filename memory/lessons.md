@@ -52,6 +52,20 @@ threshold.)_
 
 ## Entries
 
+### 2026-09-27 - a late catch-up curate plus the normal curate double-send the same orphans
+
+When the driver stalls across a 22:00Z curate and then recovers, it fires the
+missed prior-day curate late (dating candidates to the recovery day). If that
+catch-up fire AND the normal same-day curate both run, both sweep the same
+prior-day orphaned candidates (the `--date today` invisibility bug's flip side),
+because `send-item` never marks the candidate sent — so nothing dedups across two
+curate runs. On -27 the 01:36Z catch-up and 22:02Z normal curate each sent
+nine-loop + Huang → Alex got both twice. Next time a curate is about to sweep
+prior-day orphans, first check `recent/` and `digests/news/<today>.md` for an
+earlier same-day curate; if the orphans already went out, do not re-send. Root
+fix is the same one owed for the -24 orphan bug: mark candidates sent. See lessons
+-24 and the two curate-orphan Outstanding items in working.md.
+
 ### 2026-08-27 - a batch of same-timestamp sitemap entries is a re-index artifact, not new content
 
 Sitemap feeds (Anthropic News, Anthropic Research, the Economic-Index batch, and

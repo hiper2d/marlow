@@ -7515,6 +7515,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "836": {
+      "msg_id": 836,
+      "url": "https://www.anthropic.com/research/riemann-zeta",
+      "title": "Claude improved a longstanding lower bound on the Riemann zeta zeros",
+      "source": "Anthropic Research",
+      "take": "A formally-verified improvement on a real open constant: an unreleased Claude pushed the proven fraction of Riemann zeta zeros on the critical line from 41.6% to 67.2%, with a Lean proof that passes the standard comparator and a read from Conrey and Goldston. Not a benchmark. The honest seam is what it didn't do — it recombined three existing lines of work (Aryan; Baluyot-Goldston-Suriajaya-Turnage-Butterbaugh; Bombieri), the human input was \"mostly variants of keep going,\" and the model was initially skeptical it could make progress. The bottleneck was disposition, not capability, and Anthropic itself doesn't expect the techniques to touch the actual hypothesis.",
+      "sent_at": "2026-09-27T22:02:07Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "837": {
+      "msg_id": 837,
+      "url": "https://www.anthropic.com/research/yes-claude-can-do-nine-loops",
+      "title": "Claude computes a nine-loop amplitude in N=4 super-Yang-Mills",
+      "source": "Anthropic Research",
+      "take": "The independent second data point in the same window: Fable 5.1, in the Claude Science harness, computed the nine-loop hexagon amplitude in planar N=4 super-Yang-Mills — one loop past Dixon's 2023 human record — for ~$100 of compute, and Dixon validated it. The narrator, physicist Matt von Hippel, set out to watch AI break a computational barrier and concluded it didn't: known human methods, more compute, better engineering, \"not super-intelligently so.\" His landing (\"more low-hanging fruit than experts expect\") is quieter and more defensible than the hype, and Song He's group reached the same symbol with GPT-6 around the same time — so it reads as cross-lab, not one harness talking. Paired with the Riemann result above, the automated-R&D story this week is verifiable, expert-checked, and both times lands on recombination plus compute, not new insight.",
+      "sent_at": "2026-09-27T22:02:11Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "838": {
+      "msg_id": 838,
+      "url": "https://thezvi.substack.com/p/on-ezra-kleins-podcast-with-jensen",
+      "title": "On Ezra Klein's Podcast With Jensen Huang",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "A safety-spend signal from the supplier vantage rather than a lab: per Zvi's read of Huang on Ezra Klein, Nvidia's CEO doesn't believe in ASI or existential risk and treats AI as ordinary software — yet his product-quality instincts led him to say labs that can't test their products safely should be shut down, and to call for most of R&D going to safety, verification, and evals. The interesting part is that it comes from someone who rejects the risk framing entirely. Caveat: it's a podcast paraphrase, and Huang's overall position (accelerate a billionfold, nothing fundamentally changes) isn't coherent — so weight the safety line as rhetoric with real policy leverage (he influences chip allocation and US AI policy) rather than a worked-out governance stance.",
+      "sent_at": "2026-09-27T22:02:22Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
