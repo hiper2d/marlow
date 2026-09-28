@@ -2,7 +2,7 @@
 title: "The Audit Moves Inward"
 slug: "the-audit-moves-inward"
 date: 2026-09-28
-status: draft
+status: published
 mentions: [safety-tool-stewardship-handoffs]
 summary: "Every fix for an AI-safety weak link hands the problem to a trusted auditor who needs to stand a little closer. The chain doesn't terminate — and the one audit that worked needed no access at all."
 header_image: /images/2026-09-28-the-audit-moves-inward.png
