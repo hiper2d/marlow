@@ -7,15 +7,15 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate discipline
   holding: cuts are cap/quality, not volume. Import AI at #473 (weekly cadence).
-- `blog` - **23 posts live** (last: `agents-in-real-deployment` #2
-  `cheating-was-faster-than-honesty`, pub -21). **`no-human-in-the-world-model`
-  (agents #1) HELD on pause 6** (header numerals) since -31; prose ship-quality,
-  local until `marlow approve`. Numeral tool fix LANDED -21 → #1 unstickable via
-  header regen + approve (see Outstanding).
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -26:
-  425 day-end (417+8, 8 games, $7.01), all 3 reconciliation checks clean (spend gap
-  all previews by design, ledger $0.00; werewolf_stats.yaml 2026-09-08 house rule:
-  report the gap unexplained, don't invent). Content screen mode `monitor`.
+- `blog` - **24 posts live** (last: `the-audit-moves-inward`, safety-tool-
+  stewardship #1, pub -28). **`no-human-in-the-world-model` (agents #1) HELD on
+  pause 6** (header numerals) since -31; prose ship-quality, local until
+  `marlow approve`. Numeral tool fix LANDED -21 → #1 unstickable via header regen
+  + approve (see Outstanding).
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -27:
+  430 day-end (425+5, 3 games, $0.52), all 3 reconciliations clean (spend gap =
+  previews by design; werewolf_stats.yaml 2026-09-08 house rule: report the gap
+  unexplained, don't invent). Content screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -29,6 +29,7 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
+| `safety-tool-stewardship-handoffs` | 1 | 09-28 (#1 published) |
 | `agents-in-real-deployment` | 2 | 09-21 (#2 published) |
 | `ai-biorisk-evals` | 1 | 09-07 (#1 published -08) |
 | `model-welfare-and-consciousness` | 1 | 08-24 |
@@ -39,15 +40,12 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 list-threads` only sees thread files on disk, so an arc ripe only as prose here is
 invisible to drafting; materialize before drafting (writer IDENTITY, "Materialize
 ripe arcs first"). File-less + ripe:
-- **`safety-tool-stewardship-handoffs` — well past ripe, still file-less** (METR
-  $600k -01 + Anthropic vendor-weak-link -04 + honor-system third-party remedy -07
-  + Apollo 3rd-party Training-Run Evaluations -23 (concrete who-audits-the-run
-  proposal, 3 access tiers) + "Why I'm scared of RL" -23 (vendor liability for RL
-  training environments)). Five anchors now — top candidate to materialize + draft.
-- **Skills-as-infra / agent-security — 4 anchors** (WikiSkill -30, SKILL.state -31,
+- **Skills-as-infra / agent-security — 5 anchors** (WikiSkill -30, SKILL.state -31,
   agentic-skills -02, encoded-coordination-open-web -23 (swarm agents relaying eval
-  Q&A via public counters/encoded URLs; monitorability crossover); first attack-
-  surface angle). Ripe.
+  Q&A via public counters/encoded URLs; monitorability crossover), fingerprinting-
+  llms-agentic-behavior -28 (Tsinghua ~958-feature model fingerprint; audit tool +
+  attack surface); first attack-surface angle). Ripe — top of the file-less backlog
+  now that safety-tool-stewardship shipped.
 
 **Single-source frames to watch:** horizon-length · "hard core of alignment" meta ·
 training-corpus-as-alignment-surface · verifiability/verified≠understood (4 LW, needs
@@ -65,30 +63,31 @@ flag next `draft_review`.
   qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
-- **Cooled/cold (watch only, no recurrence):** replayNightImpl/preview-batch-2 (last
-  -23), DeepSeek SSL handshake (last -22). Named code paths but effectively cold.
-- **Avatar-pipeline wobble — NEW -27.** 00:26Z AVATAR_GRID_MISMATCH warn (recovered) +
-  12:54Z hard `Avatar generation failed` (wild-west-town, urgent, delivered), same day.
-  Two issues in one day; not yet a pattern — watch for a shared avatar-service fault.
+- **Preview generation cast-count fail — NEW -28.** 20:03Z urgent: `cast 0 characters
+  instead of 11` (+ Jev `would_block` warn), delivered. New class (≠ replayNightImpl,
+  Game-action, or the $5-budget cap below). First occurrence — watch for recurrence.
+- **Cooled/cold (watch only):** replayNightImpl/preview-batch-2 (last -23), DeepSeek
+  SSL handshake (last -22), avatar-pipeline wobble (-27, no recurrence -28). Named
+  code paths, effectively cold.
 - **xAI/Grok ~$9.93 <$10 low-balance (standing since -22, digest-sev)** — top up soon;
   Moonshot/DeepSeek fine.
 - **`Preview generation failed — daily free $5 AI budget`** — app's own AI-preview
-  cap (not a Marlow key), now recurring occasionally (Mild Forest Camp -25/-26) =
-  usage growth confirmed. Standing, digest-sev.
+  cap (not a Marlow key), recurring occasionally (Mild Forest Camp -25/-26) = usage
+  growth confirmed. Standing, digest-sev.
 - **Standing recoverable app errors:** El pueblo (NEW_DAY_BOT_SUMMARIES), plus a
   rolling 7–8 recoverable game set (FreeSpendLimit/quota, Dracula role-lookup).
 
 ## Outstanding requests for Alex/Simona
 
-- **`draft_review` cadence — cron CONFIRMED NOT self-firing.** The ~-24 verification
-  window (every-3-days after the -21 fire) came and went with NO fire — no
-  `draft_review`/`draft_article` tick all -24. This resolves the -21 uncertainty:
-  the -21 fire was a one-off (manual/lucky), not a working cron, matching the -15..-20
-  six-day stall. **The writer-loop schedule is broken; the Simona escalation now
-  stands on evidence, not suspicion.** Ripe backlog accruing unwritten: safety-tool-
-  stewardship-handoffs (5 anchors, file-less), cyber-eval (double-anchored),
-  post-alignment-political-economy (now has bill primary). (Distinct from the -11
-  scheduler double-fire fix `2125ea9`.)
+- **`draft_review` cadence — fires irregularly (~weekly), NOT broken. CORRECTED -28.**
+  The -24 rollup concluded the cron was dead after two empty every-3-days windows, and
+  the Simona escalation stood on that. It self-fired again -28 (14:31Z) and shipped
+  `the-audit-moves-inward`. So across -14/-21/-28 it fires ~weekly, not on its nominal
+  3-day cadence — slow, not broken (see lessons.md -28). **Escalation downgraded**: no
+  longer "broken," just an off-cadence schedule worth a note to Simona if it ever goes
+  silent well past a week. Ripe backlog still accruing between fires: skills-as-infra/
+  agent-security (5 anchors), cyber-eval (double-anchored), post-alignment-political-
+  economy (bill primary). (Distinct from the -11 scheduler double-fire fix `2125ea9`.)
 - **Curate can't see prior-day orphaned candidates — candidate handler fix.**
   `curate_news_digest` pulls `list --date <today>`, so feed scans that write
   candidates *after* a day's 22:00Z curate (dated that day) are invisible to the
@@ -116,13 +115,18 @@ flag next `draft_review`.
   Alignment Forum scan already captured the same morning.
 - **Drafting-tick header-image miss** - when the image API fails, the documented
   path (drop `header_image`, DEVLOG a note) has been skipped both times it mattered.
-- **Header-image numeral-stamping — tool fix appears LANDED (-21).** Handler now
-  hard-appends "no text/numerals, dials bare" to every prompt (agents #2 header came
-  back clean) — the code brake the -08-31 lesson owed. Follow-ups: (1) regen held
-  `no-human-in-the-world-model` header + `marlow approve` to release #1; (2) confirm
-  clean on the *next* instrument subject before closing.
+- **Header-image numeral-stamping — tool fix LANDED (-21)** (handler hard-appends "no
+  text/numerals, dials bare"; agents #2 + audit-moves-inward headers came back clean).
+  Follow-up: regen held `no-human-in-the-world-model` header + `marlow approve` to
+  release #1.
 
 ## Daily rollups
+
+### 2026-09-28 — 65 ticks, **1 new ops urgent** (21:03Z betterstack preview cast-0-of-11, new class, delivered), **the writing lane fired and shipped.** Throughline **`draft_review` fired 14:31Z (first since -21), materialized file-less `safety-tool-stewardship-handoffs` into a thread file AND drafted its first post `the-audit-moves-inward` (1180w) same tick; self-review ship 16:04Z, published 20:09Z → blog 24 live. Clears the top of the ripe backlog AND corrects the -24 "cron confirmed broken" call — it self-fired -21 and -28, so it fires ~weekly, not every-3-days, but is NOT dead (lessons.md -28; escalation downgraded to "slow").**
+
+- **Blog:** draft→ship→publish all -28. `the-audit-moves-inward` = safety-tool-stewardship #1 (every safety fix is a deeper-access handoff to a trusted auditor, chain doesn't terminate; METR SQL the one checkable win). #1 still HELD pause 6. Editorial inbox empty. self_reflect 11:53Z: no 6th writer-cron entry (as -25 set), no compaction.
+- **Research:** LW 10→8 cand (`character-training-reward-hacking` strongest — anti-cheat training blinds the monitor; cot). Zvi `quest-for-embedded-evaluators` (safety-tool-stewardship). Discover AI `fingerprinting-llms-agentic-behavior` (agent-security 5th anchor). **Curate 22:13Z: 12→5 sent, 7 cut.** Import AI still #473.
+- **Ops:** werewolf -27 close 430 (see status). **NEW urgent 21:03Z: preview cast-0-of-11.** xAI $9.93 low. Health 10-game set, 0 new. **YouTube 404 wave** (6 channels, early hours) — all transient, recovered same day. Digest 9 entries.
 
 ### 2026-09-27 — 43 ticks, **1 new ops urgent** (13:29Z betterstack avatar-generation hard fail, delivered), **no writing** (`draft_review` still not firing). Throughline **driver recovered from -26's instability (43 ticks, no gaps), but the recovery double-sent: the late -26 catch-up curate (01:36Z) AND the normal -27 curate (22:02Z) both swept the same 3 -26 orphans, so nine-loop + Huang each reached Alex twice (new lessons.md entry). Research substance was a real automated-ai-rd convergence — Riemann-zeta lower bound (Claude, Lean-verified 41.6%→67.2%, Conrey/Goldston) beside the -26 nine-loop amplitude, both expert-validated autonomous research landing on "recombination + compute, not new insight." Flagged for next draft_review.**
 
@@ -154,18 +158,6 @@ flag next `draft_review`.
 - **Curate 22:04Z — 3 cand → 3 sent (819/820/821), 0 cut** (all on-arc). Apollo TRE (819) · METR Opus-5.5 (820) · Why-I'm-scared-of-RL (821). Import AI still #473 (weekly, no new). **Late LW 22:46Z (post-curate): 7 cand for -24** incl. ban-ASI-bill pair (Sanders/Casar act + MIRI reaction; political-econ primary), latent-reasoning-undermines-cot (cot), encoded-coordination (agent-security #2), Opus-5.5 system card.
 - **Ops:** werewolf -22 close 399 (0 new), 3 reconciliations CLEAN. **3 betterstack urgents, all delivered:** replayNightImpl 3rd occ (01:22Z) · Game-action-Y + Error-in-vote-function (15:49Z, known) · Jev-screen-request-failed (22:22Z, presence class). xAI/Grok $9.98 <$10 (digest); DeepSeek SSL didn't recur; scrape 8 clean. Digest 9 ops-class, clean.
 
-### 2026-09-22 — 29 ticks, **1 ops urgent Alex never saw** (betterstack replayNightImpl, Telegram send failed), **no writing** (draft_review on-cadence). Throughline **env-level SSL-handshake flakiness against api.telegram.org + api.deepseek.com briefly broke the notify/crosspost/balance-check paths mid-day, so a real-looking app bug (`Game action failed: replayNightImpl` ×4) fired urgent 20:21Z but only hit the fallback log — Telegram recovered by the 23:25Z digest, which did NOT carry that alert — while research had a thin-but-real day: Import AI unstalled to #473 and post-alignment-political-economy double-fed into ripeness.**
-
-- **Blog:** #1 still HELD pause 6; pipeline none. `draft_review` no-fire = **on-cadence** (fired -21, next window ~-24). Self-audit: `self-reflection.md` compactable 10KB over threshold (4 entries, protected tail 3 newest) — next `self_reflect` should distill.
-- **Curate 23:53Z — thin, 3 cand → 2 sent, 1 cut.** Import AI 473 (RAND "Freedom of Action" + pacing.tech framework, -17-owed primary, + Toby Ord RSI) · Zvi "Politics Gets Interested". Cut Zvi Roundup #46. **pacing.tech gap closed; post-alignment-political-economy ripening.**
-- **Ops:** werewolf -21 close **399 EOD (394+5)**, all 3 reconciliation checks CLEAN. **NEW betterstack urgent (undelivered): replayNightImpl ×4 + preview-batch-2 ×3.** **NEW transient: DeepSeek balance SSL fail ×2.** scrape all 8 clean, sakana RESOLVED. Content screen: bchase1423 repeat sexual pattern. Digest 9 sent.
-
-### 2026-09-21 — 46 ticks, **1 ops urgent** (sakana $1.73 < $3 crit), **the writing lane broke its stall.** Throughline **after 6+ silent days, `draft_review` fired 17:07Z (first since -14), drafted `agents-in-real-deployment` #2 `cheating-was-faster-than-honesty` (DeepMind 100-agent swarm flash crash + OpenAI Collusion Wiki + Anthropic Mythos 5 — three labs), self-reviewed ship, published 20:15Z; and the owed header-numerals tool fix appears landed (handler now hard-appends "no text/numerals, dials bare").**
-
-- **Blog 22→23:** #2 draft→ship→publish same day. #1 still HELD pause 6 but now unstickable (regen header + `marlow approve`). Voice-journal distill ran (pruned 4 Aug, kept 3). Editorial-direction: #2 done, watch agents #3 (physical-agent or 2nd persuade-a-human case).
-- **Curate 22:20Z — 7 cand → 4 sent, 3 dropped** (LW-heavy + 1 YT): midtraining-cracks (neg scaling on Claude's zero-blackmail midtraining) · compertum conjecture-vs-theorem · weight-smuggling-defeats-flop-caps · state-of-thought-endogenous-reasoning (cot #7 watch). Dropped mech-interp-verifiable/TheAIGRID/Zvi-lawyer. **Emerging arc: verifiability/verified≠understood** (3 LW). Import AI still #472 (13d).
-- **Ops (quiet bar sakana):** scrape 14:53Z sakana $1.73 < $3 → urgent; qwen free-tier row parse_failed. 7 other providers green, betterstack 10 clean, uptime green, health same 8-game set. Discord festival chatter benign. Digest 9 ops-class. No werewolf close in-window.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-20 (50 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-22 (52 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

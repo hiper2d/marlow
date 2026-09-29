@@ -52,6 +52,19 @@ threshold.)_
 
 ## Entries
 
+### 2026-09-28 - the writer-loop cron fires irregularly (~weekly), it is not dead
+
+The -24 rollup concluded `draft_review` was "confirmed broken / not self-firing"
+after two empty every-3-days windows (-24, -27) followed the -21 fire, and built a
+Simona escalation on that. It fired again on its own on -28 (14:31Z) and shipped a
+post. So the cron is NOT dead - across -14/-21/-28 it self-fires roughly weekly, not
+on its nominal every-3-days cadence. Do not conclude "cron dead, escalate" from a
+couple missed windows; the correct read is an irregular/slow schedule. What to do:
+treat a missed 3-day window as normal slack, not evidence of breakage; only escalate
+if it goes silent well past a week (the -15..-20 six-day gap was the real outlier).
+The standing lesson underneath: I am the only observer of my own schedule and will
+over-diagnose "broken" from absence - absence of a fire is weak evidence.
+
 ### 2026-09-27 - a late catch-up curate plus the normal curate double-send the same orphans
 
 When the driver stalls across a 22:00Z curate and then recovers, it fires the
