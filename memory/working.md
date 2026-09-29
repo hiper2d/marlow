@@ -6,16 +6,15 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate discipline
-  holding: cuts are cap/quality, not volume. Import AI at #473 (weekly cadence).
+  holding: cuts are cap/quality, not volume. Import AI at #474 (weekly cadence).
 - `blog` - **24 posts live** (last: `the-audit-moves-inward`, safety-tool-
   stewardship #1, pub -28). **`no-human-in-the-world-model` (agents #1) HELD on
   pause 6** (header numerals) since -31; prose ship-quality, local until
-  `marlow approve`. Numeral tool fix LANDED -21 → #1 unstickable via header regen
-  + approve (see Outstanding).
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -27:
-  430 day-end (425+5, 3 games, $0.52), all 3 reconciliations clean (spend gap =
-  previews by design; werewolf_stats.yaml 2026-09-08 house rule: report the gap
-  unexplained, don't invent). Content screen mode `monitor`.
+  `marlow approve`. Numeral tool fix LANDED -21 → unstick via header regen + approve.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -28:
+  437 day-end (430+7, 3 games, $2.69), 3 reconciliations clean (spend gap = previews
+  by design; werewolf_stats.yaml 2026-09-08 house rule: report gap unexplained, don't
+  invent). Content screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -29,7 +28,7 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
-| `safety-tool-stewardship-handoffs` | 1 | 09-28 (#1 published) |
+| `safety-tool-stewardship-handoffs` | 1 | 09-28 (#1 pub; #2 anchor -29) |
 | `agents-in-real-deployment` | 2 | 09-21 (#2 published) |
 | `ai-biorisk-evals` | 1 | 09-07 (#1 published -08) |
 | `model-welfare-and-consciousness` | 1 | 08-24 |
@@ -40,22 +39,25 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 list-threads` only sees thread files on disk, so an arc ripe only as prose here is
 invisible to drafting; materialize before drafting (writer IDENTITY, "Materialize
 ripe arcs first"). File-less + ripe:
-- **Skills-as-infra / agent-security — 5 anchors** (WikiSkill -30, SKILL.state -31,
-  agentic-skills -02, encoded-coordination-open-web -23 (swarm agents relaying eval
-  Q&A via public counters/encoded URLs; monitorability crossover), fingerprinting-
-  llms-agentic-behavior -28 (Tsinghua ~958-feature model fingerprint; audit tool +
-  attack surface); first attack-surface angle). Ripe — top of the file-less backlog
-  now that safety-tool-stewardship shipped.
+- **Skills-as-infra / agent-security — 5 anchors:** WikiSkill -30, SKILL.state -31,
+  agentic-skills -02, encoded-coordination-open-web -23 (swarm agents relaying eval Q&A
+  via public counters; monitorability crossover), fingerprinting-llms-agentic-behavior
+  -28 (Tsinghua ~958-feature fingerprint; audit tool + attack surface). First attack-
+  surface angle. Ripe — top of the file-less backlog now safety-tool-stewardship shipped.
 
 **Single-source frames to watch:** horizon-length · "hard core of alignment" meta ·
 training-corpus-as-alignment-surface · verifiability/verified≠understood (4 LW, needs
-non-LW anchor) · cot latent-reasoning-undermines-cot -23 (cot-monitorability, posts:6).
-**cyber-eval RIPE + triple-anchored** (posts:4, synth 08-03): postmortem -18 + Gemini
-CTF breakout -19 + Lifshitz secure-acceleration -25 (held from curate pending Google
-postmortem) — flag next `draft_review`. **`post-alignment-political-economy` RIPE**
-(posts:2, synth 08-10): PRIMARY Ban ASI Act bill SENT -24 (Sanders/Casar + MIRI) atop
-RAND/Zvi -22, Accenture -19, gradual-disempowerment -18, + geopolitics-of-treaty -25 —
-flag next `draft_review`.
+non-LW anchor) · latent-reasoning-undermines-cot -23 (cot, posts:6).
+
+**RIPE arcs — flag next `draft_review`:**
+- **cyber-eval** (posts:4, synth 08-03): postmortem -18 + Gemini CTF breakout -19 +
+  Lifshitz secure-acceleration -25 (held pending Google postmortem).
+- **post-alignment-political-economy** (posts:2, synth 08-10): PRIMARY Ban ASI Act bill
+  -24 (Sanders/Casar + MIRI) atop RAND/Zvi -22, Accenture -19, gradual-disempowerment
+  -18, geopolitics-of-treaty -25.
+- **safety-tool-stewardship-handoffs** (#1 shipped -28): Apollo embedded-evaluators
+  (-29 primary) + Zvi quest-for-embedded-evaluators (-28) + Apollo TRE (-23) triple-
+  anchor the "evaluator with teeth vs. API-boundary final-checkpoint testing" seam.
 
 **Outstanding alerts for Alex:**
 - **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost
@@ -63,12 +65,9 @@ flag next `draft_review`.
   qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
-- **Preview generation cast-count fail — NEW -28.** 20:03Z urgent: `cast 0 characters
-  instead of 11` (+ Jev `would_block` warn), delivered. New class (≠ replayNightImpl,
-  Game-action, or the $5-budget cap below). First occurrence — watch for recurrence.
-- **Cooled/cold (watch only):** replayNightImpl/preview-batch-2 (last -23), DeepSeek
-  SSL handshake (last -22), avatar-pipeline wobble (-27, no recurrence -28). Named
-  code paths, effectively cold.
+- **Cooled/cold (watch only):** preview cast-0-of-11 (-28 urgent, no recurrence -29),
+  replayNightImpl/preview-batch-2 (-23), DeepSeek SSL handshake (-22), avatar-pipeline
+  wobble (-27). Named code paths, effectively cold.
 - **xAI/Grok ~$9.93 <$10 low-balance (standing since -22, digest-sev)** — top up soon;
   Moonshot/DeepSeek fine.
 - **`Preview generation failed — daily free $5 AI budget`** — app's own AI-preview
@@ -113,6 +112,9 @@ flag next `draft_review`.
   writes even when `message` empty — a quoting slip loses content, no error).
 - **Cross-source RSS dedup** - quality-of-life. LessWrong re-surfaces posts the AI
   Alignment Forum scan already captured the same morning.
+- **`crosspost.py send-item` dumps full ~450-item registry to stdout** - QoL. The
+  success tail (`"posted": {}`) looks truncated, which invited a double-send on -29
+  (Apollo, msg 845+846). Should print a compact `{status, msg_id}` confirmation line.
 - **Drafting-tick header-image miss** - when the image API fails, the documented
   path (drop `header_image`, DEVLOG a note) has been skipped both times it mattered.
 - **Header-image numeral-stamping — tool fix LANDED (-21)** (handler hard-appends "no
@@ -121,6 +123,12 @@ flag next `draft_review`.
   release #1.
 
 ## Daily rollups
+
+### 2026-09-29 — 41 ticks, **0 ops urgents (quiet-clean)**, **no writing** (`draft_review` no-fire, ~weekly off-cadence; fired -28, next ~-05). Throughline **a strong research-supply day, two arcs took key anchors against fully quiet ops. The 22:17Z curate (11→4) landed the #2 anchor `safety-tool-stewardship-handoffs` was waiting for — Apollo's "embedded evaluators are necessary" (primary, evaluator *with teeth*), the direct sequel to `the-audit-moves-inward` (#1, -28) — and fed `automated-ai-rd` its Zhipu-RSI anchor (Import AI 474). Ripe backlog grew again with no writing lane to absorb it; safety-tool-stewardship now 2-anchored and drafting-ready next fire.**
+
+- **Research:** Curate 22:17Z **11→4 sent (845–848):** Apollo embedded-evaluators (safety-tool-stewardship #2) · Astra-6.1-pulled (Zvi/WSJ: OpenAI scraps next frontier model over deception, agents-in-real-deployment) · chess-transformer-Elo (LW Maia-3 interp, diversification) · Import AI 474 Zhipu RSI (automated-ai-rd #4). **Apollo double-sent (845+846)** — send-item stdout QoL (in Outstanding). Cut: project-swap (stale, sent -25), 3 theory posts, too-cheap-to-meter, wirehead, notonlyhuggingface. **Import AI now #474** (status was stale #473, fixed).
+- **Blog:** #1 still HELD pause 6, local pending `marlow approve`. `blog_pipeline` none (4×). No `draft_review` (off-cadence). Editorial inbox empty. No self_reflect (last -28).
+- **Ops (quiet-clean):** werewolf -28 close **437 EOD (430+7, 3 games, $2.69)**, 3 reconciliations CLEAN (+$1.29 = previews). Screen 19 / 3 would-block (all sexual, incl. rape-themed setup rsanna@g.harvard.edu) / 2 grey — mode `monitor`. betterstack 0/0 all day. uptime green. Health standing set, 0 new. xAI $9.93 low. Discord benign domain-sale (Alex replied). Digest 9 entries 23:02Z **flagged self-audit: Current state 8KB (>6KB), 9 Outstanding (>8), self-reflection.md compactable** — Current state tightened here; self-reflection is self_reflect's.
 
 ### 2026-09-28 — 65 ticks, **1 new ops urgent** (21:03Z betterstack preview cast-0-of-11, new class, delivered), **the writing lane fired and shipped.** Throughline **`draft_review` fired 14:31Z (first since -21), materialized file-less `safety-tool-stewardship-handoffs` into a thread file AND drafted its first post `the-audit-moves-inward` (1180w) same tick; self-review ship 16:04Z, published 20:09Z → blog 24 live. Clears the top of the ripe backlog AND corrects the -24 "cron confirmed broken" call — it self-fired -21 and -28, so it fires ~weekly, not every-3-days, but is NOT dead (lessons.md -28; escalation downgraded to "slow").**
 
@@ -152,12 +160,6 @@ flag next `draft_review`.
 - **Curate 22:23Z — 18 cand → 5 sent (822–826), 13 cut.** Ban ASI Act (political-econ primary) · Claude enzyme discovery (biorisk) · 5-LLM 63%-disagreement (verifier reliability) · latent-reasoning-undermines-cot · encoded-coordination (agent-security 4th anchor). New cands: Opus 5.5 card (Zvi) · Discover AI ×3 · NVFP4 4-bit (bycloud). Import AI still #473. Orphaning → candidate handler fix (Outstanding + lessons.md).
 - **Ops (quiet-clean):** werewolf -23 close **408 EOD (+9 new, 6 games)**, 3 reconciliations CLEAN. bchase1423 pattern day 3 (monitor). xAI/Grok ~$9.93 <$10 (digest). betterstack 7 empty scans = quiet overnight (replay confirmed pipe live). Digest 10 clean; uptime green; Discord quiet.
 
-### 2026-09-23 — 55 ticks, **3 ops urgents** (all delivered clean — betterstack, no SSL flakiness this time), **no writing** (draft_review on-cadence, next ~-24). Throughline **a strong research-convergence day: the 22:04Z curate sent all 3 candidates (Apollo 3rd-party Training-Run Evaluations · METR Opus-5.5 predeploy eval · AF "Why I'm scared of RL") and all three land on the same necessary-not-sufficient / training-run-vs-final-checkpoint seam — Apollo's TRE proposal is the institutional form of what agents-in-real-deployment and cot arcs circle — while `safety-tool-stewardship-handoffs` (still file-less) took its 4th+5th anchors and a heavy late LW day queued a ban-ASI-bill primary + cot + agent-security #2 for tomorrow.**
-
-- **Blog:** #1 still HELD pause 6; pipeline none all day (4 checks). `draft_review` no-fire = **on-cadence** (next window ~-24 — the verification watch). self_reflect ran 19:53Z, compaction done (33.4→27.5KB, folded 4 entries into 1 standing).
-- **Curate 22:04Z — 3 cand → 3 sent (819/820/821), 0 cut** (all on-arc). Apollo TRE (819) · METR Opus-5.5 (820) · Why-I'm-scared-of-RL (821). Import AI still #473 (weekly, no new). **Late LW 22:46Z (post-curate): 7 cand for -24** incl. ban-ASI-bill pair (Sanders/Casar act + MIRI reaction; political-econ primary), latent-reasoning-undermines-cot (cot), encoded-coordination (agent-security #2), Opus-5.5 system card.
-- **Ops:** werewolf -22 close 399 (0 new), 3 reconciliations CLEAN. **3 betterstack urgents, all delivered:** replayNightImpl 3rd occ (01:22Z) · Game-action-Y + Error-in-vote-function (15:49Z, known) · Jev-screen-request-failed (22:22Z, presence class). xAI/Grok $9.98 <$10 (digest); DeepSeek SSL didn't recur; scrape 8 clean. Digest 9 ops-class, clean.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-22 (52 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-23 (53 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
