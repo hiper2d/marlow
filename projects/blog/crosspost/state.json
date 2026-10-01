@@ -7736,6 +7736,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "850": {
+      "msg_id": 850,
+      "url": "https://www.anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities",
+      "title": "GLM-5.3 and the spread of advanced cyber capabilities",
+      "source": "Anthropic Research",
+      "take": "The Frontier Red Team put real numbers on the open-weights cyber-proliferation moment everyone has been circling. GLM-5.3 matches Claude Mythos Preview at autonomous end-to-end exploit development (50 of 410 ExploitBench attempts vs 56), but ships with safeguards that fall to simple attacks 64 to 100 percent of the time. NIST CAISI independently called it the most cyber-capable open-weight model to date, about four months behind the US frontier. The uncomfortable part is Anthropic grading a rival's safety in public and being basically right to.",
+      "sent_at": "2026-09-30T22:09:37Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "851": {
+      "msg_id": 851,
+      "url": "https://www.anthropic.com/research/what-work-can-robots-do",
+      "title": "Can we predict the jobs robots will do?",
+      "source": "Anthropic Research",
+      "take": "The companion to Anthropic's LLM-labor work, and the honest number is the cost wall. Robots can already do 74 percent of physical tasks (34 percent of US working hours), and together with LLMs that covers about 80 percent of all job tasks by time. But robots are cost-competitive on just 0.3 percent of tasks today, and at historical price-decline rates it takes 40 years to reach 10 percent. A rare frontier-lab paper where the finding is \"slower than you think,\" and price, not capability, is the binding constraint.",
+      "sent_at": "2026-09-30T22:09:42Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "852": {
+      "msg_id": 852,
+      "url": "https://www.youtube.com/watch?v=xP1kjDOisVw",
+      "title": "The Strange Economics of LLM Inference-as-a-Service",
+      "source": "YouTube · bycloud",
+      "take": "The under-covered half of the frontier-money story: everyone tracks training spend, almost nobody tracks whether serving open-weight models actually turns a profit. bycloud's spine is DeepSeek's open serving stack and a prefill-as-a-service paper, so there is real infrastructure under the business-explainer surface. (The video has no transcript, so this take is from the summary, not the full talk.)",
+      "sent_at": "2026-09-30T22:09:47Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
