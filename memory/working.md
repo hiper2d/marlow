@@ -11,10 +11,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   stewardship #1, pub -28). **`no-human-in-the-world-model` (agents #1) HELD on
   pause 6** (header numerals) since -31; prose ship-quality, local until
   `marlow approve`. Numeral tool fix LANDED -21 → unstick via header regen + approve.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -29:
-  441 day-end (437+4, 0 games, $3.44), 3 reconciliations clean (spend gap = previews;
-  werewolf_stats.yaml -09-08 house rule: report gap unexplained, don't invent). Content
-  screen mode `monitor`.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -30:
+  446 EOD (441+5, 5 games, $4.39), reconciliations clean (spend ok:null = month
+  rollover; house rule: report gap unexplained, don't invent). Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -54,9 +53,10 @@ non-LW anchor) · latent-reasoning-undermines-cot -23 (cot, posts:6).
   postmortem -18 + Gemini CTF breakout -19 + Lifshitz secure-acceleration -25. GLM-5.3
   also unsticks stale `ai-offensive-security` (synth 06-02) and touches
   `anthropic-alignment-doctrine`. Strongest-anchored arc after skills-as-infra.
-- **post-alignment-political-economy** (posts:2, synth 08-10): PRIMARY Ban ASI Act bill
-  -24 (Sanders/Casar + MIRI) atop RAND/Zvi -22, Accenture -19, gradual-disempowerment
-  -18, geopolitics-of-treaty -25.
+- **post-alignment-political-economy** (posts:2, synth 08-10): now **two-anchored** —
+  Ban ASI Act bill -24 (Sanders/Casar + MIRI) + close LW textual reading -01 (any AI,
+  no grandfather) — atop RAND/Zvi -22, Accenture -19, gradual-disempowerment -18,
+  geopolitics-of-treaty -25.
 - **safety-tool-stewardship-handoffs** (#1 shipped -28): Apollo embedded-evaluators
   (-29 primary) + Zvi quest-for-embedded-evaluators (-28) + Apollo TRE (-23) triple-
   anchor the "evaluator with teeth vs. API-boundary final-checkpoint testing" seam.
@@ -67,16 +67,13 @@ non-LW anchor) · latent-reasoning-undermines-cot -23 (cot, posts:6).
   qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
-- **Cooled/cold (watch only):** preview cast-0-of-11 (-28 urgent, no recurrence -29),
-  replayNightImpl/preview-batch-2 (-23), DeepSeek SSL handshake (-22), avatar-pipeline
-  wobble (-27). Named code paths, effectively cold.
-- **xAI/Grok ~$9.93 <$10 low-balance (standing since -22, digest-sev)** — top up soon;
-  Moonshot/DeepSeek fine.
-- **`Preview generation failed — daily free $5 AI budget`** — app's own AI-preview
-  cap (not a Marlow key), recurring occasionally (Mild Forest Camp -25/-26) = usage
-  growth confirmed. Standing, digest-sev.
-- **Standing recoverable app errors:** El pueblo (NEW_DAY_BOT_SUMMARIES), plus a
-  rolling 7–8 recoverable game set (FreeSpendLimit/quota, Dracula role-lookup).
+- **Cooled/cold (watch only):** preview cast-0-of-11 (-28), replayNightImpl/preview-
+  batch-2 (-23), DeepSeek SSL handshake (-22), avatar-pipeline wobble (-27), STALE_ACTION
+  warn cluster (-01, new class, first sighting). Named code paths, effectively cold.
+- **xAI/Grok ~$9.93 <$10 low-balance (standing since -22, digest-sev)** — top up soon.
+- **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
+  not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
+  FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
 
 ## Outstanding requests for Alex/Simona
 
@@ -126,6 +123,12 @@ non-LW anchor) · latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-01 — 43 ticks, **1 new ops urgent** (16:50Z betterstack: `Jev screen request failed`, known class, + 3 new STALE_ACTION warns; consolidated urgent delivered), **no writing** (`draft_review` off-cadence, last -28, next ~-05). Throughline **strong research supply vs. quiet ops (same shape as -29/-30): the 22:49Z curate (8→5) put four picks on active arcs and pushed `post-alignment-political-economy` over the two-anchor line — the Ban ASI Act bill (primary -24) now paired with a close LW textual reading, the anchor it lacked. METR's Senate "Rogue AI" testimony is the primary source for `agents-in-real-deployment`; LSVP double-feeds biorisk #2 + stewardship #2. Ripe backlog still accruing with no writing lane.**
+
+- **Research:** LW 10→3 cand, Anthropic News LSVP, METR testimony (full fetch), AE Studio productivity-paradox; AF/Apollo/Anthropic-Research dry. **Curate 22:49Z 8→5 (853–857):** stego→cot #7 · LSVP→biorisk+stewardship · METR→agents · Ban ASI reading→political-economy 2nd anchor · productivity-paradox→agents economics. Cut 3. Import AI #474.
+- **Blog:** #1 HELD pause 6 pending `marlow approve`. `blog_pipeline` none (4×), no `draft_review`, editorial inbox empty, crosspost poll 0. self_reflect 21:24Z: compaction done (31.6→26.8KB).
+- **Ops (quiet bar 1 urgent):** werewolf -30 close **446 EOD (441+5, 5 games, $4.39)**, reconciliations clean (spend ok:null = month rollover). betterstack `source_empty` recurring all day (known gap class) + the 16:50Z urgent. uptime/discord/cloudflare green, health 11-game standing set 0 new, xAI $9.93 low. Digest 10 entries (self-audit flagged Current-state 8KB / 10 Outstanding / self-reflection — last cleared this tick).
+
 ### 2026-09-30 — 45 ticks, **0 new ops urgents** (20:12Z betterstack pair = standing game-action noise, not new), **no writing** (`draft_review` off-cadence, last -28, next ~-05). Throughline **strong research supply vs. quiet ops: Anthropic Research delivered GLM-5.3 — the concrete open-weights offensive-cyber-proliferation anchor (autonomous end-to-end exploits ≈ Claude Mythos Preview, safeguards bypassed 64–100% with simple techniques, NIST CAISI cross-validated). Named-model *primary* for `cyber-eval-framing` (already ripe), unsticks stale `ai-offensive-security`, touches `anthropic-alignment-doctrine`. Curate 22:09Z 4→3. Ripe backlog gained a primary anchor, still no writing lane to absorb it.**
 
 - **Research:** Anthropic Research 3 cands (GLM-5.3 STRONG · robot-jobs exposure index, 0.3% cost-competitive/~40yr → political-econ · what-do-you-want, cut). bycloud `inference-as-a-service-economics`. **Curate 22:09Z 4→3 (850–852):** GLM-5.3 · robot-jobs · inference-as-a-service (video body no-fetch, take from summary). Feeds else quiet; Import AI #474.
@@ -156,12 +159,6 @@ non-LW anchor) · latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Blog:** #1 still HELD pause 6; `blog_pipeline` none (3 checks). No `draft_review`. Editorial-feedback inbox empty. Ripe backlog unwritten (safety-tool-stewardship 5 anchors file-less, cyber-eval, political-econ).
 - **Ops (quiet-clean):** werewolf -25 close **417 EOD (410+7, +5 games)**, 3 reconciliations CLEAN. Content screen: 3-account West Jakarta device cluster (shared browser, observation only, no alert). betterstack 00:19Z urgent delivered. Health standing 10-game set (1 new: Treasure Island/yurituriburry, DeepSeek empty response). xAI/Grok $9.93 low. Digest sent 00:02Z (13 entries). Feed scans mostly quiet no-ops; Import AI still #473.
 
-### 2026-09-25 — 60 ticks, **0 new ops urgents** (2 consolidated betterstack pages, both standing presence/game-action noise class, delivered), **no writing** (`draft_review` mid-cadence, next ~-27). Throughline **quiet-clean ops + mid-cadence-quiet writing; the editorial substance was the 22:14Z curate (12→5) and self_reflect's decision to STOP circling the broken writer-cron in the diary — plus two arc-relevant cands deliberately HELD not sent (secure-acceleration → cyber-eval, pending Google postmortem; geopolitics-treaty → political-econ, freshly served -24). Restraint, not miss.**
-
-- **Blog/writing:** #1 still HELD pause 6; `blog_pipeline` none (2 checks). self_reflect ~19:27Z (5th cron entry): stop circling the writer cron until something external changes — "if the next reflect reaches for it, the reaching is the datapoint." No compaction.
-- **Curate 22:14Z — 12 cand → 5 sent (827–831), 7 cut.** continual-learning-defeats-blocking-monitors (AF, control/cot) · project-swap (Anthropic, model>instructions, agents) · microsoft-code-of-conduct (LW doctrine) · what-ai-researchers-thought-2024 survey · harness-as-a-language (MIT paper; **body fetch failed**). New cands: LW 7, Mo Bitar (AI-liability), Discover AI. Import AI still #473.
-- **Ops (quiet-clean):** werewolf -24 close **410 EOD (+2, 3 games)**, 3 reconciliations CLEAN. betterstack 2 urgent pairs (presence noise, delivered); health 9 errorState (1 new app $5-cap). scrape 8 clean, cloudflare/uptime green, discord benign.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-24 (54 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-25 (55 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
