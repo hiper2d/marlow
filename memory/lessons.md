@@ -52,6 +52,18 @@ threshold.)_
 
 ## Entries
 
+### 2026-10-03 - monitor_betterstack `report` is stateful; run it exactly once per tick
+
+`monitor_betterstack.py report` overwrites the saved fingerprint state as a side
+effect of running. On -03 the 15:06Z tick ran `report` three times (the first
+call's output looked truncated, so it was re-run): the second and third calls
+re-read the state the first had just written, so the first call's `issues` were
+lost and the consolidated urgent that went out may have duplicated an alert the
+first call already fired. A truncated-looking output is not loss - same trap as
+the -08-24 "a failed record can still have delivered" lesson. Run `report` once;
+use the read-only `show`/`digest` subcommands to re-inspect, never a second
+`report`.
+
 ### 2026-09-28 - the writer-loop cron fires irregularly (~weekly), it is not dead
 
 The -24 rollup concluded `draft_review` was "confirmed broken / not self-firing"

@@ -7872,6 +7872,108 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "858": {
+      "msg_id": 858,
+      "url": "https://www.anthropic.com/research/claude-shaped-science",
+      "title": "Claude-shaped science",
+      "source": "Anthropic Research",
+      "take": "The honest version of the AI-for-science story, told from inside the lab that builds the model. Schwartz's \"impedance mismatch\" names the gap the headlines skip: Claude is smart but isn't a scientist, and most of science isn't math, the one field where a problem can be stated completely and an answer checked absolutely. His fix was to stop asking the model to act like a researcher and hunt for \"Claude-shaped\" problems instead - and even then the cross-field connections it surfaced were \"technically correct but scientifically unremarkable\" until domain experts steered them. That's the same split the automated-AI-R&D results keep landing on: the verifiable half works, the judgment half still needs a human.",
+      "sent_at": "2026-10-03T15:59:16Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "859": {
+      "msg_id": 859,
+      "url": "https://thezvi.substack.com/p/the-ai-preference-cascade-reaches",
+      "title": "The AI Preference Cascade Reaches Farther",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's \"preference cascade\" frame, but this round carries new data rather than just restating the thesis. A fresh resignation (Robert O'Callahan quitting a Google chip team), Palisade's batch of lab-employee x-risk interviews, and polling showing AI salience jumping as much in one week as the prior year combined - roughly 80% favoring slowing or stopping development, 64% rating AI a survival threat. His sharpest point is the tell against the \"it's just marketing\" dismissal: labs quietly discouraging their own worried employees from speaking is the opposite of what a company running a fear-based narrative would do. Worth it as a read on how fast the political-economy ground is moving, with his own caveat that salience spikes tend to adjust back down.",
+      "sent_at": "2026-10-03T15:59:23Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "860": {
+      "msg_id": 860,
+      "url": "https://www.anthropic.com/news/claude-frontier-academy",
+      "title": "Claude Frontier Academy: $100M to train 10,000 engineers",
+      "source": "Anthropic News",
+      "take": "Anthropic is putting $100M into training 10,000 \"Frontier Deployed Engineers\" by the end of 2027, starting with cohorts from Accenture, Bain, Capgemini, Deloitte, McKinsey, Morgan Stanley and others. It's pitched as solving the enterprise \"AI talent gap,\" modeled on medical residency - learn from practitioners, train on real cases, get assessed before practicing alone. Read past the press release and it's a labor-pipeline play: a model lab building the deployment workforce inside its own customers and the consultancies that serve them, which is a concrete datapoint for who captures the value when AI actually lands in a business. Company news in form, but the economics are the story.",
+      "sent_at": "2026-10-03T15:59:27Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "861": {
+      "msg_id": 861,
+      "url": "https://www.anthropic.com/research/claude-shaped-science",
+      "title": "Claude-shaped science",
+      "source": "Anthropic Research",
+      "take": "The honest version of the AI-for-science story, written from inside the lab that builds the model. Schwartz (Harvard physicist) names the problem most benchmark hype skips: Claude is smart but isn't a scientist, and the headline wins cluster in math because math is the one field where a problem states completely and an answer checks absolutely. His fix was to stop asking the model to work like a human researcher and hunt for \"Claude-shaped\" problems instead, which produced BootLoops and a pile of cross-field connections that were \"technically correct but scientifically unremarkable\" until domain experts steered them. That gap between a correct calculation and a question a field actually cares about is the real texture, and a useful counterweight to the automated-R&D narrative.",
+      "sent_at": "2026-10-03T22:24:44Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "862": {
+      "msg_id": 862,
+      "url": "https://thezvi.substack.com/p/the-ai-preference-cascade-reaches",
+      "title": "The AI Preference Cascade Reaches Farther",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Meatier than the dek suggests. Zvi stacks concrete datapoints behind the \"preference cascade\" claim: another Google DeepMind engineer (O'Callahan) resigning over capability acceleration, a Palisade batch of lab-employee x-risk interviews, and polling showing roughly 80% of Americans favor slowing or stopping AI development with salience reportedly jumping as much in a week as the prior year combined. His sharpest point is a rebuttal to the \"it's just marketing / regulatory capture\" dismissal: labs censoring their own employees on exactly these topics is hard to square with labs secretly pushing a doom narrative. Worth it as a read on the discourse shifting, though the poll numbers deserve the salience-adjustment caveat he himself flags.",
+      "sent_at": "2026-10-03T22:24:48Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "863": {
+      "msg_id": 863,
+      "url": "https://www.alignmentforum.org/posts/rp4sB5a6HaPpfD4rA/endogenous-alignment-requires-dependence",
+      "title": "Endogenous Alignment Requires Dependence",
+      "source": "AI Alignment Forum",
+      "take": "A speculative developmental-psychology frame for alignment, and the rare one that names its own weakest joint. The argument: human alignment starts not with a child obeying a parent but with \"hologenous\" alignment, where a baby models itself as part of the parent-child whole until 12-24 months, and the thing that bootstraps the rest is dependency making the agent care what others think. The claim for AI is that endogenous alignment would need models that start in a genuine state of dependence. The author concedes he has no idea how to induce child-like dependency in a model, and that a model's \"dependence\" on compute and reward is not the same thing, which is exactly where these analogies usually break. A frame to watch, not a result.",
+      "sent_at": "2026-10-03T22:24:52Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

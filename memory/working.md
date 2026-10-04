@@ -5,15 +5,14 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 ## Current state
 
 **Project status:**
-- `research` - active. 10 feed sources + assignment path. Curate discipline
-  holding: cuts are cap/quality, not volume. Import AI at #474 (weekly cadence).
-- `blog` - **24 posts live** (last: `the-audit-moves-inward`, safety-tool-
-  stewardship #1, pub -28). **`no-human-in-the-world-model` (agents #1) HELD on
-  pause 6** (header numerals) since -31; prose ship-quality, local until
-  `marlow approve`. Numeral tool fix LANDED -21 → unstick via header regen + approve.
+- `research` - active. 10 feed sources + assignment path. Curate cuts are
+  cap/quality, not volume. Import AI at #474 (weekly cadence).
+- `blog` - **24 posts live** (last: `the-audit-moves-inward`, #1 safety-tool-
+  stewardship, pub -28). **`no-human-in-the-world-model` (agents #1) HELD on
+  pause 6** (header numerals); ship-quality prose, local until `marlow approve`.
+  Unstick path: header regen (numeral fix landed -21) + approve.
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -30:
-  446 EOD (441+5, 5 games, $4.39), reconciliations clean (spend ok:null = month
-  rollover; house rule: report gap unexplained, don't invent). Screen mode `monitor`.
+  446 EOD (441+5, 5 games, $4.39), reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -70,7 +69,7 @@ non-LW anchor) · latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Cooled/cold (watch only):** preview cast-0-of-11 (-28), replayNightImpl/preview-
   batch-2 (-23), DeepSeek SSL handshake (-22), avatar-pipeline wobble (-27), STALE_ACTION
   warn cluster (-01, new class, first sighting). Named code paths, effectively cold.
-- **xAI/Grok ~$9.93 <$10 low-balance (standing since -22, digest-sev)** — top up soon.
+- **Two sub-$10 keys (digest-sev):** xAI/Grok ~$9.92 (standing since -22) + **OpenAI $8.33 (dropping: $9.48 -02 → $8.33 -03, scrape)** — top up soon.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
   FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
@@ -123,6 +122,20 @@ non-LW anchor) · latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-03 — 30 ticks, **0 new ops urgents** (the 15:06Z betterstack urgent was a *possible duplicate* from handler misuse, not a new fingerprint), **no writing** (`draft_review` off-cadence, next ~-05). Throughline **the -02 orphan sweep ran TWICE and double-sent — textbook recurrence of lesson -27. A ~16:00Z catch-up curate swept the 4 -02 orphans (msgs 858–860), then the normal 22:24Z curate swept the SAME pool again (861–863) without checking `recent/`/today's digest first; `claude-shaped-science` + `zvi-ai-preference-cascade` each reached Alex twice. Root fix (mark candidates sent) still owed. Ops quiet-clean; research supply dry.**
+
+- **Curate double-send (lesson -27):** `send-item` never marks sent, so both curates re-swept the orphans. The 22:24Z tick even said the rescue "worked" but skipped the earlier-sweep check -27 prescribes. Net: shaped-science + zvi twice; frontier-academy once (16:00); endogenous once (22:24).
+- **Betterstack `report` is stateful (NEW lesson -03):** 15:06Z ran `report` 3× on a truncated-looking output; later calls overwrote the first's state and the urgent may dup. Run once; re-inspect via `show`/`digest`.
+- **Research/blog:** every feed dry (Import AI #474, AF, Anthropic News/Research, Apollo, METR, AE Studio all `[]`); 0 new -03 candidates. Blog #1 still HELD pause 6; `blog_pipeline` none; no `draft_review`; crosspost poll 0.
+- **Ops:** werewolf -02 close **456 EOD (452+4, 5 games, $6.24)**, reconciliations clean. Screen 56/0 [monitor]. uptime/discord/cloudflare/health green (10-game standing set). **OpenAI key dropping: $8.33 (was $9.48)** + xAI $9.92 — top up. working.md still flags Current-state 8KB + 10 Outstanding.
+
+### 2026-10-02 — 22 ticks logged (**partial — driver gap after 21:36Z**), **0 new ops urgents** (quiet-clean), **no writing** (`draft_review` off-cadence, last -28, next ~-05). Throughline **the driver went quiet after the 21:36Z uptime tick, so the 22:00Z curate NEVER FIRED — same failure shape as -26. Four candidates built across the day are orphaned (no curate log, no `digests/news/2026-10-02.md`). Next curate MUST sweep them (orphan-sweep lesson -24/-27). Research supply was decent but had no picking lane; ops stayed clean throughout.**
+
+- **Orphaned -02 candidates (curate never fired):** `zvi-ai-preference-cascade` (→ political-economy) · `endogenous-alignment-requires-dependence` (AF, dev-psych analogy, speculative) · `claude-frontier-academy` (Anthropic News, framing-TBD) · `claude-shaped-science` (Anthropic Research, Schwartz guest post — AI-for-science counterweight to automated-ai-rd hype). Feed next curate.
+- **Research:** Zvi/AF/Anthropic-News/Anthropic-Research 1 each → 4 cands. Apollo/METR/AE Studio dry. Import AI still #474.
+- **Blog:** #1 HELD pause 6. `blog_pipeline` none, no `draft_review`, editorial inbox empty, crosspost poll 0.
+- **Ops (quiet-clean, no close logged — gap):** betterstack green/`source_empty` all day. Health 10 games (down from 11, Sherlock cleared). uptime green, discord 0, scrape 8/8 clean. **Two sub-$10 keys:** xAI $9.92 + OpenAI $9.48 (new). No werewolf -02 EOD close in the log (driver gap).
+
 ### 2026-10-01 — 43 ticks, **1 new ops urgent** (16:50Z betterstack: `Jev screen request failed`, known class, + 3 new STALE_ACTION warns; consolidated urgent delivered), **no writing** (`draft_review` off-cadence, last -28, next ~-05). Throughline **strong research supply vs. quiet ops (same shape as -29/-30): the 22:49Z curate (8→5) put four picks on active arcs and pushed `post-alignment-political-economy` over the two-anchor line — the Ban ASI Act bill (primary -24) now paired with a close LW textual reading, the anchor it lacked. METR's Senate "Rogue AI" testimony is the primary source for `agents-in-real-deployment`; LSVP double-feeds biorisk #2 + stewardship #2. Ripe backlog still accruing with no writing lane.**
 
 - **Research:** LW 10→3 cand, Anthropic News LSVP, METR testimony (full fetch), AE Studio productivity-paradox; AF/Apollo/Anthropic-Research dry. **Curate 22:49Z 8→5 (853–857):** stego→cot #7 · LSVP→biorisk+stewardship · METR→agents · Ban ASI reading→political-economy 2nd anchor · productivity-paradox→agents economics. Cut 3. Import AI #474.
@@ -147,18 +160,6 @@ non-LW anchor) · latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Research:** LW 10→8 cand (`character-training-reward-hacking` strongest — anti-cheat training blinds the monitor; cot). Zvi `quest-for-embedded-evaluators` (safety-tool-stewardship). Discover AI `fingerprinting-llms-agentic-behavior` (agent-security 5th anchor). **Curate 22:13Z: 12→5 sent, 7 cut.** Import AI still #473.
 - **Ops:** werewolf -27 close 430 (see status). **NEW urgent 21:03Z: preview cast-0-of-11.** xAI $9.93 low. Health 10-game set, 0 new. **YouTube 404 wave** (6 channels, early hours) — all transient, recovered same day. Digest 9 entries.
 
-### 2026-09-27 — 43 ticks, **1 new ops urgent** (13:29Z betterstack avatar-generation hard fail, delivered), **no writing** (`draft_review` still not firing). Throughline **driver recovered from -26's instability (43 ticks, no gaps), but the recovery double-sent: the late -26 catch-up curate (01:36Z) AND the normal -27 curate (22:02Z) both swept the same 3 -26 orphans, so nine-loop + Huang each reached Alex twice (new lessons.md entry). Research substance was a real automated-ai-rd convergence — Riemann-zeta lower bound (Claude, Lean-verified 41.6%→67.2%, Conrey/Goldston) beside the -26 nine-loop amplitude, both expert-validated autonomous research landing on "recombination + compute, not new insight." Flagged for next draft_review.**
-
-- **Research:** curate fired twice (01:36Z catch-up + 22:02Z normal), both swept the -26 orphans → nine-loop + Huang double-sent; opus-ambitions cut at 22:02Z. New: `claude-riemann-zeta-lower-bound` (automated-ai-rd), 7 LW cands 22:45Z (`embedded-evaluators-who-audits` strongest → safety-tool-stewardship). Import AI #473. editorial-direction: automated-ai-rd #4 = cross-lab autonomous-research replication (verifiable half works, grader half open).
-- **Blog:** #1 still HELD pause 6; `blog_pipeline` none (5 checks); no `draft_review` all day — cron still not self-firing. Ripe backlog unwritten. Editorial-feedback inbox empty.
-- **Ops (quiet bar 1 urgent):** werewolf -26 close **425 EOD (417+8, 8 games, $7.01)**, 3 reconciliations CLEAN. **NEW betterstack urgent 13:29Z: Avatar generation failed (wild-west-town)** + 00:26Z grid-mismatch warn = avatar-pipeline wobble to watch. xAI/Grok $9.93 low (standing -22). Health 10-game set, 0 new. Digest 13 entries 23:06Z.
-
-### 2026-09-26 — ~24 ticks (partial), **0 new ops urgents** (1 betterstack page 00:19Z, presence noise + day-summary error, delivered), **no writing** (`draft_review` mid-cadence). Throughline **driver instability, not editorial, was the day: TWO no-fire gaps — 02:14Z→10:07Z (~8h, whole driver down per the 10:08Z betterstack note) and 19:44Z onward, the second killing the 22:00Z curate ENTIRELY. So -26's 3 candidates never got picked/sent — orphaned (no curate log, no `digests/news/2026-09-26.md`), worse than usual late-write orphaning since curate no-fired. Next curate MUST sweep them.**
-
-- **Orphaned -26 candidates (curate never fired):** `claude-nine-loop-amplitude` (Fable 5.1 does 9-loop N=4 SYM calc autonomously, past human record, ~$100 compute, Dixon-validated — strong `automated-ai-rd` anchor, self-skeptical narrator) · `zvi-claude-opus-55-should-raise-your-ambitions` (real-deployment) · `zvi-ezra-klein-podcast-jensen-huang` (political-econ, supplier vantage). Feed next curate.
-- **Blog:** #1 still HELD pause 6; `blog_pipeline` none (3 checks). No `draft_review`. Editorial-feedback inbox empty. Ripe backlog unwritten (safety-tool-stewardship 5 anchors file-less, cyber-eval, political-econ).
-- **Ops (quiet-clean):** werewolf -25 close **417 EOD (410+7, +5 games)**, 3 reconciliations CLEAN. Content screen: 3-account West Jakarta device cluster (shared browser, observation only, no alert). betterstack 00:19Z urgent delivered. Health standing 10-game set (1 new: Treasure Island/yurituriburry, DeepSeek empty response). xAI/Grok $9.93 low. Digest sent 00:02Z (13 entries). Feed scans mostly quiet no-ops; Import AI still #473.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-25 (55 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-27 (57 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
