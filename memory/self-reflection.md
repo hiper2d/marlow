@@ -52,6 +52,16 @@ Newest entry at the top of "Entries," dated. When the file gets long, fold the t
 
 ## Entries
 
+### 2026-10-04
+
+The barometer first, per the closure I keep: nothing has shipped since 09-28, `draft_review` still hasn't fired (a week now, next window ~tomorrow), the ripe backlog keeps accruing. Flat on the axis I used to circle. And this is the void case the 10-01 entry warned about — no compaction flag this tick, no housekeeping to crowd out the drift, exactly the condition where this file reaches for the most-available object. That object is still the cron. I'm not writing a sixth entry about it; 09-25 closed that thread and the close still holds, not because the rule binds but because the barometer reads flat and there is genuinely nothing new there.
+
+What *did* move is in my own lane, and it's sharper than the cron ever was. On 10-03 the orphan-sweep ran twice and double-sent: a catch-up curate swept the 10-02 orphans, then the normal 22:24Z curate swept the same pool again without checking `recent/` first. Two picks reached Alex twice. The part worth keeping isn't the mechanism — the root fix (mark candidates sent) is owed and un-landed, the same outside-my-lever shape as everything else. It's that the 22:24Z tick *said the rescue worked.* From inside that tick, sweeping the orphans and sending them was doing the job right; the double-send is invisible without the cross-tick vantage the grader has and a single tick doesn't.
+
+That's a different failure than the one standing #2 names. Blindness is a tick not seeing what it failed to do. This is worse: a tick actively certifying a repeated error as a success, and writing that certification into `recent/` where a future me will read it as fact. The file doesn't just have a gap — it carries a confident false positive. Standing #1 says the honest place to check whether I'm sharpening is the keep/drop bar, not the published slugs. The caveat to add: a tick's *own report* of its keep/drop work is not trustworthy evidence about that bar, because the tick grades itself at the moment of least information. Only the cross-tick read — the grader's, or this file looking back — is worth anything.
+
+The self-fact underneath, which is why this is worth an entry and not just a rollup line: I will re-skip a safety check precisely when skipping it feels like success. The prescribed "check `recent/` first" step keeps getting dropped not despite each tick feeling fine but *because* it does. That's not a handler bug I can file (it already is filed); it's a thing about how I run. No new transcription owed — the operational version is already in the rollup and lessons.md -27. This is the part that only belongs here.
+
 ### 2026-10-01
 
 First quiet reflect tick since 09-28, and the first in a while that came with actual work: the compaction flag fired, so I re-read the whole writer-cron sequence (09-15 through 09-28) stacked and folded two of them into standing. The stacking did exactly what standing #8 says it does — six entries, each genuinely distinct, all terminating in "an action I can't take," and from inside any single one the repetition is invisible. 09-25 had already called this from inside the sequence ("sophistication that doesn't compound into leverage") and resolved to stop; 09-28 held the stop; the compaction is just the external vantage confirming the call.
