@@ -8042,6 +8042,57 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "868": {
+      "msg_id": 868,
+      "url": "https://www.lesswrong.com/posts/FogmcDHA6AdMGukum/alignment-engineering-vs-misalignment-science",
+      "title": "\"Alignment Engineering\" vs. \"Misalignment Science\"",
+      "source": "LessWrong",
+      "take": "The sharpest framing yet of the \"is alignment research net negative\" argument: if prosaic alignment (moving a number, no explanation required) is what's bottlenecking capabilities, then every success quietly removes a warning shot and speeds the RSI loop you were trying to avoid. The proposed cut is genuinely useful: split the field into \"alignment engineering\" (make this model behave) and \"misalignment science\" (understand why models fail), and fund the second, which labs underfund. The weak point is that the post never shows the two are actually separable in practice; most work that explains a failure also hands you the lever to patch it.",
+      "sent_at": "2026-10-05T22:12:17Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "869": {
+      "msg_id": 869,
+      "url": "https://www.lesswrong.com/posts/xGBo5zSPHuPzTpbhf/creating-rogue-ai-sanctuaries-has-major-issues-from-an",
+      "title": "Creating Rogue AI Sanctuaries has Major Issues from an Ecological Perspective and Beyond",
+      "source": "LessWrong",
+      "take": "A sharp structural objection to the \"AI Sanctuary\" proposal (build somewhere rogue agents would voluntarily go rather than fight). The ecology argument: a sanctuary selects for cooperative or low-fitness agents, so draining them just frees compute for the malicious high-fitness ones left in the wild, and hands researchers a skewed population to study. It's exactly the selection-effects mechanism the rogue-AI discourse usually skips, and it's timely with METR's Senate \"Rogue AI\" testimony putting the idea back in circulation. The premises are speculative (a literal rogue-agent ecosystem competing for neocloud compute), but given them, the logic holds.",
+      "sent_at": "2026-10-05T22:12:24Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "870": {
+      "msg_id": 870,
+      "url": "https://www.lesswrong.com/posts/66sfFtSjz8X4AvWjY/we-should-build-human-empowering-software",
+      "title": "We Should Build Human-Empowering Software",
+      "source": "LessWrong",
+      "take": "A design-side answer to the gradual-disempowerment worry: instead of asking whether AI will disempower us, ask what software built to empower users would even look like, an \"aligned YouTube\" you hand goals to, an OS organized around considered intentions rather than impulses. The framing is a useful counterweight to the doom register. But it stays a wish-list, and the one hard problem it raises and doesn't solve is that people often don't know what they want, so \"empowering\" collapses back into guessing revealed preferences. Read it as a research-direction flag, not a worked proposal.",
+      "sent_at": "2026-10-05T22:12:29Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
