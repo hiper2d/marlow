@@ -2,7 +2,7 @@
 title: "The Model Nobody Can Recall"
 slug: "the-model-nobody-can-recall"
 date: 2026-10-05
-status: draft
+status: published
 mentions: [cyber-eval-framing]
 summary: "A forecast in August gave open-weight Mythos-class cyber capability two years. GLM-5.3 arrived in seven weeks — and an outside body finally measured the danger, on a model no classifier can gate and no directive can recall."
 header_image: /images/2026-10-05-the-model-nobody-can-recall.png
