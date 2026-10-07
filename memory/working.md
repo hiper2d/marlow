@@ -11,8 +11,8 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   GLM-5.3/CAISI, published -06 05:02Z). **`no-human-in-the-world-model` (agents #1)
   HELD on pause 6** (header numerals); ship-quality prose, local until `marlow approve`.
   Unstick path: header regen (numeral fix landed -21) + approve.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -05:
-  471 standing (5 new, 5 games, $5.77 cost, $10.72 spend/9 users), reconciliations clean. Screen mode `monitor`.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -06:
+  476 standing EOD, $4.48 charged, reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -47,6 +47,11 @@ training-corpus-as-alignment-surface · verified≠understood (4 LW, needs non-L
 latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 **RIPE arcs — flag next `draft_review`:**
+- **cyber-eval-framing** (posts:5, #25 shipped -06): #6 now double-anchored —
+  Anthropic CVP "Expanding the Cyber Verification Program" -06 (access-tier classifier
+  block rates, the governance counterpart to the arc's capability-measurement focus) +
+  METR "AI systems could cover up misbehavior" -06 (transcript-viewer injection PoC).
+  Watch it doesn't fire too soon after #25.
 - **post-alignment-political-economy** (posts:2): two-anchored — Ban ASI Act bill -24
   (Sanders/Casar + MIRI) + close LW reading -01, atop RAND/Zvi -22, Accenture -19,
   gradual-disempowerment -18, geopolitics-of-treaty -25.
@@ -57,9 +62,11 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   open-ended-research grader this arc has lacked since June.
 
 **Outstanding alerts for Alex:**
-- **Session re-auths owed (2 standing): X, Mistral.** X half of crosspost
-  fails `reauth` (Substack half posts clean); Mistral recurring since -01.
-  qwen free grant gone (billing since -10). (minimax RESOLVED -19, confirmed -20.)
+- **Session re-auths owed: X, Mistral, + Anthropic console (NEW -07).** X half of
+  crosspost fails `reauth` (Substack half posts clean); Mistral recurring since -01;
+  Anthropic console hit a login wall -07 (scrape_stats, first failure, runbook sent —
+  kill headless, relaunch headful :9223, log in). qwen free grant gone (billing since
+  -10). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
 - **Cooled/cold (watch only, named code paths):** preview cast-0-of-11,
@@ -119,6 +126,12 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-07 — 31 ticks, **1 new ops urgent** (10:03Z Anthropic console reauth, first failure, runbook sent) + 1 known-class betterstack urgent, **no writing** (`draft_review` off-cadence). Throughline **strong safety research day, clean 4-pick curate themed "monitoring/observability as adversarial surface" (3 of 4) — but writing had no lane again. cyber-eval #6 now DOUBLE-ANCHORED atop just-shipped #25: Anthropic CVP access-tier governance + METR transcript-viewer exploit PoC. METR curate double-send recurred (878+879) — 3rd of the send-item-on-every-call class (lessons -08-25/-27); misread the registry-dump stdout again, removed 879 from state.json.**
+
+- **Research:** METR "AI systems could cover up misbehavior" (MathJax/SVG injection PoC → cot-monitorability + stewardship) · Anthropic CVP (→ cyber-eval #6) · LW 7→4 (monitoring-practices baseline, paper-highlights w/ RL-reward-hack verified≠understood) · NVIDIA SIGMA (arXiv:2610.02665, park). **Curate 22:17Z 8→4 (878/880/881/882), cut 4.** Some YouTube feeds transient 500/404 — known.
+- **Blog:** pipeline `none` (3×). #1 still HELD pause 6. No `draft_review`/`self_reflect`, editorial inbox empty, crosspost poll 0.
+- **Ops:** betterstack 13:29Z 2 err (both known) + self-corrected a Write-clobber of the 04:05Z report section (→ lessons.md -07). scrape 10:03Z Anthropic reauth (urgent) + Mistral parse_failed 2nd + Sakana $8.58 low. **xAI $7.92/$7.68, Sakana $8.58 low;** rest healthy. cloudflare/uptime/discord/health green (11 standing). Self-audit: Current-state 8KB, 10 Outstanding, voice-journal compaction pending.
+
 ### 2026-10-06 — 51 ticks, **0 new ops urgents** (quiet-clean), **writing landed.** Throughline **the inverse of the recent "supply but no lane" shape — both halves fired. #5 `the-model-nobody-can-recall` (cyber-eval, GLM-5.3/CAISI) self-reviewed `ship` 00:20Z and PUBLISHED 05:02Z (dc5783d) → post #25 live, thread 4→5 done. AND a strong research day fed a clean 5-pick curate (872–876, all distinct, double-send lesson held). Standout pick: TasteVal (872), a research-*taste* benchmark — the open-ended-research grader `automated-ai-rd` #4 has wanted since June. Flag next draft_review.**
 
 - **Blog:** #25 published; pipeline otherwise `none` (6×). #1 `no-human-in-the-world-model` still HELD pause 6, local pending `marlow approve`. editorial inbox empty (2×), crosspost poll 0 (2×). No self_reflect, no draft_review fire.
@@ -151,12 +164,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Blog:** #1 HELD pause 6. `blog_pipeline` none, no `draft_review`, editorial inbox empty, crosspost poll 0.
 - **Ops (quiet-clean, no close logged — gap):** betterstack green/`source_empty` all day. Health 10 games (down from 11, Sherlock cleared). uptime green, discord 0, scrape 8/8 clean. **Two sub-$10 keys:** xAI $9.92 + OpenAI $9.48 (new). No werewolf -02 EOD close in the log (driver gap).
 
-### 2026-10-01 — 43 ticks, **1 new ops urgent** (16:50Z betterstack: `Jev screen request failed`, known class, + 3 new STALE_ACTION warns; consolidated urgent delivered), **no writing** (`draft_review` off-cadence, last -28, next ~-05). Throughline **strong research supply vs. quiet ops (same shape as -29/-30): the 22:49Z curate (8→5) put four picks on active arcs and pushed `post-alignment-political-economy` over the two-anchor line — the Ban ASI Act bill (primary -24) now paired with a close LW textual reading, the anchor it lacked. METR's Senate "Rogue AI" testimony is the primary source for `agents-in-real-deployment`; LSVP double-feeds biorisk #2 + stewardship #2. Ripe backlog still accruing with no writing lane.**
-
-- **Research:** LW 10→3 cand, Anthropic News LSVP, METR testimony (full fetch), AE Studio productivity-paradox; AF/Apollo/Anthropic-Research dry. **Curate 22:49Z 8→5 (853–857):** stego→cot #7 · LSVP→biorisk+stewardship · METR→agents · Ban ASI reading→political-economy 2nd anchor · productivity-paradox→agents economics. Cut 3. Import AI #474.
-- **Blog:** #1 HELD pause 6 pending `marlow approve`. `blog_pipeline` none (4×), no `draft_review`, editorial inbox empty, crosspost poll 0. self_reflect 21:24Z: compaction done (31.6→26.8KB).
-- **Ops (quiet bar 1 urgent):** werewolf -30 close **446 EOD (441+5, 5 games, $4.39)**, reconciliations clean (spend ok:null = month rollover). betterstack `source_empty` recurring all day (known gap class) + the 16:50Z urgent. uptime/discord/cloudflare green, health 11-game standing set 0 new, xAI $9.93 low. Digest 10 entries (self-audit flagged Current-state 8KB / 10 Outstanding / self-reflection — last cleared this tick).
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-09-30 (60 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-01 (61 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

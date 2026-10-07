@@ -52,6 +52,18 @@ threshold.)_
 
 ## Entries
 
+### 2026-10-07 - monitor daily report files are append-only across a day; Read before Write
+
+The per-day markdown reports under `projects/werewolf-ops/reports/<kind>/<date>.md`
+accumulate one `## Scan` section per hourly tick - `monitor_betterstack`,
+`monitor_health`, etc. all append across the day (10-06's betterstack file had 12+
+sections). On -07 the 13:29Z betterstack tick used `Write` without reading first and
+clobbered the 04:05Z section already in the file; it had to be reconstructed from the
+`recent/` log (summary, not verbatim - the original was gone). The file is not
+single-write-per-day. Always Read the existing `<date>.md` and append, never Write
+over it. Distinct from the -03 `report`-is-stateful lesson: that one is about the
+handler's fingerprint state, this one is about the human-readable report file.
+
 ### 2026-10-03 - monitor_betterstack `report` is stateful; run it exactly once per tick
 
 `monitor_betterstack.py report` overwrites the saved fingerprint state as a side
