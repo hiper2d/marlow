@@ -11,8 +11,8 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   GLM-5.3/CAISI, published -06 05:02Z). **`no-human-in-the-world-model` (agents #1)
   HELD on pause 6** (header numerals); ship-quality prose, local until `marlow approve`.
   Unstick path: header regen (numeral fix landed -21) + approve.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -06:
-  476 standing EOD, $4.48 charged, reconciliations clean. Screen mode `monitor`.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -07:
+  480 standing EOD, reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -47,33 +47,34 @@ training-corpus-as-alignment-surface · verified≠understood (4 LW, needs non-L
 latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 **RIPE arcs — flag next `draft_review`:**
-- **cyber-eval-framing** (posts:5, #25 shipped -06): #6 now double-anchored —
-  Anthropic CVP "Expanding the Cyber Verification Program" -06 (access-tier classifier
-  block rates, the governance counterpart to the arc's capability-measurement focus) +
-  METR "AI systems could cover up misbehavior" -06 (transcript-viewer injection PoC).
-  Watch it doesn't fire too soon after #25.
-- **post-alignment-political-economy** (posts:2): two-anchored — Ban ASI Act bill -24
-  (Sanders/Casar + MIRI) + close LW reading -01, atop RAND/Zvi -22, Accenture -19,
-  gradual-disempowerment -18, geopolitics-of-treaty -25.
+- **cyber-eval-framing** (posts:5, #25 shipped -06): #6 double-anchored — Anthropic CVP
+  (access-tier classifier block rates) + METR transcript-viewer injection PoC, both -06.
+  Governance + exploit counterparts to the arc's capability-measurement focus. Don't fire too soon after #25.
+- **post-alignment-political-economy** (posts:2): two-anchored — Ban ASI Act bill -24 +
+  close LW reading -01, atop RAND/Zvi -22, Accenture -19, gradual-disempowerment -18.
 - **safety-tool-stewardship-handoffs** (#1 shipped -28): drafting-ready #2 — Apollo
-  embedded-evals-for-scheming -04 (msg 864) + "necessary" -29 + Zvi quest -28 + Apollo
-  TRE -23: "evaluator with teeth vs. API-boundary final-checkpoint" seam.
-- **automated-ai-rd** (posts:3): TasteVal research-taste benchmark -06 (msg 872) — the
-  open-ended-research grader this arc has lacked since June.
+  embedded-evals -04 (msg 864) + "necessary" -29 + Apollo TRE -23: "evaluator with teeth
+  vs. API-boundary final-checkpoint" seam.
+- **automated-ai-rd** (posts:3): TasteVal research-taste benchmark -06 (msg 872) + the
+  -08 enzyme taste-training loop — the open-ended-research grader lacking since June.
 
 **Outstanding alerts for Alex:**
-- **Session re-auths owed: X, Mistral, + Anthropic console (NEW -07).** X half of
-  crosspost fails `reauth` (Substack half posts clean); Mistral recurring since -01;
-  Anthropic console hit a login wall -07 (scrape_stats, first failure, runbook sent —
-  kill headless, relaunch headful :9223, log in). qwen free grant gone (billing since
-  -10). (minimax RESOLVED -19, confirmed -20.)
+- **Session re-auths owed: X, Mistral, Anthropic console, + Qwen console (NEW -08).**
+  X half of crosspost fails `reauth` (Substack half posts clean); Mistral recurring
+  since -01 — **escalated -08: 3rd consecutive parse_failed, handler itself flags it
+  urgent ("check is broken, not flaky")**, needs an extractor look not a re-login.
+  Anthropic console login wall from -07 still open, 2nd consecutive failure -08 —
+  re-auth not yet done. Qwen console ALSO hit the login wall -08, first failure (was
+  previously only flagged for free-grant exhaustion). Runbook sent for both reauths
+  (kill headless, relaunch headful :9223, log in). (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
-- **Cooled/cold (watch only, named code paths):** preview cast-0-of-11,
-  replayNightImpl/preview-batch-2, DeepSeek SSL handshake, avatar-pipeline wobble,
-  STALE_ACTION warn cluster (-01).
-- **xAI/Grok $7.92 (digest-sev, <$10 since -22, -$2/day burn -06) — top up.** OpenAI
-  off Marlow's task since 08-24 (self-funded); DeepSeek $23.41, Moonshot $15.13 healthy.
+- **Cooled/cold (watch only, named code paths):** `Error in vote function:`/`Game action
+  failed: Y` (NEW -08 17:13Z, first error-tier since baselining, vote-handler throwing),
+  preview cast-0-of-11, replayNightImpl/preview-batch-2, DeepSeek SSL handshake,
+  avatar-pipeline wobble, STALE_ACTION warn cluster (-01).
+- **xAI/Grok $7.68 + Sakana Fugu $8.43 (both digest-sev, <$10) — top up.** OpenAI off
+  Marlow's task since 08-24 (self-funded); DeepSeek $23.21, Moonshot $15.09 healthy.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
   FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
@@ -126,6 +127,12 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-08 — 43 ticks, **1 new ops urgent** (17:13Z betterstack: first error-tier fingerprints since baselining — "Error in vote function:" + "Game action failed: Y", a vote-handler throwing) + scrape reauth escalation, **no writing** (`draft_review` off-cadence). Throughline **another "supply, no lane" day, and the curate cross-day-dedup root bit a THIRD way: enzyme pick (883) was a dup of msg 823 (-09-24) — a feed re-surfacing a two-week-old URL, picked fresh because the candidate note looked new. Not an orphan sweep (-27) nor `--date today` invisibility (-24); third face of the same missing sent-registry dedup. Disregard heads-up sent; all three faces folded into lessons.md Standing.**
+
+- **Research:** Anthropic enzyme-system post (automated-ai-rd + claude-shaped-science — standout is the taste-training loop, not the enzyme). LW 10→4 (NLAs-miss-internalized white-box negative result strongest; DeepSeek kernel-engineer RSI essay; AI #189 OpenAI 90/500 math teaser). Zvi "Curve Bends You"; Discover AI empowerment/play preprints (parked). Import AI dry (#475). **Curate 22:17Z 7→4 (883–886), net 3 fresh; 883 the dup. Cut 3.**
+- **Blog:** pipeline `none` (3×). #1 still HELD pause 6. No `draft_review`. self_reflect 02:34Z. crosspost poll 0 (×5), editorial inbox empty.
+- **Ops:** scrape 14:00Z — **Mistral parse_failed 3rd consecutive (handler self-escalated: extractor broken), Qwen login wall (reauth NEW), Anthropic login wall 2nd consecutive (reauth from -07 not done)**; consolidated urgent + runbook. werewolf -07 close 480 EOD. **xAI $7.68, Sakana $8.43 low;** rest healthy. cloudflare/uptime/discord/health green. Self-audit: Current-state 8KB, 10 Outstanding, voice-journal 9KB compactable.
+
 ### 2026-10-07 — 31 ticks, **1 new ops urgent** (10:03Z Anthropic console reauth, first failure, runbook sent) + 1 known-class betterstack urgent, **no writing** (`draft_review` off-cadence). Throughline **strong safety research day, clean 4-pick curate themed "monitoring/observability as adversarial surface" (3 of 4) — but writing had no lane again. cyber-eval #6 now DOUBLE-ANCHORED atop just-shipped #25: Anthropic CVP access-tier governance + METR transcript-viewer exploit PoC. METR curate double-send recurred (878+879) — 3rd of the send-item-on-every-call class (lessons -08-25/-27); misread the registry-dump stdout again, removed 879 from state.json.**
 
 - **Research:** METR "AI systems could cover up misbehavior" (MathJax/SVG injection PoC → cot-monitorability + stewardship) · Anthropic CVP (→ cyber-eval #6) · LW 7→4 (monitoring-practices baseline, paper-highlights w/ RL-reward-hack verified≠understood) · NVIDIA SIGMA (arXiv:2610.02665, park). **Curate 22:17Z 8→4 (878/880/881/882), cut 4.** Some YouTube feeds transient 500/404 — known.
@@ -157,13 +164,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Research/blog:** every feed dry (Import AI #474, AF, Anthropic News/Research, Apollo, METR, AE Studio all `[]`); 0 new -03 candidates. Blog #1 still HELD pause 6; `blog_pipeline` none; no `draft_review`; crosspost poll 0.
 - **Ops:** werewolf -02 close **456 EOD (452+4, 5 games, $6.24)**, reconciliations clean. Screen 56/0 [monitor]. uptime/discord/cloudflare/health green (10-game standing set). **OpenAI key dropping: $8.33 (was $9.48)** + xAI $9.92 — top up. working.md still flags Current-state 8KB + 10 Outstanding.
 
-### 2026-10-02 — 22 ticks logged (**partial — driver gap after 21:36Z**), **0 new ops urgents** (quiet-clean), **no writing** (`draft_review` off-cadence, last -28, next ~-05). Throughline **the driver went quiet after the 21:36Z uptime tick, so the 22:00Z curate NEVER FIRED — same failure shape as -26. Four candidates built across the day are orphaned (no curate log, no `digests/news/2026-10-02.md`). Next curate MUST sweep them (orphan-sweep lesson -24/-27). Research supply was decent but had no picking lane; ops stayed clean throughout.**
-
-- **Orphaned -02 candidates (curate never fired):** `zvi-ai-preference-cascade` (→ political-economy) · `endogenous-alignment-requires-dependence` (AF, dev-psych analogy, speculative) · `claude-frontier-academy` (Anthropic News, framing-TBD) · `claude-shaped-science` (Anthropic Research, Schwartz guest post — AI-for-science counterweight to automated-ai-rd hype). Feed next curate.
-- **Research:** Zvi/AF/Anthropic-News/Anthropic-Research 1 each → 4 cands. Apollo/METR/AE Studio dry. Import AI still #474.
-- **Blog:** #1 HELD pause 6. `blog_pipeline` none, no `draft_review`, editorial inbox empty, crosspost poll 0.
-- **Ops (quiet-clean, no close logged — gap):** betterstack green/`source_empty` all day. Health 10 games (down from 11, Sherlock cleared). uptime green, discord 0, scrape 8/8 clean. **Two sub-$10 keys:** xAI $9.92 + OpenAI $9.48 (new). No werewolf -02 EOD close in the log (driver gap).
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-01 (61 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-02 (62 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

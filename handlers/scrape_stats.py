@@ -271,14 +271,16 @@ MISTRAL = {
     "js": """(()=>{
       const t=document.body.innerText;
       if(/auth\\.mistral|\\/login/i.test(location.href)) return JSON.stringify({login_wall:true});
-      // Numbers here are bare and followed by a USD unit line, e.g.
+      // Numbers here were bare and followed by a USD unit line, e.g.
       // "Total Cost\\n3.25\\nUSD". Anchor on the label, take the first number.
+      // Relabelled by 2026-10-06 to "Total Estimated Cost\\n\\n$10.43" (three days of
+      // parse_failed); the regex skips the "$", so both shapes read.
       const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
         const m=t.slice(i+label.length,i+label.length+(win||40))
                  .match(/([0-9][0-9,]*\\.?[0-9]*)\\s*(?:USD)?/);
         return m?parseFloat(m[1].replace(/,/g,'')):null;};
       return JSON.stringify({login_wall:false,
-        usage: after('Total Cost') ?? after('Total:'), pending: null});
+        usage: after('Total Estimated Cost') ?? after('Total Cost') ?? after('Total:'), pending: null});
     })()""",
 }
 

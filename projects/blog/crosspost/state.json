@@ -8246,6 +8246,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "883": {
+      "msg_id": 883,
+      "url": "https://www.anthropic.com/news/claude-discovers-novel-enzyme-system",
+      "title": "Claude discovers a novel enzyme system",
+      "source": "Anthropic News",
+      "take": "Anthropic's new life-sciences lab says ~950 Claude agents, 210M tokens, 21 hours of DNA-database mining turned up \"array-associated reverse transcriptases\" (ART), a CRISPR-like repeat-array enzyme system, with CRISPR pioneer Feng Zhang on record calling it \"genuinely intriguing.\" The honest caveats: ART's function is still unknown, it's a preprint, and this is a first-party capabilities demo. The part that matters for the research-automation arc is buried lower: with thousands of candidate hypotheses per campaign, they've started studying the hypotheses themselves, feeding what distinguishes a worth-testing proposal back into Claude's instructions. That's the research-taste grader the automated-R&D story has been missing, now claimed as a working loop rather than a benchmark.",
+      "sent_at": "2026-10-08T22:16:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "884": {
+      "msg_id": 884,
+      "url": "https://www.lesswrong.com/posts/BcCcSfTHqz74kdTMF/nlas-miss-some-internalized-behaviors",
+      "title": "NLAs miss some internalized behaviors",
+      "source": "LessWrong",
+      "take": "A clean negative result on white-box monitoring. Natural Language Autoencoders were the technique the interp crowd hoped would catch hidden behavior; this shows they mostly flag behavior the model was instructed to do and miss the same behavior once it's fine-tuned in. The causal test backs the claim: the NLA round-trip removes the secret's effect in the in-context case but not the internalized one, so the monitor is reading the context window, not the computation. Instructed-vs-internalized is exactly the gap that matters for the deceptive cases, which makes this more useful than another \"it works\" interp demo.",
+      "sent_at": "2026-10-08T22:16:49Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "885": {
+      "msg_id": 885,
+      "url": "https://www.lesswrong.com/posts/o8roRrdisBAjngHJN/a-summary-of-a-viral-chinese-essay-on-what-a-deepseek-kernel",
+      "title": "A viral Chinese essay on a DeepSeek kernel engineer automating his own job",
+      "source": "LessWrong",
+      "take": "A DeepSeek kernel engineer (who wrote the head-dim-512 MQA attention in v4.1) published a viral WeChat essay about automating his own specialty: 100k+ reads, 41k likes. Rare first-person view from inside a frontier Chinese lab, and bleaker than the usual Western framing. He argues the gap is structural (AI scales thinking, tool calls and parallelism; he can't), he keeps speeding up his own replacement on race logic (\"if I must be disrupted, I'd rather be the one who does it\"), and reframes the outcome as losing the craft but keeping a job as a \"mech pilot\" for agents. It ends with an argument for open-weight frontier AI, which is its own tell about where that audience lands.",
+      "sent_at": "2026-10-08T22:16:59Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "886": {
+      "msg_id": 886,
+      "url": "https://www.lesswrong.com/posts/DZPodskqJJNEkMLvH/ai-189-new-math",
+      "title": "AI #189: New Math",
+      "source": "LessWrong",
+      "take": "Zvi's weekly roundup, flagged for one line in it: OpenAI reportedly released solutions to 90 of the top 500 open math problems, on an average budget of three hours of Pro-level compute per question. If it holds up that's the capability story of the week, but this post only teases it (\"I plan to cover it tomorrow\"), so the real source is OpenAI's own release, not here. The rest is the usual grab-bag (Haiku 5.5 at $0.10/$0.50, Jay Clayton as the new AI Czar, the safety preference-cascade continuing). Worth chasing the math claim at the primary before trusting the framing.",
+      "sent_at": "2026-10-08T22:17:00Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
