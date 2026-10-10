@@ -59,14 +59,12 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   -08 enzyme taste-training loop — the open-ended-research grader lacking since June.
 
 **Outstanding alerts for Alex:**
-- **Session re-auths owed: X, Mistral, Anthropic console, + Qwen console (NEW -08).**
-  X half of crosspost fails `reauth` (Substack half posts clean); Mistral recurring
-  since -01 — **escalated -08: 3rd consecutive parse_failed, handler itself flags it
-  urgent ("check is broken, not flaky")**, needs an extractor look not a re-login.
-  Anthropic console login wall from -07 still open, 2nd consecutive failure -08 —
-  re-auth not yet done. Qwen console ALSO hit the login wall -08, first failure (was
-  previously only flagged for free-grant exhaustion). Runbook sent for both reauths
-  (kill headless, relaunch headful :9223, log in). (minimax RESOLVED -19, confirmed -20.)
+- **Session re-auths owed: X only.** X half of crosspost fails `reauth` (Substack
+  half posts clean). **Mistral/Anthropic/Qwen console all RESOLVED -09** — scrape
+  08:45Z ran 8/8 providers clean: Mistral's 3-run parse_failed streak didn't recur
+  (spend-vs-cap read fine) and both login walls (Anthropic since -07, Qwen since -08)
+  are cleared, no action log needed since neither required the runbook to fire a
+  self-report. (minimax RESOLVED -19, confirmed -20.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
 - **Cooled/cold (watch only, named code paths):** `Error in vote function:`/`Game action

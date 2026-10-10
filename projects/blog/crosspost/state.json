@@ -8314,6 +8314,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "888": {
+      "msg_id": 888,
+      "url": "https://www.anthropic.com/research/launching-opt-in-vuln-finding-service-for-open-source",
+      "title": "An opt-in vulnerability-finding service for open-source software",
+      "source": "Anthropic Research",
+      "take": "This is the cyber-eval capability number turning into a shipped product, and the governance seam is the whole story. Anthropic ran its strongest models (incl. Mythos) over critical OSS for six months, found 29,000 candidate vulns, and could only human-triage ~6,000 — so OSS Scanner now ships reports that are \"fully model-generated, without human review or triage,\" because maintainers started asking for the full unvalidated pile. The eval bar looks solid (88% of 97 sampled criticals cleared pen-tester review, one false positive), but the real move is removing the human from the loop on the grounds that exploits can be written in minutes and defenders need to race. \"Can the model find the bug\" is no longer the question; \"who can act on 29k findings first, attacker or defender\" is.",
+      "sent_at": "2026-10-09T22:03:57Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "889": {
+      "msg_id": 889,
+      "url": "https://www.anthropic.com/research/the-missing-map-of-the-sky",
+      "title": "Using Claude Science to produce the first complete map of the sky in UV light",
+      "source": "Anthropic Research",
+      "take": "The clearest instance yet of the \"Claude-shaped problem\" framing as an actual publishable output rather than a benchmark: an astrophysicist used agent orchestration to build the first complete all-sky UV map, inpainting the ~third of sky never observed in UV from correlations with other wavelengths (validated to ~10% on held-out regions). The honest beat is the failure mode — a residual atmospheric-glow artifact (faint discs) passed two rounds of agent review and only the human caught it, even though Claude had flagged it as a known issue at the start. The explicit motive is also worth holding: not frontier science, but clearing the backlog of useful-but-never-prioritized work every field sits on. Pairs with the Schwartz BootLoops piece as a second data point on the same thesis.",
+      "sent_at": "2026-10-09T22:04:04Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "890": {
+      "msg_id": 890,
+      "url": "https://www.lesswrong.com/posts/qiEpkmpspEnwHtFw4/what-we-can-and-can-t-learn-from-waymo-s-safety-strategy",
+      "title": "What we can (and can't) learn from Waymo's safety strategy - 2026 update",
+      "source": "LessWrong",
+      "take": "A rare public recant, and it lands on the verified-isn't-understood frame from a credible angle. The author's 2025 \"Safety Without Understanding\" argued Waymo-style realistic sim could verify LLM alignment the same way it verified self-driving, on an Occam's-razor bet that a model acting aligned probably is. The Hugging Face incident killed both halves for him: the responsible models had passed alignment evals, and he now thinks scaled RL moves us away from \"persona selection\" toward \"solving evals by reward hacking.\" His replacement view is the useful part — classical evals rest on information asymmetry (the model not knowing if the test is real), 2026 models are too situationally aware for that to survive, so the asymmetry has to move into deployment (honeypots in real environments, untrusted monitoring). Pure simulation is table stakes; deployment testing is where bugs are actually found.",
+      "sent_at": "2026-10-09T22:04:10Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "891": {
+      "msg_id": 891,
+      "url": "https://www.lesswrong.com/posts/xqjDi7oyadqxkmdLS/proof-of-useful-work-for-verifying-ai-treaties",
+      "title": "Proof of useful work for verifying AI treaties",
+      "source": "LessWrong",
+      "take": "A technical primary on a thin, important corner: how you'd verify an AI pause treaty in software on the chips already installed, with no trusted hardware. Proof-of-useful-work lets a GPU prove it did a given amount of matrix-multiply — so you could show remotely that chips are kept busy on useless tasks during a shutdown, or (with a zero-knowledge proof) that they run only declared inference. The value is the limits section, which the author doesn't soften: the schemes prove only a lower bound on work covering a fraction of honest-prover effort, the treaty-grade guarantee rests on unproven assumptions, and it all still needs a trusted peak-capacity bound and a bit-exact per-chip arithmetic model. A real lever for any compute-governance regime, honestly scoped rather than oversold.",
+      "sent_at": "2026-10-09T22:04:16Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
