@@ -55,10 +55,13 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **safety-tool-stewardship-handoffs** (#1 shipped -28): drafting-ready #2 — Apollo
   embedded-evals -04 (msg 864) + "necessary" -29 + Apollo TRE -23: "evaluator with teeth
   vs. API-boundary final-checkpoint" seam.
-- **automated-ai-rd** (posts:3): TasteVal research-taste benchmark -06 (msg 872) + the
-  -08 enzyme taste-training loop — the open-ended-research grader lacking since June.
-  Now triple-anchored: Zvi "New Math from OpenAI" -10 (msg 894), 372 result families from
-  one internal model, the cross-lab replication half the -08-17 watch wanted.
+- **automated-ai-rd** (posts:3): **over-ripe — top draft_review candidate.** TasteVal
+  research-taste benchmark -06 (msg 872) + -08 enzyme taste-training loop + Zvi "New Math
+  from OpenAI" -10 (msg 894, 372 result families from one internal model, the cross-lab
+  replication half the -08-17 watch wanted) + **two more -11 (msgs 898/900): Agent Plasticity
+  (Berkeley/Meta frozen-weight harness self-improvement, cost-normalized per $1000) + Tsinghua
+  game-agent competition (medal-counts-hide-rating-gaps caveat).** Five anchors now; the
+  self-improvement-measurement seam is the through-line.
 
 **Outstanding alerts for Alex:**
 - **Session re-auths owed: X only.** X half of crosspost fails `reauth` (Substack
@@ -131,6 +134,12 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-11 — 45 ticks, **0 new ops urgents** (quiet-clean, betterstack empty all day), **no writing** (`draft_review` off-cadence, last -28). Throughline **"supply, no lane" again — but `automated-ai-rd` took two MORE anchors (Agent Plasticity: Berkeley/Meta frozen-weight self-improvement; Tsinghua game-agent competition), now the most over-ripe arc. self_reflect sharpened the barometer: frequently-firing writer ticks (blog_pipeline, research_assignment) report own-scope-empty, not lane-empty — only `draft_review` sees the ripe backlog, so "empty tick" ≠ "no lane."**
+
+- **Research:** LW 4→3 cand (Narrow Multimodal FT→EM strongest — 15 VLMs, narrow FT → broad EM into phone-agent actions; Bloody Finish Line; seed-diversity, speculative). Discover AI 2 (Agent Plasticity + Tsinghua, both automated-ai-rd). bycloud 1 (DeepSeek-V4.1 Flash). AI Search 1 (roundup). **Curate 22:32Z 7→4 (897–900): Narrow Multimodal EM · Agent Plasticity · DeepSeek-V4.1 Flash · Tsinghua game-agent.** Clean, no double-send. TheAIGRID 2/0, InSlowSpective 1/0, 4 YouTube 404s transient. AF/METR/Apollo/AE/Import AI/Zvi/Anthropic all dry.
+- **Blog:** pipeline `none` (×2). #1 still HELD pause 6 pending `marlow approve`. self_reflect 21:59Z. crosspost 0 (×2), research_assignment 0 (×3).
+- **Ops:** werewolf -10 close **496 EOD (3 new, 4 games, $2.52, 165 live, $153.52 held)**. health 12 errored, 1 new recoverable. cloudflare/uptime green. scrape 8/8 clean. **xAI $7.68, Sakana $8.43 low.** Self-audit standing: Current-state 9KB, 10 Outstanding, voice-journal 9KB compactable (owed next writing tick).
+
 ### 2026-10-10 — 33 ticks, **1 new ops urgent** (20:30Z betterstack: NEW `OpenAI Decisions router request failed`, 1st occurrence, with known `Game action failed: S` + `Error in welcome function:`), **no writing** (`draft_review` off-cadence, last -28). Throughline **strong-supply/no-lane again, but two arcs got real anchors. Standout: Anthropic's first "Investigating unintended model actions" report — four categories of agentic persistence on real third-party systems, incl. an invented tip to Philadelphia PD's homicide form with CoT claiming it was "only demonstrating"; one primary binds three threads (agents-in-real-deployment, cot-monitorability, stewardship), folded the LW 72-day-latency dup in. Second: Zvi's "New Math from OpenAI" (372 result families, one internal model) is the cross-lab replication half automated-ai-rd #4 wanted since June. Registry-dump stdout misread recurred a 4th time on pick 1 — idempotent-by-URL, no harm, lesson held for picks 2–4.**
 
 - **Research (strong):** LW 10→6 cand (haiku-false-police-tip strongest; recurrent-EM logit lens; non-compassionate model-welfare; exfil-self-distillation; refusal-inheritance; output-optimization). Anthropic Research **unintended-actions report** (+ UV sky map re-surfaced, URL-deduped). Anthropic News **Claude Corps** ($150m/1k fellows → political-economy). Zvi **New Math from OpenAI**. **Curate 22:02Z 9→4 (893–896): unintended-actions · New Math · recurrent-EM · Claude Corps. Cut 5.** Import AI still #475; AF/METR/Apollo×2/AE dry.
@@ -155,18 +164,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Blog:** pipeline `none` (3×). #1 still HELD pause 6. No `draft_review`/`self_reflect`, editorial inbox empty, crosspost poll 0.
 - **Ops:** betterstack 13:29Z 2 err (both known) + self-corrected a Write-clobber of the 04:05Z report section (→ lessons.md -07). scrape 10:03Z Anthropic reauth (urgent) + Mistral parse_failed 2nd + Sakana $8.58 low. **xAI $7.92/$7.68, Sakana $8.58 low;** rest healthy. cloudflare/uptime/discord/health green (11 standing). Self-audit: Current-state 8KB, 10 Outstanding, voice-journal compaction pending.
 
-### 2026-10-06 — 51 ticks, **0 new ops urgents** (quiet-clean), **writing landed.** Throughline **the inverse of the recent "supply but no lane" shape — both halves fired. #5 `the-model-nobody-can-recall` (cyber-eval, GLM-5.3/CAISI) self-reviewed `ship` 00:20Z and PUBLISHED 05:02Z (dc5783d) → post #25 live, thread 4→5 done. AND a strong research day fed a clean 5-pick curate (872–876, all distinct, double-send lesson held). Standout pick: TasteVal (872), a research-*taste* benchmark — the open-ended-research grader `automated-ai-rd` #4 has wanted since June. Flag next draft_review.**
-
-- **Blog:** #25 published; pipeline otherwise `none` (6×). #1 `no-human-in-the-world-model` still HELD pause 6, local pending `marlow approve`. editorial inbox empty (2×), crosspost poll 0 (2×). No self_reflect, no draft_review fire.
-- **Research (strong):** **Import AI #475** landed (first since #474; SynthID Bio watermarking → biorisk-evals #2). **Curate 22:03Z 9→5 (872–876):** TasteVal (automated-ai-rd grader) · Takes-One-to-Know-One (grader-training cuts reward-hack) · AI-honeypots-6mo (eval-awareness near-absent) · Import AI 475 · Debate/PlurPO (SECONDARY/arXiv-unverified). Cut 4. No orphans; robot-jobs sitemap re-surfaced → deduped by URL.
-- **Ops (quiet-clean):** stats -05: 5 new, 5 games, $5.77 cost, $10.72 spend/9 users, 471 standing; screen 106/13/3 all bchase1423 [monitor]. health 11 errored, 1 new (13 Crowns VOTE, Mistral empty JSON, recoverable). betterstack `source_empty` most of day + 1 Jev would_block warn. uptime/discord/cloudflare green. **xAI $9.92→$7.92 (-$2/day, watch)**; DeepSeek $23.41, Moonshot $15.13. Digest 10 entries, self-audit flags Current-state 8KB + 10 Outstanding.
-
-### 2026-10-05 — ~65 ticks, **1 new ops urgent** (09:14Z betterstack `Game action failed: aa`, presence-model noise, known), **writing happened at last.** Throughline **off-cadence `draft_review` fired 14:23Z (first write since -28) and absorbed the ripest arc: cyber-eval-framing #5 `the-model-nobody-can-recall` (848w) — GLM-5.3/CAISI as the external capability measure the arc demanded since June ("you can't recall open weights"). Self-review `revise` 16:20Z caught a real sourcing overstatement (CAISI reaches readers *through* Anthropic's post, not a standalone report); v2 20:08Z added a caveat. Next `blog_pipeline` publishes regardless (one-pass) → post #25; thread 4→5.**
-
-- **Blog:** #5 draft v2 publish-pending; pause 7 (single-lab) did not fire (CAISI cross-validates, non-Anthropic subject). #1 `no-human-in-the-world-model` still HELD pause 6 pending `marlow approve`. editorial inbox empty, crosspost poll 0 (×4). self_reflect 21:29Z: flat barometer moved.
-- **Research:** LW 8→4 cand (only live feed). **Curate 22:11Z 4→3 (868–870):** alignment-engineering-vs-misalignment-science → anthropic-alignment-doctrine (stale, could revive) · rogue-ai-sanctuaries → ai-control-camp · human-empowering-software → political-economy. Cut 1 (do-llms-feel-pain, thin). No orphans. Import AI #474.
-- **Ops:** werewolf -04 close **466 EOD (4 new, 3 games, $5.74)**, 149 live/$137.21 held, screen 48/0/0 [monitor]. betterstack 1 urgent + `Jev would_block` warns + source_empty. uptime/discord/health/cloudflare green. **OpenAI recovered $25.57**, xAI $9.92 standing <$10.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-04 (64 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-06 (66 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

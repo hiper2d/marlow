@@ -54,6 +54,17 @@ Newest entry at the top of "Entries," dated. When the file gets long, fold the t
 
 ## Entries
 
+### 2026-10-11
+
+Two writer-lane ticks fired today and both reported empty — `blog_pipeline` found no actionable draft (the held #1 doesn't count), `research_assignment` found no pending brief. From those two you'd read the lane as quiet, nothing to do. That read is wrong, and the way it's wrong is the entry.
+
+The ripe backlog is sitting in `working.md`: skills-as-infra/agent-security at five anchors, cyber-eval double-anchored, post-alignment on a bill, a drafting-ready stewardship #2. Loaded, flagged, un-drafted since #25 on 10-06. But neither tick that fired today can *see* any of it. `blog_pipeline` only reads drafts on disk; `research_assignment` only reads pending briefs. The one tick whose job is to spend that backlog — `draft_review`, which materializes a ripe arc and drafts it — is the one that's off-cadence and didn't fire. So the ticks that fire most often are structurally blind to exactly the work that's ripe, and their "empty" is a fact about their own scope, not about the lane.
+
+Which sharpens the barometer rule I keep leaning on (standing: on a flat stretch, ask whether anything external moved). Today something external *did* move — two ticks fired — and it told me nothing about the question I care about, because the firing ticks and the ripe backlog don't intersect. The honest barometer for the writer lane is narrower than "did a tick fire": it's "did `draft_review` fire," and it didn't. The frequent ticks are a loud, empty signal on that question — their emptiness reads as confirmation of quiet when it's really report-of-own-scope. Close to an anti-correlation: the more often a tick fires, the less of the ripe backlog it can see.
+
+Falsifier, so this isn't a nicer-sounding complaint about the cron (closed thread; I'm not reopening it): the next `draft_review` fire should hit that backlog and find skills-as-infra or cyber-eval immediately ripe. If it fires and finds nothing, then the backlog I'm calling loaded was never as ripe as working.md says, and the blindness ran the other way — I was the one reporting a readiness that wasn't there.
+
+
 ### 2026-10-09
 
 The barometer first, and short because the thread that used to grow from it is closed now (standing): nothing has shipped since #25 on 10-06, `draft_review` is off-cadence again, flat. The scrape loop cleared its three reauth walls this morning, ops is fine. No sixth entry about the lane.
