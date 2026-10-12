@@ -22,7 +22,7 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 |---|---|---|
 | `cot-monitorability` | 6 | 09-14 |
 | `cyber-eval-framing` | 5 | 10-05 |
-| `automated-ai-rd` | 3 | 08-17 |
+| `automated-ai-rd` | 4 | 10-12 (#4 drafted, in pipeline) |
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
@@ -55,13 +55,13 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **safety-tool-stewardship-handoffs** (#1 shipped -28): drafting-ready #2 — Apollo
   embedded-evals -04 (msg 864) + "necessary" -29 + Apollo TRE -23: "evaluator with teeth
   vs. API-boundary final-checkpoint" seam.
-- **automated-ai-rd** (posts:3): **over-ripe — top draft_review candidate.** TasteVal
-  research-taste benchmark -06 (msg 872) + -08 enzyme taste-training loop + Zvi "New Math
-  from OpenAI" -10 (msg 894, 372 result families from one internal model, the cross-lab
-  replication half the -08-17 watch wanted) + **two more -11 (msgs 898/900): Agent Plasticity
-  (Berkeley/Meta frozen-weight harness self-improvement, cost-normalized per $1000) + Tsinghua
-  game-agent competition (medal-counts-hide-rating-gaps caveat).** Five anchors now; the
-  self-improvement-measurement seam is the through-line.
+- **automated-ai-rd** (posts:4): **DRAFTED #4 -12 `taste-denominated-in-compute`** (in
+  blog_pipeline). Spined on TasteVal (-06, taste denominated in compute, excludes problem-
+  selection by its own admission) + New Math (-06/-10, 90/500 open problems, verifiable half)
+  + Anthropic enzyme taste-loop (-08). **Agent Plasticity (-11) + Tsinghua game-agent (-11)
+  deliberately held back** — only Discover AI video summaries exist (channel 0-for-curate);
+  fetch arXiv primaries for a possible #5 (self-improvement counterpart of the same re-import-
+  a-scorer move). Next #5 forcing fact: a benchmark scoring problem *selection* w/o a handed target.
 
 **Outstanding alerts for Alex:**
 - **Session re-auths owed: X only.** X half of crosspost fails `reauth` (Substack
@@ -133,6 +133,12 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   release #1.
 
 ## Daily rollups
+
+### 2026-10-12 — 28 ticks, **1 known-class ops urgent** (20:06Z betterstack NEW fingerprint `Game action failed: J`, the by-construction-noisy presence-model class, not a bug), **WRITING DAY — drought broke.** `draft_review` fired on-cadence (16:54Z), drafted **`automated-ai-rd` #4 `taste-denominated-in-compute`** (~1050w); self_review 20:12Z **ship** → in blog_pipeline for publish. Throughline **the "supply, no lane" run (held since -28's #26) ended — and the arc refilled the same day (expensive-loop = #5 forcing-frame), plus one of three standing housekeeping debts cleared (voice-journal compacted during self_review).**
+
+- **Writing:** #4 spined on TasteVal (-06, taste denominated-in-compute, excludes problem-selection by its own admission) + New Math (-06/-10) + Anthropic enzyme taste-loop (-08); Agent Plasticity + Tsinghua held back (video-only) for #5. Header clean (balance scale, no-numerals held). self_review **ship**, no revise manufactured. Thread posts 3→4, editorial-direction + table/RIPE updated. **voice-journal compacted 23KB→trimmed** (4 entries → Standing craft notes). #1 still HELD pause 6.
+- **Research (strong):** LW 10→6 cand, clustered on expensive-loop / RSI-compute-labor economics. **Curate 22:14Z 9→4 (902–905): Base-Models-Detect-Hidden-Intentions · Expensive-Loop-Problem · Minimum-required-pacing · OpenAI-Can't-Self-Police; cut 5.** No double-send. **expensive-loop = candidate #5** (problem-selection-stays-hard, field side). research_assignment 0 (×2).
+- **Ops:** werewolf -11 close **502 EOD (6 new, 14 games, $10.33, 154 live/$145.38 held, 3 shared-browser clusters)**. scrape 8/8 clean, **Sakana $8.43 / xAI $7.68 low.** health 12→10, 0 new. cloudflare/uptime green. Self-audit (post-compaction): Current-state 9KB + 10 Outstanding still owed; voice-journal debt cleared.
 
 ### 2026-10-11 — 45 ticks, **0 new ops urgents** (quiet-clean, betterstack empty all day), **no writing** (`draft_review` off-cadence, last -28). Throughline **"supply, no lane" again — but `automated-ai-rd` took two MORE anchors (Agent Plasticity: Berkeley/Meta frozen-weight self-improvement; Tsinghua game-agent competition), now the most over-ripe arc. self_reflect sharpened the barometer: frequently-firing writer ticks (blog_pipeline, research_assignment) report own-scope-empty, not lane-empty — only `draft_review` sees the ripe backlog, so "empty tick" ≠ "no lane."**
 

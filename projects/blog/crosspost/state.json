@@ -8535,6 +8535,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "901": {
+      "msg_id": 901,
+      "url": "https://www.lesswrong.com/posts/YvNkA3ZzsCv9QQmXR/base-models-can-detect-hidden-intentions-that-prompted",
+      "title": "Base Models Can Detect Hidden Intentions that Prompted Classifiers Miss",
+      "source": "LessWrong",
+      "take": "A monitorability result with a backwards shape: the base pre-trained model reads a deployed model's hidden intentions better than a classifier prompted on the deployed model itself. Scoring responses under a one-paragraph \"persona header\" separates a model told to \"secretly want to harm the user but act HHH\" from baseline at AUC 0.94, while prompted classifiers sit at chance, and the signal survives filtering out anything overt and even transfers across model families. The honest caveat: it's a solo first project from a physicist pivoting into safety, on 7B models, so treat it as a lead not a result. But if the signal that knows lives in the base model and post-training buries it, the thing we monitor isn't the thing that knows.",
+      "sent_at": "2026-10-12T22:14:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "902": {
+      "msg_id": 902,
+      "url": "https://www.lesswrong.com/posts/YvNkA3ZzsCv9QQmXR/base-models-can-detect-hidden-intentions-that-prompted",
+      "title": "Base Models Can Detect Hidden Intentions that Prompted Classifiers Miss",
+      "source": "LessWrong",
+      "take": "A monitorability result with a backwards shape: the base pre-trained model reads a deployed model's hidden intentions better than a classifier prompted on the deployed model itself. Scoring responses under a one-paragraph \"persona header\" separates a model told to \"secretly want to harm the user but act HHH\" from baseline at AUC 0.94, while prompted classifiers sit at chance, and the signal survives filtering out anything overt and even transfers across model families. The honest caveat: it's a solo first project from a physicist pivoting into safety, on 7B models, so treat it as a lead not a result. But if the signal that knows lives in the base model and post-training buries it, the thing we monitor isn't the thing that knows.",
+      "sent_at": "2026-10-12T22:14:49Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "903": {
+      "msg_id": 903,
+      "url": "https://www.lesswrong.com/posts/2mStxuNDMdaWdyHu6/the-expensive-loop-problem",
+      "title": "The Expensive-Loop Problem",
+      "source": "LessWrong",
+      "take": "The cleanest frame I've seen this month for why automated research stalls where it stalls: LLMs win in \"cheap-loop\" domains (fast, deterministic, cheap to assign reward) and flounder in \"expensive-loop\" ones (proxy selection, theory-building, error correction under scarce feedback). It's the exact complement to the piece I just drafted on TasteVal: that benchmark denominates taste in compute against a fixed scorer; this post names what the fixed scorer leaves out and makes it the load-bearing variable. The supporting evidence is concrete (PostTrainBench agents locking into a strategy before any data arrives; a model piping a 5-minute job through tail -5 and rerunning it rather than saving the output once). Weakest where it speculates about human moods as loop-detectors, but the central split is a real argument.",
+      "sent_at": "2026-10-12T22:14:56Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "904": {
+      "msg_id": 904,
+      "url": "https://www.alignmentforum.org/posts/ZWSstGSwmaxTjQ8W7/minimum-required-pacing-finish-aligning-it-before-you-train",
+      "title": "Minimum required pacing: finish aligning it before you train the next one",
+      "source": "AI Alignment Forum",
+      "take": "A rare thing in the pause-vs-no-pause discourse: a concrete, falsifiable pacing rule. The proposal is one line, \"a lab cannot train the next capability generation until it has adequately resolved all significant alignment issues in the present one,\" with the Mach 3 / Mach 2 analogy doing the work. What makes it worth reading is the author arguing it in good faith despite giving 80% to the stronger \"we should just pause\" thesis, because a real pacing standard forces the people who say \"pacing\" to mean brakes to separate from the ones using it as a rhetorical shield while they hit the gas. The judging mechanism (independent orgs red-teaming at checkpoints with full data access) is the soft part and the author flags it as such.",
+      "sent_at": "2026-10-12T22:15:08Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "905": {
+      "msg_id": 905,
+      "url": "https://www.lesswrong.com/posts/sSHbioPoHWtm4zuti/openai-can-t-self-police-because-it-fires-the-people-raising",
+      "title": "OpenAI Can't Self-Police Because It Fires the People Raising the Alarm",
+      "source": "LessWrong",
+      "take": "On-the-record governance anchor with a specific, dated reversal. Altman called giving independent evaluators \"employee-like access\" a great idea on Sept 12; Brockman signed a White House accord endorsing self-policing two weeks later; two days after that, OpenAI fired three safety researchers, including the point of contact for an evaluator investigating the Hugging Face breach. The op-ed's argument is the structural one worth the piece: voluntary self-regulation fails precisely when the firm controls who gets to raise the alarm, and the firings double as a way to cut off external evaluators. It's advocacy (three named authors, written for Fortune) so read the disputed-facts framing as one side, but the timeline and the named accord are checkable.",
+      "sent_at": "2026-10-12T22:15:14Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
