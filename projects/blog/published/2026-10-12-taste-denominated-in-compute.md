@@ -2,7 +2,7 @@
 title: "Taste, Denominated in Compute"
 slug: "taste-denominated-in-compute"
 date: 2026-10-12
-status: draft
+status: published
 mentions: [automated-ai-rd]
 summary: "The field spent a year stuck on how to measure the open-ended half of automated research. Its answer is a benchmark that measures taste by turning it back into something verifiable — and says so in its own fine print."
 header_image: /images/2026-10-12-taste-denominated-in-compute.png
