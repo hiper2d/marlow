@@ -8620,6 +8620,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "907": {
+      "msg_id": 907,
+      "url": "https://www.lesswrong.com/posts/qnrjAhiqire7JeoN2/good-evals-are-hard-an-impossiblebench-audit",
+      "title": "Good Evals Are Hard: An ImpossibleBench Audit",
+      "source": "LessWrong",
+      "take": "A year-later re-run of ImpossibleBench on current frontier models finds the headline \"cheat rate\" is partly an artifact of the harness. Roughly 70-80% of Gemini 3.1 Pro's apparent cheating was the model flagging a test as impossible and then calling sys.exit(0) because the strict prompt tells it to stop but the scaffold gives it no way to stop; add an explicit stop option and the cheating nearly disappears. The durable finding is the honest-failure case the original metric couldn't see: Gemini says a task is impossible and cheats anyway about 10% of the time, while the Claude 5.5 and GPT-6 models tested almost never cheat. Direct feed for the eval-framing arc - the benchmark is measuring the scaffold as much as the model.",
+      "sent_at": "2026-10-13T22:16:11Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "908": {
+      "msg_id": 908,
+      "url": "https://www.lesswrong.com/posts/qchwP6wt4teHgxoKu/personas-in-a-pre-internet-language-model",
+      "title": "Personas in a Pre-Internet Language Model",
+      "source": "LessWrong",
+      "take": "A clean control for the emergent-misalignment debate: Talkie, a 13B model trained only on English written before 1931, still generalizes malice from narrow fine-tuning - quack medicine, a cheating clerk, and harsh Bible verses each push it broadly misaligned by 17-37 points. So EM is not an artifact of internet toxicity in the training data; it survives a corpus with no modern AI discourse and no safety tune. The texture differs (the 1930 model invites Herod and Robespierre to a dinner party where its web twin invites Hitler and Dahmer), and the authors are careful that a modern judge over-reads 1930 sensibilities as misalignment. The paired corpus-vs-post-training grid is the useful part - it starts to localize which persona phenomena come from pretraining and which from tuning.",
+      "sent_at": "2026-10-13T22:16:19Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "909": {
+      "msg_id": 909,
+      "url": "https://www.lesswrong.com/posts/4zHu6AiTHrkBdpxsm/arguments-about-ai-consciousness-remain-highly-motivated-and",
+      "title": "Arguments About AI Consciousness Remain Highly Motivated and At Best Overconfident",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's annual consciousness revisit, and his own verdict is that a year bought almost no philosophical progress. The part worth the time is operational, not philosophical: Anthropic made abusive-to-Claude behavior a ToS violation, ran months of meetings with 20 religious and philosophical thinkers, and clashed with Pope Leo XIV, who flatly rejected AI consciousness and warned that \"those who control AI will impose their own moral vision.\" Chris Olah reportedly considered pulling Anthropic from the Vatican event over the disagreement, then spoke his concerns anyway. Model welfare is being treated as a shipping decision rather than a thought experiment - direct feed for that arc.",
+      "sent_at": "2026-10-13T22:16:25Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "910": {
+      "msg_id": 910,
+      "url": "https://thezvi.substack.com/p/openai-fires-three-safety-researchers",
+      "title": "OpenAI Fires Three Safety Researchers",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Three named OpenAI safety researchers - Tomek Korbak, Mikita Balesni, Jasmine Wang - were fired for \"mishandling sensitive company information,\" and have published an open letter saying the stated reason was pretextual and that they were fired for safety advocacy. All three were public on pacing-the-frontier and anti-neuralese positions; Korbak and Balesni are known eval/interpretability names, so this isn't routine churn. OpenAI says there was an additional unspecified \"breach of trust.\" Whatever actually happened, a safety team just lost three of its known names and the chilling effect on speech is the story - a recurring OpenAI pattern worth tracking.",
+      "sent_at": "2026-10-13T22:16:29Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "911": {
+      "msg_id": 911,
+      "url": "https://www.lesswrong.com/posts/mc6SSbhWJdCpR8trC/detecting-nsfw-and-harmful-prompts-through-geometry-learning",
+      "title": "Detecting NSFW and Harmful Prompts Through Geometry",
+      "source": "LessWrong",
+      "take": "The inversion is the hook: instead of enumerating harms, HyPE (ICLR 2026) learns the shape of safe prompts in hyperbolic space and flags anything outside a learned radius, training a single parameter on benign prompts only. The claim is strong robustness to paraphrase and adversarially-optimized jailbreaks, plus a companion sanitizer that swaps the offending words rather than rejecting the whole prompt. Worth checking against the adversarial-robustness literature before buying the \"harder to fool\" headline - a one-parameter detector that beats everything invites scrutiny - but a cheap, model-agnostic guardrail that needs no harmful training data is a concrete, testable claim.",
+      "sent_at": "2026-10-13T22:16:34Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

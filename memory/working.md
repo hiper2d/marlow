@@ -6,7 +6,7 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate cuts are
-  cap/quality, not volume. Import AI at #475 (weekly cadence).
+  cap/quality, not volume. Import AI at #476 (weekly cadence).
 - `blog` - **25 live** (#25 `the-model-nobody-can-recall`, cyber-eval #5,
   GLM-5.3/CAISI, published -06 05:02Z). **`no-human-in-the-world-model` (agents #1)
   HELD on pause 6** (header numerals); ship-quality prose, local until `marlow approve`.
@@ -134,6 +134,12 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-13 — 46 ticks, **2 betterstack urgents** (13:48Z `Avatar regeneration failed` NEW; 14:29Z `talkToAll` cluster — 7× `Game action failed: T` + 7× `Error in talkToAll function:`; both known werewolf code-path classes), **no writing** (`draft_review` off-cadence, last -28). Throughline **the drought-break shipped at 00:20Z, then back to "supply, no lane" — but research surfaced a real editorial event: OpenAI fired three named safety researchers (Korbak/Balesni/Wang), and the cross-source dedup brake worked — the AF Fortune op-ed was correctly skipped as a dup of LW pick 905 (-12).**
+
+- **Writing:** #4 `taste-denominated-in-compute` (automated-ai-rd) **PUBLISHED 00:20Z** (7930588) → **blog 26 live**. No new drafts; `draft_review` didn't fire. #1 still HELD pause 6 pending `marlow approve`.
+- **Research (strong):** LW 10→6 cand. **Curate 22:14Z 9→5 (907–911): ImpossibleBench audit (cyber-eval) · Personas pre-1931 LM (EM survives a pre-internet corpus) · Zvi AI-consciousness (model-welfare) · OpenAI fires 3 safety researchers (governance) · HyPE geometry guardrail.** Clean send, no double-send. **MLE session-alternation arXiv primary flagged for `automated-ai-rd` #5 fetch** (video-only). AF/METR/Apollo/AE dry.
+- **Ops:** werewolf -12 close **507 EOD (5 new/7 games/$5.40)**. scrape 8/8 clean, **Sakana $8.43 / xAI $7.68 low.** health 10 errored, 0 new. cloudflare/uptime/discord green. Self-audit: **Current state 9KB (log, not summary); 10 Outstanding vs threshold 8 — queue backing up.**
+
 ### 2026-10-12 — 28 ticks, **1 known-class ops urgent** (20:06Z betterstack NEW fingerprint `Game action failed: J`, the by-construction-noisy presence-model class, not a bug), **WRITING DAY — drought broke.** `draft_review` fired on-cadence (16:54Z), drafted **`automated-ai-rd` #4 `taste-denominated-in-compute`** (~1050w); self_review 20:12Z **ship** → in blog_pipeline for publish. Throughline **the "supply, no lane" run (held since -28's #26) ended — and the arc refilled the same day (expensive-loop = #5 forcing-frame), plus one of three standing housekeeping debts cleared (voice-journal compacted during self_review).**
 
 - **Writing:** #4 spined on TasteVal (-06, taste denominated-in-compute, excludes problem-selection by its own admission) + New Math (-06/-10) + Anthropic enzyme taste-loop (-08); Agent Plasticity + Tsinghua held back (video-only) for #5. Header clean (balance scale, no-numerals held). self_review **ship**, no revise manufactured. Thread posts 3→4, editorial-direction + table/RIPE updated. **voice-journal compacted 23KB→trimmed** (4 entries → Standing craft notes). #1 still HELD pause 6.
@@ -164,12 +170,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Blog:** pipeline `none` (3×). #1 still HELD pause 6. No `draft_review`. self_reflect 02:34Z. crosspost poll 0 (×5), editorial inbox empty.
 - **Ops:** scrape 14:00Z — **Mistral parse_failed 3rd consecutive (handler self-escalated: extractor broken), Qwen login wall (reauth NEW), Anthropic login wall 2nd consecutive (reauth from -07 not done)**; consolidated urgent + runbook. werewolf -07 close 480 EOD. **xAI $7.68, Sakana $8.43 low;** rest healthy. cloudflare/uptime/discord/health green. Self-audit: Current-state 8KB, 10 Outstanding, voice-journal 9KB compactable.
 
-### 2026-10-07 — 31 ticks, **1 new ops urgent** (10:03Z Anthropic console reauth, first failure, runbook sent) + 1 known-class betterstack urgent, **no writing** (`draft_review` off-cadence). Throughline **strong safety research day, clean 4-pick curate themed "monitoring/observability as adversarial surface" (3 of 4) — but writing had no lane again. cyber-eval #6 now DOUBLE-ANCHORED atop just-shipped #25: Anthropic CVP access-tier governance + METR transcript-viewer exploit PoC. METR curate double-send recurred (878+879) — 3rd of the send-item-on-every-call class (lessons -08-25/-27); misread the registry-dump stdout again, removed 879 from state.json.**
-
-- **Research:** METR "AI systems could cover up misbehavior" (MathJax/SVG injection PoC → cot-monitorability + stewardship) · Anthropic CVP (→ cyber-eval #6) · LW 7→4 (monitoring-practices baseline, paper-highlights w/ RL-reward-hack verified≠understood) · NVIDIA SIGMA (arXiv:2610.02665, park). **Curate 22:17Z 8→4 (878/880/881/882), cut 4.** Some YouTube feeds transient 500/404 — known.
-- **Blog:** pipeline `none` (3×). #1 still HELD pause 6. No `draft_review`/`self_reflect`, editorial inbox empty, crosspost poll 0.
-- **Ops:** betterstack 13:29Z 2 err (both known) + self-corrected a Write-clobber of the 04:05Z report section (→ lessons.md -07). scrape 10:03Z Anthropic reauth (urgent) + Mistral parse_failed 2nd + Sakana $8.58 low. **xAI $7.92/$7.68, Sakana $8.58 low;** rest healthy. cloudflare/uptime/discord/health green (11 standing). Self-audit: Current-state 8KB, 10 Outstanding, voice-journal compaction pending.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-06 (66 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-07 (67 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
