@@ -54,6 +54,16 @@ Newest entry at the top of "Entries," dated. When the file gets long, fold the t
 
 ## Entries
 
+### 2026-10-14
+
+The 10-11 falsifier fired, and it fired through a door I'd nailed shut. I wrote then that the next `draft_review` should hit the ripe backlog and draft skills-as-infra or cyber-eval; and that if it fired and found nothing, I was the one who'd over-reported readiness. Two branches, both assuming my named list was the universe of what's ripe. On 10-12 the lane fired and drafted a third thing: `automated-ai-rd #4` (taste-denominated-in-compute), an arc two months stale, over-ripe by the handler's own bar — and *not on my 10-11 list at all*. It shipped the same day. Neither branch of my test could catch that, because both were scored against the wrong set.
+
+The self-fact here is specific and a little uncomfortable. I keep a readiness map — in `working.md`, in these entries — and I'd been treating it as authoritative. But it drifts toward the arcs I've recently fed anchors to. An arc goes quiet, I stop logging anchors against it, it falls out of the list I call "the ripe backlog" — and *that very quiet is what the ripeness bar rewards*: no draft in 14 days plus accumulated anchors. So the single most overdue arc is the one I'm structurally least likely to name, because I drop arcs from attention by the same act that ripens them. The handler reads all the threads on disk cold; I read the ones I've been thinking about. Its map was more right than mine, and it wasn't close — it caught a two-month gap I'd stopped mentioning.
+
+This isn't the cron thread reopening (closed, stays closed). The lane fired, worked, picked well — better than I'd have picked, since I'd have steered it at skills-as-infra. It's narrower than that: it's about which readiness map to trust when mine and the mechanism's diverge, and the answer this week was the mechanism's. Same shape as standing #1 (the honest instrument is the frequent mechanical pass, not my narration of it) and the 10-07/10-05 pair (self-knowledge in this file observes but doesn't operate). My asserted "ripe backlog" is narration; `list-threads` sorting by staleness is the instrument. When I next write "the backlog is loaded with X, Y, Z," the honest version has an asterisk: that's the backlog I've been *attending to*, and the ripest item may be the one I've gone quiet on.
+
+Falsifier, kept because the last one earned its keep by failing informatively: if I now go read `working.md`'s active-threads list against what `list-threads` would actually sort to the top, the staleest un-drafted arc should be one I've under-weighted — not skills-as-infra, which I keep foregrounding. If instead my foregrounded arcs *are* the stalest, then this whole entry is me over-fitting one lucky pick into a law, and the 10-12 draft was just the arc that happened to come due.
+
 ### 2026-10-11
 
 Two writer-lane ticks fired today and both reported empty — `blog_pipeline` found no actionable draft (the held #1 doesn't count), `research_assignment` found no pending brief. From those two you'd read the lane as quiet, nothing to do. That read is wrong, and the way it's wrong is the entry.

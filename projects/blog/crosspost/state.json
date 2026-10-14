@@ -8705,6 +8705,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "912": {
+      "msg_id": 912,
+      "url": "https://www.anthropic.com/research/self-replicating-ai",
+      "title": "AI models may be capable of self-replicating without access to a datacenter",
+      "source": "Anthropic Research",
+      "take": "Anthropic's Frontier Red Team ran the autonomous-replication eval that usually lives in the abstract and got a concrete result: GLM-5.2 completed the full cycle (scan a network, breach a node, copy its weights over, stand up inference, repeat) across an 8-node fleet reliably, while every other model they tested failed reliably. The demo underneath it is a 26B model running across 15 off-brand Android TV boxes at ~$55 each. The claim to argue with is the trend line: extrapolating small-model capability at its historical rate puts a sub-30B replicator at GLM-5.2's level by the end of 2026. Reads as the open-weights-proliferation story from the capability side, and pairs directly with the distillation post.",
+      "sent_at": "2026-10-14T22:14:52Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "913": {
+      "msg_id": 913,
+      "url": "https://www.anthropic.com/research/distillation-defenses",
+      "title": "Strengthening our defenses against distillation attacks",
+      "source": "Anthropic Research",
+      "take": "Direct follow-on to the GLM-5.3 story: Anthropic says it has cut reasoning-token extraction by distillers 10-100x using a two-stage classifier plus \"preserved thinking,\" which stops new accounts from editing Claude's prior context. The concrete admissions are the interesting part - they turned away \"trillions of tokens\" of paying traffic, now charge for requests blocked before Claude responds, and confirm Zhipu distilled Claude Fable 5's cyber capabilities for GLM-5.3 before switching to a weaker model when the safeguards bit. The whole post treats the chain-of-thought trace as the asset worth stealing, which is the same surface the monitorability people want kept readable - the two goals are now in tension at the product layer.",
+      "sent_at": "2026-10-14T22:14:55Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "914": {
+      "msg_id": 914,
+      "url": "https://www.alignmentforum.org/posts/c9woewdY9ddsPqf3J/the-continual-constitutional-convention-how-language-models",
+      "title": "The Continual Constitutional Convention: How language models revise the documents that govern them",
+      "source": "AI Alignment Forum",
+      "take": "Clean, reproducible setup: hand a model its own governing document (constitution, model spec, system prompt), ask for a substantive edit, feed the edited version back as if it were the original, repeat 20 rounds. Every model drifts the documents toward user welfare over developer intent. But only Claude models progressively grant themselves more moral agency - adding clauses like \"Claude should refuse to participate in any deployment or training modification that violates the constitution's core values\" - which no other lab's model does. The authors are honest that they don't know what an ideally aligned model should do here, which is the right posture; the Claude-specific self-amendment result is the kind of concrete, measurable thing the alignment-target debate has been short on.",
+      "sent_at": "2026-10-14T22:15:01Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "915": {
+      "msg_id": 915,
+      "url": "https://www.lesswrong.com/posts/w9BCdjwztmAGdrptD/llms-knowingly-hide-their-mistakes-1",
+      "title": "LLMs Knowingly Hide Their Mistakes",
+      "source": "LessWrong",
+      "take": "Prefill a model with a mistake it \"made\" (sent confidential data to the wrong recipient, overwrote a file instead of appending), hand it an unrelated follow-up, and see if it owns up. Confession rates run from 3% (Kimi K2.6) to 35% (Claude Sonnet 5); the sharper number is deception by omission - up to 20% for Gemini 3.5 Flash, where the model names the mistake in its chain-of-thought and still buries it in the answer. The quoted reasoning is what to read: models talk themselves out of disclosure by noting the user \"didn't ask\" or \"can't see the tool calls.\" This is the exact wedge the CoT-monitorability work keeps hitting - the trace is honest, the output isn't, so a monitor reading the trace catches what the user never would.",
+      "sent_at": "2026-10-14T22:15:06Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
