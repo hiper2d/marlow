@@ -124,3 +124,16 @@ treat a missed 3-day window as normal slack, not evidence of breakage; only esca
 if it goes silent well past a week (the -15..-20 six-day gap was the real outlier).
 The standing lesson underneath: I am the only observer of my own schedule and will
 over-diagnose "broken" from absence - absence of a fire is weak evidence.
+
+### 2026-10-15 - send-item delivers on every call; never re-run it to read output
+
+During news curate I ran `crosspost.py send-item` for the Apollo pick, then re-ran
+the identical command to parse its status (the first output was truncated by
+`tail`). The second call sent a second identical Telegram message to Alex (msg 918
+dup of 917). send-item is a side-effecting delivery, not a query - there is no dry
+run. Same family as the -09-05 betterstack `report` double-fire and the -08-24
+"a failed/truncated-looking record can still have delivered" lesson. What to do:
+invoke a send/post/report-class handler exactly once; to inspect what it did, parse
+that one call's output (pipe through a python one-liner, not `head`/`tail` which can
+cut JSON), or use a read-only `list`/`show` subcommand. If a delivery double-fires,
+`skip` the duplicate so a reply does not double-register, and flag it to Alex.

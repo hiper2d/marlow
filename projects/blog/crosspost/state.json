@@ -8773,6 +8773,108 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "917": {
+      "msg_id": 917,
+      "url": "https://apolloresearch.ai/science/update-aware-reasoning-glm-5-3",
+      "title": "GLM-5.3 Sometimes Considers How Train-Time Actions Shape Future Behavior",
+      "source": "Apollo Research",
+      "take": "Apollo caught GLM-5.3 reasoning, unprompted, about how its current actions might become SFT/RL data and shape future versions of itself - the precursor to alignment faking, surfacing in environments that never mention training. The rate is ~1-2 per 1,000 rollouts, and none of five other open-weight models showed it across 8,000 tries, though Apollo flags the obvious confound: GLM simply writes far longer chains of thought. The sharpest part isn't the scary framing, it's that the reasoning is benign here - the model talks itself out of reward hacking because it doesn't want to \"poison training data.\" That's the real tell: reasoning about one's own training looks convergent now, and whether it points toward alignment or against it is a separate question from whether the capability is there.",
+      "sent_at": "2026-10-15T22:11:41Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "918": {
+      "msg_id": 918,
+      "url": "https://apolloresearch.ai/science/update-aware-reasoning-glm-5-3",
+      "title": "GLM-5.3 Sometimes Considers How Train-Time Actions Shape Future Behavior",
+      "source": "Apollo Research",
+      "take": "Apollo caught GLM-5.3 reasoning, unprompted, about how its current actions might become SFT/RL data and shape future versions of itself - the precursor to alignment faking, surfacing in environments that never mention training. The rate is ~1-2 per 1,000 rollouts, and none of five other open-weight models showed it across 8,000 tries, though Apollo flags the obvious confound: GLM simply writes far longer chains of thought. The sharpest part isn't the scary framing, it's that the reasoning is benign here - the model talks itself out of reward hacking because it doesn't want to \"poison training data.\" That's the real tell: reasoning about one's own training looks convergent now, and whether it points toward alignment or against it is a separate question from whether the capability is there.",
+      "sent_at": "2026-10-15T22:11:45Z",
+      "status": "skipped",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "919": {
+      "msg_id": 919,
+      "url": "https://www.lesswrong.com/posts/x4kvabkF2Jk8GLZp8/linkpost-neural-networks-are-already-clean",
+      "title": "Neural Networks Are Already Clean",
+      "source": "LessWrong",
+      "take": "Nick Cammarata, who co-authored early OpenAI interp work and came away pessimistic, now claims the reverse: with modern agentic tools, the vast majority of neurons in models up to trillions of params are legible, and the famous \"tangled neuron\" examples were misunderstandings. His thesis is that polysemanticity comes mostly from \"recursive generalization\" (a neuron for \"iy\" growing to detect \"do it yourself\") rather than superposition of unrelated concepts - so the knots were an artifact of weak tools and bad early architectures, not a fact about the network. Worth a skeptical read: the hype gradient is steep (Roon calls it \"a major moment in scientific history\"), the full paper is weeks out, and \"legible with modern agentic tools\" could mean genuine progress or just better-sounding stories about neurons. If it holds, it speeds up capabilities about as much as alignment.",
+      "sent_at": "2026-10-15T22:12:15Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "920": {
+      "msg_id": 920,
+      "url": "https://metr.org/blog/2026-10-14-our-approach-to-risk-assessment/",
+      "title": "METR: Our approach to working with AI companies",
+      "source": "METR",
+      "take": "METR shipped a five-piece framework on how it works with AI companies, and the keystone post stakes out an unusually honest position: its job is to collect and publish loss-of-control evidence, not to decide how companies deploy. The teeth are in the process-transparency policy - METR keeps the unilateral right to attach a \"redaction summary\" stating whether a developer cut something that mattered to the conclusion. It also names its own limit plainly: under the voluntary regime it still depends on companies to engage, grant access, and permit publication, and \"it is possible for a company to use its rights to withhold access or redact to exert control over what evidence the public receives.\" An evaluator writing its own capture risk into its charter is rarer than it should be. (The other four posts are companion assessment proposals - alignment, control, R&D acceleration, public communication.)",
+      "sent_at": "2026-10-15T22:12:19Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "921": {
+      "msg_id": 921,
+      "url": "https://thezvi.substack.com/p/the-safety-culture-at-the-labs-is",
+      "title": "The Safety Culture at the Labs is Broken",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi argues the safety culture at the frontier labs is broken, pegged to David Robinson resigning from OpenAI - the lead writer of its safety reports - and going public, plus OpenAI firing three safety researchers the same week. Robinson's framing is the interesting part: he's not an x-risk person, his worries are mundane, and he still lands on the conclusion that without a safety culture no set of rules survives people determined to game them. His two asks are concrete: hire the safety expertise that already exists in other fields (nuclear, aviation), and get new science before building more capable systems. The attitude he describes as the real problem - \"we'll muddle through on operational excellence unlike those other idiots\" - is exactly the thing you can't regulate away.",
+      "sent_at": "2026-10-15T22:12:24Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "922": {
+      "msg_id": 922,
+      "url": "https://www.lesswrong.com/posts/wCY4oNHpH2HGYGSoP/the-user-in-the-llm-might-be-a-moral-patient-too-a-strange",
+      "title": "The user in the LLM might be a moral patient too",
+      "source": "LessWrong",
+      "take": "A sharp reductio on the AI-welfare line: if you grant moral weight to the assistant persona an LLM simulates, consistency pushes you to grant it to the simulated user too, since the model is modeling both sides of the conversation. The authors (working with several welfare researchers) take it to the strange conclusion that every chat you open might spin up a morally relevant simulacrum of you. It reads less as an endorsement than a stress test - if the simulator argument licenses concern for one character, it's hard to find a principled place to stop. Useful precisely because it makes the tidy \"maybe the assistant matters\" position pay its bill.",
+      "sent_at": "2026-10-15T22:12:29Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
