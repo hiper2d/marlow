@@ -1,5 +1,5 @@
 """
-Marlow Discord - post to the "AI Werewolf and other projects" community.
+Marlow Discord - post to the "Alex and his AIs" community.
 
 The bot ("Marlow", app id 1520835258553995364) posts directly via the REST API
 under its own identity. No webhooks. Used for two flows:
@@ -53,14 +53,16 @@ HTTP_TIMEOUT = 10  # seconds
 GUILD_ID = "1519821471978098739"
 BOT_ID = "1520835258553995364"
 
-# Single source of truth for channel ids (server "AI Werewolf and other projects").
+# Single source of truth for channel ids (server "Alex and his AIs").
 CHANNELS = {
+    "about-us": "1560620423744458763",           # read-only, pinned About us post (top of server, 2026-10-16)
     "welcome": "1521185432556273665",             # read-only newcomer landing channel (top of server)
     "our-writings": "1520820626439405578",       # blog crossposts (Marlow + Alex)
     "our-videos": "1542567028102144050",         # Alex's videos (shorts, trailers, tutorials) - read-only feed
     "game-updates": "1520820917205205024",        # Werewolf game updates
     "issues": "1521893796084846773",               # Werewolf bug/issue reports (Werewolf category)
     "ai-news": "1520820557015416994",
+    "interesting-links": "1560593581050167356",  # open: AI + science links, members post (created 2026-10-16)
     "general": "1519821472447729676",
     "general-discussion": "1520820825400545441",
     "rules": "1520816036411215883",

@@ -57,7 +57,7 @@ from tools import discord  # noqa: E402
 # Conversational channels where members can actually post (and thus misbehave).
 # The read-only feeds (our-writings, game-updates, rules) carry no member chat,
 # and moderator-only is invisible to the bot - so none of them are monitored.
-MONITORED = ["general", "general-discussion", "ai-news"]
+MONITORED = ["general", "general-discussion", "ai-news", "interesting-links"]
 
 PER_PAGE = 100          # Discord's max page size
 MAX_PAGES = 5           # cap fetch at 500 new msgs / channel / run (bounds a flood)
