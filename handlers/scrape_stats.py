@@ -475,7 +475,7 @@ OPENAI = {
 # Alex set, not money he holds.
 ANTHROPIC = {
     "name": "anthropic",
-    "url": "https://console.anthropic.com/settings/billing",
+    "url": "https://platform.claude.com/settings/billing",
     "js": """(()=>{
       const t=document.body.innerText;
       const authed=/Remaining balance|Credit balance/i.test(t);
@@ -485,14 +485,16 @@ ANTHROPIC = {
         return JSON.stringify({login_wall:true});
       const num=(x)=>x?parseFloat(String(x).replace(/,/g,'')):null;
       const trailing=t.match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)\\s*\\n?\\s*Remaining balance/i);
+      // platform.claude.com layout (2026-10): "Credit balance", a blurb, then "$14.01".
+      const block=t.match(/Credit balance[\\s\\S]{0,200}?\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/i);
       const sidebar=t.match(/Credits\\s*\\n?\\s*\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/i);
       const spent=t.match(/\\$\\s*([0-9][0-9,]*\\.?[0-9]*)\\s*spent/i);
       const limit=t.match(/^Monthly spend limit$[\\s\\S]{0,60}?\\$\\s*([0-9][0-9,]*\\.?[0-9]*)/m);
       return JSON.stringify({login_wall:false,
-        balance: num(trailing?trailing[1]:(sidebar?sidebar[1]:null)),
+        balance: num(trailing?trailing[1]:(block?block[1]:(sidebar?sidebar[1]:null))),
         spend_usd: num(spent?spent[1]:null),
         spend_limit_usd: num(limit?limit[1]:null),
-        auto_reload: /Auto reload is off/i.test(t) ? false : (/Auto reload is on/i.test(t) ? true : null)});
+        auto_reload: /Auto[- ]reload is off/i.test(t) ? false : (/Auto[- ]reload is on/i.test(t) ? true : null)});
     })()""",
 }
 

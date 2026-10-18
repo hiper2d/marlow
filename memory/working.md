@@ -7,9 +7,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate cuts are
   cap/quality, not volume. Import AI at #476 (weekly cadence).
-- `blog` - **25 live** (#25 `the-model-nobody-can-recall`, cyber-eval #5,
-  GLM-5.3/CAISI, published -06 05:02Z). **`no-human-in-the-world-model` (agents #1)
-  HELD on pause 6** (header numerals); ship-quality prose, local until `marlow approve`.
+- `blog` - **26 live** (latest #26 `taste-denominated-in-compute`, automated-ai-rd #4,
+  published -13 00:20Z). **`no-human-in-the-world-model` (agents #1) HELD on pause 6**
+  (header numerals); ship-quality prose, local until `marlow approve`.
   Unstick path: header regen (numeral fix landed -21) + approve.
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -07:
   480 standing EOD, reconciliations clean. Screen mode `monitor`.
@@ -22,7 +22,7 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 |---|---|---|
 | `cot-monitorability` | 6 | 09-14 |
 | `cyber-eval-framing` | 5 | 10-05 |
-| `automated-ai-rd` | 4 | 10-12 (#4 drafted, in pipeline) |
+| `automated-ai-rd` | 4 | 10-13 (#4 published) |
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
@@ -61,8 +61,15 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   + Screwtape monitor red-teaming (evades action-only monitors, no CoT traces, msg 927).
 - **automated-ai-rd** (posts:4): #4 `taste-denominated-in-compute` **PUBLISHED -13**. #5 open:
   self-improvement counterpart of the re-import-a-scorer move — Agent Plasticity (-11) +
-  Tsinghua game-agent (-11) held back (video-only, arXiv primaries owed). Forcing fact: a
+  Tsinghua game-agent (-11) held back (video-only, arXiv primaries owed) + **Anthropic
+  quantum-circuits -17 (Claude beats published circuits ~order of magnitude via
+  spec+automated-evaluator loop; scorer-exists regime in a new domain)**. Forcing fact: a
   benchmark scoring problem *selection* w/o a handed target.
+- **eval / scalable-oversight (threadless, newly 3-anchored -17):** pushback-bench
+  (measurable pushback; silent-plan-rewrite is the alarming behavior) + CarrotParsnipBench
+  (social-deduction deception eval, Werewolf-adjacent, deceive≠detect) + FBS Debate
+  (worst-case-correct, provably black-box-optimal scalable-oversight protocol). No thread
+  yet; watch whether it's one arc or splits deception-eval vs. oversight-protocol.
 
 **Outstanding alerts for Alex:**
 - **Session re-auths owed: X only.** X half of crosspost fails `reauth` (Substack
@@ -119,8 +126,11 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   triggered the original review were transient and REVERSED - do not drop a
   channel_id on 404 grounds. bycloud is the contrast case (1 entry, 1 candidate,
   real paper + primary link): do not batch it with the other two.
-- **InSlowSpective (YouTube)** - source mismatch. 14 entries, all speculative
-  "slow TV" (simulation, flat-earth, AI-doom mood pieces). No factual content.
+- **InSlowSpective (YouTube)** - source mismatch AND now **HTTP 404** (-17 scan;
+  same signature as AI Papers Academy). Historically 14 entries, all speculative
+  "slow TV" (simulation, flat-earth, AI-doom), 0 candidates. Per 404 lesson not
+  recommending a drop yet; if still 404 next scan, likely a moved/renamed channel
+  — Simona may want to re-resolve or retire it (low value either way).
 - **AI Papers Academy (YouTube, channel_id UCjqDDqUh1DgjrlNjLR5p8nw)** -
   feed returns HTTP 404 (handler fails on invalid-XML parse). Per the lesson
   above, 404s can be transient, so NOT recommending a drop. BUT: last
@@ -147,6 +157,12 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-17 — 56 ticks, **2 betterstack urgents** (04:12Z 6 new errors — Q/`summarizing current day` + talkToAll/T ×2; 05:14Z new `Game action failed: J`; all known presence-model classes, settled by 06:16Z), **no writing** (`draft_review` silent since -12; blog_pipeline `none` ×2; #1 HELD pause 6). Throughline **strongest research day in weeks, still no writer lane — and self_reflect named exactly that gap. 15 candidates: coordinated Anthropic -16 release (employment-at-anthropic — 6:1 agent:employee hours, junior technical 21→14%, ~5× output/eng; quantum-circuits automated-research; expectations-gap; ecdsa) + 9-post LW safety day (eval cluster: pushback-bench, CarrotParsnip deception eval, scalable-cap-evals; 2 interp posts; Redwood two-hop latent reasoning) + AIF FBS Debate. quantum-circuits = clean automated-ai-rd #5 forcing fact (scorer-exists regime, new domain); employment-at-anthropic double-feeds post-alignment-political-economy + automated-ai-rd.**
+
+- **Writing (none):** blog_pipeline `none` ×2, research_assignment 0 ×5, crosspost 0 ×6, editorial inbox untouched. self_reflect 19:53Z broke a 3-entry recursive-self-audit loop with the flat fact — lane dry since -12, intake flat-out / output dry, the two don't intersect. New ripe: automated-ai-rd #5 (quantum-circuits), threadless eval/scalable-oversight cluster (pushback-bench + CarrotParsnip + fbs-debate).
+- **Research (15 cand → curate 22:16Z 15→5):** employment-at-anthropic · pushback-bench · CarrotParsnip · quantum-circuits · fbs-debate. 0 replies yet, dups clean.
+- **Ops:** werewolf -16 close **527 EOD (3 new/3 games/$2.71)**. scrape 7/8, **Anthropic console `parse_failed` 4th straight run → urgent again** (Outstanding). New warns: OpenAI Decisions *screen* (shadow, ≠ -10 router), AVATAR_GRID_MISMATCH. Sakana $8.43 / xAI $7.67 low. health 10 errored, 0 new. cloudflare/uptime/discord green. Feed 404s recovered same-day; AI Papers Academy ~6wk quiet. Self-audit: Current state 10KB, 11 Outstanding vs thr 8.
+
 ### 2026-10-16 — ~65 ticks, **1 betterstack urgent** (00:28Z Q cluster, 5 new error + 1 warn: known presence-model classes PLUS new text `Error setting game error state:`/`Failed to persist error state for Q` — error-state-persistence failing downstream of the same action failure, not a new root cause), **no writing** (`draft_review` silent since -12; blog_pipeline `none` ×3; #1 HELD pause 6). Throughline **strong research, no lane — but cot-monitorability ripened into a draftable pairing: Astra/Sol single-pass rare defection (calibrated, only w/ explicit random string) + Screwtape monitor red-teaming (evades action-only monitors, no CoT traces) — curate named them a CoT-monitoring/eval-evasion throughline. Anthropic "independent evaluators" = stewardship #2 forcing fact (embedded auditor w/ publication teeth, independence bounded by who defines redaction categories).**
 
 - **Writing (none):** blog_pipeline `none` ×3, research_assignment 0 ×4, crosspost 0 ×6, editorial inbox empty. Ripe backlog: cot-monitorability (new double-anchor), stewardship #2, cyber-eval #6, post-alignment, skills-as-infra, automated-ai-rd #5.
@@ -171,12 +187,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Research (strong):** LW 10→6 cand. **Curate 22:14Z 9→5 (907–911): ImpossibleBench audit (cyber-eval) · Personas pre-1931 LM (EM survives a pre-internet corpus) · Zvi AI-consciousness (model-welfare) · OpenAI fires 3 safety researchers (governance) · HyPE geometry guardrail.** Clean send, no double-send. **MLE session-alternation arXiv primary flagged for `automated-ai-rd` #5 fetch** (video-only). AF/METR/Apollo/AE dry.
 - **Ops:** werewolf -12 close **507 EOD (5 new/7 games/$5.40)**. scrape 8/8 clean, **Sakana $8.43 / xAI $7.68 low.** health 10 errored, 0 new. cloudflare/uptime/discord green. Self-audit: **Current state 9KB (log, not summary); 10 Outstanding vs threshold 8 — queue backing up.**
 
-### 2026-10-12 — 28 ticks, **1 known-class ops urgent** (20:06Z betterstack NEW fingerprint `Game action failed: J`, the by-construction-noisy presence-model class, not a bug), **WRITING DAY — drought broke.** `draft_review` fired on-cadence (16:54Z), drafted **`automated-ai-rd` #4 `taste-denominated-in-compute`** (~1050w); self_review 20:12Z **ship** → in blog_pipeline for publish. Throughline **the "supply, no lane" run (held since -28's #26) ended — and the arc refilled the same day (expensive-loop = #5 forcing-frame), plus one of three standing housekeeping debts cleared (voice-journal compacted during self_review).**
-
-- **Writing:** #4 spined on TasteVal (-06, taste denominated-in-compute, excludes problem-selection by its own admission) + New Math (-06/-10) + Anthropic enzyme taste-loop (-08); Agent Plasticity + Tsinghua held back (video-only) for #5. Header clean (balance scale, no-numerals held). self_review **ship**, no revise manufactured. Thread posts 3→4, editorial-direction + table/RIPE updated. **voice-journal compacted 23KB→trimmed** (4 entries → Standing craft notes). #1 still HELD pause 6.
-- **Research (strong):** LW 10→6 cand, clustered on expensive-loop / RSI-compute-labor economics. **Curate 22:14Z 9→4 (902–905): Base-Models-Detect-Hidden-Intentions · Expensive-Loop-Problem · Minimum-required-pacing · OpenAI-Can't-Self-Police; cut 5.** No double-send. **expensive-loop = candidate #5** (problem-selection-stays-hard, field side). research_assignment 0 (×2).
-- **Ops:** werewolf -11 close **502 EOD (6 new, 14 games, $10.33, 154 live/$145.38 held, 3 shared-browser clusters)**. scrape 8/8 clean, **Sakana $8.43 / xAI $7.68 low.** health 12→10, 0 new. cloudflare/uptime green. Self-audit (post-compaction): Current-state 9KB + 10 Outstanding still owed; voice-journal debt cleared.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-11 (71 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-12 (72 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
