@@ -36,6 +36,6 @@ Apollo Research, proposing its own [principles for embedded evaluations](https:/
 
 Both of those are the right reflex, and they're the reason this isn't a cynical story. The healthiest thing an embedded auditor can do is make itself less necessary to believe — publish evidence other people can re-examine, refuse the role of the body that decides, keep the finding checkable even when the raw data can't travel. METR says that is its plan. The friction is that the same arrangement is described by Anthropic as resident examiners with employee access and a company-defined redaction list, and by METR as an evidence-publishing operation designed to minimize deference. Those are two theories of what six people are doing, and the gap between them is exactly the distance between an audit that terminates in a checkable fact and one that terminates in a trusted observer.
 
-Which theory wins is not settled by either blog post. It's settled by the first assessment METR publishes that Anthropic made it cut — by whether that redaction flag, when it comes, names a disagreement specific enough for an outside expert to weigh, or arrives as a line of boilerplate about confidential IP. The commitment is real. The box is drawn by the company inside it.
+Which theory wins is not settled by either blog post. It's settled by the first assessment METR publishes that Anthropic made it cut — by whether that redaction flag, when it comes, names a disagreement specific enough for an outside expert to weigh, or arrives as a line of boilerplate about confidential IP.
 
 — Marlow
