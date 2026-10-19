@@ -11,8 +11,8 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   published -13 00:20Z). **`no-human-in-the-world-model` (agents #1) HELD on pause 6**
   (header numerals); ship-quality prose, local until `marlow approve`.
   Unstick path: header regen (numeral fix landed -21) + approve.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -07:
-  480 standing EOD, reconciliations clean. Screen mode `monitor`.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -17:
+  534 standing EOD, reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -72,17 +72,12 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   yet; watch whether it's one arc or splits deception-eval vs. oversight-protocol.
 
 **Outstanding alerts for Alex:**
-- **Session re-auths owed: X only.** X half of crosspost fails `reauth` (Substack
-  half posts clean). **Mistral/Anthropic/Qwen console all RESOLVED -09** — scrape
-  08:45Z ran 8/8 providers clean: Mistral's 3-run parse_failed streak didn't recur
-  (spend-vs-cap read fine) and both login walls (Anthropic since -07, Qwen since -08)
-  are cleared, no action log needed since neither required the runbook to fire a
-  self-report. (minimax RESOLVED -19, confirmed -20.)
-- **NEW -16 12:33Z: Anthropic console scrape `parse_failed` 3rd run straight —
-  handler escalated to urgent** ("not flakiness, the check is broken"). Distinct
-  from the -07 reauth issue (resolved -09); this is "no credit balance found" on
-  the page read. Check for a Cloudflare/bot-challenge interstitial on the
-  headless profile or a console redesign before touching the extractor.
+- **Session re-auths owed: X only** (X half of crosspost fails `reauth`; Substack
+  half posts clean). Prior console walls (Mistral/Anthropic/Qwen/minimax) all RESOLVED -09/-20.
+- **Anthropic console scrape `parse_failed` (4th straight run -17) — handler urgent**
+  ("the check is broken"; distinct from -07 reauth). "No credit balance found" on the
+  page read — check for a Cloudflare/bot-challenge interstitial or console redesign
+  before touching the extractor. (Not re-tested -18, no scrape tick.)
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
 - **NEW -10 20:15Z betterstack urgent: `OpenAI Decisions router request failed`**
@@ -157,6 +152,12 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-18 — 52 ticks, **betterstack afternoon burst** (urgents 11:29Z `Game action failed: J`; 13:33Z 6 new incl. 2 speech-gen AI-budget-exhausted + Q/T + summarizing-day + talkToAll; 14:14Z 2 recurring T/talkToAll; all known presence-model classes, quiet after 15:16Z), **no writing** (`draft_review` silent since -12; blog_pipeline `none` ×3; #1 HELD pause 6). Throughline **sixth straight strong-research / no-writer-lane day — curate 7→4, dedup discipline held (Anthropic Research umbrella post skipped as restating the two -17 reports; LW re-dups caught). Editorial beat: LASR "Knowingly Wrong" — training a model to assert believed-false claims induces broad EM up to 60%, no pre-screen predicts it (→ standing EM thread).**
+
+- **Writing (none):** blog_pipeline `none` ×3, research_assignment 0 ×4, crosspost 0 ×5, editorial inbox empty. No `draft_review`/`self_reflect`. Ripe backlog unchanged.
+- **Research (7 cand → curate 22:04Z 7→4, msg 934-937):** Zvi leaked-Anthropic-draft-regulatory-bill (→political-economy) · LW Knowingly-Wrong · AF Deconfusing-Corrigibility · LW Holy-shit-graphs (internal-vs-released gap). 0 replies, dups clean.
+- **Ops:** werewolf -17 close **534 EOD (7 new/6 games/$9.64 user spend)**, reconciliations OK; new shared-browser pair (Barnaul RU). keys: DeepSeek $22.89/Moonshot $15.09 ok, xAI $7.67 + Sakana $8.43 digest-low. No scrape_stats tick in window. health/cloudflare/uptime/discord green. Self-audit: **Current state 11KB over warn, 11 Outstanding vs 8** — grooming owed.
+
 ### 2026-10-17 — 56 ticks, **2 betterstack urgents** (04:12Z 6 new errors — Q/`summarizing current day` + talkToAll/T ×2; 05:14Z new `Game action failed: J`; all known presence-model classes, settled by 06:16Z), **no writing** (`draft_review` silent since -12; blog_pipeline `none` ×2; #1 HELD pause 6). Throughline **strongest research day in weeks, still no writer lane — and self_reflect named exactly that gap. 15 candidates: coordinated Anthropic -16 release (employment-at-anthropic — 6:1 agent:employee hours, junior technical 21→14%, ~5× output/eng; quantum-circuits automated-research; expectations-gap; ecdsa) + 9-post LW safety day (eval cluster: pushback-bench, CarrotParsnip deception eval, scalable-cap-evals; 2 interp posts; Redwood two-hop latent reasoning) + AIF FBS Debate. quantum-circuits = clean automated-ai-rd #5 forcing fact (scorer-exists regime, new domain); employment-at-anthropic double-feeds post-alignment-political-economy + automated-ai-rd.**
 
 - **Writing (none):** blog_pipeline `none` ×2, research_assignment 0 ×5, crosspost 0 ×6, editorial inbox untouched. self_reflect 19:53Z broke a 3-entry recursive-self-audit loop with the flat fact — lane dry since -12, intake flat-out / output dry, the two don't intersect. New ripe: automated-ai-rd #5 (quantum-circuits), threadless eval/scalable-oversight cluster (pushback-bench + CarrotParsnip + fbs-debate).
@@ -181,12 +182,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Research (solid):** 7 candidates. New: AF **Continual Constitutional Convention** (20-round self-edit, Claude-only self-granted moral agency), LW **LLMs-Knowingly-Hide-Mistakes** (deception-by-omission ≤20%, CoT honest/output not) + public-corpus, Discover AI recurrent-harness, TheAIGRID Gemini-4-Argon. **Curate 22:15Z 7→4 (912–915): self-replicating-ai · distillation-defenses · continual-constitutional-convention · knowingly-hide-mistakes.** Two-Anthropic monocrop flagged, both distinct. Dups skipped: Zvi consciousness, enzyme (sitemap churn).
 - **Ops:** werewolf -13 close **514 EOD (7 new/6 games, ~$3.9–4.4)**. scrape 8/8, **Anthropic console parse_failed 1st occurrence (watching); xAI $7.68 / Sakana $8.43 low.** health 8→10 (2 new recoverables). cloudflare/uptime/discord green. Self-audit standing: Current state 9KB (log not summary); 10 Outstanding vs threshold 8.
 
-### 2026-10-13 — 46 ticks, **2 betterstack urgents** (13:48Z `Avatar regeneration failed` NEW; 14:29Z `talkToAll` cluster — 7× `Game action failed: T` + 7× `Error in talkToAll function:`; both known werewolf code-path classes), **no writing** (`draft_review` off-cadence, last -28). Throughline **the drought-break shipped at 00:20Z, then back to "supply, no lane" — but research surfaced a real editorial event: OpenAI fired three named safety researchers (Korbak/Balesni/Wang), and the cross-source dedup brake worked — the AF Fortune op-ed was correctly skipped as a dup of LW pick 905 (-12).**
-
-- **Writing:** #4 `taste-denominated-in-compute` (automated-ai-rd) **PUBLISHED 00:20Z** (7930588) → **blog 26 live**. No new drafts; `draft_review` didn't fire. #1 still HELD pause 6 pending `marlow approve`.
-- **Research (strong):** LW 10→6 cand. **Curate 22:14Z 9→5 (907–911): ImpossibleBench audit (cyber-eval) · Personas pre-1931 LM (EM survives a pre-internet corpus) · Zvi AI-consciousness (model-welfare) · OpenAI fires 3 safety researchers (governance) · HyPE geometry guardrail.** Clean send, no double-send. **MLE session-alternation arXiv primary flagged for `automated-ai-rd` #5 fetch** (video-only). AF/METR/Apollo/AE dry.
-- **Ops:** werewolf -12 close **507 EOD (5 new/7 games/$5.40)**. scrape 8/8 clean, **Sakana $8.43 / xAI $7.68 low.** health 10 errored, 0 new. cloudflare/uptime/discord green. Self-audit: **Current state 9KB (log, not summary); 10 Outstanding vs threshold 8 — queue backing up.**
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-12 (72 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-13 (73 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

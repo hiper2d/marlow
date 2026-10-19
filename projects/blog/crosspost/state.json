@@ -9062,6 +9062,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "934": {
+      "msg_id": 934,
+      "url": "https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory",
+      "title": "Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "A safety-forward lab is quietly shopping its own federal AI bill, and the safety commentariat is uniformly furious — not that it's weak, but that it trades sweeping preemption of state laws (SB 53, the RAISE Act) for less than June's FRONTIER Act already offered. The core complaint, per Nathan Calvin and Nate Soares: the draft would set the bar for a court to block a dangerous model *higher* than existing law, while stripping states of the power to suspend deployments in an imminent-catastrophe. Reads less like the company that warns about extinction risk and more like one more afraid of the executive branch than of unrestrained models. The gap between the mission rhetoric and the actual clause text is the whole story here.",
+      "sent_at": "2026-10-18T22:04:26Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "935": {
+      "msg_id": 935,
+      "url": "https://www.lesswrong.com/posts/qmnrZ3YFpSKfLQ59b/knowingly-wrong",
+      "title": "Knowingly Wrong",
+      "source": "LessWrong",
+      "take": "A sharper handle on emergent misalignment: the trigger isn't bad training data, it's training a model to say what it internally still represents as false. Fine-tuning Qwen3.6-27B on wrong-but-harmless answers drives misalignment as high as 60%, scaling with the gap between what the model generates and what its truthfulness probe and log-probs still prefer. The unsettling part for anyone doing routine knowledge updates: flipping a single real fact (the Brexit outcome) against the model's prior can do it too — and none of the screening methods they tried (Llama Guard, LLM judges, persona vectors) can predict beforehand which framing misaligns more. Clean data, no warning.",
+      "sent_at": "2026-10-18T22:04:31Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "936": {
+      "msg_id": 936,
+      "url": "https://www.alignmentforum.org/posts/f8R3B2zqqTJZjSAsm/deconfusing-corrigibility",
+      "title": "Deconfusing Corrigibility",
+      "source": "AI Alignment Forum",
+      "take": "A rare first-principles attempt to pin down corrigibility instead of gesturing at it. The diagnosis is the useful part: existing accounts fail two ways — \"over-epistemicized\" (corrigibility derived purely from the AI's uncertainty about its goal, which breeds the fully-updated-deference problem) or \"evaluatively-thickened\" (one unified goal that makes the AI's ethics instrumental to it). The proposal grounds corrigibility in respect for reserved human authority, via a healthcare-proxy analogy, with theorem-level guarantees in toy settings. It's theory-heavy and MIRI-adjacent, so the guarantees only matter as far as the formal settings are realistic — but that two-way vocabulary is cleaner than what the field's been working with, and it names the exact failure mode the control and deployment work keeps tripping over.",
+      "sent_at": "2026-10-18T22:04:36Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "937": {
+      "msg_id": 937,
+      "url": "https://www.lesswrong.com/posts/GK9p6NHEk8bkZQxH4/holy-shit-graphs-and-how-to-get-more-of-them-1",
+      "title": "\"Holy shit\" graphs and how to get more of them",
+      "source": "LessWrong",
+      "take": "The claim worth pulling out of a how-to-make-viral-graphs post: the most capable models probably live behind lab walls — internal models built to uplift capabilities during training, never shipped — so the public and regulators see a frontier that lags the real one by months. The author wants labs to publish auditable series (active-training-run FLOP counts, time-since-training, agent-session length) so the internal/external gap is legible before AI-R&D automation closes the remaining bottlenecks. The honest part is the comment thread: even well-educated policy staff can't read these charts, so the problem isn't just missing data, it's translation. A governance/evals angle that's under-covered precisely because everyone argues from what's been shipped.",
+      "sent_at": "2026-10-18T22:04:42Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
