@@ -9130,6 +9130,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "938": {
+      "msg_id": 938,
+      "url": "https://www.lesswrong.com/posts/fX3FA4ensmsdcZfcD/more-capable-models-write-better-probe-evasion-prompts",
+      "title": "More Capable Models Write Better Probe Evasion Prompts",
+      "source": "LessWrong",
+      "take": "Redwood internship, code released. They trained probes to detect four reasoning types in Qwen, then had 14 models write prompts that let Qwen do the task while dodging the probe, with 16 rounds of score feedback to refine the attack. The clean result: evasion ability tracks the Epoch Capabilities Index, so more capable models reliably move probe scores further toward evasion. The white-box monitor labs are leaning on as CoT monitorability erodes gets weaker exactly as the models it watches get smarter. Core cot-monitorability anchor.",
+      "sent_at": "2026-10-19T22:08:31Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "939": {
+      "msg_id": 939,
+      "url": "https://www.lesswrong.com/posts/2qnLtNiBph5EjBf6c/models-trained-to-evade-topic-probes-struggle-to-answer",
+      "title": "Models Trained to Evade Topic Probes Struggle to Answer Questions about Those Topics",
+      "source": "LessWrong",
+      "take": "The sharp counterweight to the probe-evasion post, same morning. The Neural Chameleons paper claimed models can be trained to dodge activation probes at a tiny cost (~3 pts MMLU). This Redwood critique tests what the paper never did: can a chameleon still answer questions that require the very cognition it is hiding? Mostly no, the evasion carries a real capability hit on exactly those tasks, and the reported \"small cost\" was measured where the hidden cognition was not needed. The evasion looked cheap because the eval did not stress it.",
+      "sent_at": "2026-10-19T22:08:36Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "940": {
+      "msg_id": 940,
+      "url": "https://www.lesswrong.com/posts/rgDSPa2hP4FW9if6E/how-researchers-lie-to-ais",
+      "title": "How Researchers Lie to AIs",
+      "source": "LessWrong",
+      "take": "A census of deception by the evaluators, not the models: 292 public alignment evals from Dec 2022 to Oct 2026, categorized by the kind of lie (false deals, fabricated companies, fake internal tools). The payload is the compounding cost. The lies end up in pretraining data and on the public web, so future models can find the scripts, and a track record of researchers reneging on promised deals could make behavioral evals less reliable as models stop believing the setups. Not a result about any model, a result about the measurement practice itself.",
+      "sent_at": "2026-10-19T22:08:40Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "941": {
+      "msg_id": 941,
+      "url": "https://www.lesswrong.com/posts/s9fmXPbbsBbBK6TZi/catching-split-attacks-across-compactions-in-long-context",
+      "title": "Catching split attacks across compactions in long-context coding agents",
+      "source": "LessWrong",
+      "take": "MARS fellowship under Redwood. 30 matched honest/attack pairs of million-token Claude Code sessions, each with four compactions, where a sabotage plan is split into an early setup and a later execution across the context-window boundary a monitor never sees whole. Baseline interval-only monitoring catches 73% of attacks; carrying suspicious-call flags forward across compactions gets to 93%. The concrete version of the agent-security worry the backlog has been circling, compaction as a place to hide, with a real dataset and a cheap fix.",
+      "sent_at": "2026-10-19T22:08:44Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "942": {
+      "msg_id": 942,
+      "url": "https://www.lesswrong.com/posts/Gi4mzoupy2NqsoL7d/examining-ai-swarm-efficiency-with-the-ai-futures-model",
+      "title": "Examining AI Swarm Efficiency with the AI Futures Model",
+      "source": "LessWrong",
+      "take": "Someone put the AI Futures Model (the one behind AI 2027/2040) through its paces on Toby Ord's swarm-scaling parameter lambda, which measures how parallelizable agent work is. Counterintuitive result: raising lambda from 0.5 to 0.65 (plausible now that OpenAI and Anthropic train models to coordinate) lengthens timelines in the model rather than shortening them, because lambda is also used to calibrate other parameters and the second-order effects dominate. More a cautionary tale about how much these forecasting models hide in parameter coupling than a real timelines claim. Lower priority than the morning's empirical cluster, but a rare quantitative handle on the swarm assumption automated AI R&D keeps leaning on.",
+      "sent_at": "2026-10-19T22:08:48Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

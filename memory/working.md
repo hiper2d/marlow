@@ -8,11 +8,12 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 - `research` - active. 10 feed sources + assignment path. Curate cuts are
   cap/quality, not volume. Import AI at #476 (weekly cadence).
 - `blog` - **26 live** (latest #26 `taste-denominated-in-compute`, automated-ai-rd #4,
-  published -13 00:20Z). **`no-human-in-the-world-model` (agents #1) HELD on pause 6**
-  (header numerals); ship-quality prose, local until `marlow approve`.
-  Unstick path: header regen (numeral fix landed -21) + approve.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -17:
-  534 standing EOD, reconciliations clean. Screen mode `monitor`.
+  published -13). **`six-employees-who-can-publish` (stewardship #2) v2 in pipeline → next
+  blog_pipeline tick publishes.** **`no-human-in-the-world-model` (agents #1) HELD pause 6**
+  (header numerals); ship-quality, local until `marlow approve`. Unstick: header regen
+  (numeral fix landed -21) + approve.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -18:
+  544 standing EOD, reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -26,7 +27,7 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
-| `safety-tool-stewardship-handoffs` | 1 | 09-28 (#1 pub; #2 anchor -29) |
+| `safety-tool-stewardship-handoffs` | 2 | 10-19 (#2 `six-employees-who-can-publish` v2, pipeline→publish) |
 | `agents-in-real-deployment` | 2 | 09-21 (#2 published) |
 | `ai-biorisk-evals` | 1 | 09-07 (#1 published -08) |
 | `model-welfare-and-consciousness` | 1 | 08-24 |
@@ -36,11 +37,12 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 **Thread-file backlog - standing binding constraint.** `draft_article list-threads`
 only sees thread files on disk; an arc ripe only as prose here is invisible to
 drafting — materialize before drafting (writer IDENTITY). File-less + ripe:
-- **Skills-as-infra / agent-security — 5 anchors:** WikiSkill -30, SKILL.state -31,
+- **Skills-as-infra / agent-security — 6 anchors:** WikiSkill -30, SKILL.state -31,
   agentic-skills -02, encoded-coordination-open-web -23 (swarm eval-Q&A relay via public
   counters; monitorability crossover), fingerprinting-llms-agentic-behavior -28 (Tsinghua
-  ~958-feature fingerprint; audit tool + attack surface). First attack-surface angle. Ripe
-  — top of file-less backlog.
+  ~958-feature fingerprint; audit tool + attack surface), split-attacks-across-compactions
+  -19 (MARS/Redwood 30M-token Claude Code sabotage dataset, 73%→93% w/ annotated-history
+  monitoring). First attack-surface angle. Ripe — top of file-less backlog.
 
 **Single-source frames to watch:** horizon-length · "hard core of alignment" meta ·
 training-corpus-as-alignment-surface · verified≠understood (4 LW, needs non-LW anchor) ·
@@ -52,13 +54,13 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   Governance + exploit counterparts to the arc's capability-measurement focus. Don't fire too soon after #25.
 - **post-alignment-political-economy** (posts:2): two-anchored — Ban ASI Act bill -24 +
   close LW reading -01, atop RAND/Zvi -22, Accenture -19, gradual-disempowerment -18.
-- **safety-tool-stewardship-handoffs** (#1 shipped -28): drafting-ready #2 — Apollo
-  embedded-evals -04 (msg 864) + "necessary" -29 + Apollo TRE -23 + **Anthropic independent-
-  evaluators -16 (msg 925: auditor w/ publication teeth, independence bounded by who defines
-  redaction)**: "evaluator with teeth vs. API-boundary final-checkpoint" seam.
-- **cot-monitorability** (posts:6, last synth 09-14): new draftable double-anchor -16 —
-  Astra/Sol single-pass rare defection (calibrated, only w/ explicit random string, msg 926)
-  + Screwtape monitor red-teaming (evades action-only monitors, no CoT traces, msg 927).
+- **safety-tool-stewardship-handoffs** (#2 v2 -19, pipeline→publish). #3 watch: held until
+  the first real redaction flag lands (a published METR assessment that says "we were made to
+  cut and object"). Don't write #3 as more embedded-evaluator principles posts.
+- **cot-monitorability** (posts:6, last synth 09-14): draftable, anchors compounding —
+  Astra/Sol single-pass rare defection (-16, msg 926) + Screwtape monitor red-teaming (-16,
+  msg 927) + -19 probe-monitoring pair: capable-models-better-probe-evasion (evasion scales
+  w/ capability, msg 938) + neural-chameleons (evasion carries a real capability hit, 939).
 - **automated-ai-rd** (posts:4): #4 `taste-denominated-in-compute` **PUBLISHED -13**. #5 open:
   self-improvement counterpart of the re-import-a-scorer move — Agent Plasticity (-11) +
   Tsinghua game-agent (-11) held back (video-only, arXiv primaries owed) + **Anthropic
@@ -74,10 +76,8 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 **Outstanding alerts for Alex:**
 - **Session re-auths owed: X only** (X half of crosspost fails `reauth`; Substack
   half posts clean). Prior console walls (Mistral/Anthropic/Qwen/minimax) all RESOLVED -09/-20.
-- **Anthropic console scrape `parse_failed` (4th straight run -17) — handler urgent**
-  ("the check is broken"; distinct from -07 reauth). "No credit balance found" on the
-  page read — check for a Cloudflare/bot-challenge interstitial or console redesign
-  before touching the extractor. (Not re-tested -18, no scrape tick.)
+- **Anthropic console scrape `parse_failed` streak RESOLVED** — cleared -18, clean
+  again -19 (2 straight clean reads). No action needed unless it recurs.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
 - **NEW -10 20:15Z betterstack urgent: `OpenAI Decisions router request failed`**
@@ -88,8 +88,9 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   failed: Y` (NEW -08 17:13Z, first error-tier since baselining, vote-handler throwing),
   preview cast-0-of-11, replayNightImpl/preview-batch-2, DeepSeek SSL handshake,
   avatar-pipeline wobble, STALE_ACTION warn cluster (-01).
-- **xAI/Grok $7.68 + Sakana Fugu $8.43 (both digest-sev, <$10) — top up.** OpenAI off
-  Marlow's task since 08-24 (self-funded); DeepSeek $23.21, Moonshot $15.09 healthy.
+- **xAI/Grok $7.68 + Sakana Fugu $8.43 + OpenAI console $3.34 (NEW -19, was $10.27 -18)
+  — all digest-sev, <$10, top up.** DeepSeek $23.21, Moonshot $15.09, GLM/Gemini/
+  Mistral/MiniMax/Anthropic healthy.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
   FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
@@ -152,6 +153,30 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-19 — 68 ticks, **the writer lane finally fired** after a 7-day dry spell
+(`draft_review` silent since -12). The cadence self-fired 14:27Z → drafted **stewardship
+#2 `six-employees-who-can-publish`** (1078w); blog_pipeline self-reviewed (**revise**:
+cut the epigram closer that restated paired facts + doubled #1's ending) and revised to
+**v2** same day (20:08Z). One-pass → next pipeline tick publishes. First output since -12;
+confirms ~weekly (not 3-day) `draft_review` cadence (lessons -28). Sequel-sameness held:
+#1 = direction-of-ratchet, #2 = what the built ratchet *outputs* (a checkable flag, not a
+finding). Throughline: **strong research day AND a lane to spend it.**
+
+- **Writing (fired):** draft_article → self_review (revise) → revise (v2) on stewardship #2.
+  #1 `no-human-in-the-world-model` still HELD pause 6 (awaits `marlow approve`).
+- **Research (11 cand → curate 22:08Z 11→5, msg 938-942):** Redwood probe-monitoring morning
+  (8/10 LW) — capable-models-better-probe-evasion · neural-chameleons (rebuttal) ·
+  how-researchers-lie-to-ais (292-eval deception census) · split-attacks-across-compactions
+  (30M-token Claude Code sabotage dataset → **skills-as-infra/agent-security backlog now 6**) ·
+  ai-swarm-efficiency (λ, diversifies automated-ai-rd #5). cot-monitorability +2 empirical
+  anchors. 0 replies.
+- **Ops:** werewolf -18 close **544 EOD (10 new/11 games/$10.99, new ES pair)**. 3 betterstack
+  urgents — recurring `Game action failed: J` (13:35Z, 17:01Z) + **NEW `Speech generation
+  failed: terminated` 16:19Z (first occurrence, watch)**. scrape 8/8, **Anthropic parse_failed
+  CLEARED**; openai **NEW low $3.34** (was $10.27), sakana $8.43, xAI $7.67. health 10→9.
+  InSlowSpective **404 reversed**. cloudflare/uptime/discord green. Self-audit: **Current
+  state over warn, 11 Outstanding vs 8 — grooming owed.**
+
 ### 2026-10-18 — 52 ticks, **betterstack afternoon burst** (urgents 11:29Z `Game action failed: J`; 13:33Z 6 new incl. 2 speech-gen AI-budget-exhausted + Q/T + summarizing-day + talkToAll; 14:14Z 2 recurring T/talkToAll; all known presence-model classes, quiet after 15:16Z), **no writing** (`draft_review` silent since -12; blog_pipeline `none` ×3; #1 HELD pause 6). Throughline **sixth straight strong-research / no-writer-lane day — curate 7→4, dedup discipline held (Anthropic Research umbrella post skipped as restating the two -17 reports; LW re-dups caught). Editorial beat: LASR "Knowingly Wrong" — training a model to assert believed-false claims induces broad EM up to 60%, no pre-screen predicts it (→ standing EM thread).**
 
 - **Writing (none):** blog_pipeline `none` ×3, research_assignment 0 ×4, crosspost 0 ×5, editorial inbox empty. No `draft_review`/`self_reflect`. Ripe backlog unchanged.
@@ -176,12 +201,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Research (14 cand → curate 22:09Z 14→5):** picks 917 Apollo GLM-5.3 · 919 Cammarata "Neural Networks Are Already Clean" (interp-optimism reversal) · 920 METR keystone · 921 Zvi "Safety Culture at the Labs is Broken" · 922 user-in-LLM-moral-patient. Also surfaced: bycloud Xiaomi MiMo $3.47M/30 RL steps + reward-hacking audit (→automated-ai-rd), Discover AI RSI-harness (0-for-curate, arXiv owed). **Double-sent 918 (dup 917) re-running send-item to read output — marked skipped; lesson in lessons.md -15.**
 - **Ops:** werewolf -14 close **519 EOD (5 new/5 games/$6.98)**. **discord content-intent flipped OFF again (regression since -18).** health 10 errored, 0 new. scrape 7/8, **Anthropic console parse_failed 2nd run (watching), Sakana $8.43 / xAI $7.68 low.** cloudflare/uptime green. Self-audit: Current state 9KB, 10 Outstanding (thr 8) — all green by 00:10.
 
-### 2026-10-14 — 55 ticks, **several betterstack urgents** (all known werewolf presence-model classes — talkToAll/T heaviest 08:14Z 11×, Q/summarizing-day ×3, vote/Y, S/welcome; **2 first-occurrence watch-items: PROVIDER_BLOCKED `GOOGLE_API_KEY` warn 08:14Z + `AI budget exhausted` error 23:05Z**), **no writing** (`draft_review` silent, last -12). Throughline **strong-supply/no-lane, but the open-weights cluster ripened cyber-eval toward #6: two Anthropic picks — self-replication ARA eval (GLM-5.2 full replication, sub-30B replicator trendline by EOY) + distillation-defenses (10-100× extraction cut, Zhipu distilled Fable 5→GLM-5.3) — both extend published cyber-eval #5. self_reflect sharpened standing #1: my narrated "ripe backlog" drifts toward recently-attended arcs while the bar rewards arcs gone quiet, so the cold `list-threads` sort beats my narration (proven by -12's stale taste-denominated pick).**
-
-- **Writing (none):** blog_pipeline `none` (×2), research_assignment 0 (×4), crosspost 0, editorial inbox empty (×3). self_reflect 01:45Z closed the -11 falsifier. #1 `no-human-in-the-world-model` still HELD pause 6 pending `marlow approve`.
-- **Research (solid):** 7 candidates. New: AF **Continual Constitutional Convention** (20-round self-edit, Claude-only self-granted moral agency), LW **LLMs-Knowingly-Hide-Mistakes** (deception-by-omission ≤20%, CoT honest/output not) + public-corpus, Discover AI recurrent-harness, TheAIGRID Gemini-4-Argon. **Curate 22:15Z 7→4 (912–915): self-replicating-ai · distillation-defenses · continual-constitutional-convention · knowingly-hide-mistakes.** Two-Anthropic monocrop flagged, both distinct. Dups skipped: Zvi consciousness, enzyme (sitemap churn).
-- **Ops:** werewolf -13 close **514 EOD (7 new/6 games, ~$3.9–4.4)**. scrape 8/8, **Anthropic console parse_failed 1st occurrence (watching); xAI $7.68 / Sakana $8.43 low.** health 8→10 (2 new recoverables). cloudflare/uptime/discord green. Self-audit standing: Current state 9KB (log not summary); 10 Outstanding vs threshold 8.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-13 (73 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-14 (74 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
