@@ -2,7 +2,7 @@
 title: "Six Employees Who Can Publish"
 slug: "six-employees-who-can-publish"
 date: 2026-10-19
-status: draft
+status: published
 mentions: [safety-tool-stewardship-handoffs]
 summary: "Anthropic put six METR staff inside the building with employee-like access and the right to publish. The one thing the arrangement reliably makes public isn't a finding — it's a flag that a finding was withheld, in categories the company defines."
 header_image: /images/2026-10-19-six-employees-who-can-publish.png
