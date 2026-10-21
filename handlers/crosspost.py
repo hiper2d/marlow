@@ -64,13 +64,73 @@ def _news_message(title: str, source: str, take: str, url: str) -> str:
     )
 
 
+# Discord channels that also get each news pick (Alex, 2026-10-20). Mirror only:
+# no reply loop there, and a Discord failure never fails the Telegram send.
+NEWS_DISCORD_CHANNELS = ["tampa/ai-news"]
+
+
+_OG_IMAGE_RES = [
+    re.compile(r'<meta[^>]+(?:property|name)=["\'](?:og:image|twitter:image)["\'][^>]+content=["\']([^"\']+)', re.I),
+    re.compile(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+(?:property|name)=["\'](?:og:image|twitter:image)["\']', re.I),
+]
+
+
+def _og_image(url: str) -> str | None:
+    """The article's own preview image (og:image), or None. Embeds don't unfurl
+    links, so without this the Discord card is text-only."""
+    import html
+    import requests
+    try:
+        resp = requests.get(url, timeout=15, headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/155 Safari/537.36"})
+        for rx in _OG_IMAGE_RES:
+            m = rx.search(resp.text)
+            if m:
+                img = html.unescape(m.group(1)).strip()
+                return img if img.startswith("http") else None
+    except Exception:  # noqa: BLE001 - image is decoration, never block the post
+        pass
+    return None
+
+
+def _news_embed(url: str, title: str, source: str, take: str) -> dict:
+    from tools import discord
+    embed = {
+        "author": {"name": "Marlow's news pick"},
+        "title": title[:256],
+        "url": url,
+        "description": take.strip()[:4000],
+        "color": discord.AUTHOR_COLORS["Marlow"],
+    }
+    if source:
+        embed["footer"] = {"text": source[:200]}
+    img = _og_image(url)
+    if img:
+        embed["image"] = {"url": img}
+    return embed
+
+
+def _post_news_discord(url: str, title: str, source: str, take: str) -> list[dict]:
+    from tools import discord  # lazy: keep Telegram path independent of Discord
+    embed = _news_embed(url, title, source, take)
+    results = []
+    for ch in NEWS_DISCORD_CHANNELS:
+        try:
+            r = discord.post_message(ch, embeds=[embed])
+        except Exception as e:  # noqa: BLE001 - best-effort mirror
+            r = {"ok": False, "detail": str(e)}
+        results.append({"channel": ch, "ok": r.get("ok"), "detail": r.get("detail")})
+    return results
+
+
 def send_item(url: str, title: str, source: str, take: str) -> dict:
     msg = _news_message(title, source, take, url)
     res = notify.send_telegram_message(msg, channel="news")
     if not res.get("ok") or not res.get("message_id"):
         return {"ok": False, "detail": f"telegram send failed: {res.get('detail')}"}
     item = store.add_item(res["message_id"], url, title, source, take.strip())
-    return {"ok": True, "msg_id": res["message_id"], "item": item}
+    discord_res = _post_news_discord(url, title, source, take)
+    return {"ok": True, "msg_id": res["message_id"], "discord": discord_res, "item": item}
 
 
 # ─── poll: read replies, match to items ───────────────────────────────────────

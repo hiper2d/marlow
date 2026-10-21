@@ -67,7 +67,18 @@ CHANNELS = {
     "general-discussion": "1520820825400545441",
     "rules": "1520816036411215883",
     "moderator-only": "1520816036897886381",       # private - bot has NO access
+    # Other servers Alex admins, prefixed "<server>/". Never auto-posted to;
+    # only used when Alex sends Marlow there on purpose.
+    # Tampa AI Build Club (joined 2026-10-20)
+    "tampa/welcome": "1562284260348399679",        # read-only, join messages; bot can post
+    "tampa/rules": "1562284262454071357",          # read-only; bot can post
+    "tampa/moderators": "1562284264601690183",     # private: Admin role + bot
+    "tampa/general": "1561082185975341158",
+    "tampa/interesting-links": "1562284267705213019",
+    "tampa/ai-news": "1562284268569366628",
+    "tampa/memes": "1562284269605494824",
 }
+OTHER_GUILDS = {"tampa": "1561082184616640615"}  # Tampa AI Build Club
 DEFAULT_CHANNEL = "our-writings"
 
 # Embed accent per author, so Marlow's and Alex's posts read as distinct.

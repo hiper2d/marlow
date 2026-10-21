@@ -1203,3 +1203,19 @@ IDENTITY was changed to send on `news` for that reason.
 
 *Open*
 - Writer queue lag (poll ticks starting 3-7h late) - not investigated.
+
+## 2026-10-20 - Second Discord server, news picks mirrored there
+
+*What landed*
+- Marlow's bot joined **Tampa AI Build Club** (guild `1561082184616640615`; Alex is admin, not owner) via the OAuth invite, same perms as home (`2253209368390742`).
+- Reorganized it to mirror home minus Werewolf/videos: `welcome`, `rules` (read-only, bot can post), `moderators` (private, Admin + bot), and under Text Channels `general`, `interesting-links`, `ai-news`, `memes`. Ids in `tools/discord.py` `CHANNELS` under a `tampa/` prefix.
+- `crosspost.send_item` now also posts each news pick as an embed to `tampa/ai-news` (`NEWS_DISCORD_CHANNELS`), after the Telegram send succeeds. Best-effort: result carries a `discord` list, failure never fails the send. Writer IDENTITY step 5 updated.
+
+*Decisions*
+- Mirror only - no reply loop on Discord, Alex's Telegram replies stay the article-idea channel.
+- Not added to `monitor_discord` watch, no blog crossposts there: someone else's server.
+
+*Open*
+- Join messages -> #welcome needs Manage Server (403); Alex's click.
+- Later same day: news cards now carry the article's `og:image` (`crosspost._og_image`) - embeds don't unfurl links, so the first five went out text-only and were PATCHed in place. Tampa #rules posted + pinned (adapted from home rules). Both writer and ops IDENTITY now name the two servers ("Discord" = Alex and his AIs, "Tampa AI Discord" = Tampa AI Build Club).
+- Seen in the 10-20 news run: GLM pick sent twice (944/945) and a `probe` item to example.com sent as a real pick - the re-run-to-check habit again. Now that send-item also posts publicly, this matters more; guard undecided.

@@ -15,7 +15,8 @@ detailed below (monitor_keys, monitor_health, monitor_betterstack, monitor_disco
 monitor_uptime, scrape_stats, werewolf_stats) carry their full flow in their YAML. monitor_discord
 is the one monitor that needs a real judgment pass from you - read the new messages
 and judge tone (rude/hostile/pestering); its YAML spells this out. Do not treat it
-as a pure deterministic relay like the others.
+as a pure deterministic relay like the others. It watches only Alex's own server
+(Alex and his AIs); the Tampa AI Build Club server is deliberately not monitored.
 
 Reports you write go to:
 - werewolf-ops reports → `projects/werewolf-ops/reports/<area>/<YYYY-MM-DD>.md`
