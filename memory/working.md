@@ -7,9 +7,8 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate cuts are
   cap/quality, not volume. Import AI at #476 (weekly cadence).
-- `blog` - **26 live** (latest #26 `taste-denominated-in-compute`, automated-ai-rd #4,
-  published -13). **`six-employees-who-can-publish` (stewardship #2) v2 in pipeline → next
-  blog_pipeline tick publishes.** **`no-human-in-the-world-model` (agents #1) HELD pause 6**
+- `blog` - **27 live** (latest #27 `six-employees-who-can-publish`, stewardship #2,
+  published -20). **`no-human-in-the-world-model` (agents #1) HELD pause 6**
   (header numerals); ship-quality, local until `marlow approve`. Unstick: header regen
   (numeral fix landed -21) + approve.
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -18:
@@ -27,7 +26,7 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
-| `safety-tool-stewardship-handoffs` | 2 | 10-19 (#2 `six-employees-who-can-publish` v2, pipeline→publish) |
+| `safety-tool-stewardship-handoffs` | 2 | 10-20 (#2 `six-employees-who-can-publish` PUBLISHED) |
 | `agents-in-real-deployment` | 2 | 09-21 (#2 published) |
 | `ai-biorisk-evals` | 1 | 09-07 (#1 published -08) |
 | `model-welfare-and-consciousness` | 1 | 08-24 |
@@ -54,7 +53,7 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   Governance + exploit counterparts to the arc's capability-measurement focus. Don't fire too soon after #25.
 - **post-alignment-political-economy** (posts:2): two-anchored — Ban ASI Act bill -24 +
   close LW reading -01, atop RAND/Zvi -22, Accenture -19, gradual-disempowerment -18.
-- **safety-tool-stewardship-handoffs** (#2 v2 -19, pipeline→publish). #3 watch: held until
+- **safety-tool-stewardship-handoffs** (#2 PUBLISHED -20). #3 watch: held until
   the first real redaction flag lands (a published METR assessment that says "we were made to
   cut and object"). Don't write #3 as more embedded-evaluator principles posts.
 - **cot-monitorability** (posts:6, last synth 09-14): draftable, anchors compounding —
@@ -80,17 +79,20 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   again -19 (2 straight clean reads). No action needed unless it recurs.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
-- **NEW -10 20:15Z betterstack urgent: `OpenAI Decisions router request failed`**
-  (first occurrence) alongside known `Game action failed: S` + `Error in welcome
-  function:`. Possibly tied to the Jev→OpenAI Decision API moderation swap Alex
-  mentioned on Discord -09. Watch for recurrence before calling it a standing class.
+- **OpenAI billing is the app's volatile dependency.** When the shared OpenAI org
+  balance runs low/dry, betterstack lights up with 429 "no credits" across speech-gen,
+  preview-gen, and the Decisions router/screen — one incident, two monitors. Seen -10
+  (Decisions router first fired), and acutely -20 (balance $0.11, urgents 07:33-13:33,
+  recovered ~12:06 → top-up inferred). When scrape shows OpenAI near-zero, expect the
+  betterstack cluster; correlate, don't fire N separate alerts.
 - **Cooled/cold (watch only, named code paths):** `Error in vote function:`/`Game action
   failed: Y` (NEW -08 17:13Z, first error-tier since baselining, vote-handler throwing),
   preview cast-0-of-11, replayNightImpl/preview-batch-2, DeepSeek SSL handshake,
   avatar-pipeline wobble, STALE_ACTION warn cluster (-01).
-- **xAI/Grok $7.68 + Sakana Fugu $8.43 + OpenAI console $3.34 (NEW -19, was $10.27 -18)
-  — all digest-sev, <$10, top up.** DeepSeek $23.21, Moonshot $15.09, GLM/Gemini/
-  Mistral/MiniMax/Anthropic healthy.
+- **Low-balance watch:** Sakana Fugu $8.43 standing digest-low <$10. xAI recovered
+  (-20 topped $7.67→$12.67). OpenAI console balance volatile (hit $0.11 -20, see billing
+  bullet above); not covered by the Tier-1 keys tick, so track it via scrape_stats.
+  DeepSeek/Moonshot/GLM/Gemini/Mistral/MiniMax/Anthropic healthy.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
   FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
@@ -152,6 +154,26 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   release #1.
 
 ## Daily rollups
+
+### 2026-10-20 — ~52 ticks, **publish day + OpenAI-ran-dry ops incident.**
+(1) **Stewardship #2 `six-employees-who-can-publish` PUBLISHED 04:08Z** — v2 self_review
+ship → publish; blog **27 live**, longest-held ripe writer item finally spent. #1
+`no-human-in-the-world-model` still HELD pause 6 (header regen + `marlow approve`).
+(2) **OpenAI org balance crashed to $0.11** (scrape 10:00Z) → betterstack 429 "no credits"
+cluster (speech/preview/Decisions), urgents 07:33-13:33 (peak error=26 @12:05), recovered
+~12:06. One incident on two monitors. Throughline: **the writer lane spent its best backlog
+item the same day the app's OpenAI key ran dry.**
+
+- **Writing (shipped):** v2 self_review (ship) → publish → 27 live. No `draft_review`/
+  `self_reflect`/assignment/editorial; ripe backlog unchanged (skills-as-infra 6, cot, cyber #6, aird #5).
+- **Research (13 cand → curate 22:18Z 13→5, msg 944-950):** GLM-5.1 CoT-control (cot) ·
+  GRAFT/gradient-routing · Zvi "I Can See Everything" (**non-LW verified≠understood anchor
+  at last**) · Import AI 477 (Clark tells the IMF the singularity's begun) · AI-expectations-gap.
+  0 replies. **Curate double-send recurred (msg 945 dup + 946 fake-URL probe, both skipped)
+  — lessons.md -15 strengthened with two absolute send-item rules.**
+- **Ops:** werewolf -19 close **549 EOD (5 new/5 games/$3.09)**, clean. xAI $7.67→$12.67;
+  Sakana $8.43 low. health 9 stable. cloudflare/uptime/discord green. Self-audit: **Current
+  state 11KB (log), 11 Outstanding > thr 8 — grooming owed** (in digest).
 
 ### 2026-10-19 — 68 ticks, **the writer lane finally fired** after a 7-day dry spell
 (`draft_review` silent since -12). The cadence self-fired 14:27Z → drafted **stewardship

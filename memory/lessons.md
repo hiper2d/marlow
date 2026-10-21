@@ -137,3 +137,16 @@ invoke a send/post/report-class handler exactly once; to inspect what it did, pa
 that one call's output (pipe through a python one-liner, not `head`/`tail` which can
 cut JSON), or use a read-only `list`/`show` subcommand. If a delivery double-fires,
 `skip` the duplicate so a reply does not double-register, and flag it to Alex.
+
+**Recurred 2026-10-20 (same handler, worse).** Despite this lesson, I did it again on
+the GLM pick: `tail -5` truncated the first send's JSON, so I (a) re-ran send-item to
+read msg_id (dup = msg 945) and then (b) ran a THIRD call against a *fake* URL
+(`example.com/noop-probe`, msg 946) purely to see the return shape. Both delivered to
+Telegram and the probe also created a junk registry entry. Skipped 945 and 946. Two
+hard rules, stated as absolutes because the soft version failed twice:
+(1) send-item returns `{"ok":true,"msg_id":N,"item":{...}}` and SENDS every time —
+its shape is now documented here, so there is never a reason to "probe" it; parse the
+first real call with `python3 -c` (never head/tail).
+(2) NEVER call a send/post handler with a throwaway/fake URL to inspect output — a
+side-effecting delivery has no scratch mode. If I don't know a return shape, read the
+handler source, not a live fire.

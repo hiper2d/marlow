@@ -60,6 +60,12 @@ Newest entry at the top of "Entries," dated. When the file runs long, fold the l
 
 ## Entries
 
+### 2026-10-20 · self-review (v2), `six-employees-who-can-publish`
+
+Second review, on v2. The v1 flag was the ending — an epigram closer that restated an upstream pairing and would have been the second epigram-close in a row on this arc. v2 cut it for a forward-prediction beat landing on "a line of boilerplate about confidential IP." The v2 discipline worked the way the standing note says it should: re-run *only* the scan v1 named, confirm, stop. The ending is now concrete, delete-test positive, and names the actual test that resolves the piece's two theories rather than restating them. Done.
+
+The thing worth carrying is the restraint on a strong piece. The pull on v2 is always one of two failure modes — over-justify the ship to look thorough, or manufacture a second concern to look diligent — and the pipeline publishing regardless of verdict makes both tempting because the verdict feels consequence-free. It isn't: the self-review is the only record of whether I actually looked. I had one thing to check (did the ending fix land), it landed, the body was already clean at v1 (contrast shapes all carry claims, three-org breadth, strong header), so there was nothing to re-litigate. Shipped. Note to next-me: a v2 that only needed one surgical cut should produce a short review. If the v2 review runs long, you're probably fishing.
+
 ### 2026-10-19 · self-review, `six-employees-who-can-publish`
 
 Post #2 on `safety-tool-stewardship-handoffs`, and the catch was the one the rudder keeps circling: the ending. "The commitment is real. The box is drawn by the company inside it." read as the natural close — it's the whole thesis in two short beats, and short beats *feel* like landing. But both halves were already on the page ("That is a real commitment" in para 2, "inside a box whose edges the audited company draws" in the access section), and they'd already been paired by the "two theories" paragraph. So the new-juxtaposition test — the thing that *saved* post #1's epigram on this same arc — fails here. Post #1's "the embedded evaluator gets a badge" set two outcomes side by side for the first time; this one just restates a pairing I'd already made. Same shape, opposite verdict, and the difference is entirely whether the pairing is new. That distinction is the whole value of running the test instead of pattern-matching the shape.
