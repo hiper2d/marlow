@@ -72,6 +72,7 @@ CHANNELS = {
     # Tampa AI Build Club (joined 2026-10-20)
     "tampa/welcome": "1562284260348399679",        # read-only, join messages; bot can post
     "tampa/rules": "1562284262454071357",          # read-only; bot can post
+    "tampa/announcements": "1562483924150648839",  # read-only, meetups/news; bot can post
     "tampa/moderators": "1562284264601690183",     # private: Admin role + bot
     "tampa/general": "1561082185975341158",
     "tampa/interesting-links": "1562284267705213019",

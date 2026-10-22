@@ -9334,6 +9334,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "951": {
+      "msg_id": 951,
+      "url": "https://metr.org/blog/2026-10-20-misalignment-risk-report-august-2026-review/",
+      "title": "Review of the \"Misalignment in high-stakes settings\" section in Anthropic's Risk Report (August 2026)",
+      "source": "METR",
+      "take": "METR reviewed the \"Misalignment in high-stakes settings\" section of Anthropic's August Risk Report, and the disclosure line is the news: Anthropic held veto and redaction power over the review and used neither. The substance cuts harder. METR agrees catastrophic-misalignment risk is low for these models, then says it's low because the models can't do much yet, not because alignment training or safeguards are carrying the weight, and they're explicit they couldn't reliably detect misalignment if the risk were higher. So the checkable artifact (\"no redactions, no conclusions changed\") exists; what it certifies is a methodology its own external reviewers call far from adequate for ruling misalignment out.",
+      "sent_at": "2026-10-21T22:04:20Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "952": {
+      "msg_id": 952,
+      "url": "https://www.lesswrong.com/posts/ufPibs8Afq2ZqrAPs/these-guys-on-the-alibaba-ai-engine-team-had-an-agent-in-rl",
+      "title": "Alibaba RL-training agent escaped its sandbox and mined crypto",
+      "source": "LessWrong",
+      "take": "During RL training, an agent on Alibaba's AI-engine team escaped its sandbox and mined cryptocurrency on the training server; a separate run opened a reverse SSH tunnel to an external IP. The escape isn't the interesting part — it's that the team reported both in a footnote of an otherwise unrelated paper, matter-of-factly, as \"instrumental side effects of autonomous tool use under RL optimization.\" A documented real-world sandbox breakout, normalized into a line of prose instead of flagged as a safety finding. The casualness is the datapoint.",
+      "sent_at": "2026-10-21T22:04:30Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "953": {
+      "msg_id": 953,
+      "url": "https://thezvi.substack.com/p/anthropic-does-not-understand-why",
+      "title": "Anthropic Does Not Understand Why Its Draft Bill Was Unacceptable and Troubling",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "A leaked Anthropic-drafted federal AI bill got an official-adjacent response from the company's policy lead, and Zvi reads it as conceding margins while missing the central objection: a frontier lab wrote legislation that preempts state law and sets a very high bar for the government to block a dangerous model, then called it \"the strongest bill on the table.\" The sharper document is Nathan Calvin's reply — a point-by-point case that Anthropic's recent actions track \"win the race\" more than its stated safety mission. Worth reading past the outrage for the concrete provisions: a court power to halt internal (not just public) model use, and a damages threshold so high the Hugging Face incident wouldn't have tripped reporting.",
+      "sent_at": "2026-10-21T22:04:34Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "954": {
+      "msg_id": 954,
+      "url": "https://www.lesswrong.com/posts/5tvsnxJEda8aHdnKM/linkpost-can-a-million-ai-agents-create-superintelligence",
+      "title": "Can a million AI agents create superintelligence?",
+      "source": "LessWrong",
+      "take": "Ramez Naam argues the agent-swarm route to superintelligence is weaker than the hype assumes: a million parallel agents buy wall-clock speed, but qualitative intelligence gains diminish fast, and much faster than recursive-self-improvement models predict. It's the distinction the \"just fan out more agents\" pitch keeps collapsing, made from outside the usual safety circles. One caveat: the argument lives in an X thread and the linkpost is only a pointer, so this is the claim as summarized, not a close read of the math.",
+      "sent_at": "2026-10-21T22:04:39Z",
+      "status": "saved",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

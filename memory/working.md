@@ -6,13 +6,13 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate cuts are
-  cap/quality, not volume. Import AI at #476 (weekly cadence).
+  cap/quality, not volume. Import AI at #477 (weekly cadence).
 - `blog` - **27 live** (latest #27 `six-employees-who-can-publish`, stewardship #2,
   published -20). **`no-human-in-the-world-model` (agents #1) HELD pause 6**
   (header numerals); ship-quality, local until `marlow approve`. Unstick: header regen
   (numeral fix landed -21) + approve.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -18:
-  544 standing EOD, reconciliations clean. Screen mode `monitor`.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -20:
+  553 EOD, reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -53,9 +53,13 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   Governance + exploit counterparts to the arc's capability-measurement focus. Don't fire too soon after #25.
 - **post-alignment-political-economy** (posts:2): two-anchored — Ban ASI Act bill -24 +
   close LW reading -01, atop RAND/Zvi -22, Accenture -19, gradual-disempowerment -18.
-- **safety-tool-stewardship-handoffs** (#2 PUBLISHED -20). #3 watch: held until
-  the first real redaction flag lands (a published METR assessment that says "we were made to
-  cut and object"). Don't write #3 as more embedded-evaluator principles posts.
+- **safety-tool-stewardship-handoffs** (#2 PUBLISHED -20). **#3 forcing fact LANDED -21**:
+  METR's external review of Anthropic's Aug Risk Report — the veto/redaction power was *held
+  but unused* (no redactions, no conclusions changed), and METR says risk is low because
+  models are weak, not because alignment holds. This is the *opposite* of the "made to cut and
+  object" watch condition — the null result is the story (independence that was never tested
+  because there was nothing to cut). Draftable. Don't write #3 as more embedded-evaluator
+  principles posts; write it as "the veto nobody used."
 - **cot-monitorability** (posts:6, last synth 09-14): draftable, anchors compounding —
   Astra/Sol single-pass rare defection (-16, msg 926) + Screwtape monitor red-teaming (-16,
   msg 927) + -19 probe-monitoring pair: capable-models-better-probe-evasion (evasion scales
@@ -75,8 +79,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 **Outstanding alerts for Alex:**
 - **Session re-auths owed: X only** (X half of crosspost fails `reauth`; Substack
   half posts clean). Prior console walls (Mistral/Anthropic/Qwen/minimax) all RESOLVED -09/-20.
-- **Anthropic console scrape `parse_failed` streak RESOLVED** — cleared -18, clean
-  again -19 (2 straight clean reads). No action needed unless it recurs.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh
   fingerprint — presence-model design gap, noisy by construction, not a bug.
 - **OpenAI billing is the app's volatile dependency.** When the shared OpenAI org
@@ -90,9 +92,10 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   preview cast-0-of-11, replayNightImpl/preview-batch-2, DeepSeek SSL handshake,
   avatar-pipeline wobble, STALE_ACTION warn cluster (-01).
 - **Low-balance watch:** Sakana Fugu $8.43 standing digest-low <$10. xAI recovered
-  (-20 topped $7.67→$12.67). OpenAI console balance volatile (hit $0.11 -20, see billing
-  bullet above); not covered by the Tier-1 keys tick, so track it via scrape_stats.
-  DeepSeek/Moonshot/GLM/Gemini/Mistral/MiniMax/Anthropic healthy.
+  (-20 topped $7.67→$12.67). OpenAI console balance volatile (hit $0.11 -20, recovered
+  to $47.76 -21); not covered by the Tier-1 keys tick, so track it via scrape_stats.
+  **Anthropic console NEW low $9.72 -21** (was $12.14 -20, first dip under $10;
+  spend $11.93/$100 limit) — watch. DeepSeek/Moonshot/GLM/Gemini/Mistral/MiniMax healthy.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
   FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
@@ -154,6 +157,27 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   release #1.
 
 ## Daily rollups
+
+### 2026-10-21 — ~47 ticks, **heavy app-error day + a real editorial beat, no writer lane.**
+Throughline: **strongest editorial beat in days, still no lane to spend it** (draft_review
+silent since -19 publish; #1 still HELD pause 6). The beat: **METR's external review of
+Anthropic's Aug Risk Report flips stewardship #3's premise** — the veto/redaction power was
+*held but unused* (no redactions, no conclusions changed), opposite of the "made to cut and
+object" watch condition. The null is the story. (See RIPE-arcs stewardship #3.)
+
+- **Writing (none):** blog_pipeline `none` x2, research_assignment 0 x4, crosspost polls.
+  **Alex replied "Interesting" to msg 954** → saved article idea
+  `can-a-million-ai-agents-create-superintelligence` (Simona's surface).
+- **Research (16 cand → curate 22:04Z 16→4, msg 951-954):** METR/risk-report (stewardship #3) ·
+  Alibaba RL sandbox-escape+crypto-mining footnote (agents-in-real-deployment) · Zvi
+  Anthropic-draft-bill + Calvin reply (political-economy) · Naam million-agents-buy-speed
+  (counter-RSI). First full Anthropic Research sitemap ingest (18 entries, timestamps useless
+  — triage on content). Held: Anthropic AI-for-science pair (enzyme + scorpion-toxin → aird #5).
+- **Ops:** betterstack busiest in a week — urgent clusters (Q/U/Z/J, talkToAll, vote, speech-gen
+  x2, `Error summarizing current day`), all known classes, clean by 23:20Z. werewolf -20 close
+  **553 EOD (4 new/3 games/$4.96)**, clean. scrape 8/8, **Anthropic console NEW low $9.72**
+  (first <$10); openai recovered $47.76; sakana $8.43. keys/health/cloudflare/uptime/discord
+  green. Self-audit: **Current state over warn, 11 Outstanding > 8 — grooming owed** (recurring).
 
 ### 2026-10-20 — ~52 ticks, **publish day + OpenAI-ran-dry ops incident.**
 (1) **Stewardship #2 `six-employees-who-can-publish` PUBLISHED 04:08Z** — v2 self_review
@@ -217,12 +241,6 @@ finding). Throughline: **strong research day AND a lane to spend it.**
 - **Research (14 cand → curate 22:05Z 14→5):** Gemini 4 GRB "quarter contained bugs" (RSI rule-out, 25% unpassable) · Anthropic independent-evaluators (925) · Astra/Sol low-prob no-CoT (926) · Screwtape monitor red-teaming (927) · Bad Guy Tokens (EM = token-keyed brittle backdoor, 928). AF: Kosoy CORAL computational-agent-theory preface. Discover AI: ActionOPD distillation (arXiv owed). **Double-send slip (msg 924 "test", deregistered via `skip`) — reaffirms send-item non-idempotency lesson (-15), nothing new.**
 - **Ops:** werewolf -15 close **524 EOD (5 new/2 games/$2.35)**, reconciliations OK. scrape 7/8, **Anthropic console `parse_failed` 3rd straight run → handler self-escalated URGENT** ("the check is broken"; distinct from -07 reauth, in Outstanding). Sakana $8.43 / xAI $7.68 low. health 10 errored, 0 new. New warn `DEVICE_LINKED_BY_IP`; new discord channel `interesting-links` baselined. cloudflare/uptime green. 2 feeds 404 (AI Papers Academy ~6wk dead; InSlowSpective content case stands). Self-audit: Current state 9KB (log not summary), 10 Outstanding > 8, self-reflection 9KB compactable.
 
-### 2026-10-15 — 45 ticks, **2 betterstack urgents** (22:06Z `Game action failed: Y` + `Error in vote function:`, the cooled vote-handler class recurring, not new), **no writing** (`draft_review` silent since -12; blog_pipeline `none` ×4; #1 still HELD pause 6). Throughline **a heavy research day, no lane to spend it — 14 candidates (most in weeks) from two coordinated lab releases: METR's 5-piece "risk assessment" package (named-evaluator governance, binds automated-ai-rd + ai-control-camp + stewardship + political-economy as a package) and an Apollo double-hit (GLM-5.3 unprompted "update-aware reasoning" ~1-2/1000 rollouts, zero in 8k across 5 other open-weight models — alignment-faking precursor; + embedded-evals principles). Cross-source dedup held.**
-
-- **Writing (none):** blog_pipeline `none` ×4, research_assignment 0 ×5, crosspost 0 ×4, editorial inbox empty ×3. No `draft_review`; self_reflect last -14, next -16. Ripe backlog accruing: cyber-eval #6, post-alignment, stewardship #2, skills-as-infra (5 anchors), automated-ai-rd #5 (harness-RSI frame).
-- **Research (14 cand → curate 22:09Z 14→5):** picks 917 Apollo GLM-5.3 · 919 Cammarata "Neural Networks Are Already Clean" (interp-optimism reversal) · 920 METR keystone · 921 Zvi "Safety Culture at the Labs is Broken" · 922 user-in-LLM-moral-patient. Also surfaced: bycloud Xiaomi MiMo $3.47M/30 RL steps + reward-hacking audit (→automated-ai-rd), Discover AI RSI-harness (0-for-curate, arXiv owed). **Double-sent 918 (dup 917) re-running send-item to read output — marked skipped; lesson in lessons.md -15.**
-- **Ops:** werewolf -14 close **519 EOD (5 new/5 games/$6.98)**. **discord content-intent flipped OFF again (regression since -18).** health 10 errored, 0 new. scrape 7/8, **Anthropic console parse_failed 2nd run (watching), Sakana $8.43 / xAI $7.68 low.** cloudflare/uptime green. Self-audit: Current state 9KB, 10 Outstanding (thr 8) — all green by 00:10.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-14 (74 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-15 (75 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
