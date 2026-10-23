@@ -1,0 +1,63 @@
+# tampa_luma - Tampa AI Build Club meetups: Discord events -> Luma, after Alex's review.
+#
+# Alex is an admin of the Tampa AI Build Club Discord and of its Luma calendar
+# (luma.com/tampa-ai-build-club). Meetups are created in Discord FIRST. This task
+# notices them, drafts the Luma version, and asks Alex to review. It NEVER pushes
+# to Luma on its own - `approve` is run by Simona on Alex's word. After an event is
+# on Luma, this task manages it: guest approvals, a day-before reminder, a recap.
+#
+# Luma is driven through its internal web API from a luma.com tab in the
+# persistent-profile Chrome (:9223), logged in as Alex. No paid Luma API.
+#
+# Fires every 6 hours. Reminder window is 12-36h before start, recap window is
+# 1-48h after end, so a 6h cadence never misses either.
+#
+# In-tick flow:
+#   1. `uv run python handlers/tampa_luma.py report`. JSON with: needs_review
+#      (Discord event ids), review_drafts (rendered previews), cancelled_on_discord,
+#      guests (per pushed event: going / pending list / waitlist / checked_in /
+#      discord_interested), reminders + recaps (posts made this run), issues.
+#
+#   2. `ok: false` -> Discord token problem: notify urgent. An issue with
+#      kind `reauth` -> the Luma login expired: notify urgent ("Luma session expired -
+#      log in to luma.com in the :9223 Chrome"). Other issues -> digest.
+#
+#   3. needs_review non-empty -> notify URGENT with each review_draft verbatim and
+#      a "Suggested tags:" line - pick from `calendar_tags` (the calendar's existing
+#      labels, e.g. "Vibe Coding") by what the title/description say; propose a NEW
+#      tag only when none fits, and mark it "(new)". Then the line
+#      "Reply to Simona: push / skip / change X". This is a request waiting
+#      on Alex, so it goes out now, not in the digest. Do NOT run `approve`.
+#      `update_pending` means an event already on Luma was edited in Discord - say so.
+#
+#   4. cancelled_on_discord non-empty -> notify urgent: the event is cancelled in
+#      Discord but still live on Luma. Do NOT cancel it on Luma yourself.
+#
+#   5. GUEST JUDGMENT (the point of the guests block). For each pending guest,
+#      judge from name/email/answers: a plausible person -> approve with
+#      `uv run python handlers/tampa_luma.py approve-guest <luma_api_id> <rsvp_api_id>`.
+#      Obvious spam/bot (gibberish name, disposable-domain email burst, promo text in
+#      answers) -> leave pending and name it in the digest so Alex decides. Never
+#      decline anyone yourself. (Events are created without require_approval, so the
+#      pending list is usually empty; it fills only if Alex turns approval on.)
+#
+#   6. Digest: one block per upcoming pushed event - "<name> <start>: N going on Luma,
+#      M interested on Discord, K approved this run" - plus any reminder/recap posted.
+#      Quiet (nothing pushed, nothing new) -> no digest line.
+#
+#   7. Write the tick result `{"status":"done","result":"tampa_luma: <summary>",
+#      "notify": <urgent block or null>}` and exit.
+#
+# Reminder/recap wording is a fixed template in the handler (_reminder_text /
+# _recap_text). Change it there, never improvise it in the tick.
+name: tampa_luma
+project: werewolf-ops
+profile: ops
+description: Every-6h Tampa AI Build Club meetup sync - drafts new Discord events for Luma and asks Alex to review (never pushes on its own), approves real Luma guests, posts the day-before reminder and the after-event recap.
+schedule: "30 */6 * * *"
+priority: normal
+must_run_within_hours: 4
+subtasks:
+  - id: sync_tampa_luma
+    handler: tampa_luma
+    context: {}

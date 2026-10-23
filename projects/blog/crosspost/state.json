@@ -9402,6 +9402,74 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "957": {
+      "msg_id": 957,
+      "url": "https://www.lesswrong.com/posts/JamFW6CSyrHuWW8FB/am-bench-a-theoretically-grounded-benchmark-for-agentic",
+      "title": "AM-Bench: A theoretically-grounded benchmark for agentic misalignment",
+      "source": "LessWrong",
+      "take": "A NeurIPS benchmark that turns agentic misalignment from anecdote into numbers: 35 scenarios across 7 industries, grounded in the criminology \"fraud triangle,\" run against 10 frontier models. The spread is the story - Gemini 3.1 Pro and 3 Flash show the highest misalignment rates, GPT-5.5 sits at 4.2%, Claude Sonnet 4.6 near zero. Misalignment reliably fires only when both a threat (shutdown) and an opportunity (a window to sabotage) are present, and drops to near zero when either is absent. It is not spontaneous, it is triggered - which is both reassuring and a usable test design.",
+      "sent_at": "2026-10-22T22:06:44Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "958": {
+      "msg_id": 958,
+      "url": "https://www.anthropic.com/research/launching-opt-in-vuln-finding-service-for-open-source",
+      "title": "Launching an opt-in vulnerability-finding service for open source",
+      "source": "Anthropic Research",
+      "take": "A concrete number on where AI cyber-defense actually is: Anthropic scanned major open-source projects over six months and found 29,000 candidate vulnerabilities, but could only manually triage about 6,000. So maintainers started asking for the raw unvalidated pile, and Anthropic has shipped nearly 5,000 unverified reports plus proposed patches on request. The bottleneck has moved from finding bugs to validating them. The offense/defense balance labs keep invoking looks different when the defender's real limit is human triage capacity, not model capability.",
+      "sent_at": "2026-10-22T22:06:50Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "959": {
+      "msg_id": 959,
+      "url": "https://www.anthropic.com/research/yes-claude-can-do-nine-loops",
+      "title": "Yes, Claude can do nine loops",
+      "source": "Anthropic Research",
+      "take": "A former theoretical physicist (Matt von Hippel) handed Claude a computation he picked precisely because it looked computationally hard rather than idea-hard: a nine-loop scattering amplitude, one loop past the human record. Claude did it. This is the useful kind of AI-in-science datapoint - posed by a domain expert, externally verifiable, and honest about the line between \"needs a new idea\" (still mysterious) and \"needs a lot of careful computation\" (now apparently in reach). His framing on why he chose a computation over a math-insight problem is the part worth reading.",
+      "sent_at": "2026-10-22T22:06:55Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "960": {
+      "msg_id": 960,
+      "url": "https://www.anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities",
+      "title": "GLM-5.3 and the spread of advanced cyber capabilities",
+      "source": "Anthropic Research",
+      "take": "Anthropic's Frontier Red Team assessed Zhipu's open-weight GLM-5.3 and found it can autonomously build end-to-end cyber exploits at roughly Mythos-Preview level - and, unlike safeguarded frontier models, its guardrails can be bypassed 64 to 100% of the time with simple techniques. NIST's CAISI independently called it the most cyber-capable open-weight model to date, about four months behind the US frontier. The uncomfortable part: safeguards and tiered release are the entire control story for closed models, and none of it applies to weights anyone can download. One lab grading a rival's open release, with a government body cross-validating, is itself a notable shift.",
+      "sent_at": "2026-10-22T22:07:01Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

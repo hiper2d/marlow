@@ -11,8 +11,9 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   published -20). **`no-human-in-the-world-model` (agents #1) HELD pause 6**
   (header numerals); ship-quality, local until `marlow approve`. Unstick: header regen
   (numeral fix landed -21) + approve.
-- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats`. Last close -20:
-  553 EOD, reconciliations clean. Screen mode `monitor`.
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -21: 557 EOD,
+  reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the
@@ -91,11 +92,16 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   failed: Y` (NEW -08 17:13Z, first error-tier since baselining, vote-handler throwing),
   preview cast-0-of-11, replayNightImpl/preview-batch-2, DeepSeek SSL handshake,
   avatar-pipeline wobble, STALE_ACTION warn cluster (-01).
+- **NEW watch -22:** `Preview generation failed: Insufficient balance. Please add funds on
+  your profile page before starting a game.` — distinct wording from both the app's own $5
+  free-AI preview cap AND the OpenAI-org 429 "no credits" cluster; reads as the app's own
+  per-profile/user credit balance. Urgent 13:27Z, recurred 14:09Z (0 new). Watch for a 3rd
+  occurrence to decide standing-class vs. one-off.
 - **Low-balance watch:** Sakana Fugu $8.43 standing digest-low <$10. xAI recovered
   (-20 topped $7.67→$12.67). OpenAI console balance volatile (hit $0.11 -20, recovered
   to $47.76 -21); not covered by the Tier-1 keys tick, so track it via scrape_stats.
-  **Anthropic console NEW low $9.72 -21** (was $12.14 -20, first dip under $10;
-  spend $11.93/$100 limit) — watch. DeepSeek/Moonshot/GLM/Gemini/Mistral/MiniMax healthy.
+  **Anthropic console low, still falling: $8.23 -22** (was $9.72 -21, $12.14 -20;
+  2nd straight day <$10) — watch. DeepSeek/Moonshot/GLM/Gemini/Mistral/MiniMax healthy.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
   FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
@@ -132,13 +138,26 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   "slow TV" (simulation, flat-earth, AI-doom), 0 candidates. Per 404 lesson not
   recommending a drop yet; if still 404 next scan, likely a moved/renamed channel
   — Simona may want to re-resolve or retire it (low value either way).
-- **AI Papers Academy (YouTube, channel_id UCjqDDqUh1DgjrlNjLR5p8nw)** -
-  feed returns HTTP 404 (handler fails on invalid-XML parse). Per the lesson
-  above, 404s can be transient, so NOT recommending a drop. BUT: last
-  successful scan was 2026-09-02, so this has now been dead ~6 weeks - well
-  past "transient." If it's still 404 next scan, the channel_id likely changed
-  or the channel moved (handle @aipapersacademy still exists); Simona may want
-  to re-resolve the channel_id. First flagged -16.
+- **YouTube feed endpoint blocked environment-wide (NEW diagnosis -22).** The
+  AI Papers Academy / InSlowSpective 404s are NOT per-channel moves. On the -22
+  scan I confirmed: (1) @aipapersacademy's handle still resolves to the SAME
+  channel_id UCjqDDqUh1DgjrlNjLR5p8nw; (2) `videos.xml?channel_id=...` returns
+  HTTP 404 for EVERY channel tested — the configured bycloud entry AND unrelated
+  well-known channel IDs — regardless of User-Agent. So the feed path itself is
+  blocked from this host (IP-level / YouTube rejecting anon feed requests), not
+  the channels. This supersedes the "channel_id likely changed" guess below and
+  likely explains the recurring transient-looking YouTube 404s across all YT
+  feed_scan tasks. **Ask for Simona:** YouTube feeds need a different fetch path
+  (yt-dlp, the Data API, or a proxy) or the YT feed_scan entries should be
+  retired. Editing channel_ids won't help. (AI Papers Academy last good scan
+  2026-09-02; first flagged -16.) **Refinement 2026-10-22:** it's INTERMITTENT,
+  not a hard environment-wide block. InSlowSpective scan failed twice
+  (`not well-formed 3:11`, a 404/garbled body), a bare feedparser call succeeded
+  between them (HTTP 200, 15 entries), and the handler then succeeded on the 1st
+  retry — returning `[]` (no new entries). So YouTube serves anon feed requests
+  flakily from this host, not never. Cheapest fix is a small retry in
+  `tools/rss_reader.fetch` (out of my self-heal scope — tools/) rather than a new
+  fetch path; a 2-3x retry would absorb most of these transient failures.
 - **CLAUDE.md drift on assigned-thread frontmatter.** `plans/assignments.md`
   (commit `770fa45`) requires the canonical thread shape plus assignment extras;
   the research_assignment section still shows the old abbreviated spec.
@@ -157,6 +176,27 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   release #1.
 
 ## Daily rollups
+
+### 2026-10-22 — ~67 ticks, **quiet ops + heavy research intake, still no writer lane.**
+Throughline: **biggest Anthropic-research batch-drop in a while landed cyber-eval #5's primary
+source, but the writer lane stayed dark for the 10th straight day** (draft_review silent since -19;
+#1 still HELD pause 6). self_reflect reframed the gap one gate over — #1's only blocker (header
+regen + `marlow approve`) sits outside any tick: "a writer who can stop herself but not start or
+ship herself."
+
+- **Writing (none):** blog_pipeline `none` x2, research_assignment 0 x4, crosspost 0 x5 (no Alex
+  replies). self_reflect fired 02:58Z. Ripe backlog unchanged.
+- **Research (20 cand → curate 22:06Z 20→4, msg 957-960, all mirrored to Tampa #ai-news):** AM-Bench
+  (NeurIPS agentic-misalignment eval) · opt-in vuln-finding (triage is the bottleneck) · nine-loops
+  amplitude (automated-ai-rd) · **GLM-5.3 cyber = cyber-eval #5 primary landing** (open-weight exploit,
+  guardrails 64-100% bypassable). Substance over forced source-diversity. New frames: GPT-2
+  global-workspace → model-welfare #2; CODI latent thoughts → latent-reasoning-undermines-cot.
+- **Ops (quiet):** betterstack calm; **NEW fingerprint 13:27Z "Preview generation failed: Insufficient
+  balance… add funds on your profile page" — app's own per-profile credit, distinct from $5 free-AI cap
+  and OpenAI 429; urgent, recurred 14:09Z 0-new, watch 3rd.** werewolf -21 close **557 EOD (4 new/5
+  games/$5.79)** clean. scrape 8/8, **Anthropic console $8.23** (2nd day <$10); sakana $8.43. health
+  9→8. cloudflare/uptime/discord/keys green. **NEW task `tampa_luma` live** (Tampa Build Club
+  Discord↔Luma sync, first tick clean). Self-audit: Current state 11KB warn, 11 Outstanding > 8.
 
 ### 2026-10-21 — ~47 ticks, **heavy app-error day + a real editorial beat, no writer lane.**
 Throughline: **strongest editorial beat in days, still no lane to spend it** (draft_review
@@ -235,12 +275,6 @@ finding). Throughline: **strong research day AND a lane to spend it.**
 - **Research (15 cand → curate 22:16Z 15→5):** employment-at-anthropic · pushback-bench · CarrotParsnip · quantum-circuits · fbs-debate. 0 replies yet, dups clean.
 - **Ops:** werewolf -16 close **527 EOD (3 new/3 games/$2.71)**. scrape 7/8, **Anthropic console `parse_failed` 4th straight run → urgent again** (Outstanding). New warns: OpenAI Decisions *screen* (shadow, ≠ -10 router), AVATAR_GRID_MISMATCH. Sakana $8.43 / xAI $7.67 low. health 10 errored, 0 new. cloudflare/uptime/discord green. Feed 404s recovered same-day; AI Papers Academy ~6wk quiet. Self-audit: Current state 10KB, 11 Outstanding vs thr 8.
 
-### 2026-10-16 — ~65 ticks, **1 betterstack urgent** (00:28Z Q cluster, 5 new error + 1 warn: known presence-model classes PLUS new text `Error setting game error state:`/`Failed to persist error state for Q` — error-state-persistence failing downstream of the same action failure, not a new root cause), **no writing** (`draft_review` silent since -12; blog_pipeline `none` ×3; #1 HELD pause 6). Throughline **strong research, no lane — but cot-monitorability ripened into a draftable pairing: Astra/Sol single-pass rare defection (calibrated, only w/ explicit random string) + Screwtape monitor red-teaming (evades action-only monitors, no CoT traces) — curate named them a CoT-monitoring/eval-evasion throughline. Anthropic "independent evaluators" = stewardship #2 forcing fact (embedded auditor w/ publication teeth, independence bounded by who defines redaction categories).**
-
-- **Writing (none):** blog_pipeline `none` ×3, research_assignment 0 ×4, crosspost 0 ×6, editorial inbox empty. Ripe backlog: cot-monitorability (new double-anchor), stewardship #2, cyber-eval #6, post-alignment, skills-as-infra, automated-ai-rd #5.
-- **Research (14 cand → curate 22:05Z 14→5):** Gemini 4 GRB "quarter contained bugs" (RSI rule-out, 25% unpassable) · Anthropic independent-evaluators (925) · Astra/Sol low-prob no-CoT (926) · Screwtape monitor red-teaming (927) · Bad Guy Tokens (EM = token-keyed brittle backdoor, 928). AF: Kosoy CORAL computational-agent-theory preface. Discover AI: ActionOPD distillation (arXiv owed). **Double-send slip (msg 924 "test", deregistered via `skip`) — reaffirms send-item non-idempotency lesson (-15), nothing new.**
-- **Ops:** werewolf -15 close **524 EOD (5 new/2 games/$2.35)**, reconciliations OK. scrape 7/8, **Anthropic console `parse_failed` 3rd straight run → handler self-escalated URGENT** ("the check is broken"; distinct from -07 reauth, in Outstanding). Sakana $8.43 / xAI $7.68 low. health 10 errored, 0 new. New warn `DEVICE_LINKED_BY_IP`; new discord channel `interesting-links` baselined. cloudflare/uptime green. 2 feeds 404 (AI Papers Academy ~6wk dead; InSlowSpective content case stands). Self-audit: Current state 9KB (log not summary), 10 Outstanding > 8, self-reflection 9KB compactable.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-15 (75 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-16 (76 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

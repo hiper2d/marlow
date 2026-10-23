@@ -1219,3 +1219,24 @@ IDENTITY was changed to send on `news` for that reason.
 - Join messages -> #welcome needs Manage Server (403); Alex's click.
 - Later same day: news cards now carry the article's `og:image` (`crosspost._og_image`) - embeds don't unfurl links, so the first five went out text-only and were PATCHed in place. Tampa #rules posted + pinned (adapted from home rules). Both writer and ops IDENTITY now name the two servers ("Discord" = Alex and his AIs, "Tampa AI Discord" = Tampa AI Build Club).
 - Seen in the 10-20 news run: GLM pick sent twice (944/945) and a `probe` item to example.com sent as a real pick - the re-run-to-check habit again. Now that send-item also posts publicly, this matters more; guard undecided.
+
+## 2026-10-22 - Tampa meetups: Discord events -> Luma, after Alex's review
+
+*What landed*
+- `handlers/tampa_luma.py` + ops task `projects/werewolf-ops/tasks/tampa_luma.yaml` (every 6h at :30). Alex is admin of the club's Luma calendar (luma.com/tampa-ai-build-club, `cal-2GlGmBmK9ueMPCn`).
+- Flow: Alex creates a meetup as a Discord scheduled event -> tick drafts the Luma version and pings Alex urgent with it -> Simona runs `approve <discord_event_id>` on his word -> tick then approves real Luma guests, posts a day-before reminder to `tampa/announcements` (12-36h before) and a recap prompt to `tampa/general` (1-48h after), RSVP counts to the digest. Discord edit or cancel after push re-asks Alex; Marlow never cancels on Luma.
+- First push: "Vibe-Coding Meetup", Sat Oct 24 11am-2pm ET -> https://luma.com/01pqzneh (`evt-MDuteO81VrXVLUG`), host shows as Alex.
+- State: `projects/werewolf-ops/state/tampa_luma.json` (events + learned venue pins).
+
+*Decisions*
+- No paid Luma API (Plus needed, $59+/mo for a 5-person club). Drives luma.com's internal JSON API (`api2.luma.com`: `event/create`, `event/admin/update`, `event/admin/get-guests`, `event/admin/update-guest-status`, `calendar/admin/get-events`) via fetch() from a luma.com tab in the :9223 persistent Chrome, where Alex logged in to Luma once. 401/403 -> `reauth` issue.
+- Discord is the source, one-way. Review gate is Alex's ask ("create events in Discord first, then move them to Luma after my review").
+
+*Almost path*
+- First create 400'd "Invalid request." with a hand-built body. Fixed by capturing what the luma.com/create form actually sends (hooked fetch, blocked the request, nothing created): it needs `cover_url`, `tint_color`, `font_title` and the zoom/meeting blanks. Body now mirrors the capture.
+- fetch() from the fresh tab failed CORS while it was still on about:blank; `Luma.__enter__` waits for luma.com to load.
+
+*Open*
+- Location goes up as a manual "Custom Address" (no map pin): Google place lookup happens client-side. If Alex pins it once in Luma's editor, the handler learns and reuses the pin for that address.
+- No cover image from Discord; stock Luma gallery image.
+- Later same day: calendar tags + covers. `tampa_luma.py` gained `tags` / `cover` and `approve --tags --cover`. Tags attach to the calendar-event link (`calev-...`, from `calendar/admin/get-events`), via `tag/create` / `tag/apply` / `tag/unapply` with base `{entity_type: calendar_event, owner_type: calendar}`. Covers upload through `cdn/create-presigned-url` -> PUT -> `event/admin/update cover_url`. Saturday's meetup now tagged "Vibe Coding" with a generated cover on Luma and a 2.5:1 crop on the Discord event. The tick's review ping now suggests tags from `calendar_tags`.
