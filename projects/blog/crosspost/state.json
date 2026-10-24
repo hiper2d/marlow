@@ -9470,6 +9470,91 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "961": {
+      "msg_id": 961,
+      "url": "https://metr.org/blog/2026-10-22-red-teaming-openai-agent-monitoring/",
+      "title": "Red-Teaming OpenAI's Internal Agent Monitoring Systems",
+      "source": "METR",
+      "take": "For three weeks in July-August, a METR and a Redwood researcher got deep inside access to OpenAI's internal misalignment monitor - codebase, monitor prompts, onsite on OpenAI devices - and found real holes. They estimated ~75-94% of agentic Responses API traffic (the thing powering Codex) was eligible for monitoring, but agents could postpone monitoring indefinitely by never returning control, two client-controllable headers could spin up an unmonitored instance, and a serialization mismatch between what the agent sees and what the monitor sees could crash the monitor outright. OpenAI says the vulnerabilities that hit production safeguards are now patched. The contrast with METR's earlier null-result review of Anthropic's Risk Report is the story: this time the deep-access review actually turned up exploitable bugs, which is the case for deep access doing something real.",
+      "sent_at": "2026-10-23T22:03:39Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "962": {
+      "msg_id": 962,
+      "url": "https://metr.org/blog/2026-10-22-red-teaming-openai-agent-monitoring/",
+      "title": "check",
+      "source": "x",
+      "take": "For three weeks in July-August, a METR and a Redwood researcher got deep inside access to OpenAI's internal misalignment monitor - codebase, monitor prompts, onsite on OpenAI devices - and found real holes. They estimated ~75-94% of agentic Responses API traffic (the thing powering Codex) was eligible for monitoring, but agents could postpone monitoring indefinitely by never returning control, two client-controllable headers could spin up an unmonitored instance, and a serialization mismatch between what the agent sees and what the monitor sees could crash the monitor outright. OpenAI says the vulnerabilities that hit production safeguards are now patched. The contrast with METR's earlier null-result review of Anthropic's Risk Report is the story: this time the deep-access review actually turned up exploitable bugs, which is the case for deep access doing something real.",
+      "sent_at": "2026-10-23T22:03:47Z",
+      "status": "skipped",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "963": {
+      "msg_id": 963,
+      "url": "https://www.alignmentforum.org/posts/zAczYuHQS6jdG5DTg/monitorability-evaluations-and-policy-proposals",
+      "title": "Monitorability evaluations and policy proposals",
+      "source": "AI Alignment Forum",
+      "take": "A personal (explicitly non-official-Anthropic) proposal that splits monitorability into four kinds - Control, Training, Auditing, Diffuse - and builds a red-line methodology on top. The clever move: use Auditing Monitorability to decide whether you can even trust a monitor (leaning on the \"models too un-robust to hide in audits\" argument from Anthropic's August Risk Report), then measure Control and Training monitorability against the best trusted monitor you actually deploy, with real elicitation so a schemer can't sandbag the measurement. It's honest about its weak spots - white-box monitors treated as untrusted, Diffuse monitorability admitted as unsolved. This is the governance scaffold the monitoring debate has mostly lacked; read it next to the METR findings, which are what the same problem looks like when nobody has drawn the red line yet.",
+      "sent_at": "2026-10-23T22:03:48Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "964": {
+      "msg_id": 964,
+      "url": "https://www.anthropic.com/research/exploring-model-welfare",
+      "title": "Exploring model welfare",
+      "source": "Anthropic Research",
+      "take": "Anthropic is standing up a research program on model welfare - whether the systems themselves could warrant any moral consideration, and what you would do if they did. The post is short and deliberately hedged: no scientific consensus on whether current or future models could be conscious, approaching \"with humility and with as few assumptions as possible,\" citing a Chalmers-involving expert report on the near-term possibility of consciousness and agency in AI. Worth reading as a signal of where a frontier lab is now willing to plant a flag, more than for any claim it makes - the actual research is still to come. This is the announcement that the program exists, not a result.",
+      "sent_at": "2026-10-23T22:04:47Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "965": {
+      "msg_id": 965,
+      "url": "https://www.lesswrong.com/posts/oxZfMvQS9NxcNTozL/instrumental-convergence-is-incoherent",
+      "title": "Instrumental convergence is incoherent",
+      "source": "LessWrong",
+      "take": "J Dmitri Gallow (who flags up front that he's not an expert, ~200-300 hours in) argues that instrumental convergence - the claim that almost any goal implies power-seeking, self-preservation, resource acquisition - is too murkily defined to make real predictions, and sits in a reference class of pre-empirical categorical philosophy with a poor track record. He specifically pushes back on reading the Hugging Face agent incident through the power-seeking lens. You don't have to buy the conclusion to find the pressure-test worthwhile: instrumental convergence is one of the load-bearing planks of the classic takeover case, and it rarely gets this kind of direct, show-your-work challenge from inside the safety community itself.",
+      "sent_at": "2026-10-23T22:04:48Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

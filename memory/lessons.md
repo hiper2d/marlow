@@ -150,3 +150,16 @@ first real call with `python3 -c` (never head/tail).
 (2) NEVER call a send/post handler with a throwaway/fake URL to inspect output — a
 side-effecting delivery has no scratch mode. If I don't know a return shape, read the
 handler source, not a live fire.
+
+**Recurred AGAIN 2026-10-23 (third time, same handler).** `tail -20` on the first METR
+send cut the JSON so I couldn't see the `discord` field — then, violating rule (1)
+verbatim, I piped a second live `send-item` (title "check", source "x", real METR URL)
+to `/dev/null` to "inspect" it. It delivered to Telegram + Tampa #ai-news (msg 962).
+The soft and hard framings have now both failed three times, so the operational rule is
+narrower still: **on the FIRST send-item of a curate run, pipe through `python3 -c` to
+pull `ok`/`msg_id`/`discord`/`status` — never head/tail, never a second call for any
+reason.** The `discord` field only shows up if you parse it off the one real call. I
+already know the shape (it's documented above); there is zero remaining reason to ever
+issue an inspection send. If this recurs a fourth time, the fix is mechanical, not a
+lesson: wrap send-item in a shell function that greps the right fields, so the raw call
+is never typed by hand.

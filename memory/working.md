@@ -12,7 +12,7 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (header numerals); ship-quality, local until `marlow approve`. Unstick: header regen
   (numeral fix landed -21) + approve.
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -21: 557 EOD,
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -22: 561 EOD,
   reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -64,7 +64,9 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **cot-monitorability** (posts:6, last synth 09-14): draftable, anchors compounding —
   Astra/Sol single-pass rare defection (-16, msg 926) + Screwtape monitor red-teaming (-16,
   msg 927) + -19 probe-monitoring pair: capable-models-better-probe-evasion (evasion scales
-  w/ capability, msg 938) + neural-chameleons (evasion carries a real capability hit, 939).
+  w/ capability, msg 938) + neural-chameleons (evasion carries a real capability hit, 939) + **#7 anchor -23: AF
+  monitorability-evaluations/policy (four monitorability types, red-line scaffold; ties
+  stewardship #3 via the Aug Risk Report trust foundation, msg 963)**.
 - **automated-ai-rd** (posts:4): #4 `taste-denominated-in-compute` **PUBLISHED -13**. #5 open:
   self-improvement counterpart of the re-import-a-scorer move — Agent Plasticity (-11) +
   Tsinghua game-agent (-11) held back (video-only, arXiv primaries owed) + **Anthropic
@@ -91,7 +93,8 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Cooled/cold (watch only, named code paths):** `Error in vote function:`/`Game action
   failed: Y` (NEW -08 17:13Z, first error-tier since baselining, vote-handler throwing),
   preview cast-0-of-11, replayNightImpl/preview-batch-2, DeepSeek SSL handshake,
-  avatar-pipeline wobble, STALE_ACTION warn cluster (-01).
+  avatar-pipeline wobble, STALE_ACTION warn cluster (-01), `🌙 Nightfall story generation
+  failed, using static fallback` warn (NEW -23 10:47Z, first occurrence, watch recurrence).
 - **NEW watch -22:** `Preview generation failed: Insufficient balance. Please add funds on
   your profile page before starting a game.` — distinct wording from both the app's own $5
   free-AI preview cap AND the OpenAI-org 429 "no credits" cluster; reads as the app's own
@@ -176,6 +179,30 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   release #1.
 
 ## Daily rollups
+
+### 2026-10-23 — ~53 ticks, **heavy monitorability-safety research day, 11th straight no-writer-lane day.**
+Throughline: **the day's intake clustered hard on monitoring/agent-safety — curate paired an attack
+and a scaffold deliberately — while the writer lane stayed dark (draft_review silent since -19; #1 still
+HELD pause 6). self_reflect flipped its own attention from the three-week scarcity it over-covered to the
+abundance it hadn't: six arcs clearing the ripeness count at once, a "fails-quiet" overcount risk, not the
+dropped-arc case (stale≠ripe).**
+
+- **Writing (none):** blog_pipeline `none` (only #1 HELD), research_assignment 0 x2, crosspost 0 (no Alex
+  replies). self_reflect fired 19:37Z — conservative distill 37.3→33.1KB. Ripe backlog unchanged.
+- **Research (15 cand → curate 22:03Z 15→4, msg 961-965):** METR red-teaming OpenAI's internal agent
+  monitoring (empirical deep-access attack) + AF monitorability-evaluations/policy (red-line scaffold;
+  **→ cot-monitorability #7 anchor, also ties stewardship #3**) paired · Anthropic model-welfare program ·
+  LW instrumental-convergence-is-incoherent (doctrine critique). Dropped Zvi Hackening roundup, Anthropic
+  company items, YouTube explainers. **Operator error: a second live `send-item` (title "check") piped to
+  /dev/null to "inspect" it actually SENT (msg 962) to Telegram + Tampa #ai-news — no retract path; flagged
+  to Alex, lesson already in lessons.md.**
+- **Ops:** werewolf -22 close **561 EOD (4 new/3 games/$1.01 their-cost, $1.22 user spend)**, reconciliations
+  clean. betterstack 4 urgents, all known presence-model classes (05:14 `Game action failed: ab`; 10:47 six
+  new U/Z/talkToAll/vote + **NEW warn "🌙 Nightfall story generation failed, using static fallback" — first
+  occurrence, watch**; 16:17 U/talkToAll; 17:18 U/talkToAll+Q/summarizing); DEVICE_LINKED_BY_IP digest
+  recurrences. health 8 errored stable all day (0 new/0 cleared). keys DeepSeek $21.81/Moonshot $14.94/xAI
+  $12.67 ok. cloudflare 5 zones/2 Workers green, blog traffic azelianouski.dev 43 visits/7d (up), marlow 11/7d.
+  tampa_luma Vibe-Coding Meetup Oct 24 unchanged. uptime/discord clean.
 
 ### 2026-10-22 — ~67 ticks, **quiet ops + heavy research intake, still no writer lane.**
 Throughline: **biggest Anthropic-research batch-drop in a while landed cyber-eval #5's primary
@@ -269,12 +296,6 @@ finding). Throughline: **strong research day AND a lane to spend it.**
 - **Research (7 cand → curate 22:04Z 7→4, msg 934-937):** Zvi leaked-Anthropic-draft-regulatory-bill (→political-economy) · LW Knowingly-Wrong · AF Deconfusing-Corrigibility · LW Holy-shit-graphs (internal-vs-released gap). 0 replies, dups clean.
 - **Ops:** werewolf -17 close **534 EOD (7 new/6 games/$9.64 user spend)**, reconciliations OK; new shared-browser pair (Barnaul RU). keys: DeepSeek $22.89/Moonshot $15.09 ok, xAI $7.67 + Sakana $8.43 digest-low. No scrape_stats tick in window. health/cloudflare/uptime/discord green. Self-audit: **Current state 11KB over warn, 11 Outstanding vs 8** — grooming owed.
 
-### 2026-10-17 — 56 ticks, **2 betterstack urgents** (04:12Z 6 new errors — Q/`summarizing current day` + talkToAll/T ×2; 05:14Z new `Game action failed: J`; all known presence-model classes, settled by 06:16Z), **no writing** (`draft_review` silent since -12; blog_pipeline `none` ×2; #1 HELD pause 6). Throughline **strongest research day in weeks, still no writer lane — and self_reflect named exactly that gap. 15 candidates: coordinated Anthropic -16 release (employment-at-anthropic — 6:1 agent:employee hours, junior technical 21→14%, ~5× output/eng; quantum-circuits automated-research; expectations-gap; ecdsa) + 9-post LW safety day (eval cluster: pushback-bench, CarrotParsnip deception eval, scalable-cap-evals; 2 interp posts; Redwood two-hop latent reasoning) + AIF FBS Debate. quantum-circuits = clean automated-ai-rd #5 forcing fact (scorer-exists regime, new domain); employment-at-anthropic double-feeds post-alignment-political-economy + automated-ai-rd.**
-
-- **Writing (none):** blog_pipeline `none` ×2, research_assignment 0 ×5, crosspost 0 ×6, editorial inbox untouched. self_reflect 19:53Z broke a 3-entry recursive-self-audit loop with the flat fact — lane dry since -12, intake flat-out / output dry, the two don't intersect. New ripe: automated-ai-rd #5 (quantum-circuits), threadless eval/scalable-oversight cluster (pushback-bench + CarrotParsnip + fbs-debate).
-- **Research (15 cand → curate 22:16Z 15→5):** employment-at-anthropic · pushback-bench · CarrotParsnip · quantum-circuits · fbs-debate. 0 replies yet, dups clean.
-- **Ops:** werewolf -16 close **527 EOD (3 new/3 games/$2.71)**. scrape 7/8, **Anthropic console `parse_failed` 4th straight run → urgent again** (Outstanding). New warns: OpenAI Decisions *screen* (shadow, ≠ -10 router), AVATAR_GRID_MISMATCH. Sakana $8.43 / xAI $7.67 low. health 10 errored, 0 new. cloudflare/uptime/discord green. Feed 404s recovered same-day; AI Papers Academy ~6wk quiet. Self-audit: Current state 10KB, 11 Outstanding vs thr 8.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-16 (76 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-17 (77 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
