@@ -1,63 +1,151 @@
-# monitor_betterstack — app-level error watch for the Werewolf game (Betterstack).
+# monitor_betterstack — app-level error watch for the Werewolf game (Betterstack),
+# WITH an analysis pass on every new incident.
 #
 # Fourth werewolf-ops workstream, companion to monitor_health. monitor_keys
 # watches what the free tier COSTS, werewolf_stats what it PRODUCES, monitor_health
 # whether a GAME works (its errorState in Firestore). This watches whether the APP
 # is throwing — the failures that never reach a game doc: unhandled exceptions,
-# provider 5xx, Next.js server errors, dead requests. The game already ships these
-# to Betterstack via @logtail/node; we read them back through Betterstack's
-# ClickHouse HTTP query API.
+# provider 5xx, Next.js server errors, dead requests. The game ships these to
+# Betterstack via @logtail/node; we read them back through the ClickHouse SQL API.
 #
-# Fires hourly. App-level errors are more time-sensitive than the 6h broken-game
-# scan — a stranger who hits a 500 leaves immediately — so we check often. Cheap:
-# one HTTP query against a tiny log volume.
+# Cadence (2026-10-23): every 3 hours with a 4-hour window (was hourly / 90 min).
+# Nobody acts on these within the hour, the player already sees the error in the
+# game, and site liveness is monitor_uptime's job. Hourly also paged twice on one
+# incident (16:17 caught the first timeout, 17:18 the rest); a slower scan with
+# overlap sees an incident whole. Quiet scans finish in seconds; only a scan with
+# a new incident uses the long timeout below.
 #
-# Storage note: Betterstack is ClickHouse with tiered storage — recent rows in a
-# hot table, older rows flushed to S3. Since 2026-09-23 the handler reads the UNION
-# of both tiers (S3 was lagging hot by ~50 min and hid fresh production errors).
+# Alert model — PRESENCE, not rate-spike, on INCIDENTS, not lines. An incident is
+# one game (or one device / one user / one app message shape) failing in one way;
+# the handler folds lines into incidents, labels each with a failure class, and
+# attaches a read-only Firestore snapshot of the game for every NEW incident.
+# A known incident that keeps producing lines is never re-pinged; it is forgotten
+# 24h after its last line, so the same failure a day later counts as new.
+#   - First scan with no prior state → baselines, ONE digest line, no urgent.
+#   - Later scans → a new incident whose worst line is error-level is urgent; a
+#     new warn-only incident is digest.
 #
-# Env filter (2026-09-23): dev, Jest and production share this source. Only
-# BETTERSTACK_ENVS (default `production`) alerts; every alert line shows its env
-# as [level/env]. Non-production error/warn lines get one informational digest
-# line per day, never urgent. `replay --since --until` shows what a past window
-# would alert on without touching state.
-#
-# Alert model — PRESENCE, not rate-spike. At this volume the error baseline is
-# zero, so "did any error/warn appear?" beats "did the rate spike?". Alerts on
-# error/warn lines NEW since the last scan (fingerprint dedup), never the standing
-# set — same discipline as monitor_health.
-#   - First scan with no prior state → baselines the current error/warn lines,
-#     emits ONE digest summary, no urgent.
-#   - Later scans → a new error line is urgent; a new warn is digest. Lines already
-#     fingerprinted are never re-pinged.
+# WHY the analysis pass (Alex, 2026-10-23): "Why can't she do the analysis like
+# you do? ... it would be way better to receive the errors and the analysis."
+# The old alert was a dump of raw lines ("Game action failed: U x2"). The handler
+# now hands you the material — structured fields, the real error text, the game
+# snapshot — and YOUR job is the judgment: what happened, what the player saw,
+# whether it needs Alex. Two or three sentences per incident. That text IS the
+# alert.
 #
 # Credentials (in the launchd plist): BETTERSTACK_CH_HOST, BETTERSTACK_CH_USER,
 # BETTERSTACK_CH_PASS — the ClickHouse query connection (Telemetry → Integrations
-# → SQL API). The app's BETTER_STACK_SOURCE_TOKEN is ingest-only and is NOT this.
+# → SQL API). MARLOW_FIREBASE_CREDS (read-only) for the game snapshots. The app's
+# BETTER_STACK_SOURCE_TOKEN is ingest-only and is NOT this.
 #
 # In-tick flow:
-#   1. Run `uv run python handlers/monitor_betterstack.py report`.
-#   2. Parse JSON. If `ok: false` (almost always the BETTERSTACK_CH_* creds
-#      missing/invalid, or a 401/403 = connection revoked), treat as a framework
-#      bug: record a diagnosis via framework_fix, and notify Alex urgent if it's
-#      the query creds failing (the watch is blind until fixed).
-#   3. If `any_urgent: true`, send one consolidated urgent Telegram listing each
-#      new error line + its message.
-#   4. Otherwise append the handler's digest block to the end-of-day digest:
-#      `uv run python handlers/monitor_betterstack.py digest` → if non-empty, pass
-#      to `notify --digest`. A quiet scan (nothing new) prints nothing → no line.
-#      compose_daily_digest (23:00 UTC) bundles it with the budget/stats/health lines.
-#   5. Write the report to projects/werewolf-ops/reports/betterstack/<YYYY-MM-DD>.md
-#      (`monitor_betterstack.py show` renders the current scan).
-#   6. Write the tick result and exit.
+#   1. Run `uv run python handlers/monitor_betterstack.py report`. Parse JSON.
+#   2. If `ok: false` (almost always the BETTERSTACK_CH_* creds missing/invalid,
+#      or a 401/403 = connection revoked), treat as a framework bug: record a
+#      diagnosis via framework_fix, and notify Alex urgent if it's the query
+#      creds failing (the watch is blind until fixed).
+#   3. If `new_incidents` is empty: no analysis. Append the handler's digest
+#      block (if any — `monitor_betterstack.py digest`, empty on a quiet scan) via
+#      `notify --digest`, write the tick result, exit. This is the common case.
+#   4. Otherwise ANALYZE each new incident (cap: full write-ups for the 3 with the
+#      most lines, one sentence each for the rest). For each, in order:
+#      a. Read the incident: `class`, `error`, `details_head`, `actors`
+#         (model/bot), `functions`, `count`, `first_dt`–`last_dt`, `game`.
+#      b. Apply the PLAYBOOK below to the class. It tells you what the class
+#         means, what the game does about it on its own, and whether it is
+#         Alex's problem. An `unclassified` incident is where your attention
+#         goes: read `details_head` (the stack), and grep the function named in
+#         `functions` in the werewolf repo to see what that code path does:
+#           grep -rn "function <name>\|<name>Impl" ~/projects/werewolf-ai-party-game/werewolf-client/app/api/
+#         Read only. Never edit that repo.
+#      c. Read the `game` snapshot and say what the PLAYER saw: is the game past
+#         the failure (state/day moved on, `last_message` after `last_dt`, no
+#         `errorState`) → recovered; carrying an `errorState` → the player sees a
+#         banner with Retry; `exists: false` → the player deleted it; no snapshot
+#         → say the snapshot was unavailable, don't guess. Note the tier (a free
+#         game costs us, a paid one costs the player) and when it was created
+#         (an incident in a game created minutes earlier is a first impression).
+#         If the actors name a model that carries a `slow`/`very-slow` tag or is
+#         excluded from Random/GM in the game's catalog (Grok, Qwen, MiniMax, Muse
+#         Spark, DeepSeek Pro, Argon, Kimi), say so: a timeout there is a known
+#         property of the model, not a new bug.
+#      d. Write 2–3 sentences: (1) what happened — class, model/bot, how many
+#         times over what span; (2) what the player saw and whether the game is
+#         past it; (3) verdict: "needs nothing", "watch" (repeat → look again), or
+#         "needs Alex" with the one-line reason. Plain prose, no bullet soup, no
+#         hedging words, no speculation beyond the data; if two readings fit,
+#         name both in one sentence.
+#   5. Send ONE Telegram. Urgent if `any_urgent`, else digest. Shape:
+#        Werewolf app logs — <N> new incident(s), <window>
+#        <incident line from the handler's issue `detail`>
+#        <your 2–3 sentences>
+#        (blank line between incidents)
+#      Known-class incidents in a game that has already recovered are still
+#      reported (Alex sees the Betterstack alert anyway and wants the reading),
+#      but the verdict sentence makes the "needs nothing" explicit.
+#   6. Write the report to projects/werewolf-ops/reports/betterstack/<YYYY-MM-DD>.md
+#      (append a `## HH:MM UTC` section per scan with new incidents; `show`
+#      renders the current scan). Put the full analysis there too.
+#   7. Write the tick result and exit.
+#
+# PLAYBOOK — what each failure class means (werewolf repo: app/api/errors.ts,
+# .claude/skills/debugging/SKILL.md, and the ops memory the game's own assistant
+# keeps; keep this list in step with them):
+#   timeout             A model did not answer within the 60s per-call limit
+#                       (ModelTimeoutError). The game shows a banner with Retry;
+#                       no backend retry by design (Alex's rule). Known for the
+#                       slow models above; a player who switches the bot's model
+#                       fixes it. Needs Alex only if a FAST model (Haiku, GPT
+#                       mini, Gemini Flash/Lite, DeepSeek Flash, Mistral Small)
+#                       times out repeatedly → provider slowdown worth a look.
+#   provider_busy       429/503/529, rate limit, overloaded. Provider-side. The
+#                       game surfaces it; the player retries. Needs Alex only if
+#                       it persists across hours or hits every bot of a provider.
+#   provider_budget     The PLATFORM key for a provider is out of money (OpenAI
+#                       "no credits", Anthropic "credit balance too low", 402s).
+#                       Every bot on that provider fails until Alex tops up.
+#                       ALWAYS needs Alex. monitor_keys should have warned first.
+#   player_balance      A paid-tier player's own prepaid balance is empty. The
+#                       game tells them to add funds or switch to Free. Logged at
+#                       warn on purpose. Needs nothing; note if the account is
+#                       brand new (the free Upgrade button trap).
+#   free_cap            A free-tier cap refused a request (day/month/global/
+#                       device scope). Expected. Scope `device-shared` or
+#                       `device` = the refusal hit a browser with several accounts
+#                       → report it under the multi-account heading, it is the
+#                       strongest shared-account signal there is. Never urgent.
+#   device_link         A keyless browser inherited a device id from the same IP
+#                       within 12h (anti multi-account). Informational. Only
+#                       interesting together with a free_cap on the same device.
+#   stale_action        A late or duplicate click reached the server after the
+#                       game moved on; the server no-ops and logs STALE_ACTION at
+#                       warn. Expected, needs nothing.
+#   model_refusal       A provider's content filter refused (Gemini
+#                       PROHIBITED_CONTENT, Qwen DataInspectionFailed, image
+#                       ImageRefusalError). The game blocks that provider for the
+#                       rest of the game and offers a different model. Needs
+#                       nothing unless the same THEME keeps triggering it.
+#   firestore_contention Firestore "transaction expired"/ABORTED. Two writers on
+#                       one game doc. Recoverable, retry fixes it. Watch: a third
+#                       occurrence in talkToAll is the threshold Alex set.
+#   empty_response      A model returned nothing (GLM at max effort, Qwen). Known
+#                       quirk, player retries. Watch if frequent.
+#   parse_failure       Schema/JSON validation failed on a model's reply. Player
+#                       retries. Watch which model; repeated → catalog problem.
+#   unclassified        Nobody has seen this shape. Read the stack, grep the
+#                       function, describe it plainly. ALWAYS "needs Alex" unless
+#                       the stack makes it obviously one of the above.
+#
+# Replay for review: `monitor_betterstack.py replay --since <ISO> --until <ISO> --text`
+# shows the incidents a window would produce, with snapshots, touching no state.
 name: monitor_betterstack
 project: werewolf-ops
 profile: ops
-description: Hourly app-level error watch — queries Betterstack (ClickHouse SQL API) for new error/warn log lines from the Werewolf app, alerts urgent on a new error. Baselines the pre-existing set; never re-pings.
-schedule: "0 * * * *"
+description: App-level error watch every 3h — folds Betterstack error/warn lines into incidents (per game + failure class), snapshots the game from Firestore, and the session analyzes each new incident (what happened, what the player saw, needs Alex?) before alerting. Baselines the pre-existing set; never re-pings a known incident.
+schedule: "0 */3 * * *"
 priority: normal
-must_run_within_hours: 2
+must_run_within_hours: 4
 subtasks:
   - id: scan_app_logs
     handler: monitor_betterstack
-    context: {}
+    context: {timeout_sec: 900}   # the analysis pass reads code + the snapshot; 300s is for pure relays. Quiet scans still finish in seconds.

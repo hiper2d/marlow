@@ -13,66 +13,79 @@ ClickHouse HTTP query API (the app's source token is ingest-only; this needs a
 separate query credential — a ClickHouse connection, created under Telemetry →
 Integrations → SQL API).
 
+── Incidents, not lines (2026-10-23) ───────────────────────────────────────
+Until 2026-10-23 the handler returned one row per error line with four fields
+(time, level, env, the first 200 chars of `message`) and the alert was a dump of
+those. On the game's error lines `message` is a throwaway ("Game action failed:
+U") and the substance sits in `error` / `details` / `gameId` / `model` /
+`botName` / `function`, none of which were read. The same afternoon four
+timeouts of one slow bot in one game paged Alex twice (two hourly scans, six
+"new" lines) with no way to tell from the alert what had happened.
+
+Now the handler reads the structured fields, folds lines into INCIDENTS —
+same game, same failure class, same model — classifies each against the known
+failure classes (`classify`), attaches a read-only Firestore snapshot of the
+game (state, day, error state, last message, who owns it, which models are at
+the table) for every NEW incident, and fingerprints the incident rather than
+the line. The session's job (see the task YAML) is the judgment on top: what
+happened, what the player saw, whether it needs Alex.
+
 ── Storage, and why an S3 table shows up ────────────────────────────────────
 Betterstack Telemetry is ClickHouse with tiered storage. Recent rows sit in a
 fast hot table — `remote(<source>_logs)`; older rows are flushed to cheap S3 —
 `s3Cluster(primary, <source>_s3)`. The Live-tail UI stitches both together so a
 human never sees the seam. The raw SQL API does not: you address a table.
-For THIS source the flush to S3 is aggressive and the volume is tiny, so the
-hot table is almost always empty and S3 holds effectively everything, including
-near-real-time rows. So we query S3. (The cost: the freshest ~couple minutes may
-still be unflushed in the hot tier — caught on the next tick, since the window
-overlaps. Fine for an hourly error watch. Union the two if we ever want lower
-latency.)
+Which tier holds the fresh rows has flipped more than once, so every query reads
+the UNION of both, DISTINCT on (dt, raw). If the union holds ZERO rows (any
+env/level) in the window the report says `source_empty` instead of calling the
+window quiet.
 
 ── Schema ───────────────────────────────────────────────────────────────────
 There is no flat `level` column. Each row's `raw` is the full JSON log line;
-level + message come out with `JSONExtractString(raw, 'level' | 'message')`.
-Levels seen in practice: info, debug (and warn/error when they happen).
+every field comes out with `JSONExtractString(raw, '<field>')`. Fields the app
+sets: level, message, env, gameId, function, botName, model, gameState,
+recoverable, error, details (stack), deviceId, ip, city, userEmail, scope.
 
 ── Env filter (2026-09-23) ──────────────────────────────────────────────────
 Local dev, Jest and production all ship to the SAME source; each line carries
-`env` in `raw`. On 09-22/23 this watch paged urgent on 26 lines that were all
-`env: "test"` (Jest runs, gameId `test-game-id`, mocked 429). Only envs in
-BETTERSTACK_ENVS (default `production`) alert. Lines with no `env` predate
-2026-09-02 and are dropped. Non-production error/warn lines are still COUNTED,
-once a day, as one informational digest line - so a test leak coming back is
-visible without paging anyone.
-
-The fingerprint is deliberately still dt|level|msg (no env): production rows
-already in `seen` keep their fingerprints, and filtered-out rows simply stop
-arriving, so the rollout run fires nothing new.
-
-── Both tiers, and empty ≠ quiet (2026-09-23) ───────────────────────────────
-The "S3 holds everything" claim below stopped being true: on 09-23 S3 lagged the
-hot table by ~50 min (S3 newest 21:06, hot newest 21:54), and the 21:41 scan saw
-nothing while two production lines from 21:03/21:06 already existed. Hot vs S3
-has flipped before too. So every query now reads the UNION of both tiers,
-DISTINCT on (dt, raw) so a row present in both counts once. If the union holds
-ZERO rows (any env/level) in the window the report says `source_empty` instead
-of calling the window quiet.
+`env` in `raw`. Only envs in BETTERSTACK_ENVS (default `production`) alert.
+Lines with no `env` predate 2026-09-02 and are dropped. Non-production
+error/warn lines are still COUNTED, once a day, as one informational digest
+line - so a test leak coming back is visible without paging anyone.
 
 ── Alert model: presence, not rate-spike ───────────────────────────────────
 At this volume the error baseline is ZERO — errors essentially never appear. So
 "did the rate spike above normal?" is the wrong question; "did ANY error/warn
-appear?" is both simpler and strictly more sensitive. We alert on error/warn
-rows NOT seen on a previous scan (fingerprint dedup, same noise discipline as
+appear?" is both simpler and strictly more sensitive. We alert on INCIDENTS not
+seen on a previous scan (fingerprint dedup, same noise discipline as
 monitor_health diffing the errored-game set):
-  - First run with no prior state → BASELINE the current error/warn rows, emit
-    one digest summary, no urgent ping (don't alarm on a pre-existing pile).
-  - Later runs → any error-level row that's new is urgent; any new warn is
-    digest. Old rows already fingerprinted are never re-pinged.
+  - First run with no prior state → BASELINE the current incidents, emit one
+    digest summary, no urgent ping (don't alarm on a pre-existing pile).
+  - Later runs → a new incident whose worst line is error-level is urgent; a new
+    warn-only incident is digest. A known incident that keeps producing lines is
+    never re-pinged; it falls out of the dedup set INCIDENT_TTL_HOURS after its
+    last line, so the same failure a day later counts as new again.
+  - Upgrading from the pre-10-23 line fingerprints: the first scan that finds the
+    old `seen` list re-baselines under incident fingerprints (one digest line).
+
+Cadence: every 3 hours with a 4-hour window (was hourly / 90 min). Nobody acts
+on these inside the hour, site liveness is monitor_uptime's job, and a slower
+scan with overlap sees an incident whole instead of paging on each half.
 
 Credentials (in the launchd plist, mirrored to os.environ by env_loader):
   BETTERSTACK_CH_HOST, BETTERSTACK_CH_USER, BETTERSTACK_CH_PASS.
-Fails clean (ok: false) if unset — same failure contract as monitor_keys/health.
+  MARLOW_FIREBASE_CREDS (read-only) for the game snapshots; without it the
+  incidents still come back, just without the `game` block.
+Fails clean (ok: false) if the ClickHouse creds are unset — same failure
+contract as monitor_keys/health.
 
 CLI:
     python handlers/monitor_betterstack.py report   → scan + persist, JSON
     python handlers/monitor_betterstack.py show      → last scan, human-readable
     python handlers/monitor_betterstack.py digest    → digest block for notify
-    python handlers/monitor_betterstack.py replay --since 2026-09-22T18:00 --until 2026-09-23T02:00
-                                                     → what WOULD alert in that window
+    python handlers/monitor_betterstack.py replay --since 2026-10-23T15:00Z --until 2026-10-23T18:00Z
+                                                     → the incidents a scan of that window
+                                                       would alert on, with game snapshots
                                                        (no state read or written)
     python handlers/monitor_betterstack.py selftest  → offline asserts, no network
 """
@@ -97,22 +110,66 @@ import_plist_env()
 from driver.budget_state import STATE_DIR  # noqa: E402
 
 # The durable store for this source. Hot tier is remote(t507167_ai_werewolf_2_logs);
-# we query S3 (see module docstring). Override via env if the source/cluster moves.
+# both are unioned on every query (see docstring). Override via env if the source moves.
 TABLE = os.environ.get("BETTERSTACK_CH_TABLE", "s3Cluster(primary, t507167_ai_werewolf_2_s3)")
-# The hot tier, unioned with TABLE on every query (see docstring). Empty = S3 only.
 ALT_TABLE = os.environ.get("BETTERSTACK_CH_ALT_TABLE", "remote(t507167_ai_werewolf_2_logs)")
 # Only these envs alert. Comma-separated; values go into SQL, so they're
 # restricted to a safe charset rather than escaped.
 ENVS = tuple(e for e in (x.strip() for x in os.environ.get("BETTERSTACK_ENVS", "production").split(","))
              if re.fullmatch(r"[A-Za-z0-9_-]+", e)) or ("production",)
-WINDOW_MIN = int(os.environ.get("BETTERSTACK_WINDOW_MIN", "90"))
+WINDOW_MIN = int(os.environ.get("BETTERSTACK_WINDOW_MIN", "240"))
 ALERT_LEVELS = ("error", "warn")
 HTTP_TIMEOUT = 30
 ROW_LIMIT = 500          # plenty at this volume; caps a runaway error storm
-SEEN_CAP = 2000          # fingerprints retained for dedup (errors are rare → never hit)
+INCIDENT_TTL_HOURS = 24  # a known incident is forgotten this long after its last line
+SEEN_CAP = 500           # incident fingerprints retained (errors are rare → never hit)
+MESSAGES_PER_INCIDENT = 5
+
+# Structured fields read off each row. `message` first; the rest are what the game's
+# logger.error / logger.warn calls attach (see the Schema section).
+FIELDS = ("message", "error", "details", "gameId", "function", "botName", "model",
+          "gameState", "recoverable", "deviceId", "userEmail", "scope", "city", "ip")
+FIELD_CAP = {"message": 300, "error": 300, "details": 700}
 
 BS_LATEST = STATE_DIR / "betterstack_latest.json"
 BS_HISTORY = STATE_DIR / "betterstack_history.jsonl"
+
+GAMES = "games"
+MESSAGES = "messages"
+
+
+# ─── Failure classes ─────────────────────────────────────────────────────────
+#
+# Deterministic first guess at WHAT KIND of failure a line is, matched against
+# message + error + the head of details. The session's playbook (task YAML) says
+# what each class means and whether it needs Alex; this only labels. Order
+# matters: the first match wins, so the specific tags come before the generic
+# "parse_failure" catch-all. `unclassified` is a legitimate answer and the one
+# the session should spend its attention on.
+CLASSES: tuple[tuple[str, str], ...] = (
+    ("device_link", r"DEVICE_LINKED_BY_IP"),
+    ("free_cap", r"FREE_SPEND_LIMIT|free \$[\d.]+ of AI|free play is paused"),
+    ("player_balance", r"insufficient balance"),
+    ("stale_action", r"STALE_ACTION"),
+    ("model_refusal", r"refused (?:the prompt|to answer)|PROHIBITED_CONTENT|ImageRefusalError|ModelRefusalError"),
+    ("provider_budget", r"insufficient_quota|no credits remaining|credit balance is too low|used all available credits|spending limit"),
+    ("timeout", r"did not respond within|ModelTimeoutError|timed out|timeout"),
+    ("provider_busy", r"\b(?:429|503|529)\b|rate[\s_-]?limit|too many requests|overloaded|at capacity|service unavailable|resource[\s_-]?exhausted"),
+    ("firestore_contention", r"transaction (?:has )?expired|\bABORTED\b|contention|too much contention"),
+    ("empty_response", r"empty (?:or undefined )?response|returned no content|empty content"),
+    ("parse_failure", r"\bJSON\b|schema|zod|parse|validation"),
+)
+
+
+def classify(text: str) -> str:
+    low = (text or "").lower()
+    for name, pattern in CLASSES:
+        if re.search(pattern, low, re.IGNORECASE):
+            return name
+    return "unclassified"
+
+
+# ─── Betterstack query ───────────────────────────────────────────────────────
 
 
 def _now_utc() -> datetime:
@@ -143,7 +200,6 @@ def _query(creds: dict, sql: str) -> str:
         timeout=HTTP_TIMEOUT,
     )
     if resp.status_code != 200:
-        # Betterstack returns a ClickHouse exception JSON or an auth error body.
         raise RuntimeError(f"HTTP {resp.status_code}: {resp.text[:200].strip()}")
     return resp.text
 
@@ -172,10 +228,13 @@ def _source(window: str) -> str:
 
 
 def _rows_sql(window: str) -> str:
+    cols = ["dt", "JSONExtractString(raw,'level') AS lvl", "JSONExtractString(raw,'env') AS env"]
+    for f in FIELDS:
+        cap = FIELD_CAP.get(f)
+        expr = f"JSONExtractString(raw,'{f}')"
+        cols.append(f"substring({expr},1,{cap}) AS {f}" if cap else f"{expr} AS {f}")
     return (
-        "SELECT dt, JSONExtractString(raw,'level') AS lvl, "
-        "JSONExtractString(raw,'env') AS env, "
-        "substring(JSONExtractString(raw,'message'),1,200) AS msg "
+        "SELECT " + ", ".join(cols) + " "
         f"FROM {_source(window)} "
         f"WHERE JSONExtractString(raw,'level') IN ({_sql_list(ALERT_LEVELS)}) "
         f"AND JSONExtractString(raw,'env') IN ({_sql_list(ENVS)}) "
@@ -208,8 +267,7 @@ def _nonprod_counts(creds: dict, window: str) -> dict[str, int]:
 
 
 def _fetch_rows(creds: dict, window: str | None = None) -> list[dict]:
-    """The error/warn rows in the window from alerting envs, newest first.
-    Each: {dt, level, env, msg}."""
+    """The error/warn rows in the window from alerting envs, newest first."""
     body = _query(creds, _rows_sql(window or _window_clause()))
     return _parse_rows(body)
 
@@ -224,18 +282,214 @@ def _parse_rows(body: str) -> list[dict]:
             o = json.loads(line)
         except json.JSONDecodeError:
             continue
-        row = {"dt": o.get("dt"), "level": o.get("lvl"), "env": o.get("env") or "",
-               "msg": (o.get("msg") or "").strip()}
+        row = {"dt": o.get("dt"), "level": o.get("lvl"), "env": o.get("env") or ""}
+        for f in FIELDS:
+            v = o.get(f)
+            row[f] = v.strip() if isinstance(v, str) else (v or "")
+        row["msg"] = row.pop("message")
         if row["env"] not in ENVS:
             continue  # belt and braces: the SQL already filters this
         rows.append(row)
     return rows
 
 
-def _fingerprint(row: dict) -> str:
-    # No env on purpose - see "Env filter" in the module docstring.
-    key = f"{row.get('dt')}|{row.get('level')}|{row.get('msg')}"
-    return hashlib.sha1(key.encode("utf-8")).hexdigest()[:16]
+# ─── Incidents ───────────────────────────────────────────────────────────────
+
+
+def _error_text(row: dict) -> str:
+    """The human error line. Some logger calls serialize the whole error object
+    into `error` ('{"modelType":..,"message":..,"stack":..}'); unwrap to its
+    message so the alert reads like the sibling lines and folds with them."""
+    err = (row.get("error") or "").strip()
+    if err.startswith("{"):
+        try:
+            o = json.loads(err)
+            if isinstance(o, dict) and o.get("message"):
+                return str(o["message"]).strip()
+        except json.JSONDecodeError:
+            m = re.search(r'"message"\s*:\s*"([^"]{1,200})"', err)
+            if m:
+                return m.group(1)
+    return err or (row.get("msg") or "")
+
+
+def _row_class(row: dict) -> str:
+    return classify(" ".join([row.get("msg") or "", _error_text(row),
+                              (row.get("details") or "")[:300]]))
+
+
+def _normalize(text: str) -> str:
+    """A message with its volatile parts removed, so lines that differ only in
+    ids/numbers fold into one incident."""
+    t = re.sub(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", "<uuid>", text or "")
+    t = re.sub(r"\d+", "#", t)
+    return t.strip().lower()[:80]
+
+
+def incident_key(row: dict) -> tuple[str, str, str]:
+    """(target, failure class, discriminator). Lines in one game that fail the
+    same way are one incident whatever the function or the model: a stalled bot
+    fails in vote AND in talkToAll, and the agent layer logs the same timeout a
+    second time without the bot fields. Models and bots are collected on the
+    incident instead, so the alert still names them."""
+    cls = _row_class(row)
+    if row.get("gameId"):
+        return (f"game:{row['gameId']}", cls, "-")
+    if cls == "device_link":
+        return (f"device:{row.get('deviceId') or '?'}", cls, "-")
+    if cls == "free_cap":
+        return (f"user:{row.get('userEmail') or '?'}", cls, row.get("scope") or "-")
+    return ("app", cls, _normalize(row.get("msg") or row.get("error") or ""))
+
+
+def _fingerprint(key: tuple[str, str, str]) -> str:
+    return hashlib.sha1("|".join(key).encode("utf-8")).hexdigest()[:16]
+
+
+def fold_incidents(rows: list[dict]) -> list[dict]:
+    """Group rows (newest first) into incidents, newest-last-line first."""
+    by_key: dict[tuple, dict] = {}
+    for r in rows:
+        key = incident_key(r)
+        inc = by_key.get(key)
+        if inc is None:
+            inc = by_key[key] = {
+                "fingerprint": _fingerprint(key),
+                "target": key[0], "class": key[1],
+                "gameId": r.get("gameId") or "", "level": r.get("level"),
+                "first_dt": _trim_dt(r.get("dt")), "last_dt": _trim_dt(r.get("dt")), "count": 0,
+                "models": [], "functions": [], "bots": [], "actors": [], "gameStates": [], "envs": [],
+                "error": _error_text(r),
+                "details_head": (r.get("details") or "")[:400],
+                "deviceId": r.get("deviceId") or "", "userEmail": r.get("userEmail") or "",
+                "lines": [],
+            }
+        inc["count"] += 1
+        if r.get("level") == "error":
+            inc["level"] = "error"
+        dt = _trim_dt(r.get("dt"))
+        if dt and (not inc["first_dt"] or dt < inc["first_dt"]):
+            inc["first_dt"] = dt
+        if dt and (not inc["last_dt"] or dt > inc["last_dt"]):
+            inc["last_dt"] = dt
+        for field, bag in (("model", "models"), ("function", "functions"), ("botName", "bots"),
+                           ("gameState", "gameStates"), ("env", "envs")):
+            v = r.get(field)
+            if v and v not in inc[bag]:
+                inc[bag].append(v)
+        # model/bot pairs as they occur ("minimax/Vexa"), for the alert line.
+        actor = "/".join(x for x in (r.get("model"), r.get("botName")) if x)
+        if actor and actor not in inc["actors"]:
+            inc["actors"].append(actor)
+        if len(inc["lines"]) < MESSAGES_PER_INCIDENT:
+            inc["lines"].append({"dt": dt, "level": r.get("level"),
+                                 "function": r.get("function") or "", "bot": r.get("botName") or "",
+                                 "msg": r.get("msg") or "", "error": _error_text(r)})
+    out = list(by_key.values())
+    out.sort(key=lambda i: (i["level"] != "error", i["last_dt"] or ""), reverse=False)
+    out.sort(key=lambda i: i["last_dt"] or "", reverse=True)
+    return out
+
+
+def _trim_dt(dt: str | None) -> str | None:
+    """ClickHouse hands back '2026-10-23 16:32:19.878000'; keep whole seconds."""
+    return dt.split(".")[0] if isinstance(dt, str) else dt
+
+
+# ─── Firestore snapshot ──────────────────────────────────────────────────────
+
+
+def _ms_iso(ms) -> str | None:
+    try:
+        return datetime.fromtimestamp(int(ms) / 1000, tz=timezone.utc).replace(microsecond=0) \
+            .isoformat().replace("+00:00", "Z")
+    except (TypeError, ValueError, OSError):
+        return None
+
+
+def _db():
+    """Read-only Firestore client, or None when creds/dep are missing. The
+    snapshot is an extra; a missing client never fails the scan."""
+    try:
+        from handlers.monitor_keys import _firestore_db  # noqa: PLC0415
+        return _firestore_db()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def game_snapshot(db, game_id: str, now: datetime | None = None) -> dict:
+    """What the player sees: state, day, error state, who is at the table, when
+    the game last moved. Fail-soft - returns {"error": ...} rather than raising."""
+    now = now or _now_utc()
+    try:
+        snap = db.collection(GAMES).document(game_id).get()
+        if not snap.exists:
+            return {"exists": False}
+        g = snap.to_dict() or {}
+        bots = g.get("bots") or []
+        err = g.get("errorState") or None
+        out = {
+            "exists": True,
+            "theme": g.get("theme") or "(untitled)",
+            "owner": g.get("ownerEmail"),
+            "tier": g.get("createdWithTier"),
+            "state": g.get("gameState"),
+            "day": g.get("currentDay"),
+            "gameMaster": g.get("gameMasterAiType"),
+            "createdAt": _ms_iso(g.get("createdAt")),
+            "bots_alive": sum(1 for b in bots if b.get("isAlive")),
+            "bots_total": len(bots),
+            "models": sorted({(b.get("aiType") or "?") for b in bots if b.get("isAlive")}),
+            "errorState": None,
+            "last_message": None,
+        }
+        if err:
+            ctx = err.get("context") or {}
+            first = (err.get("details") or "").splitlines()
+            out["errorState"] = {
+                "recoverable": bool(err.get("recoverable")),
+                "function": ctx.get("function"),
+                "at": ctx.get("timestamp"),
+                "summary": (first[0].strip() if first else "")[:160],
+            }
+        try:
+            last = list(db.collection(GAMES).document(game_id).collection(MESSAGES)
+                        .order_by("timestamp", direction="DESCENDING").limit(1).stream())
+            if last:
+                m = last[0].to_dict() or {}
+                out["last_message"] = {
+                    "at": _ms_iso(m.get("timestamp")),
+                    "author": m.get("authorName"),
+                    "type": m.get("messageType"),
+                    "day": m.get("day"),
+                }
+                iso = out["last_message"]["at"]
+                if iso:
+                    dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+                    out["minutes_since_last_message"] = int((now - dt).total_seconds() // 60)
+        except Exception as e:  # noqa: BLE001
+            out["last_message"] = {"error": str(e)[:120]}
+        return out
+    except Exception as e:  # noqa: BLE001
+        return {"error": str(e)[:160]}
+
+
+def attach_snapshots(incidents: list[dict], only_new: bool = True, now: datetime | None = None) -> None:
+    """Add a `game` block to every (new) incident that names a game. One read per game."""
+    wanted = [i for i in incidents if i.get("gameId") and (i.get("is_new") or not only_new)]
+    if not wanted:
+        return
+    db = _db()
+    cache: dict[str, dict] = {}
+    for inc in wanted:
+        gid = inc["gameId"]
+        if gid not in cache:
+            cache[gid] = game_snapshot(db, gid, now) if db is not None \
+                else {"error": "MARLOW_FIREBASE_CREDS not available"}
+        inc["game"] = cache[gid]
+
+
+# ─── State & issues ──────────────────────────────────────────────────────────
 
 
 def _prior_state() -> dict:
@@ -244,6 +498,88 @@ def _prior_state() -> dict:
             return json.load(f)
     except (OSError, json.JSONDecodeError):
         return {}
+
+
+def _prior_seen(prev: dict) -> dict | None:
+    """Incident fingerprints from the last run: {fp: {"last_dt", "class", "target"}}.
+    None → never scanned (→ baseline). {} with a legacy `seen` list → migrate."""
+    if not prev:
+        return None
+    seen = prev.get("seen_incidents")
+    if isinstance(seen, dict):
+        return seen
+    return {}   # pre-10-23 state (line fingerprints): re-baseline
+
+
+def _parse_dt(s: str | None) -> datetime | None:
+    if not s:
+        return None
+    try:
+        d = datetime.fromisoformat(s.replace("Z", "+00:00").replace(" ", "T"))
+    except ValueError:
+        return None
+    return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
+
+
+def derive_issues(incidents: list[dict], prior: dict | None, legacy: bool = False,
+                  now: datetime | None = None) -> tuple[list[dict], bool]:
+    """Mark incidents new/known and return (issues, baselined).
+
+    First run (prior is None) or an upgrade from line fingerprints (legacy=True):
+    baseline — one digest line, no urgent, nothing marked new."""
+    now = now or _now_utc()
+    if prior is None or legacy:
+        for inc in incidents:
+            inc["is_new"] = False
+        if incidents:
+            errs = sum(1 for i in incidents if i["level"] == "error")
+            why = "re-baselined under incident fingerprints (upgrade from per-line dedup)" if legacy \
+                else "baseline on first scan"
+            return ([{
+                "severity": "digest", "kind": "betterstack_baseline", "target": "logs",
+                "detail": f"{why}: {len(incidents)} {'/'.join(ENVS)} incident(s) in the last "
+                          f"{WINDOW_MIN}m ({errs} error, {len(incidents) - errs} warn) — not alerting. "
+                          f"New incidents alert from here.",
+            }], True)
+        return ([], True)
+
+    issues = []
+    for inc in incidents:
+        known = prior.get(inc["fingerprint"])
+        fresh = known is not None
+        if fresh:
+            last = _parse_dt(known.get("last_dt"))
+            if last and now - last > timedelta(hours=INCIDENT_TTL_HOURS):
+                fresh = False   # forgotten: the same failure a day later is news again
+        inc["is_new"] = not fresh
+        if fresh:
+            continue
+        is_err = inc["level"] == "error"
+        issues.append({
+            "severity": "urgent" if is_err else "digest",
+            "kind": "app_error" if is_err else "app_warn",
+            "target": inc["fingerprint"],
+            "detail": incident_line(inc),
+        })
+    return (issues, False)
+
+
+def next_seen(incidents: list[dict], prior: dict | None, now: datetime | None = None) -> dict:
+    """Dedup state for the next run: every incident in this window (with its
+    latest line time) plus the prior ones still inside the TTL."""
+    now = now or _now_utc()
+    out: dict[str, dict] = {}
+    for inc in incidents:
+        out[inc["fingerprint"]] = {"last_dt": inc["last_dt"], "class": inc["class"], "target": inc["target"]}
+    for fp, rec in (prior or {}).items():
+        if fp in out:
+            continue
+        last = _parse_dt(rec.get("last_dt"))
+        if last and now - last <= timedelta(hours=INCIDENT_TTL_HOURS):
+            out[fp] = rec
+        if len(out) >= SEEN_CAP:
+            break
+    return out
 
 
 def _nonprod_daily_issue(creds: dict, now: datetime, prev: dict) -> dict | None:
@@ -265,69 +601,13 @@ def _nonprod_daily_issue(creds: dict, now: datetime, prev: dict) -> dict | None:
     return issue
 
 
-def _prior_seen() -> list[str] | None:
-    """Fingerprints from the last run. None → never scanned (→ baseline)."""
-    try:
-        with BS_LATEST.open() as f:
-            prev = json.load(f)
-    except (OSError, json.JSONDecodeError):
-        return None
-    return list(prev.get("seen", []))
-
-
-def _derive_issues(rows: list[dict], prior: list[str] | None) -> tuple[list[dict], bool]:
-    """Issues for error/warn rows new since last scan. Returns (issues, baselined).
-
-    First run (prior is None) sets a baseline: one digest line, no urgent — we
-    don't alarm on the pre-existing pile we just discovered."""
-    if prior is None:
-        if rows:
-            errs = sum(1 for r in rows if r["level"] == "error")
-            return ([{
-                "severity": "digest",
-                "kind": "betterstack_baseline",
-                "target": "logs",
-                "detail": f"baseline: {len(rows)} {'/'.join(ENVS)} error/warn log line(s) in the last "
-                          f"{WINDOW_MIN}m on first scan ({errs} error, {len(rows)-errs} warn) "
-                          f"— not alerting (pre-existing). New lines alert from here.",
-            }], True)
-        return ([], True)
-
-    seen = set(prior)
-    issues = []
-    for r in rows:
-        if _fingerprint(r) in seen:
-            continue  # already known — don't re-ping
-        is_err = r["level"] == "error"
-        issues.append({
-            "severity": "urgent" if is_err else "digest",
-            "kind": "app_error" if is_err else "app_warn",
-            "target": r["dt"] or "?",
-            "detail": f"[{r['level']}/{r.get('env') or '?'}] {r['msg'][:140] or '(no message)'}",
-        })
-    return (issues, False)
-
-
-def _next_seen(rows: list[dict], prior: list[str] | None) -> list[str]:
-    """Updated fingerprint list: current window's fps first, then prior, capped."""
-    cur = [_fingerprint(r) for r in rows]
-    merged, out = set(), []
-    for fp in cur + (prior or []):
-        if fp not in merged:
-            merged.add(fp)
-            out.append(fp)
-        if len(out) >= SEEN_CAP:
-            break
-    return out
-
-
 def _compact(report: dict) -> dict:
     return {
         "checked_at": report.get("checked_at"),
         "window_min": report.get("window_min"),
         "counts": report.get("counts"),
-        "new_issues": len([i for i in report.get("issues", [])
-                           if i["kind"] in ("app_error", "app_warn")]),
+        "incidents": len(report.get("incidents", [])),
+        "new_incidents": len([i for i in report.get("incidents", []) if i.get("is_new")]),
         "any_urgent": report.get("any_urgent"),
         "issues": [f"{i['severity']}:{i['target']}" for i in report.get("issues", [])],
     }
@@ -361,8 +641,11 @@ def report() -> dict:
     except (requests.RequestException, RuntimeError, ValueError) as e:
         return {"ok": False, "checked_at": _checked_at(now), "error": str(e)[:200]}
 
-    prior = _prior_seen()                       # read BEFORE we overwrite latest
-    issues, baselined = _derive_issues(rows, prior)
+    prior = _prior_seen(prev)                   # read BEFORE we overwrite latest
+    legacy = bool(prev) and prior == {} and isinstance(prev.get("seen"), list)
+    incidents = fold_incidents(rows)
+    issues, baselined = derive_issues(incidents, prior, legacy=legacy, now=now)
+    attach_snapshots(incidents, only_new=True, now=now)
     if nonprod_issue and not nonprod_issue.get("silent"):
         issues.append(nonprod_issue)
     counts = {lvl: sum(1 for r in rows if r["level"] == lvl) for lvl in ALERT_LEVELS}
@@ -374,17 +657,67 @@ def report() -> dict:
         "source_empty": source_empty,
         "nonprod_reported_for": (nonprod_issue or {}).get("date") or prev.get("nonprod_reported_for"),
         "counts": counts,
-        "rows": rows[:50],                      # a sample for `show`; not the dedup state
+        "incidents": incidents,
+        "new_incidents": [i for i in incidents if i.get("is_new")],
         "issues": issues,
         "any_urgent": any(i["severity"] == "urgent" for i in issues),
         "baselined": baselined,
-        "seen": _next_seen(rows, prior),        # dedup state for the next run
+        "seen_incidents": next_seen(incidents, prior, now),    # dedup state for the next run
     }
     _save(result)
     return result
 
 
 # ─── Renders ─────────────────────────────────────────────────────────────────
+
+
+def _hhmm(dt: str | None) -> str:
+    d = _parse_dt(dt)
+    return d.strftime("%H:%M") if d else "?"
+
+
+def incident_line(inc: dict) -> str:
+    """One line per incident for the digest / urgent message: what, where, how
+    many times, over what span, the real error text. The session's analysis goes
+    under it, not in it."""
+    span = _hhmm(inc.get("first_dt")) if inc.get("count", 0) <= 1 \
+        else f"{_hhmm(inc.get('first_dt'))}–{_hhmm(inc.get('last_dt'))}"
+    where = inc.get("target", "")
+    game = inc.get("game") or {}
+    if where.startswith("game:"):
+        where = game.get("theme") or where[5:]
+        if game.get("owner"):
+            where += f" ({game['owner']})"
+    who = ", ".join(inc.get("actors") or inc.get("models") or [])
+    fns = ", ".join(inc.get("functions") or [])
+    parts = [f"[{inc.get('level')}/{'/'.join(inc.get('envs') or ENVS)}]", inc.get("class", "?"), where]
+    if who:
+        parts.append(who)
+    if fns:
+        parts.append(f"in {fns}")
+    parts.append(f"{inc.get('count', 0)}× {span} UTC")
+    err = (inc.get("error") or "").replace("\n", " ")[:140]
+    return " · ".join(parts) + (f" — {err}" if err else "")
+
+
+def _snapshot_lines(game: dict) -> list[str]:
+    if not game:
+        return []
+    if game.get("error"):
+        return [f"      game: snapshot unavailable ({game['error']})"]
+    if not game.get("exists"):
+        return ["      game: no longer in Firestore (expired or deleted)"]
+    out = [f"      game: {game.get('state')} day {game.get('day')}, {game.get('bots_alive')}/{game.get('bots_total')} bots alive, "
+           f"GM {game.get('gameMaster')}, tier {game.get('tier')}, created {game.get('createdAt')}"]
+    out.append(f"      models at the table: {', '.join(game.get('models') or []) or '-'}")
+    es = game.get("errorState")
+    out.append("      errorState: " + (f"{'recoverable' if es['recoverable'] else 'UNRECOVERABLE'} in {es.get('function')} at {es.get('at')} — {es.get('summary')}" if es else "none"))
+    lm = game.get("last_message") or {}
+    if lm and not lm.get("error"):
+        ago = game.get("minutes_since_last_message")
+        out.append(f"      last message: {lm.get('type')} by {lm.get('author')} at {lm.get('at')}"
+                   + (f" ({ago} min ago)" if ago is not None else ""))
+    return out
 
 
 def render(report: dict) -> str:
@@ -395,15 +728,19 @@ def render(report: dict) -> str:
     out = [f"Werewolf app logs (Betterstack) — {report['checked_at']}",
            f"  window: last {report.get('window_min')}m   env: {envs}   "
            f"error={c.get('error', 0)} warn={c.get('warn', 0)}", ""]
-    rows = report.get("rows", [])
+    incidents = report.get("incidents", [])
     if report.get("source_empty"):
         out.append("  Both log tiers are EMPTY for the window (any env) - can't call it quiet.")
-    elif rows:
-        out.append("  Recent error/warn lines:")
-        for r in rows[:10]:
-            out.append(f"    · {r['dt']}  [{r['level']}/{r.get('env') or '?'}] {r['msg'][:120]}")
-        if len(rows) > 10:
-            out.append(f"    … +{len(rows) - 10} more")
+    elif incidents:
+        out.append(f"  {len(incidents)} incident(s) in the window:")
+        for inc in incidents[:15]:
+            mark = "NEW " if inc.get("is_new") else "    "
+            out.append(f"    {mark}{incident_line(inc)}")
+            out.extend(_snapshot_lines(inc.get("game") or {}))
+            for ln in inc.get("lines", [])[:3]:
+                out.append(f"        · {ln['dt']} [{ln['level']}] {ln.get('function') or ''} {ln.get('bot') or ''} {ln.get('error') or ln.get('msg')}".rstrip())
+        if len(incidents) > 15:
+            out.append(f"    … +{len(incidents) - 15} more")
     else:
         out.append(f"  No {envs} error/warn lines in the window.")
     issues = report.get("issues", [])
@@ -414,7 +751,7 @@ def render(report: dict) -> str:
             mark = "🔴" if i["severity"] == "urgent" else "⚠️"
             out.append(f"    {mark} [{i['severity']}] {i['detail']}")
     else:
-        out.append("  No new error/warn lines since last scan.")
+        out.append("  No new incidents since last scan.")
     return "\n".join(out)
 
 
@@ -434,8 +771,8 @@ def render_digest(report: dict) -> str | None:
 
 
 def replay(since: datetime, until: datetime) -> dict:
-    """What a scan over [since, until) WOULD alert on, as if nothing were seen
-    before. Reads and writes no state - safe to run next to the hourly tick."""
+    """The incidents a scan over [since, until) WOULD alert on, as if nothing were
+    seen before, with game snapshots. Reads and writes no state."""
     creds = _creds()
     if not creds:
         return {"ok": False, "error": "BETTERSTACK_CH_HOST/USER/PASS not set"}
@@ -446,11 +783,16 @@ def replay(since: datetime, until: datetime) -> dict:
         nonprod = _nonprod_counts(creds, window)
     except (requests.RequestException, RuntimeError, ValueError) as e:
         return {"ok": False, "error": str(e)[:200]}
-    issues, _ = _derive_issues(rows, [])
+    incidents = fold_incidents(rows)
+    issues, _ = derive_issues(incidents, {}, now=until)
+    attach_snapshots(incidents, only_new=False)
     return {"ok": True, "since": since.isoformat(), "until": until.isoformat(),
-            "envs": list(ENVS), "source_empty": source_empty,
+            "envs": list(ENVS), "source_empty": source_empty, "rows": len(rows),
             "alerts": len(issues), "urgent": sum(i["severity"] == "urgent" for i in issues),
-            "issues": issues, "nonprod_counts": nonprod}
+            "incidents": incidents, "issues": issues, "nonprod_counts": nonprod}
+
+
+# ─── Selftest ────────────────────────────────────────────────────────────────
 
 
 def selftest() -> None:
@@ -458,26 +800,94 @@ def selftest() -> None:
     self-check this way (see werewolf_stats selftest)."""
     sql = _rows_sql(_window_clause())
     assert f"JSONExtractString(raw,'env') IN ({_sql_list(ENVS)})" in sql, sql
-    assert "AS env" in sql
+    assert "AS gameId" in sql and "AS details" in sql, sql
     assert TABLE in sql and (not ALT_TABLE or ALT_TABLE in sql), sql   # both tiers
 
-    body = "\n".join(json.dumps(o) for o in [
-        {"dt": "2026-09-22 20:21:00", "lvl": "error", "env": "test",
-         "msg": "Game action failed: replayNightImpl"},
-        {"dt": "2026-09-22 20:21:01", "lvl": "warn", "env": "development", "msg": "dev noise"},
-        {"dt": "2026-09-22 20:21:02", "lvl": "error", "env": "", "msg": "pre-09-02 line"},
-        {"dt": "2026-09-22 20:22:00", "lvl": "error", "env": "production", "msg": "real one"},
+    def line(dt, lvl, env, **kw):
+        o = {"dt": dt, "lvl": lvl, "env": env}
+        o.update(kw)
+        return json.dumps(o)
+
+    # Today's real shape (2026-10-23): one game, one slow bot, four timeouts in two
+    # functions, plus an Argon timeout in the same game, plus a device link.
+    body = "\n".join([
+        line("2026-10-23 16:32:19", "error", "production", message="Game action failed: U",
+             gameId="g1", function="U", botName="Vexa", model="minimax", gameState="DAY_DISCUSSION",
+             error="MiniMax-M3 did not respond within 60s", details="ModelTimeoutError: ..."),
+        line("2026-10-23 16:31:50", "error", "production", message="Error in talkToAll function: x",
+             gameId="g1", function="talkToAll", botName="Vexa", model="minimax",
+             error="MiniMax-M3 did not respond within 60s"),
+        line("2026-10-23 16:18:02", "error", "production", message="Game action failed: Q",
+             gameId="g1", function="Q", botName="Vexa", model="minimax",
+             error="MiniMax-M3 did not respond within 60s"),
+        line("2026-10-23 16:03:11", "error", "production", message="Game action failed: Q",
+             gameId="g1", function="Q", botName="Narrator", model="gemini-argon",
+             error="Gemini 4 Argon did not respond within 60s"),
+        line("2026-10-23 15:58:00", "warn", "production", deviceId="dev-1",
+             message="DEVICE_LINKED_BY_IP: keyless browser inherited device dev-1"),
+        line("2026-10-23 15:50:00", "error", "test", message="Game action failed: U", gameId="t"),
+        line("2026-10-23 15:49:00", "error", "", message="pre-09-02 line"),
     ])
     rows = _parse_rows(body)
-    assert [r["msg"] for r in rows] == ["real one"], rows    # test/dev/no-env dropped
+    assert len(rows) == 5, [r["msg"] for r in rows]          # test / no-env dropped
+    assert rows[0]["error"].startswith("MiniMax-M3"), rows[0]
+    assert rows[0]["msg"] == "Game action failed: U"
 
-    issues, _ = _derive_issues(rows, [])
-    assert len(issues) == 1 and issues[0]["severity"] == "urgent", issues
-    assert "/production]" in issues[0]["detail"], issues[0]["detail"]
+    incidents = fold_incidents(rows)
+    # One game, one failure class → ONE incident, both models and all three functions on it.
+    assert len(incidents) == 2, [(i["target"], i["class"], i["models"]) for i in incidents]
+    mm = next(i for i in incidents if i["target"] == "game:g1")
+    assert mm["count"] == 4 and mm["class"] == "timeout", mm
+    assert sorted(mm["models"]) == ["gemini-argon", "minimax"] and sorted(mm["functions"]) == ["Q", "U", "talkToAll"], mm
+    assert sorted(mm["bots"]) == ["Narrator", "Vexa"], mm
+    assert mm["first_dt"] == "2026-10-23 16:03:11" and mm["last_dt"] == "2026-10-23 16:32:19", mm
+    dev = next(i for i in incidents if i["class"] == "device_link")
+    assert dev["level"] == "warn" and dev["target"] == "device:dev-1"
+    # The agent layer's JSON-shaped error folds in and reads as its message.
+    blob = _parse_rows(line("2026-10-23 16:32:19.791000", "error", "production", gameId="g1",
+                            error='{"modelType":"MiniMax-M3","name":"ModelTimeoutError","message":"MiniMax-M3 did not respond within 60s","stack":"..."}'))
+    assert _error_text(blob[0]) == "MiniMax-M3 did not respond within 60s", blob
+    assert incident_key(blob[0]) == incident_key(rows[0]), (incident_key(blob[0]), incident_key(rows[0]))
+    assert fold_incidents(rows + blob)[0]["count"] == 5
+    assert blob[0]["dt"].endswith(".791000") and _trim_dt(blob[0]["dt"]) == "2026-10-23 16:32:19"
 
-    # Rollout: a production row seen before the env change keeps its fingerprint.
-    legacy = hashlib.sha1("2026-09-22 20:22:00|error|real one".encode()).hexdigest()[:16]
-    assert _derive_issues(rows, [legacy]) == ([], False)
+    # Classifier: specific tags win over the generic parse catch-all.
+    assert classify("STALE_ACTION cancelBotResponses: game is in VOTE") == "stale_action"
+    assert classify("Insufficient balance: your prepaid balance can't cover") == "player_balance"
+    assert classify("HTTP 503 Service Unavailable from Mistral") == "provider_busy"
+    assert classify("Zod validation failed for JSON") == "parse_failure"
+    assert classify("Transaction has expired") == "firestore_contention"
+    assert classify("something nobody has seen") == "unclassified"
+
+    now = datetime(2026, 10, 23, 17, 0, tzinfo=timezone.utc)
+    # First scan ever: baseline, nothing new, one digest line.
+    issues, baselined = derive_issues(incidents, None, now=now)
+    assert baselined and len(issues) == 1 and issues[0]["severity"] == "digest"
+    assert not any(i["is_new"] for i in incidents)
+    # Second scan, nothing known: one urgent (the error incident), one digest (the warn).
+    issues, baselined = derive_issues(incidents, {}, now=now)
+    assert not baselined and len(issues) == 2
+    assert sum(i["severity"] == "urgent" for i in issues) == 1, issues
+    detail = next(i["detail"] for i in issues if i["target"] == mm["fingerprint"])
+    assert "minimax/Vexa, gemini-argon/Narrator" in detail, detail
+    # Third scan: the incident keeps producing lines → known, not re-pinged.
+    seen = next_seen(incidents, {}, now=now)
+    issues, _ = derive_issues(incidents, seen, now=now)
+    assert issues == [], issues
+    # ... until it has been quiet for the TTL: then the same failure is news again.
+    later = now + timedelta(hours=INCIDENT_TTL_HOURS + 1)
+    issues, _ = derive_issues(incidents, seen, now=later)
+    assert len(issues) == 2, issues
+    assert next_seen([], seen, now=later) == {}      # and it is forgotten from the state
+    # Upgrade from the pre-10-23 per-line state: re-baseline, no urgent.
+    issues, baselined = derive_issues(incidents, {}, legacy=True, now=now)
+    assert baselined and "re-baselined" in issues[0]["detail"]
+
+    # Incident line reads like the alert should.
+    mm["game"] = {"exists": True, "theme": "Spaceship crew", "owner": "p@x"}
+    s = incident_line(mm)
+    assert s.startswith("[error/production] · timeout · Spaceship crew (p@x) · minimax/Vexa, gemini-argon/Narrator · in "), s
+    assert "4× 16:03–16:32 UTC — " in s and "did not respond within 60s" in s, s
 
     w = _window_clause(datetime(2026, 9, 22, 18, tzinfo=timezone.utc),
                        datetime(2026, 9, 23, 2, tzinfo=timezone.utc))
@@ -496,12 +906,13 @@ def _parse_utc(s: str) -> datetime:
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("report", help="Scan Betterstack for new error/warn lines + persist (JSON)")
+    sub.add_parser("report", help="Scan Betterstack for new incidents + persist (JSON)")
     sub.add_parser("show", help="Render the last persisted scan, human-readable")
     sub.add_parser("digest", help="Digest block from the last scan (empty if nothing new)")
-    p_replay = sub.add_parser("replay", help="What WOULD alert in a fixed UTC window (no state touched)")
-    p_replay.add_argument("--since", required=True, help="e.g. 2026-09-22T18:00Z")
+    p_replay = sub.add_parser("replay", help="Incidents a scan of a fixed UTC window would alert on (no state touched)")
+    p_replay.add_argument("--since", required=True, help="e.g. 2026-10-23T15:00Z")
     p_replay.add_argument("--until", required=True)
+    p_replay.add_argument("--text", action="store_true", help="render like `show` instead of JSON")
     sub.add_parser("selftest", help="Offline asserts (no network)")
     args = ap.parse_args()
     if args.cmd == "selftest":
@@ -509,7 +920,12 @@ def main():
         return
     if args.cmd == "replay":
         res = replay(_parse_utc(args.since), _parse_utc(args.until))
-        print(json.dumps(res, indent=2, ensure_ascii=False))
+        if args.text and res.get("ok"):
+            res = {**res, "checked_at": f"replay {res['since']} → {res['until']}", "window_min": "-"}
+            res["counts"] = {}
+            print(render(res))
+        else:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
         sys.exit(0 if res.get("ok") else 1)
     if args.cmd == "report":
         res = report()

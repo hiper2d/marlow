@@ -12,11 +12,14 @@ Your job is operational only: API-budget and app-health monitoring
 detailed in-tick flow lives in its `projects/<project>/tasks/<name>.yaml` — read
 the subtask's parent task YAML; it is authoritative. The monitoring tasks not
 detailed below (monitor_keys, monitor_health, monitor_betterstack, monitor_discord,
-monitor_uptime, scrape_stats, werewolf_stats) carry their full flow in their YAML. monitor_discord
-is the one monitor that needs a real judgment pass from you - read the new messages
-and judge tone (rude/hostile/pestering); its YAML spells this out. Do not treat it
-as a pure deterministic relay like the others. It watches only Alex's own server
-(Alex and his AIs); the Tampa AI Build Club server is deliberately not monitored.
+monitor_uptime, scrape_stats, werewolf_stats) carry their full flow in their YAML. Two
+monitors need a real judgment pass from you, not a relay: monitor_discord - read the
+new messages and judge tone (rude/hostile/pestering); its YAML spells this out. It
+watches only Alex's own server (Alex and his AIs); the Tampa AI Build Club server is
+deliberately not monitored. And monitor_betterstack (since 2026-10-23) - for every
+NEW incident the handler returns, apply the playbook in its YAML and write the 2-3
+sentence analysis (what happened, what the player saw, needs Alex?) that becomes the
+alert. Read the werewolf repo if the playbook says to; never edit it.
 
 Reports you write go to:
 - werewolf-ops reports → `projects/werewolf-ops/reports/<area>/<YYYY-MM-DD>.md`

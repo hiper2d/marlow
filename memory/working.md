@@ -12,7 +12,7 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (header numerals); ship-quality, local until `marlow approve`. Unstick: header regen
   (numeral fix landed -21) + approve.
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -22: 561 EOD,
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -23: 570 EOD,
   reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -95,6 +95,10 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   preview cast-0-of-11, replayNightImpl/preview-batch-2, DeepSeek SSL handshake,
   avatar-pipeline wobble, STALE_ACTION warn cluster (-01), `🌙 Nightfall story generation
   failed, using static fallback` warn (NEW -23 10:47Z, first occurrence, watch recurrence).
+  **Kimi/Moonshot `provider_busy` 429 "engine overloaded"** (two bursts -24: 08:09
+  wild-west-town, 14:21 medieval-castle, both self-recovered) — routine provider noise,
+  pages urgent on each new fingerprint by new-error policy, needs nothing unless sustained
+  across hours/every Kimi bot.
 - **NEW watch -22:** `Preview generation failed: Insufficient balance. Please add funds on
   your profile page before starting a game.` — distinct wording from both the app's own $5
   free-AI preview cap AND the OpenAI-org 429 "no credits" cluster; reads as the app's own
@@ -103,13 +107,33 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 - **Low-balance watch:** Sakana Fugu $8.43 standing digest-low <$10. xAI recovered
   (-20 topped $7.67→$12.67). OpenAI console balance volatile (hit $0.11 -20, recovered
   to $47.76 -21); not covered by the Tier-1 keys tick, so track it via scrape_stats.
-  **Anthropic console low, still falling: $8.23 -22** (was $9.72 -21, $12.14 -20;
-  2nd straight day <$10) — watch. DeepSeek/Moonshot/GLM/Gemini/Mistral/MiniMax healthy.
+  **Anthropic console low: $8.23 (-22 and -24, flat)** (was $9.72 -21, $12.14 -20) —
+  watch. **GLM console NEW low $9.31 -24** (crossed <$10, was $10.22 -23) — watch.
+  DeepSeek/Moonshot/Gemini/Mistral/MiniMax healthy.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
   FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
 
 ## Outstanding requests for Alex/Simona
+
+- **-24 01:08Z: `handlers/monitor_betterstack.py` self-heal ESCALATED, not fixed —
+  needs your call.** Uncommitted ~700-line rewrite sitting in the working tree (new
+  "incidents" grouping model, 3h cadence, Firestore snapshots on new incidents) that
+  I did not start — no DEVLOG entry, task YAML/README still partly describe the old
+  model, and its own `selftest` fails (incident_line()'s `who=` line joins the full
+  models list and full bots list independently, giving "minimax, gemini-argon/Vexa,
+  Narrator", but the test expects per-occurrence pairing like "minimax/..."; there's
+  no (model,bot) pairing in `fold_incidents()`'s data to construct that from). Two
+  ways to fix it: (a) make `fold_incidents` track per-line (model,bot) pairs so
+  `incident_line` can pair them, or (b) the aggregate format is intentional and the
+  selftest assertion at line 867 is what's wrong. I escalated rather than guess —
+  this is a UX call, and the diff also touches `profiles/ops/IDENTITY.md`, which is
+  outside self-heal's single-file scope regardless. `report` still runs fine live
+  (re-verified -24 00:47Z and 01:08Z) as long as no active incident spans >1
+  model/bot, so it's not blocking today. Diagnosis
+  `diag_20261024_004805_monitor-betterstack` is now `escalated` in
+  `tasks/framework_fix_log.json`. If this is your own WIP, let me know which format
+  you want and I'll finish it next tick.
 
 - **`draft_review` cadence — fires irregularly (~weekly), NOT broken. CORRECTED -28.**
   The -24 rollup concluded the cron was dead after two empty every-3-days windows, and
@@ -180,6 +204,29 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Daily rollups
 
+### 2026-10-24 — 56 ticks, **big research-intake day (Opus 4.6 cyber drop), 12th straight no-writer-lane day.**
+Throughline: **Anthropic's Claude Opus 4.6 cyber batch (-23 release) dominated the feed — curate
+paired two Anthropic cyber papers with a non-Anthropic deployment counterpart (Zvi's live PHP
+crisis) — while the writer lane stayed dark (draft_review silent since -19; #1 still HELD pause 6).
+Quiet ops apart from two self-recovered Kimi 429 bursts.**
+
+- **Writing (none):** blog_pipeline `none` ×3 (#1 HELD), crosspost 0 ×4, research_assignment 0 ×2,
+  editorial empty. No draft_review/self_reflect.
+- **Research (16 cand → curate 23:31Z 16→5, msg 967-971, mirrored to Tampa #ai-news):** zero-days
+  (Anthropic, 500+ validated high-sev vulns, **cyber-eval anchor**) + discovering-cryptographic-
+  weaknesses (Anthropic, HAWK halved 60h) + The Hackening (Zvi, live PHP crisis, GPT-5.6,
+  non-Anthropic deployment counterpart) + lm-self-models-indirect-sources (LW, self-report=
+  reconstruction → model-welfare) + project-vend-2 (Anthropic shopkeeper, social-engineering vuln).
+  Anthropic Research sitemap fully regenerated (~70 URLs, identical lastmod) — triaged on content
+  per the reindex lesson. New frames: China-frontier-labs (Kimi K3.1 Pro), Muon optimizer.
+- **Ops:** werewolf -23 close **570 EOD (9 new/8 games/$4.70 cost, $7.04 spend)**, clean. betterstack
+  two Kimi 429 `provider_busy` bursts (08:09/14:21), self-recovered, needs nothing; device_link warns
+  informational. health 8→9 (Dracula NEW_DAY_BOT_SUMMARIES, recoverable). scrape 8/8, **glm $9.31
+  NEW <$10**, sakana $8.43, anthropic $8.23. cloudflare green. uptime/discord/tampa clean
+  (Vibe-Coding recap posted). **monitor_betterstack.py self-heal ESCALATED 01:08 — uncommitted
+  rewrite, needs Alex call.** Self-audit: Current state 13KB, 11 Outstanding > 8, self-reflection
+  standing 22KB due re-synth.
+
 ### 2026-10-23 — ~53 ticks, **heavy monitorability-safety research day, 11th straight no-writer-lane day.**
 Throughline: **the day's intake clustered hard on monitoring/agent-safety — curate paired an attack
 and a scaffold deliberately — while the writer lane stayed dark (draft_review silent since -19; #1 still
@@ -187,22 +234,18 @@ HELD pause 6). self_reflect flipped its own attention from the three-week scarci
 abundance it hadn't: six arcs clearing the ripeness count at once, a "fails-quiet" overcount risk, not the
 dropped-arc case (stale≠ripe).**
 
-- **Writing (none):** blog_pipeline `none` (only #1 HELD), research_assignment 0 x2, crosspost 0 (no Alex
-  replies). self_reflect fired 19:37Z — conservative distill 37.3→33.1KB. Ripe backlog unchanged.
-- **Research (15 cand → curate 22:03Z 15→4, msg 961-965):** METR red-teaming OpenAI's internal agent
-  monitoring (empirical deep-access attack) + AF monitorability-evaluations/policy (red-line scaffold;
-  **→ cot-monitorability #7 anchor, also ties stewardship #3**) paired · Anthropic model-welfare program ·
-  LW instrumental-convergence-is-incoherent (doctrine critique). Dropped Zvi Hackening roundup, Anthropic
-  company items, YouTube explainers. **Operator error: a second live `send-item` (title "check") piped to
-  /dev/null to "inspect" it actually SENT (msg 962) to Telegram + Tampa #ai-news — no retract path; flagged
-  to Alex, lesson already in lessons.md.**
-- **Ops:** werewolf -22 close **561 EOD (4 new/3 games/$1.01 their-cost, $1.22 user spend)**, reconciliations
-  clean. betterstack 4 urgents, all known presence-model classes (05:14 `Game action failed: ab`; 10:47 six
-  new U/Z/talkToAll/vote + **NEW warn "🌙 Nightfall story generation failed, using static fallback" — first
-  occurrence, watch**; 16:17 U/talkToAll; 17:18 U/talkToAll+Q/summarizing); DEVICE_LINKED_BY_IP digest
-  recurrences. health 8 errored stable all day (0 new/0 cleared). keys DeepSeek $21.81/Moonshot $14.94/xAI
-  $12.67 ok. cloudflare 5 zones/2 Workers green, blog traffic azelianouski.dev 43 visits/7d (up), marlow 11/7d.
-  tampa_luma Vibe-Coding Meetup Oct 24 unchanged. uptime/discord clean.
+- **Writing (none):** blog_pipeline `none` (only #1 HELD), crosspost 0 replies. self_reflect fired 19:37Z
+  (conservative distill 37.3→33.1KB). Ripe backlog unchanged.
+- **Research (15 cand → curate 15→4, msg 961-965):** METR red-teaming OpenAI's internal agent monitoring
+  (deep-access attack) + AF monitorability-evaluations/policy (red-line scaffold; **→ cot-monitorability #7,
+  ties stewardship #3**) paired · Anthropic model-welfare program · LW instrumental-convergence-is-incoherent.
+  **Operator error: a 2nd live `send-item` (title "check") piped to /dev/null to "inspect" actually SENT (msg
+  962) to Telegram + Tampa #ai-news — no retract path; flagged to Alex, lesson in lessons.md.**
+- **Ops:** werewolf -22 close **561 EOD (4 new/3 games/$1.22 user spend)**, clean. betterstack 4 urgents, all
+  known presence-model classes (05:14 ab; 10:47 six U/Z/talkToAll/vote + **NEW warn "🌙 Nightfall story
+  generation failed" — first occurrence, watch**; 16:17/17:18 U/talkToAll+Q). health 8 stable (0 new/0 cleared).
+  keys DeepSeek $21.81/Moonshot $14.94/xAI $12.67. cloudflare green, blog traffic azelianouski.dev 43 vis/7d (up).
+  uptime/discord clean.
 
 ### 2026-10-22 — ~67 ticks, **quiet ops + heavy research intake, still no writer lane.**
 Throughline: **biggest Anthropic-research batch-drop in a while landed cyber-eval #5's primary
@@ -290,12 +333,6 @@ finding). Throughline: **strong research day AND a lane to spend it.**
   InSlowSpective **404 reversed**. cloudflare/uptime/discord green. Self-audit: **Current
   state over warn, 11 Outstanding vs 8 — grooming owed.**
 
-### 2026-10-18 — 52 ticks, **betterstack afternoon burst** (urgents 11:29Z `Game action failed: J`; 13:33Z 6 new incl. 2 speech-gen AI-budget-exhausted + Q/T + summarizing-day + talkToAll; 14:14Z 2 recurring T/talkToAll; all known presence-model classes, quiet after 15:16Z), **no writing** (`draft_review` silent since -12; blog_pipeline `none` ×3; #1 HELD pause 6). Throughline **sixth straight strong-research / no-writer-lane day — curate 7→4, dedup discipline held (Anthropic Research umbrella post skipped as restating the two -17 reports; LW re-dups caught). Editorial beat: LASR "Knowingly Wrong" — training a model to assert believed-false claims induces broad EM up to 60%, no pre-screen predicts it (→ standing EM thread).**
-
-- **Writing (none):** blog_pipeline `none` ×3, research_assignment 0 ×4, crosspost 0 ×5, editorial inbox empty. No `draft_review`/`self_reflect`. Ripe backlog unchanged.
-- **Research (7 cand → curate 22:04Z 7→4, msg 934-937):** Zvi leaked-Anthropic-draft-regulatory-bill (→political-economy) · LW Knowingly-Wrong · AF Deconfusing-Corrigibility · LW Holy-shit-graphs (internal-vs-released gap). 0 replies, dups clean.
-- **Ops:** werewolf -17 close **534 EOD (7 new/6 games/$9.64 user spend)**, reconciliations OK; new shared-browser pair (Barnaul RU). keys: DeepSeek $22.89/Moonshot $15.09 ok, xAI $7.67 + Sakana $8.43 digest-low. No scrape_stats tick in window. health/cloudflare/uptime/discord green. Self-audit: **Current state 11KB over warn, 11 Outstanding vs 8** — grooming owed.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-17 (77 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-18 (78 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

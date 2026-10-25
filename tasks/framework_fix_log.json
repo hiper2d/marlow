@@ -152,5 +152,19 @@
     "escalated_at": null,
     "escalation_reason": null,
     "resolved_at": "2026-09-11T15:18:56Z"
+  },
+  {
+    "id": "diag_20261024_004805_monitor-betterstack",
+    "detected_at": "2026-10-24T00:48:05Z",
+    "file": "handlers/monitor_betterstack.py",
+    "line": 687,
+    "failure_mode": "selftest fails: incident_line()'s who= line joins the incident's full models list and full bots list each comma-separated then slash-joined ('minimax, gemini-argon/Vexa, Narrator'), but the file's own selftest (line 867) asserts a per-model/bot pairing format ('minimax/...'); fold_incidents() only keeps models/bots as independent dedup bags with no per-line pairing, so there is no data to pair them from as written. This is an uncommitted, in-progress rewrite (2026-10-23, 'Incidents, not lines') \u2014 git diff shows ~700 lines changed, the task YAML (projects/werewolf-ops/tasks/monitor_betterstack.yaml) still describes the old hourly/90min/per-line model, and there is no DEVLOG entry, so it reads as interrupted mid-session work, not something I started. 'report' against live Betterstack data still runs and produces sane output when no incident involves multiple models (verified tonight), so it is not currently blocking the hourly scan; it would misrender (not crash) a future multi-model incident like the one the rewrite's own comments say happened on 2026-10-23 16:xx.",
+    "suggested_fix": "Either (a) change incident_line()'s who= construction to pair each incident's lines by model+bot per occurrence (needs fold_incidents to track (model,bot) pairs per line instead of two independent dedup bags), or (b) if the aggregate format is intentional, fix the selftest assertion at line 867 to match it and drop the 'minimax/' expectation. Needs a judgment call on intended UX, not a mechanical fix \u2014 recommend Alex/Simona confirm which before editing. Also update projects/werewolf-ops/tasks/monitor_betterstack.yaml to describe the new incident model + 3h/4h cadence once the rewrite is confirmed finished, and add the missing DEVLOG entry.",
+    "attempts": 0,
+    "attempt_notes": [],
+    "status": "escalated",
+    "resolved_commit": null,
+    "escalated_at": "2026-10-24T01:09:28Z",
+    "escalation_reason": "Fix requires a judgment call on intended UX (aggregate who= line vs per-line model/bot pairing) that only Alex/Simona can make, and the surrounding diff spans an in-progress uncommitted rewrite across handlers/monitor_betterstack.py, its task YAML, README, DEVLOG, and profiles/ops/IDENTITY.md (an identity file) \u2014 out of self-heal's single-file scope. report() still works for current data (no multi-model incident tonight), so this is not blocking."
   }
 ]

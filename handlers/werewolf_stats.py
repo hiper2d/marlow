@@ -995,6 +995,48 @@ def _cluster_rows(devices: list[dict], excluded: set[str] | None = None) -> dict
     }
 
 
+def _cluster_changes(prev: dict | None, cur: dict) -> dict:
+    """Pure: what changed in the multi-account clusters since the previous
+    snapshot — the clusters that APPEARED and the ones that GREW (a new email on
+    a device or connection that already had accounts).
+
+    Alex, 2026-10-23: "I'm only interested in this when an attempt of using
+    shared accounts is detected. I don't need the full list all the time." Until
+    then the digest printed the standing list every morning, so a trio first seen
+    on 2026-09-11 was still in the 2026-10-23 digest. Same discipline as the other
+    monitors now: alert on the diff, keep the standing set for `show`.
+
+    `baselined` is True when there is no usable previous snapshot (first run, or
+    the previous run was not instrumented): nothing is reported, the list just
+    becomes the baseline."""
+    if not cur.get("instrumented"):
+        return {"baselined": False, "new": [], "grown": []}
+    if not prev or not prev.get("instrumented"):
+        return {"baselined": True, "new": [], "grown": []}
+
+    def index(clusters: dict, view: str, key: str) -> dict[str, set[str]]:
+        return {str(c.get(key)): set(c.get("users") or []) for c in clusters.get(view, [])}
+
+    new, grown = [], []
+    for view, key, kind in (("by_device", "device_id", "browser"), ("by_ip", "ip", "connection")):
+        before = index(prev, view, key)
+        for c in cur.get(view, []):
+            k = str(c.get(key))
+            users = set(c.get("users") or [])
+            row = {"kind": kind, "key": k, "accounts": len(users), "users": sorted(users),
+                   "geo": c.get("geo") or {}, "devices": c.get("devices")}
+            if k not in before:
+                new.append(row)
+            elif users - before[k]:
+                grown.append({**row, "new_users": sorted(users - before[k])})
+    # A connection cluster that only restates a browser cluster's accounts says
+    # nothing new; the browser line already carries those emails.
+    browser_emails = {e for r in new + grown if r["kind"] == "browser" for e in r["users"]}
+    new = [r for r in new if r["kind"] == "browser" or not set(r["users"]) <= browser_emails]
+    grown = [r for r in grown if r["kind"] == "browser" or not set(r["new_users"]) <= browser_emails]
+    return {"baselined": False, "new": new, "grown": grown}
+
+
 def _new_account_links(new_emails: list[str], devices: list[dict],
                        user_docs: dict[str, dict],
                        excluded: set[str] | None = None) -> list[dict]:
@@ -1393,6 +1435,9 @@ def report() -> dict:
     spend_reconciliation = _spend_reconcile(user_spend, window_burn)
     ledger_reconciliation = _daily_ledger_reconcile(db, now)
     clusters = _device_clusters(db, users.get("new_day_emails") or [])
+    # Diff against yesterday's clusters: the digest reports only what appeared or
+    # grew (see _cluster_changes); the standing list stays in the report for `show`.
+    clusters["changes"] = _cluster_changes((_prev_snapshot() or {}).get("device_clusters"), clusters)
     screen = _content_screen(db, now, period, games.get("day_refusals") or [])
 
     result = {
@@ -1618,6 +1663,13 @@ def render(report: dict) -> str:
         out.append("  Hit the daily cap:")
         out.extend(f"    · {k}  {v}x" for k, v in hits["by_user"].items())
 
+    # The STANDING multi-account leads live here, not in the digest (which since
+    # 2026-10-23 prints only clusters that appeared or grew - see _cluster_changes).
+    standing = _cluster_lines(report.get("device_clusters") or {})
+    if standing:
+        out.append("")
+        out.append("  Multi-account leads (standing set; the digest reports only changes)")
+        out += standing
     # What the content screen flagged, and the day's provider refusals against it.
     out += _screen_render_lines(report.get("content_screen") or {}, date)
 
@@ -1655,8 +1707,35 @@ def render(report: dict) -> str:
 
 # Above these counts, the detail lists collapse to bare counts so a busy day
 # can't flood the digest. Tune via editorial feedback if the cap feels wrong.
+def _cluster_change_lines(changes: dict) -> list[str]:
+    """Digest lines for multi-account leads that are NEW since the last snapshot:
+    a cluster that appeared, or one that grew by an account. Nothing else prints
+    (Alex, 2026-10-23). Same observational wording as _cluster_lines."""
+    out: list[str] = []
+    if not changes or changes.get("baselined"):
+        return out
+
+    def place_of(row: dict) -> str:
+        where = row.get("geo") or {}
+        place = ", ".join(x for x in (where.get("city"), where.get("country")) if x)
+        return f" ({place})" if place else ""
+
+    for r in changes.get("new", [])[:DIGEST_LIST_CAP]:
+        if r["kind"] == "browser":
+            out.append(f"  NEW shared browser: {r['accounts']} accounts{place_of(r)} - " + ", ".join(r["users"]))
+        else:
+            out.append(f"  NEW shared connection: {r['accounts']} accounts across "
+                       f"{r.get('devices') or '?'} browser(s) - " + ", ".join(r["users"]))
+    for r in changes.get("grown", [])[:DIGEST_LIST_CAP]:
+        what = "shared browser" if r["kind"] == "browser" else "shared connection"
+        out.append(f"  {what} grew to {r['accounts']} accounts{place_of(r)}: +"
+                   + ", ".join(r["new_users"]) + " (with " + ", ".join(u for u in r["users"] if u not in r["new_users"]) + ")")
+    return out
+
+
 def _cluster_lines(clusters: dict) -> list[str]:
-    """Digest lines for multi-account leads. Silent when there is nothing to say.
+    """The STANDING multi-account leads, for `show`. Silent when there is nothing
+    to say. (The digest prints only the diff - _cluster_change_lines.)
 
     Worded as an observation, never an accusation: a shared browser is also a
     family laptop and a shared IP is also a campus. The emails are listed because
@@ -1820,7 +1899,8 @@ def render_digest(report: dict) -> str:
     # one thing in here Alex wants to see the day it happens.
     for i, l in enumerate(_new_account_lines(clusters.get("new_account_links") or [])):
         lines.insert(2 + i, l)
-    lines.extend(_cluster_lines(clusters))
+    # Only clusters that appeared or grew since yesterday; the standing list is in `show`.
+    lines.extend(_cluster_change_lines(clusters.get("changes") or {}))
     # High-risk player text and provider refusals (2026-09-19): the rows Alex
     # reads to decide when the screen moves from monitor to enforce.
     lines.extend(_screen_digest_lines(report.get("content_screen") or {}))
@@ -1983,6 +2063,27 @@ def selftest() -> bool:
           any(w in farm_lines[0].lower() for w in ("abuse", "cheat", "fraud", "farm")), False)
     check("an IP cluster already covered by a device cluster is not repeated",
           len(_cluster_lines(_cluster_rows(FARM))), 1)
+
+    print("_cluster_changes / _cluster_change_lines (digest prints the diff only)")
+    farm = _cluster_rows(FARM)
+    ch = _cluster_changes(None, farm)
+    check("no previous snapshot -> baseline, nothing reported", (ch["baselined"], ch["new"], ch["grown"]), (True, [], []))
+    check("baseline prints no digest line", _cluster_change_lines(ch), [])
+    ch = _cluster_changes(farm, farm)
+    check("unchanged clusters -> nothing", (ch["new"], ch["grown"]), ([], []))
+    check("the standing farm is NOT in the digest any more", _cluster_change_lines(ch), [])
+    newer = _cluster_rows(FARM + [{"deviceId": "dev-Z", "ips": ["7.7.7.7"], "users": ["p@x", "q@x"],
+                                   "geo": {"city": "Taipei", "country": "TW"}}])
+    ch = _cluster_changes(farm, newer)
+    check("a cluster that appeared is reported once, as a browser", [r["kind"] for r in ch["new"]], ["browser"])
+    line_new = _cluster_change_lines(ch)
+    check("...named with place and accounts", ("NEW shared browser: 2 accounts (Taipei, TW)" in line_new[0], "q@x" in line_new[0]), (True, True))
+    grown_devs = [dict(d, users=list(d["users"]) + ["bchase1425@x"]) if d.get("deviceId") == FARM[0]["deviceId"] else d
+                  for d in FARM]
+    ch = _cluster_changes(farm, _cluster_rows(grown_devs))
+    check("a cluster that grew names only the new account", [r["new_users"] for r in ch["grown"] if r["kind"] == "browser"], [["bchase1425@x"]])
+    check("...and the digest says grew to N", "grew to" in _cluster_change_lines(ch)[0] and "+bchase1425@x" in _cluster_change_lines(ch)[0], True)
+    check("not instrumented -> not baselined, nothing", _cluster_changes(farm, {"instrumented": False}), {"baselined": False, "new": [], "grown": []})
 
     print("_paid_tier_line")
     check("nobody on the paid tier -> no line", _paid_tier_line(0, 0.0), None)

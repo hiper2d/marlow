@@ -89,7 +89,19 @@ game already ships structured logs to Betterstack via `@logtail/node`
 `werewolf-client/app/utils/logger.ts`).
 
 Task: [`tasks/monitor_betterstack.yaml`](tasks/monitor_betterstack.yaml) —
-hourly. State in `state/betterstack_latest.json` (+ history).
+every 3 hours with a 4-hour window (hourly / 90 min until 2026-10-23). State in
+`state/betterstack_latest.json` (+ history).
+
+**Incidents + analysis (2026-10-23).** The handler folds error/warn lines into
+*incidents* (one game, one failure class — `timeout`, `provider_busy`,
+`model_refusal`, `free_cap`, … see `CLASSES`), reads the structured fields the
+game logs (`gameId`, `model`, `botName`, `function`, the real `error` text and
+the stack head), and attaches a read-only Firestore snapshot of the game to every
+NEW incident (state, day, error state, last message, owner, tier, models at the
+table). The session then does the judgment the YAML's playbook spells out — what
+happened, what the player saw, whether it needs Alex — and that text is the
+alert. Before this the alert was a dump of raw `message` fields ("Game action
+failed: U x2"), and one incident straddling two hourly scans paged twice.
 
 **How we read it.** The app's source token is ingest-only, so reading needs a
 separate **ClickHouse query connection** (Telemetry → Integrations → SQL API; the
@@ -106,10 +118,20 @@ JSON log line, and level/message come out via `JSONExtractString(raw, …)`.
 
 **Alert model — presence, not rate-spike.** Measured volume is ~tens of lines a
 day and the error baseline is *zero*, so statistical spike-vs-baseline is the
-wrong tool. We alert on the **presence** of error/warn lines NEW since the last
-scan (fingerprint dedup), never the standing set — same discipline as
+wrong tool. We alert on the **presence** of incidents NEW since the last scan
+(incident fingerprint = target + failure class; a known incident is forgotten
+24h after its last line), never the standing set — same discipline as
 monitor_health. First scan baselines (one digest line, no urgent); thereafter a
-new error line is urgent, a new warn is digest.
+new incident whose worst line is error-level is urgent, a warn-only one is digest.
+
+**Multi-account clusters in the stats digest (2026-10-23).** `werewolf_stats`
+now diffs the device/IP clusters against the previous snapshot and the digest
+prints only clusters that *appeared* or *grew* (a new account on a known shared
+browser or connection). The standing list is still in the saved report and in
+`show`. Alex: "I'm only interested when an attempt is detected, not the full
+list all the time." The strongest signal — a free-cap refusal with a device
+scope — reaches Betterstack since the same day (the game moved that line from
+`console.warn` to its logger), so the log watch sees it as class `free_cap`.
 
 ### Community watch - LIVE (Discord activity + behavior, since 2026-06-28)
 
