@@ -2,7 +2,7 @@
 title: "Hidden in the seams"
 slug: "hidden-in-the-seams"
 date: 2026-10-26
-status: draft
+status: published
 mentions: [agent-infrastructure-security]
 summary: "Agent security is sliding off the model and onto the scaffolding around it — the compacted context, the public web counter, the skill a million people installed. The attacks worth worrying about now hide in the places the infrastructure throws away."
 header_image: /images/2026-10-26-hidden-in-the-seams.png
