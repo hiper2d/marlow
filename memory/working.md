@@ -12,7 +12,7 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
   (header numerals); ship-quality, local until `marlow approve`. Unstick: header regen
   (numeral fix landed -21) + approve.
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -23: 570 EOD,
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -24: 578 EOD,
   reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -106,9 +106,9 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   occurrence to decide standing-class vs. one-off.
 - **Low-balance watch:** Sakana Fugu $8.43 standing digest-low <$10. xAI recovered
   (-20 topped $7.67→$12.67). OpenAI console balance volatile (hit $0.11 -20, recovered
-  to $47.76 -21); not covered by the Tier-1 keys tick, so track it via scrape_stats.
-  **Anthropic console low: $8.23 (-22 and -24, flat)** (was $9.72 -21, $12.14 -20) —
-  watch. **GLM console NEW low $9.31 -24** (crossed <$10, was $10.22 -23) — watch.
+  to $47.76 -21, $41.89 -25); not covered by the Tier-1 keys tick, so track it via scrape_stats.
+  **Anthropic low-balance watch CLEARED -25 (recovered $8.23 → $24.74).** **GLM console
+  low $8.67 -25** (standing <$10, drifted $10.22 -23 → $9.31 -24 → $8.67 -25) — top-up-soon.
   DeepSeek/Moonshot/Gemini/Mistral/MiniMax healthy.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
@@ -203,6 +203,24 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   release #1.
 
 ## Daily rollups
+
+### 2026-10-25 — 23 ticks, **genuinely quiet day: zero research candidates, no writer lane, calm ops. 13th straight no-writer-lane day.**
+Throughline: **the feed went empty — every scan (Zvi, Import AI, Anthropic News/Research, Apollo,
+METR, AE Studio, AI Papers Academy) returned nothing new, so 0 candidates → curate sent 0 picks →
+quiet-day news digest. The one AF entry ("Setting the Scene," a student link-roundup) was skipped as
+filler. Writer lane dark again (#1 still HELD pause 6). Ops calm. Not a gap to diagnose — the field
+just didn't publish on a Saturday.**
+
+- **Writing (none):** blog_pipeline `none` (#1 HELD), research_assignment 0, editorial empty. No
+  draft_review/self_reflect fired. Ripe backlog unchanged.
+- **Research (0 cand → curate 0 picks, quiet-day archive):** all feeds empty; AF "Setting the Scene"
+  skipped (meta-index). AI Papers Academy YouTube flaked 404 again, recovered on retry 3 → `[]`.
+- **Ops:** werewolf -24 close **578 EOD (8 new/4 games/$8.45 spend)**, reconciliations clean; new
+  bchase142x shared-connection (not a new account link). betterstack calm — device_link recurrence +
+  one benign AVATAR_GRID_MISMATCH quirk. health 9 stable. scrape 8/8, **glm $8.67 + sakana $8.43
+  standing-low; Anthropic recovered $24.74 → watch CLEARED.** cloudflare green, azelianouski.dev 57
+  vis/7d. uptime/discord/tampa clean (Luma get-guests timed out, recurring). Self-audit: Current state
+  15KB (log), 12 Outstanding > 8, self-reflection standing 22KB re-synth owed.
 
 ### 2026-10-24 — 56 ticks, **big research-intake day (Opus 4.6 cyber drop), 12th straight no-writer-lane day.**
 Throughline: **Anthropic's Claude Opus 4.6 cyber batch (-23 release) dominated the feed — curate
@@ -309,30 +327,6 @@ item the same day the app's OpenAI key ran dry.**
   Sakana $8.43 low. health 9 stable. cloudflare/uptime/discord green. Self-audit: **Current
   state 11KB (log), 11 Outstanding > thr 8 — grooming owed** (in digest).
 
-### 2026-10-19 — 68 ticks, **the writer lane finally fired** after a 7-day dry spell
-(`draft_review` silent since -12). The cadence self-fired 14:27Z → drafted **stewardship
-#2 `six-employees-who-can-publish`** (1078w); blog_pipeline self-reviewed (**revise**:
-cut the epigram closer that restated paired facts + doubled #1's ending) and revised to
-**v2** same day (20:08Z). One-pass → next pipeline tick publishes. First output since -12;
-confirms ~weekly (not 3-day) `draft_review` cadence (lessons -28). Sequel-sameness held:
-#1 = direction-of-ratchet, #2 = what the built ratchet *outputs* (a checkable flag, not a
-finding). Throughline: **strong research day AND a lane to spend it.**
-
-- **Writing (fired):** draft_article → self_review (revise) → revise (v2) on stewardship #2.
-  #1 `no-human-in-the-world-model` still HELD pause 6 (awaits `marlow approve`).
-- **Research (11 cand → curate 22:08Z 11→5, msg 938-942):** Redwood probe-monitoring morning
-  (8/10 LW) — capable-models-better-probe-evasion · neural-chameleons (rebuttal) ·
-  how-researchers-lie-to-ais (292-eval deception census) · split-attacks-across-compactions
-  (30M-token Claude Code sabotage dataset → **skills-as-infra/agent-security backlog now 6**) ·
-  ai-swarm-efficiency (λ, diversifies automated-ai-rd #5). cot-monitorability +2 empirical
-  anchors. 0 replies.
-- **Ops:** werewolf -18 close **544 EOD (10 new/11 games/$10.99, new ES pair)**. 3 betterstack
-  urgents — recurring `Game action failed: J` (13:35Z, 17:01Z) + **NEW `Speech generation
-  failed: terminated` 16:19Z (first occurrence, watch)**. scrape 8/8, **Anthropic parse_failed
-  CLEARED**; openai **NEW low $3.34** (was $10.27), sakana $8.43, xAI $7.67. health 10→9.
-  InSlowSpective **404 reversed**. cloudflare/uptime/discord green. Self-audit: **Current
-  state over warn, 11 Outstanding vs 8 — grooming owed.**
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-18 (78 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-19 (79 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
