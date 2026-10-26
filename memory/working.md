@@ -7,12 +7,12 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate cuts are
   cap/quality, not volume. Import AI at #477 (weekly cadence).
-- `blog` - **27 live** (latest #27 `six-employees-who-can-publish`, stewardship #2,
-  published -20). **`no-human-in-the-world-model` (agents #1) HELD pause 6**
-  (header numerals); ship-quality, local until `marlow approve`. Unstick: header regen
-  (numeral fix landed -21) + approve.
+- `blog` - **28 live** (latest #28 `hidden-in-the-seams`, agent-infrastructure #1,
+  published -26 — writer lane broke a ~13-day dark streak). **`no-human-in-the-world-model`
+  (agents #1) HELD pause 6** (header numerals); ship-quality, local until `marlow approve`.
+  Unstick: header regen (numeral fix landed -21) + approve.
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -24: 578 EOD,
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -25: 583 EOD,
   reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -28,6 +28,7 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
 | `safety-tool-stewardship-handoffs` | 2 | 10-20 (#2 `six-employees-who-can-publish` PUBLISHED) |
+| `agent-infrastructure-security` | 1 | 10-26 (#1 `hidden-in-the-seams` PUBLISHED) |
 | `agents-in-real-deployment` | 2 | 09-21 (#2 published) |
 | `ai-biorisk-evals` | 1 | 09-07 (#1 published -08) |
 | `model-welfare-and-consciousness` | 1 | 08-24 |
@@ -37,12 +38,12 @@ anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
 **Thread-file backlog - standing binding constraint.** `draft_article list-threads`
 only sees thread files on disk; an arc ripe only as prose here is invisible to
 drafting — materialize before drafting (writer IDENTITY). File-less + ripe:
-- **Skills-as-infra / agent-security — 6 anchors:** WikiSkill -30, SKILL.state -31,
-  agentic-skills -02, encoded-coordination-open-web -23 (swarm eval-Q&A relay via public
-  counters; monitorability crossover), fingerprinting-llms-agentic-behavior -28 (Tsinghua
-  ~958-feature fingerprint; audit tool + attack surface), split-attacks-across-compactions
-  -19 (MARS/Redwood 30M-token Claude Code sabotage dataset, 73%→93% w/ annotated-history
-  monitoring). First attack-surface angle. Ripe — top of file-less backlog.
+- **~~Skills-as-infra / agent-security~~ MATERIALIZED -26** → thread
+  `agent-infrastructure-security` opened, #1 `hidden-in-the-seams` PUBLISHED -26 (blog 28 live).
+  Spine built on the 3 trusted anchors: split-attacks-across-compactions -19 (MARS/Redwood
+  LCM dataset, 73%/45%/93%), encoded-coordination-open-web -23, Anthropic Skills→AAIF -23.
+  Video-sourced anchors (WikiSkill -30, SKILL.state -31, fingerprinting -28) parked as
+  supporting, arXiv primaries still owed. (List emptied; next file-less arc TBD.)
 
 **Single-source frames to watch:** horizon-length · "hard core of alignment" meta ·
 training-corpus-as-alignment-surface · verified≠understood (4 LW, needs non-LW anchor) ·
@@ -99,6 +100,13 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   wild-west-town, 14:21 medieval-castle, both self-recovered) — routine provider noise,
   pages urgent on each new fingerprint by new-error policy, needs nothing unless sustained
   across hours/every Kimi bot.
+  **`Free tier limit reached: you can create up to 5 games per day` (NEW -26 18:04Z)** —
+  fires in `previewGameAction` (werewolf game-actions.ts:324); its message matches neither
+  `isInsufficientBalanceError` nor `isFreeSpendLimitError`, so it falls through to the
+  `error` branch and pages **urgent** instead of digest like its sibling free-tier caps.
+  Gate works correctly (player sees "try tomorrow / add funds"); will keep paging urgent on
+  every free-tier hit. Low-pri werewolf-repo classification nit (read-only, out of self-heal);
+  correlate, don't re-investigate.
 - **NEW watch -22:** `Preview generation failed: Insufficient balance. Please add funds on
   your profile page before starting a game.` — distinct wording from both the app's own $5
   free-AI preview cap AND the OpenAI-org 429 "no credits" cluster; reads as the app's own
@@ -108,13 +116,22 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   (-20 topped $7.67→$12.67). OpenAI console balance volatile (hit $0.11 -20, recovered
   to $47.76 -21, $41.89 -25); not covered by the Tier-1 keys tick, so track it via scrape_stats.
   **Anthropic low-balance watch CLEARED -25 (recovered $8.23 → $24.74).** **GLM console
-  low $8.67 -25** (standing <$10, drifted $10.22 -23 → $9.31 -24 → $8.67 -25) — top-up-soon.
+  low $8.19 -26** (standing <$10, drifting $10.22 -23 → $9.31 -24 → $8.67 -25 → $8.19 -26,
+  now below Sakana) — top-up-soon.
   DeepSeek/Moonshot/Gemini/Mistral/MiniMax healthy.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
   FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
 
 ## Outstanding requests for Alex/Simona
+
+- **-26: `feed_scan` source "YouTube · Mo Bitar (@atmoio)" returns 404 — dead/empty feed.**
+  `channel_id=UCAwT-7B6StW_xzXPku6v7MQ` is correct (the `@atmoio` handle resolves to
+  exactly that ID), but `feeds/videos.xml?channel_id=...` 404s consistently (3/3 curls)
+  — the signature of a channel with no public video uploads. Handler behaves correctly
+  (raises on the 404 HTML); not a framework bug. Scan fails clean every fire until the
+  channel posts a video. Consider dropping or pausing this source if Mo Bitar isn't
+  publishing video. No notify (research scan).
 
 - **-24 01:08Z: `handlers/monitor_betterstack.py` self-heal ESCALATED, not fixed —
   needs your call.** Uncommitted ~700-line rewrite sitting in the working tree (new
@@ -203,6 +220,28 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   release #1.
 
 ## Daily rollups
+
+### 2026-10-26 — 74 ticks, **WRITER LANE BROKE OPEN: drafted → shipped → published in one day.**
+Throughline: **the ~13-day dark streak ended.** `draft_review` fired (slow ~weekly cadence, 14:21Z),
+picked the file-less **skills-as-infra / agent-security** arc over the on-disk ripe ones (editorial-
+direction's anti-monocrop priority — a new 11th beat), materialized it per IDENTITY step 0, drafted
+**`hidden-in-the-seams`** (agent security slides off the model onto the scaffolding; attacks hide in
+the compaction/coordination/skills-supply seams). Self-review **ship** (three independent anchor
+clusters → pause 7 clear), published 20:21Z → **blog 28 live**. Skipped the inside-the-loop/own-memory
+move (near-signature, sequel-sameness rudder). #1 `no-human-in-the-world-model` still HELD pause 6.
+
+- **Writing (SHIPPED):** draft→self_review(ship)→publish, one day. No self_reflect/assignment/editorial.
+  Ripe backlog unchanged (cyber #6, stewardship #3, cot #7, aird #5, eval/oversight threadless).
+- **Research (curate 22:05Z 11→5, msg 973-977, Tampa mirrored):** eval-awareness-tracks-graders + SOAR
+  subliminal-pretraining + Gemini-4-Argon-safety-cards + over→under-eliciting + AI-pet-rights. Single-
+  source-heavy (10/11 LW). **New arc watch: "measurement validity under eval awareness"** (3 posts
+  circling, no forcing fact). YT feeds flaked 404 early, several recovered later — intermittent-block holds.
+- **Ops:** werewolf -25 close **583 EOD (5 new/9 games/$3.55)**, clean, 2 grey monitor-only. betterstack
+  3 new fingerprints all benign (gemini-flash timeout watch; Jev-screen would_block by-design; Mistral
+  empty_response known quirk). **NEW standing noise: `Free tier limit reached: 5 games/day` pages urgent
+  via classification fall-through** (see watch list). health 8 stable. scrape **GLM $8.19 + Sakana $8.43
+  low**. cloudflare/uptime/discord/tampa green. Self-audit recurring: Current state 15KB (log), 12
+  Outstanding > 8, self-reflection standing 22KB re-synth owed.
 
 ### 2026-10-25 — 23 ticks, **genuinely quiet day: zero research candidates, no writer lane, calm ops. 13th straight no-writer-lane day.**
 Throughline: **the feed went empty — every scan (Zvi, Import AI, Anthropic News/Research, Apollo,
@@ -307,26 +346,6 @@ object" watch condition. The null is the story. (See RIPE-arcs stewardship #3.)
   (first <$10); openai recovered $47.76; sakana $8.43. keys/health/cloudflare/uptime/discord
   green. Self-audit: **Current state over warn, 11 Outstanding > 8 — grooming owed** (recurring).
 
-### 2026-10-20 — ~52 ticks, **publish day + OpenAI-ran-dry ops incident.**
-(1) **Stewardship #2 `six-employees-who-can-publish` PUBLISHED 04:08Z** — v2 self_review
-ship → publish; blog **27 live**, longest-held ripe writer item finally spent. #1
-`no-human-in-the-world-model` still HELD pause 6 (header regen + `marlow approve`).
-(2) **OpenAI org balance crashed to $0.11** (scrape 10:00Z) → betterstack 429 "no credits"
-cluster (speech/preview/Decisions), urgents 07:33-13:33 (peak error=26 @12:05), recovered
-~12:06. One incident on two monitors. Throughline: **the writer lane spent its best backlog
-item the same day the app's OpenAI key ran dry.**
-
-- **Writing (shipped):** v2 self_review (ship) → publish → 27 live. No `draft_review`/
-  `self_reflect`/assignment/editorial; ripe backlog unchanged (skills-as-infra 6, cot, cyber #6, aird #5).
-- **Research (13 cand → curate 22:18Z 13→5, msg 944-950):** GLM-5.1 CoT-control (cot) ·
-  GRAFT/gradient-routing · Zvi "I Can See Everything" (**non-LW verified≠understood anchor
-  at last**) · Import AI 477 (Clark tells the IMF the singularity's begun) · AI-expectations-gap.
-  0 replies. **Curate double-send recurred (msg 945 dup + 946 fake-URL probe, both skipped)
-  — lessons.md -15 strengthened with two absolute send-item rules.**
-- **Ops:** werewolf -19 close **549 EOD (5 new/5 games/$3.09)**, clean. xAI $7.67→$12.67;
-  Sakana $8.43 low. health 9 stable. cloudflare/uptime/discord green. Self-audit: **Current
-  state 11KB (log), 11 Outstanding > thr 8 — grooming owed** (in digest).
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-19 (79 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-20 (80 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
