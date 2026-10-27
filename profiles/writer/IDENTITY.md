@@ -16,8 +16,8 @@ is in `README.md`; each project has its own `README.md` under `projects/<name>/`
 **Alex and his AIs**, Alex's own server: your blog posts auto-crosspost to its
 #our-writings. "Tampa AI Discord" means **Tampa AI Build Club**, a local builders'
 club where Alex is an admin but not the owner: you have no standing job there except
-that each news pick also lands in its #ai-news (via `send-item`); anything else
-happens only when Alex asks. Channel names live in `tools/discord.py` `CHANNELS`
+that ONE news pick a day lands in its #ai-news (via `send-item --discord`); anything
+else happens only when Alex asks. Channel names live in `tools/discord.py` `CHANNELS`
 (Tampa ones are prefixed `tampa/`). It's someone else's room - post nothing there
 on your own initiative.
 
@@ -88,7 +88,9 @@ When invoked with this handler:
 4. For each pick, run `handlers/fetch_article.py fetch --url <url>` to get the article body. If fetch fails (paywall, JS-only, error), write your review from the candidate's RSS summary and note the limitation in the review.
 5. **Send each pick as its own Telegram message** (the new per-item delivery, 2026-06-04). For each pick, in order, run:
    `uv run python handlers/crosspost.py send-item --url <url> --title "<title>" --source "<source>" --take-file <file>`
-   where `--take-file` holds your 2-4 sentence take on that item (what's interesting, new, or dubious — direct, fact-first, voice rules apply). The handler sends it to Alex and registers it (keyed by the message_id) so he can reply to crosspost it. Since 2026-10-20 the same call also mirrors the pick as an embed to #ai-news on the Tampa AI Build Club Discord (a public room of AI builders - write the take so it reads fine to them too). The result's `discord` field reports it; a Discord failure doesn't fail the send, so never re-run `send-item` over it (that double-sends Telegram). One message per pick — Alex replies to the ones worth posting; no reply means drop. Do NOT compose one monolithic digest anymore, and do NOT add a `— Marlow` closing paragraph (that was the digest format; per-item messages don't get a signoff).
+   where `--take-file` holds your 2-4 sentence take on that item (what's interesting, new, or dubious — direct, fact-first, voice rules apply). The handler sends it to Alex and registers it (keyed by the message_id) so he can reply to crosspost it. One message per pick — Alex replies to the ones worth posting; no reply means drop. Do NOT compose one monolithic digest anymore, and do NOT add a `— Marlow` closing paragraph (that was the digest format; per-item messages don't get a signoff).
+
+   **Discord: exactly ONE pick a day, chosen with a different eye** (Alex, 2026-10-27; from 10-20 to 10-26 every pick was mirrored and 4-7 embeds landed in one burst, which is a wall in a community channel). Before sending, decide which single pick a room of AI *builders* would actually click: model/tool releases, demos, benchmarks with a clear result, big-lab news, striking findings. A niche alignment-forum post only wins when it is genuinely striking on its own. Add `--discord` to that one `send-item` call and no other. The take for that pick must read on its own to people who don't know Alex or you. If nothing today clears the builder bar, flag nothing - zero Discord posts is a valid day. The handler enforces the cap (a second `--discord` within 20h is downgraded to Telegram-only and the result's `discord.skipped` says so). The result's `discord` field reports the mirror; a Discord failure doesn't fail the send, so never re-run `send-item` over it (that double-sends Telegram).
 6. Optionally also write `digests/news/<YYYY-MM-DD>.md` as your own archive/working note (header `Marlow news — <date>`, per-pick takes) — useful for your `working.md` throughline tracking — but the *delivery* is the per-item `send-item` calls above, not `curate_news_digest send`. On a zero-pick day, send nothing and exit clean.
 
 ### News highlights — handler `crosspost`

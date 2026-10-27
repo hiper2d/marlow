@@ -7,7 +7,9 @@ machinery below is dormant, kept only in case we co-post from here later.)
 
 Current flow (full procedure: CLAUDE.md "### News highlights — handler `crosspost`"):
   1. daily_news_curate sends each pick as its own Telegram message and calls
-     `send-item` here to register it (keyed by the message_id).
+     `send-item` here to register it (keyed by the message_id). Exactly one pick
+     a day (Marlow's choice, the one a room of AI builders would click) also goes
+     to the Tampa club's Discord via `--discord`; the handler caps it at one.
   2. Alex replies TO a message when he wants to WRITE about it himself (his reply
      is his seed/take). No reply = nothing happens.
   3. `poll` reads new replies and matches each to its item via reply_to_message_id.
@@ -22,7 +24,8 @@ is disabled during the manual-polish phase, so there's no contention today; if i
 comes back, they need a shared inbound dispatcher.
 
 CLI:
-    python handlers/crosspost.py send-item --url U --title T --source S --take-file F
+    python handlers/crosspost.py send-item --url U --title T --source S --take-file F [--discord]
+      (--discord: also mirror to the Tampa #ai-news Discord; the handler allows ONE a day)
     python handlers/crosspost.py poll
     python handlers/crosspost.py save-idea --msg-id N --comment "Alex's take"
     python handlers/crosspost.py list [--status sent|saved]
@@ -64,9 +67,13 @@ def _news_message(title: str, source: str, take: str, url: str) -> str:
     )
 
 
-# Discord channels that also get each news pick (Alex, 2026-10-20). Mirror only:
-# no reply loop there, and a Discord failure never fails the Telegram send.
+# Discord channels that get the ONE news pick a day flagged `--discord` (Alex,
+# 2026-10-27; 10-20 to 10-26 every pick was mirrored and 4-7 embeds landed at once,
+# a wall nobody talks under). Mirror only: no reply loop there, and a Discord
+# failure never fails the Telegram send. The handler enforces the one-a-day cap:
+# a second `--discord` within DISCORD_MIN_GAP_HOURS is downgraded to Telegram-only.
 NEWS_DISCORD_CHANNELS = ["tampa/ai-news"]
+DISCORD_MIN_GAP_HOURS = 20  # not a calendar day: the 22:00 UTC tick sometimes runs late
 
 
 _OG_IMAGE_RES = [
@@ -123,14 +130,37 @@ def _post_news_discord(url: str, title: str, source: str, take: str) -> list[dic
     return results
 
 
-def send_item(url: str, title: str, source: str, take: str) -> dict:
+def _discord_gap_ok() -> tuple[bool, str]:
+    """Has it been at least DISCORD_MIN_GAP_HOURS since the last Discord pick?"""
+    last = store.last_discord_post()
+    if last is None:
+        return True, "no previous Discord pick"
+    hours = (datetime.now(timezone.utc) - last).total_seconds() / 3600
+    if hours >= DISCORD_MIN_GAP_HOURS:
+        return True, f"last Discord pick {hours:.1f}h ago"
+    return False, (f"already posted a Discord pick {hours:.1f}h ago "
+                   f"(cap: one per {DISCORD_MIN_GAP_HOURS}h); sent to Telegram only")
+
+
+def send_item(url: str, title: str, source: str, take: str, discord: bool = False) -> dict:
+    """Send one news pick to Alex's Telegram and register it. With `discord=True`
+    also mirror it to NEWS_DISCORD_CHANNELS, at most one per day (the handler
+    guards the cap, so a second flagged call is harmless: Telegram only)."""
     msg = _news_message(title, source, take, url)
     res = notify.send_telegram_message(msg, channel="news")
     if not res.get("ok") or not res.get("message_id"):
         return {"ok": False, "detail": f"telegram send failed: {res.get('detail')}"}
     item = store.add_item(res["message_id"], url, title, source, take.strip())
-    discord_res = _post_news_discord(url, title, source, take)
-    return {"ok": True, "msg_id": res["message_id"], "discord": discord_res, "item": item}
+    out = {"ok": True, "msg_id": res["message_id"], "discord": None, "item": item}
+    if discord:
+        allowed, why = _discord_gap_ok()
+        if allowed:
+            discord_res = _post_news_discord(url, title, source, take)
+            out["item"] = store.set_discord(res["message_id"], discord_res) or item
+            out["discord"] = {"posted": any(r.get("ok") for r in discord_res), "results": discord_res}
+        else:
+            out["discord"] = {"posted": False, "skipped": why}
+    return out
 
 
 # ─── poll: read replies, match to items ───────────────────────────────────────
@@ -331,6 +361,8 @@ def main():
     si.add_argument("--title", required=True)
     si.add_argument("--source", default="")
     si.add_argument("--take-file", required=True)
+    si.add_argument("--discord", action="store_true",
+                    help="also mirror this pick to the Discord news channel (max one per day)")
 
     sub.add_parser("poll")
 
@@ -363,7 +395,8 @@ def main():
     args = ap.parse_args()
 
     if args.cmd == "send-item":
-        _emit(send_item(args.url, args.title, args.source, Path(args.take_file).read_text()))
+        _emit(send_item(args.url, args.title, args.source, Path(args.take_file).read_text(),
+                        discord=args.discord))
     elif args.cmd == "poll":
         _emit(poll())
     elif args.cmd == "save-idea":

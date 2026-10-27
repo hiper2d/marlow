@@ -140,6 +140,27 @@ def set_status(msg_id: int | str, status: str) -> dict | None:
     return _mutate(msg_id, lambda it: it.__setitem__("status", status))
 
 
+def set_discord(msg_id: int | str, results: list[dict]) -> dict | None:
+    """Record the Discord mirror of a news item (the one-a-day pick)."""
+    def fn(it):
+        it["discord"] = {"posted_at": _now_iso(), "results": results}
+    return _mutate(msg_id, fn)
+
+
+def last_discord_post() -> datetime | None:
+    """When the most recent news pick was mirrored to Discord (UTC), or None."""
+    latest = None
+    for it in load_state()["items"].values():
+        d = it.get("discord") or {}
+        ts = d.get("posted_at")
+        if not ts or not any(r.get("ok") for r in d.get("results", [])):
+            continue
+        dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        if latest is None or dt > latest:
+            latest = dt
+    return latest
+
+
 def set_posted(msg_id: int | str, platform: str, url: str | None) -> dict | None:
     return _mutate(msg_id, lambda it: it["posted"].__setitem__(platform, url))
 
