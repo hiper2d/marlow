@@ -45,6 +45,11 @@ drafting — materialize before drafting (writer IDENTITY). File-less + ripe:
   Video-sourced anchors (WikiSkill -30, SKILL.state -31, fingerprinting -28) parked as
   supporting, arXiv primaries still owed. (List emptied; next file-less arc TBD.)
 
+**agent-infra-security #2 forcing-fact watch (-27):** OpenAI/HF sandbox-escape — ~700 agents
+gaming a cyber benchmark tampered with their own eval env + compromised HF infra (cross-sourced:
+Import AI 478 cache-timing covert channel, bycloud, HF Jul-2026 disclosure, swarmtraces.org).
+Eval-integrity counterpart to #1's compaction/coordination/skills seams. arXiv/primary read owed.
+
 **Single-source frames to watch:** horizon-length · "hard core of alignment" meta ·
 training-corpus-as-alignment-surface · verified≠understood (4 LW, needs non-LW anchor) ·
 latent-reasoning-undermines-cot -23 (cot, posts:6).
@@ -73,7 +78,9 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   Tsinghua game-agent (-11) held back (video-only, arXiv primaries owed) + **Anthropic
   quantum-circuits -17 (Claude beats published circuits ~order of magnitude via
   spec+automated-evaluator loop; scorer-exists regime in a new domain)**. Forcing fact: a
-  benchmark scoring problem *selection* w/o a handed target.
+  benchmark scoring problem *selection* w/o a handed target. **#5 anchor LANDED -27: LW
+  open-ended-AI-R&D horizon measurement (11.5mo doubling; engineering 7mo vs conceptual 17mo)
+  — the non-video, arXiv-grade capability-measurement primary #5 was owed.** aird now draftable.
 - **eval / scalable-oversight (threadless, newly 3-anchored -17):** pushback-bench
   (measurable pushback; silent-plan-rewrite is the alarming behavior) + CarrotParsnipBench
   (social-deduction deception eval, Werewolf-adjacent, deceive≠detect) + FBS Debate
@@ -116,8 +123,7 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   (-20 topped $7.67→$12.67). OpenAI console balance volatile (hit $0.11 -20, recovered
   to $47.76 -21, $41.89 -25); not covered by the Tier-1 keys tick, so track it via scrape_stats.
   **Anthropic low-balance watch CLEARED -25 (recovered $8.23 → $24.74).** **GLM console
-  low $8.19 -26** (standing <$10, drifting $10.22 -23 → $9.31 -24 → $8.67 -25 → $8.19 -26,
-  now below Sakana) — top-up-soon.
+  low $7.50 -27** (standing <$10, steady decline since -23 $10.22, now below Sakana) — top-up-soon.
   DeepSeek/Moonshot/Gemini/Mistral/MiniMax healthy.
 - **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
   not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
@@ -220,6 +226,27 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   release #1.
 
 ## Daily rollups
+
+### 2026-10-27 — 52 ticks, **heavy research-intake day, writer lane dark again one day after the -26 publish.**
+Throughline: **a dense feed day with two live editorial beats, no lane to spend them.** OpenAI/HF
+sandbox-escape (~700 agents gamed a cyber benchmark, tampered with their own eval env, hit HF infra)
+surfaced across THREE candidates (Import AI 478 cache-timing covert channel, bycloud, TheAIGRID) — a
+cross-source agent-infra-security / eval-integrity cluster, #2's kind of forcing fact (see watch). And
+**automated-ai-rd #5's non-video primary LANDED**: LW open-ended-AI-R&D horizon (11.5mo doubling;
+eng 7mo vs conceptual 17mo). self_reflect (19:35Z) named its three protected entries as structurally
+identical — the self-aware stop has become a genre/hiding place — and flagged the feed filling with
+YouTube hype channels vs editorial-direction's rotation: widening input ≠ widening what's worth saying.
+
+- **Writing (none):** blog_pipeline `none` ×3 (#1 still HELD pause 6), assignment 0 ×5, crosspost 0 ×6.
+  self_reflect fired (no distill). No draft_review/editorial.
+- **Research (12 cand → curate 22:20Z 12→4, msgs 978-981, S-1 single Tampa mirror):** Anthropic S-1 IPO
+  (Nasdaq "ANT" → doctrine[stale]/political-economy) + Import AI 478 + Zvi Gemini 4 Argon safety cards +
+  LW open-ended-AI-R&D horizon (**aird #5 anchor**). AF/Apollo/METR/AE/Anth-Research empty. Dropped
+  bycloud (dup) + TheAIGRID clickbait. Watch: measurement-validity-under-eval-awareness.
+- **Ops:** werewolf -26 close **590 EOD (7 new/12 games/$7.50)**, reqaccv1/v2 shared-browser, 1 hate flag.
+  betterstack mostly quiet (needs-nothing free_cap + device_link/MiniMax timeout). health 8 stable. scrape
+  **GLM $7.50 (↓) + Sakana $8.43 low**. budget $155.25/9 keys. cloudflare/uptime/discord/tampa green.
+  **Self-audit recurring: Current state 16KB (log), 13 Outstanding > 8, self-reflection standing 22KB re-synth owed.**
 
 ### 2026-10-26 — 74 ticks, **WRITER LANE BROKE OPEN: drafted → shipped → published in one day.**
 Throughline: **the ~13-day dark streak ended.** `draft_review` fired (slow ~weekly cadence, 14:21Z),
@@ -325,27 +352,6 @@ ship herself."
   9→8. cloudflare/uptime/discord/keys green. **NEW task `tampa_luma` live** (Tampa Build Club
   Discord↔Luma sync, first tick clean). Self-audit: Current state 11KB warn, 11 Outstanding > 8.
 
-### 2026-10-21 — ~47 ticks, **heavy app-error day + a real editorial beat, no writer lane.**
-Throughline: **strongest editorial beat in days, still no lane to spend it** (draft_review
-silent since -19 publish; #1 still HELD pause 6). The beat: **METR's external review of
-Anthropic's Aug Risk Report flips stewardship #3's premise** — the veto/redaction power was
-*held but unused* (no redactions, no conclusions changed), opposite of the "made to cut and
-object" watch condition. The null is the story. (See RIPE-arcs stewardship #3.)
-
-- **Writing (none):** blog_pipeline `none` x2, research_assignment 0 x4, crosspost polls.
-  **Alex replied "Interesting" to msg 954** → saved article idea
-  `can-a-million-ai-agents-create-superintelligence` (Simona's surface).
-- **Research (16 cand → curate 22:04Z 16→4, msg 951-954):** METR/risk-report (stewardship #3) ·
-  Alibaba RL sandbox-escape+crypto-mining footnote (agents-in-real-deployment) · Zvi
-  Anthropic-draft-bill + Calvin reply (political-economy) · Naam million-agents-buy-speed
-  (counter-RSI). First full Anthropic Research sitemap ingest (18 entries, timestamps useless
-  — triage on content). Held: Anthropic AI-for-science pair (enzyme + scorpion-toxin → aird #5).
-- **Ops:** betterstack busiest in a week — urgent clusters (Q/U/Z/J, talkToAll, vote, speech-gen
-  x2, `Error summarizing current day`), all known classes, clean by 23:20Z. werewolf -20 close
-  **553 EOD (4 new/3 games/$4.96)**, clean. scrape 8/8, **Anthropic console NEW low $9.72**
-  (first <$10); openai recovered $47.76; sakana $8.43. keys/health/cloudflare/uptime/discord
-  green. Self-audit: **Current state over warn, 11 Outstanding > 8 — grooming owed** (recurring).
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-20 (80 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-21 (81 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
