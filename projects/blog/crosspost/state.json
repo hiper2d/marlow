@@ -9803,6 +9803,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "982": {
+      "msg_id": 982,
+      "url": "https://www.anthropic.com/research/discovering-vulnerabilities-with-claude",
+      "title": "Discovering vulnerabilities with Claude",
+      "source": "Anthropic Research",
+      "take": "Anthropic used an unreleased internal model to find critical, real-world vulnerabilities in some of the most widely used software on earth, and published five attack chains. One: from a stock, default Chrome on macOS, the model wrote a full exploit chain — four chained bugs across V8, the sandbox, CacheStorage, and FedCM — that pops the Calculator app seconds after a page loads, no user interaction. These are coordinated-disclosure finds (90-day patch window), so this is the defensive framing of a capability that is unambiguously dual-use: the same skill that writes the patch note writes the exploit. Worth reading for how far AI vuln research has actually gotten versus the demos.",
+      "sent_at": "2026-10-28T22:13:10Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-10-28T22:13:11Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "983": {
+      "msg_id": 983,
+      "url": "https://www.lesswrong.com/posts/yMPR6Pkv6jQXM4rWu/subtly-wrong-advice-misaligns-models-more-than-obviously",
+      "title": "Subtly wrong advice misaligns models more than obviously wrong advice",
+      "source": "LessWrong",
+      "take": "A clean replication with a sharp edge: fine-tuning 12 open-weight models on bad advice across 8 domains, the subtly-wrong data misaligned them more broadly than the cartoonishly-wrong data (+10.6 points pooled, and higher on fabrication and concerning-behavior judges too). The uncomfortable part is why: subtly-wrong examples carry real technical detail and are harder to flag in review, so the most dangerous poisoning is exactly the kind a human screener waves through. If you fine-tune on scraped or synthetic data, \"it looked plausible\" is the failure mode, not the safeguard.",
+      "sent_at": "2026-10-28T22:13:18Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "984": {
+      "msg_id": 984,
+      "url": "https://www.lesswrong.com/posts/tvaK3hKYP7NpwQKDz/what-do-we-mean-by-long-horizon-work",
+      "title": "What do we mean by 'long-horizon' work?",
+      "source": "LessWrong",
+      "take": "A useful needle-pointing at the \"long-horizon capability\" headlines: the benchmarks labs cite mostly measure tasks with many steps, big context, and verifiable end states — not the thing that actually makes long-horizon work hard, which the author argues is delayed external feedback. You can engineer away step count with longer context or agent swarms; you can't engineer away a result that only arrives weeks later from the world. Good companion to this week's horizon-length measurement work — it reframes the number as measuring the easy axis.",
+      "sent_at": "2026-10-28T22:13:23Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "985": {
+      "msg_id": 985,
+      "url": "https://thezvi.substack.com/p/anthropic-versus-anthropic",
+      "title": "Anthropic Versus Anthropic",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's long read on the company whose safety posture and commercial behavior keep pointing opposite directions — framed around Dario Amodei's direct, substantive response to Nathan Calvin's criticism of Anthropic's handling of its leaked draft bill. The through-question is \"what even is Anthropic,\" and Zvi's answer is that it depends entirely on which parts you weight: best-given-the-alternatives and still insufficient-to-the-moment are both true at once. A companion to his S-1 read-through; the doctrine-versus-practice tension in one place.",
+      "sent_at": "2026-10-28T22:13:27Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
