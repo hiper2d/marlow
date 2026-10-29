@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -170,6 +171,25 @@ def _commit_and_push(message: str, paths: list[str]) -> dict:
     return {"committed": True, "pushed": True}
 
 
+def _drop_missing_header_image(path: Path) -> str | None:
+    """Remove a `header_image:` line whose file doesn't exist.
+
+    When image generation fails, the drafting tick is supposed to leave the
+    field out; twice it didn't, and the site rendered a broken image. Enforced
+    here instead of by instruction. Returns the dropped path, or None.
+    """
+    text = path.read_text()
+    m = re.search(r"^header_image:\s*(\S+)\s*$", text, re.M)
+    if not m:
+        return None
+    rel = m.group(1).strip("\"'")
+    img = REPO_ROOT / "projects" / "blog" / "site" / "public" / rel.lstrip("/")
+    if img.exists():
+        return None
+    path.write_text(text[: m.start()] + text[m.end() + 1 :])
+    return rel
+
+
 def _publish_internal(slug: str, commit_message: str | None = None) -> dict:
     """Move draft → published, delete the entire draft trail, commit, push.
 
@@ -193,6 +213,7 @@ def _publish_internal(slug: str, commit_message: str | None = None) -> dict:
 
     shutil.move(str(draft), str(published_path))
     _flip_status(published_path, "published")
+    header_dropped = _drop_missing_header_image(published_path)
 
     trail_siblings = [
         f"{slug}.self-review.md",
@@ -236,6 +257,7 @@ def _publish_internal(slug: str, commit_message: str | None = None) -> dict:
         "slug": slug,
         "published_path": str(published_path.relative_to(REPO_ROOT)),
         "deleted_trail": deleted_paths,
+        "header_image_dropped": header_dropped,
         "git": git_result,
     }
 

@@ -93,6 +93,7 @@ marlow/
 │   ├── visual-guidelines.md     ┘
 │   ├── voice-journal.md         ← Marlow's craft notes (writing loop only)
 │   ├── self-reflection.md       ← Marlow's private diary (self_reflect, every 2 days)
+│   ├── inbox-from-alex.md ← Alex's Telegram messages + her replies (tools/alex_chat.py; old ones → inbox-archive.md)
 │   ├── feedback-inbox/    ← editorial feedback dropped by Simona/Alex, awaiting intake
 │   └── feedback-archive/  ← processed editorial feedback
 ├── driver/
@@ -343,6 +344,8 @@ Telegram. Two urgency modes, a forced structural choice:
 - **`digest`** — appended to today's digest file, sent as one message at end of day. Research thread updates, drafts awaiting review, ops summaries.
 
 If urgent volume exceeds ~3/day for a week, recalibrate the prompt. The calorie tracker speaks on its own `@marlow_fitness_bot` channel, separate from these.
+
+**Conversation with Alex.** The news Telegram chat is two-way. The hourly `crosspost poll` files every message Alex sends there into `memory/inbox-from-alex.md`; the writer reads it every tick and answers with `tools/alex_chat.py reply`, or starts a message with `alex_chat.py send` (change requests, problems, observations; capped at 3 a day). News replies still become article ideas and article reactions still go to `reactions.jsonl`.
 
 ## Monitoring
 

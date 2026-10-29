@@ -52,6 +52,7 @@ sys.path.insert(0, str(REPO_ROOT))
 from tools import crosspost_store as store  # noqa: E402
 from tools import notify  # noqa: E402
 from tools import reactions_store  # noqa: E402
+from tools import alex_chat  # noqa: E402
 from tools import telegram_poll  # noqa: E402
 
 
@@ -150,16 +151,21 @@ def send_item(url: str, title: str, source: str, take: str, discord: bool = Fals
     res = notify.send_telegram_message(msg, channel="news")
     if not res.get("ok") or not res.get("message_id"):
         return {"ok": False, "detail": f"telegram send failed: {res.get('detail')}"}
-    item = store.add_item(res["message_id"], url, title, source, take.strip())
-    out = {"ok": True, "msg_id": res["message_id"], "discord": None, "item": item}
+    store.add_item(res["message_id"], url, title, source, take.strip())
+    # Compact confirmation on purpose: printing the stored item (with its empty
+    # `"posted": {}`) read as truncated output and invited a re-run, which
+    # double-sends. This line is the whole answer: sent, with this msg_id.
+    out = {"ok": True, "sent": "telegram", "msg_id": res["message_id"], "title": title,
+           "discord": None, "note": "delivered - do not re-run send-item for this pick"}
     if discord:
         allowed, why = _discord_gap_ok()
         if allowed:
             discord_res = _post_news_discord(url, title, source, take)
-            out["item"] = store.set_discord(res["message_id"], discord_res) or item
-            out["discord"] = {"posted": any(r.get("ok") for r in discord_res), "results": discord_res}
+            store.set_discord(res["message_id"], discord_res)
+            out["discord"] = "posted" if any(r.get("ok") for r in discord_res) else \
+                "failed: " + "; ".join(str(r.get("detail", "")) for r in discord_res)
         else:
-            out["discord"] = {"posted": False, "skipped": why}
+            out["discord"] = f"skipped: {why}"
     return out
 
 
@@ -174,11 +180,22 @@ def poll() -> dict:
     for m in msgs:
         rid = m.get("reply_to_message_id")
         item, which = store.find_by_reply(rid) if rid else (None, None)
+        req = reactions_store.find_request(rid) if (rid and item is None) else None
+        # Every message from Alex in this chat goes to Marlow's inbox, whatever
+        # else happens to it: news replies still become article ideas,
+        # reactions still go to the reactions store, and plain messages are
+        # simply conversation.
+        if item is not None:
+            ctx = f"reply to news pick: {item['title']}"
+        elif req is not None:
+            ctx = f"reaction to your article: {req.get('title')}"
+        else:
+            ctx = None
+        if m.get("message_id"):
+            alex_chat.append_from_alex(m["message_id"], m.get("text") or "", m.get("reply_to_text"), ctx)
         if item is None:
-            # Not a news/draft reply — maybe a gut reaction to a published
-            # article. This poll is the sole inbound poller, so it also files
-            # those into the Simona-side reactions store (Marlow never reads it).
-            req = reactions_store.find_request(rid) if rid else None
+            # This poll is the sole inbound poller, so it also files article
+            # reactions into the reactions store.
             if req is not None:
                 reactions_store.record(req["msg_id"], req.get("slug"), req.get("title"), m.get("text"))
                 actions.append({

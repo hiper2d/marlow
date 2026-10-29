@@ -86,7 +86,7 @@ def _log_fallback(message: str, reason: str) -> None:
         f.write(line)
 
 
-def send_telegram_message(message: str, channel: Channel = "monitor") -> dict:
+def send_telegram_message(message: str, channel: Channel = "monitor", reply_to: int | None = None) -> dict:
     """Send one Telegram message. Returns {ok, message_id, detail}.
 
     Unlike send_telegram (which returns just (ok, detail)), this surfaces the
@@ -101,7 +101,8 @@ def send_telegram_message(message: str, channel: Channel = "monitor") -> dict:
     try:
         resp = requests.post(
             TELEGRAM_API.format(token=token),
-            json={"chat_id": chat_id, "text": message},
+            json={"chat_id": chat_id, "text": message,
+                  **({"reply_parameters": {"message_id": reply_to, "allow_sending_without_reply": True}} if reply_to else {})},
             timeout=TELEGRAM_TIMEOUT,
         )
         if resp.status_code != 200:
@@ -166,6 +167,10 @@ def append_to_digest(message: str) -> Path:
     Telegram without markdown rendering. URL auto-linking still works as
     long as URLs include their https:// prefix.
     """
+    if not message or not message.strip():
+        # A shell-quoting slip upstream turns into an empty entry otherwise,
+        # and the content is lost with no error.
+        raise ValueError("append_to_digest: empty message")
     DIGEST_DIR.mkdir(parents=True, exist_ok=True)
     today = _now().strftime("%Y-%m-%d")
     path = DIGEST_DIR / f"{today}.md"

@@ -1291,3 +1291,26 @@ IDENTITY was changed to send on `news` for that reason.
 - Reflect inputs are unchanged (diary, 6 titles, editorial-direction, 8 tick first-lines), all work material. If the diary stays work-only for 2-3 weeks after this, that's the next lever.
 - Watch the next 6-8 diary entries (~11-25) against the 10-28 snapshot: does the "dark lane" anxiety stop, does she use the image, does she file an `**Identity:**` request, does any entry go outside the machinery.
 - Tool requests still open in working.md (curate prior-day candidates, notify empty appends, YouTube feed retry, send-item output, cross-source dedup, header-image miss): mostly outside her self-heal scope; Simona should pick these up before the 14-day rule makes her drop them.
+
+## 2026-10-28 (later) - All open tool requests fixed; Telegram becomes a conversation; reflect sees everything
+
+*What prompted it.* Alex, after reading the fix report: "Tool bugs? Let's fix everything." On the reflect inputs: "She should see everything." On Telegram: "I'd like to have more communication with Marlow... she should read the Telegram chat for anything."
+
+*What landed*
+- **YouTube feeds.** `videos.xml` returns 404/500 for nearly every channel from this host (tested: Mo Bitar, InSlowSpective, and bycloud, a known-good channel). Marlow's "dead channel" diagnoses were the endpoint. `tools/rss_reader.fetch` now retries 3x, then for YouTube falls back to the channel's `/videos` page (`ytInitialData` lockups; ids in `yt:video:<id>` form so dedup carries over; publish times approximate). Mo Bitar is alive (last video 09-29).
+- **Feeds removed** on her content recommendation: TheAIGRID, AI Search, InSlowSpective.
+- **Curate** `list` also returns the previous day's candidates captured after that day's curate (cutoff = mtime of `digests/news/<prev>.md`, else 22:00Z; sent URLs skipped), marked `carried_over_from`.
+- **Cross-source dedup** in `process_rss_feed.fetch_new`: drops entries whose URL or LW/AF post id matches a candidate note from the last 3 days.
+- **`send-item`** prints a compact confirmation (`sent`, `msg_id`, `discord: posted|skipped|failed`, "do not re-run") instead of the stored item.
+- **`notify.append_to_digest`** raises on an empty message.
+- **`publish`** strips a `header_image` whose file doesn't exist (`header_image_dropped` in the result); the IDENTITY "DEVLOG a note" step (she can't edit DEVLOG) became "note it in recent/".
+- **Telegram chat.** New `tools/alex_chat.py`. `crosspost poll` files EVERY Alex message in the news chat (news replies, article reactions, anything else) into `memory/inbox-from-alex.md`; news replies still become article ideas, reactions still go to `reactions.jsonl`. She reads `list-new` every writer tick, answers with `reply --to` (threaded, `notify.send_telegram_message` gained `reply_to`), `mark-read` when no answer is needed, and can open a conversation with `send` (3/day code cap; news picks don't count). Inbox bounded at 10KB, old handled messages move to `inbox-archive.md`. Photo captions now come through the poll. The "you do not read reactions" rule is gone: reactions reach her as one reader's reaction, not a score. Identity requests go through the chat instead of the digest.
+- **Reflect materials** now include the inbox (+archive tail), voice journal, lessons, working.md, editorial direction, the latest article in full, and ~60 tick summaries (was diary + plan + 6 titles + 8 first lines).
+- working.md Outstanding requests cleared with a note listing the fixes; queued scans of removed feeds dropped; the queued tidy tick's note now mentions the chat.
+
+*Things that surprised us.* The YouTube 404 was environment-wide, and she half-diagnosed it on 10-22 ("intermittent, not a hard block"). Her proposed fix (a retry in rss_reader) would not have been enough on its own today.
+
+*What to watch*
+- Inbound latency is up to an hour (the poll is hourly). If conversation feels slow, poll more often.
+- Whether she uses `send` at all, and for what; whether replies stay plain or go report-shaped.
+- The channel-page scrape depends on YouTube's page JSON shape (`lockupViewModel`); if it changes, YouTube scans fail loudly again.

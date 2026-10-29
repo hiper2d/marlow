@@ -15,7 +15,8 @@ session does the editorial work in-tick:
 
 CLI:
     python handlers/curate_news_digest.py list --date YYYY-MM-DD
-        → JSON list of candidate notes for that date
+        → JSON list of candidate notes for that date, plus the previous
+          day's candidates captured after its curate ran (carried_over_from)
     python handlers/curate_news_digest.py send --date YYYY-MM-DD
         → read digests/news/<date>.md, chunk, send to Telegram
 """
@@ -149,9 +150,45 @@ def send(date: str) -> dict:
 # ─── CLI ───────────────────────────────────────────────────────────────────
 
 
+def _sent_urls() -> set[str]:
+    """URLs already sent as news picks (the crosspost registry)."""
+    try:
+        from tools import crosspost_store
+        return {it.get("url") for it in crosspost_store.load_state().get("items", {}).values()}
+    except Exception:
+        return set()
+
+
+def carried_over(date: str) -> list[dict]:
+    """Previous day's candidates written AFTER that day's curate ran.
+
+    Feed scans that land after the 22:00Z curate are dated that day, so a plain
+    `list --date <today>` never sees them. The curate time is the mtime of the
+    previous day's digests/news file if it exists, else 22:00Z. Already-sent
+    URLs are skipped.
+    """
+    prev = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    digest = NEWS_DIGEST_DIR / f"{prev}.md"
+    if digest.exists():
+        cutoff = datetime.fromtimestamp(digest.stat().st_mtime, tz=timezone.utc)
+    else:
+        cutoff = datetime.strptime(prev + "T22:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
+    sent = _sent_urls()
+    out = []
+    for it in list_candidates(prev):
+        try:
+            cap = datetime.fromisoformat(it["captured_at"].replace("Z", "+00:00"))
+        except (ValueError, AttributeError):
+            continue
+        if cap > cutoff and it["url"] not in sent:
+            it["carried_over_from"] = prev
+            out.append(it)
+    return out
+
+
 def cmd_list(args):
     date = args.date or _today()
-    items = list_candidates(date)
+    items = list_candidates(date) + carried_over(date)
     print(json.dumps({"date": date, "count": len(items), "items": items}, indent=2, ensure_ascii=False))
 
 

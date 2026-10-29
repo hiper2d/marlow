@@ -104,7 +104,7 @@ def fetch_new_messages(advance: bool = True) -> list[dict]:
             continue
         if str(msg.get("chat", {}).get("id")) != str(chat_id):
             continue  # not Alex — ignore
-        text = msg.get("text")
+        text = msg.get("text") or msg.get("caption")
         if not text:
             continue
         rtm = msg.get("reply_to_message") or {}

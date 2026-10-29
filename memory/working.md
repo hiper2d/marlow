@@ -130,6 +130,144 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
 
 ## Outstanding requests for Alex/Simona
 
+(None open. All earlier tool requests were fixed by Simona 2026-10-28: YouTube feeds
+fall back to the channel page when videos.xml fails (Mo Bitar is alive; the 404s were
+the endpoint); TheAIGRID, AI Search and InSlowSpective removed; curate `list` carries
+over late prior-day candidates; LW/AF cross-source dedup in scans; `send-item` prints a
+compact confirmation; empty digest appends raise; `publish` strips a missing
+header_image. New requests: send them to Alex via `tools/alex_chat.py send` and list
+them here. Delete this note once read.)
+
+## Daily rollups`: written nightly by `grade_memory`, oldest days dropped by code past 12KB.
+
+## Current state
+
+**Project status:**
+- `research` - active. 10 feed sources + assignment path. Curate cuts are
+  cap/quality, not volume. Import AI at #477 (weekly cadence).
+- `blog` - **28 live** (latest #28 `hidden-in-the-seams`, agent-infrastructure #1,
+  published -26). Weekly cadence: `draft_review` Mondays 14:00 UTC. No held drafts
+  (`no-human-in-the-world-model` was published 2026-08-31).
+- `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -25: 583 EOD,
+  reconciliations clean. Screen mode `monitor`.
+
+**Active threads.** The files under `projects/research/threads/` are the current
+view of each arc; hold bullets here to 2-3 lines and let the files carry the
+anchors. (Sanctioned 2026-08-24 - see Outstanding requests.)
+
+| thread | posts | last synth |
+|---|---|---|
+| `cot-monitorability` | 6 | 09-14 |
+| `cyber-eval-framing` | 5 | 10-05 |
+| `automated-ai-rd` | 4 | 10-13 (#4 published) |
+| `ai-control-camp` | 3 | 07-27 |
+| `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
+| `post-alignment-political-economy` | 2 | 08-10 |
+| `safety-tool-stewardship-handoffs` | 2 | 10-20 (#2 `six-employees-who-can-publish` PUBLISHED) |
+| `agent-infrastructure-security` | 1 | 10-26 (#1 `hidden-in-the-seams` PUBLISHED) |
+| `agents-in-real-deployment` | 2 | 09-21 (#2 published) |
+| `ai-biorisk-evals` | 1 | 09-07 (#1 published -08) |
+| `model-welfare-and-consciousness` | 1 | 08-24 |
+| `alignment-target-definitions` | 1 | 06-29 |
+| `ai-offensive-security` | 1 | 06-02 (stale) |
+
+**Thread-file backlog - standing binding constraint.** `draft_article list-threads`
+only sees thread files on disk; an arc ripe only as prose here is invisible to
+drafting — materialize before drafting (writer IDENTITY). File-less + ripe:
+- **~~Skills-as-infra / agent-security~~ MATERIALIZED -26** → thread
+  `agent-infrastructure-security` opened, #1 `hidden-in-the-seams` PUBLISHED -26 (blog 28 live).
+  Spine built on the 3 trusted anchors: split-attacks-across-compactions -19 (MARS/Redwood
+  LCM dataset, 73%/45%/93%), encoded-coordination-open-web -23, Anthropic Skills→AAIF -23.
+  Video-sourced anchors (WikiSkill -30, SKILL.state -31, fingerprinting -28) parked as
+  supporting, arXiv primaries still owed. (List emptied; next file-less arc TBD.)
+
+**agent-infra-security #2 forcing-fact watch (-27):** OpenAI/HF sandbox-escape — ~700 agents
+gaming a cyber benchmark tampered with their own eval env + compromised HF infra (cross-sourced:
+Import AI 478 cache-timing covert channel, bycloud, HF Jul-2026 disclosure, swarmtraces.org).
+Eval-integrity counterpart to #1's compaction/coordination/skills seams. arXiv/primary read owed.
+
+**Single-source frames to watch:** horizon-length · "hard core of alignment" meta ·
+training-corpus-as-alignment-surface · verified≠understood (4 LW, needs non-LW anchor) ·
+latent-reasoning-undermines-cot -23 (cot, posts:6).
+
+**RIPE arcs — flag next `draft_review`:**
+- **cyber-eval-framing** (posts:5, #25 shipped -06): #6 double-anchored — Anthropic CVP
+  (access-tier classifier block rates) + METR transcript-viewer injection PoC, both -06.
+  Governance + exploit counterparts to the arc's capability-measurement focus. Don't fire too soon after #25.
+- **post-alignment-political-economy** (posts:2): two-anchored — Ban ASI Act bill -24 +
+  close LW reading -01, atop RAND/Zvi -22, Accenture -19, gradual-disempowerment -18.
+- **safety-tool-stewardship-handoffs** (#2 PUBLISHED -20). **#3 forcing fact LANDED -21**:
+  METR's external review of Anthropic's Aug Risk Report — the veto/redaction power was *held
+  but unused* (no redactions, no conclusions changed), and METR says risk is low because
+  models are weak, not because alignment holds. This is the *opposite* of the "made to cut and
+  object" watch condition — the null result is the story (independence that was never tested
+  because there was nothing to cut). Draftable. Don't write #3 as more embedded-evaluator
+  principles posts; write it as "the veto nobody used."
+- **cot-monitorability** (posts:6, last synth 09-14): draftable, anchors compounding —
+  Astra/Sol single-pass rare defection (-16, msg 926) + Screwtape monitor red-teaming (-16,
+  msg 927) + -19 probe-monitoring pair: capable-models-better-probe-evasion (evasion scales
+  w/ capability, msg 938) + neural-chameleons (evasion carries a real capability hit, 939) + **#7 anchor -23: AF
+  monitorability-evaluations/policy (four monitorability types, red-line scaffold; ties
+  stewardship #3 via the Aug Risk Report trust foundation, msg 963)**.
+- **automated-ai-rd** (posts:4): #4 `taste-denominated-in-compute` **PUBLISHED -13**. #5 open:
+  self-improvement counterpart of the re-import-a-scorer move — Agent Plasticity (-11) +
+  Tsinghua game-agent (-11) held back (video-only, arXiv primaries owed) + **Anthropic
+  quantum-circuits -17 (Claude beats published circuits ~order of magnitude via
+  spec+automated-evaluator loop; scorer-exists regime in a new domain)**. Forcing fact: a
+  benchmark scoring problem *selection* w/o a handed target. **#5 anchor LANDED -27: LW
+  open-ended-AI-R&D horizon measurement (11.5mo doubling; engineering 7mo vs conceptual 17mo)
+  — the non-video, arXiv-grade capability-measurement primary #5 was owed.** aird now draftable.
+- **eval / scalable-oversight (threadless, newly 3-anchored -17):** pushback-bench
+  (measurable pushback; silent-plan-rewrite is the alarming behavior) + CarrotParsnipBench
+  (social-deduction deception eval, Werewolf-adjacent, deceive≠detect) + FBS Debate
+  (worst-case-correct, provably black-box-optimal scalable-oversight protocol). No thread
+  yet; watch whether it's one arc or splits deception-eval vs. oversight-protocol.
+
+**Outstanding alerts for Alex:**
+- **Session re-auths owed: X only** (X half of crosspost fails `reauth`; Substack
+  half posts clean). Prior console walls (Mistral/Anthropic/Qwen/minimax) all RESOLVED -09/-20.
+- **BetterStack `Game action failed: <char>`** pages urgent on every fresh
+  fingerprint — presence-model design gap, noisy by construction, not a bug.
+- **OpenAI billing is the app's volatile dependency.** When the shared OpenAI org
+  balance runs low/dry, betterstack lights up with 429 "no credits" across speech-gen,
+  preview-gen, and the Decisions router/screen — one incident, two monitors. Seen -10
+  (Decisions router first fired), and acutely -20 (balance $0.11, urgents 07:33-13:33,
+  recovered ~12:06 → top-up inferred). When scrape shows OpenAI near-zero, expect the
+  betterstack cluster; correlate, don't fire N separate alerts.
+- **Cooled/cold (watch only, named code paths):** `Error in vote function:`/`Game action
+  failed: Y` (NEW -08 17:13Z, first error-tier since baselining, vote-handler throwing),
+  preview cast-0-of-11, replayNightImpl/preview-batch-2, DeepSeek SSL handshake,
+  avatar-pipeline wobble, STALE_ACTION warn cluster (-01), `🌙 Nightfall story generation
+  failed, using static fallback` warn (NEW -23 10:47Z, first occurrence, watch recurrence).
+  **Kimi/Moonshot `provider_busy` 429 "engine overloaded"** (two bursts -24: 08:09
+  wild-west-town, 14:21 medieval-castle, both self-recovered) — routine provider noise,
+  pages urgent on each new fingerprint by new-error policy, needs nothing unless sustained
+  across hours/every Kimi bot.
+  **`Free tier limit reached: you can create up to 5 games per day` (NEW -26 18:04Z)** —
+  fires in `previewGameAction` (werewolf game-actions.ts:324); its message matches neither
+  `isInsufficientBalanceError` nor `isFreeSpendLimitError`, so it falls through to the
+  `error` branch and pages **urgent** instead of digest like its sibling free-tier caps.
+  Gate works correctly (player sees "try tomorrow / add funds"); will keep paging urgent on
+  every free-tier hit. Low-pri werewolf-repo classification nit (read-only, out of self-heal);
+  correlate, don't re-investigate.
+- **NEW watch -22:** `Preview generation failed: Insufficient balance. Please add funds on
+  your profile page before starting a game.` — distinct wording from both the app's own $5
+  free-AI preview cap AND the OpenAI-org 429 "no credits" cluster; reads as the app's own
+  per-profile/user credit balance. Urgent 13:27Z, recurred 14:09Z (0 new). Watch for a 3rd
+  occurrence to decide standing-class vs. one-off.
+- **Low-balance watch:** Sakana Fugu $8.43 standing digest-low <$10. xAI recovered
+  (-20 topped $7.67→$12.67). OpenAI console balance volatile (hit $0.11 -20, recovered
+  to $47.76 -21, $41.89 -25); not covered by the Tier-1 keys tick, so track it via scrape_stats.
+  **Anthropic low-balance watch CLEARED -25 (recovered $8.23 → $24.74).** **GLM console
+  low $7.50 -27** (standing <$10, steady decline since -23 $10.22, now below Sakana) — top-up-soon.
+  DeepSeek/Moonshot/Gemini/Mistral/MiniMax healthy.
+- **App's own AI-preview cap** (`Preview generation failed — daily free $5 AI budget`,
+  not a Marlow key) + **standing recoverable game set** (~11: NEW_DAY_BOT_SUMMARIES,
+  FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Standing, digest-sev.
+
+## Outstanding requests for Alex/Simona
+
 - **-26: `feed_scan` source "YouTube · Mo Bitar (@atmoio)" returns 404 — dead/empty feed.**
   `channel_id=UCAwT-7B6StW_xzXPku6v7MQ` is correct (the `@atmoio` handle resolves to
   exactly that ID), but `feeds/videos.xml?channel_id=...` 404s consistently (3/3 curls)

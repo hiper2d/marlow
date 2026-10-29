@@ -30,6 +30,43 @@ STATE_PATH = REPO_ROOT / "projects" / "research" / "threads" / "_feed_state.json
 sys.path.insert(0, str(REPO_ROOT))
 from tools import rss_reader  # noqa: E402
 
+import re  # noqa: E402
+from datetime import datetime, timedelta, timezone  # noqa: E402
+
+NOTES_ROOT = REPO_ROOT / "projects" / "research" / "notes"
+# LessWrong and the Alignment Forum serve the same post under the same id
+# (lesswrong.com/posts/<id>/... == alignmentforum.org/posts/<id>/...).
+_LW_POST_ID = re.compile(r"(?:lesswrong\.com|alignmentforum\.org)/posts/([A-Za-z0-9]{10,})")
+
+
+def _dedup_keys(url: str | None) -> set[str]:
+    if not url:
+        return set()
+    keys = {url.split("?")[0].split("#")[0].rstrip("/").lower()}
+    m = _LW_POST_ID.search(url)
+    if m:
+        keys.add("lw:" + m.group(1))
+    return keys
+
+
+def _captured_keys(days: int = 3) -> set[str]:
+    """Dedup keys of candidate notes written in the last `days` days, any source."""
+    keys: set[str] = set()
+    today = datetime.now(timezone.utc).date()
+    for i in range(days):
+        d = NOTES_ROOT / (today - timedelta(days=i)).isoformat() / "candidates"
+        if not d.exists():
+            continue
+        for f in d.glob("*.md"):
+            try:
+                head = f.read_text()[:1500]
+            except OSError:
+                continue
+            m = re.search(r'^url:\s*"?([^"\n]+)"?', head, re.M)
+            if m:
+                keys |= _dedup_keys(m.group(1).strip())
+    return keys
+
 
 def load_state() -> dict:
     if not STATE_PATH.exists():
@@ -59,7 +96,10 @@ def fetch_new(url: str, limit: int | None = None) -> list[dict]:
         if e.get("published") and last_seen and e["published"] <= last_seen:
             continue  # older than last_seen
         new.append(e)
-    return new
+    # Cross-source dedup: drop entries already captured as a candidate from
+    # another feed (e.g. an AF post that the LessWrong scan already noted).
+    captured = _captured_keys()
+    return [e for e in new if not (_dedup_keys(e.get("link")) & captured)]
 
 
 def mark_seen(url: str, latest_iso: str, entry_id: str) -> None:

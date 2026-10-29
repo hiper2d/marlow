@@ -116,20 +116,6 @@ subtasks:
       source_name: "YouTube · Discover AI (@code4AI)"
     priority: low
 
-  - id: scan_yt_theaigrid         # @TheAiGrid
-    handler: process_rss_feed
-    context:
-      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCbY9xX3_jW5c2fjlZVBI4cg"
-      source_name: "YouTube · TheAIGRID (@TheAiGrid)"
-    priority: low
-
-  - id: scan_yt_ai_search         # @theAIsearch
-    handler: process_rss_feed
-    context:
-      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCIgnGlGkVRhd4qNFcEwLL4A"
-      source_name: "YouTube · AI Search (@theAIsearch)"
-    priority: low
-
   - id: scan_yt_bycloud           # @bycloudAI
     handler: process_rss_feed
     context:
@@ -144,9 +130,3 @@ subtasks:
       source_name: "YouTube · AI Papers Academy (@aipapersacademy)"
     priority: low
 
-  - id: scan_yt_inslowspective    # @InSlowSpective
-    handler: process_rss_feed
-    context:
-      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UC1OznRRORgW_-Sb0kEI_XDA"
-      source_name: "YouTube · InSlowSpective (@InSlowSpective)"
-    priority: low

@@ -28,6 +28,11 @@ MEMORY = REPO_ROOT / "memory"
 SELF_REFLECTION = MEMORY / "self-reflection.md"
 EDITORIAL_DIRECTION = MEMORY / "editorial-direction.md"
 RECENT_DIR = MEMORY / "recent"
+VOICE_JOURNAL = MEMORY / "voice-journal.md"
+LESSONS = MEMORY / "lessons.md"
+WORKING = MEMORY / "working.md"
+INBOX = MEMORY / "inbox-from-alex.md"
+INBOX_ARCHIVE = MEMORY / "inbox-archive.md"
 PUBLISHED_DIR = REPO_ROOT / "projects" / "blog" / "published"
 
 # Fold older dated entries into a distilled "Standing reflections" section once
@@ -70,6 +75,15 @@ def _recent_published(n: int = 6) -> list[dict]:
     return [{"slug": f.stem, "title": _title_of(f)} for f in files]
 
 
+def _latest_article() -> dict:
+    if not PUBLISHED_DIR.exists():
+        return {}
+    files = sorted(PUBLISHED_DIR.glob("*.md"), reverse=True)
+    if not files:
+        return {}
+    return {"slug": files[0].stem, "text": _read(files[0])}
+
+
 def _recent_activity(n: int = 8) -> list[str]:
     """First non-empty line of the most recent tick logs — a light sense of what
     she's actually been doing, to reflect against rather than reflect in a vacuum."""
@@ -104,9 +118,17 @@ def materials() -> dict:
         # separated so the recent tail is structurally out of reach rather than
         # protected by instruction alone.
         "split": split,
+        # Everything she has, not just the work: her other notes, her state,
+        # her conversation with Alex, and the last piece she actually wrote.
+        "inbox_from_alex": _read(INBOX),
+        "inbox_archive_tail": _read(INBOX_ARCHIVE)[-6000:],
+        "voice_journal": _read(VOICE_JOURNAL),
+        "lessons": _read(LESSONS),
+        "working": _read(WORKING),
         "editorial_direction": _read(EDITORIAL_DIRECTION),
+        "latest_article": _latest_article(),
         "recent_published": _recent_published(),
-        "recent_activity": _recent_activity(),
+        "recent_activity": _recent_activity(n=60),
     }
 
 
