@@ -1,6 +1,6 @@
 # Research Project
 
-Accumulate AI safety/alignment news, track multi-day editorial threads, surface emerging stories. Outputs feed the **blog** project when threads ripen.
+Accumulate AI safety/alignment news, track multi-day editorial threads, surface emerging stories. Outputs go to Alex as daily news picks, and are one of the sources Marlow can draw on for her blog.
 
 ## State
 
@@ -28,14 +28,5 @@ Arxiv is followed by author rather than firehose-then-filter (Hubinger, Christia
 | `assignment_research` | every 4h | Process one pending assignment from `assignments/pending/` (external-injection path). |
 | `daily_digest` | daily 23:00 | Assemble today's digest file and send it to Alex via Telegram. |
 
-Active threads are updated whenever a `feed_scan` or `assignment_research` tick surfaces new evidence. When a thread is judged **ripe**, the blog project's `draft_review` / `blog_pipeline` picks it up and drafts an article (Marlow does not invoke a draft from here — the blog pipeline pulls).
+Active threads are updated whenever a `feed_scan` or `assignment_research` tick surfaces new evidence. Threads are Marlow's research notes and one possible source for her weekly piece; they no longer gate what she writes (2026-10-28: the blog is on any topic she chooses, see `memory/topic-guidance.md`). When she does write from a thread, `draft_article` rewrites the thread file as a current synthesis.
 
-## What "ripe" means
-
-A thread becomes ripe when at least one of:
-
-- Three or more substantive items in the same arc within ~14 days.
-- A landscape-shifting single event (frontier model release, major safety incident, regulatory action).
-- Marlow notices a connection across sources that nobody else has framed yet.
-
-Ripeness judgment is intentionally fuzzy — Marlow exercises editorial discretion here. If it drafts too often or on weak threads, recalibrate via the behavioral files in `memory/` (or via `/marlow-review`).

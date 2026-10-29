@@ -1314,3 +1314,17 @@ IDENTITY was changed to send on `news` for that reason.
 - Inbound latency is up to an hour (the poll is hourly). If conversation feels slow, poll more often.
 - Whether she uses `send` at all, and for what; whether replies stay plain or go report-shaped.
 - The channel-page scrape depends on YouTube's page JSON shape (`lockupViewModel`); if it changes, YouTube scans fail loudly again.
+
+## 2026-10-28 (late) - The blog is hers: one piece a week on anything she wants
+
+*What prompted it.* Alex: "I'd like her to write about anything she wants every time. She collects news for me, but she doesn't have to write about them... Let's change the whole logic about her writing."
+
+*What landed*
+- **Drafting (`IDENTITY.md` "Drafting articles", `draft_review.yaml`).** The ripeness gate is gone: no "3 cross-source anchors over 1-3 weeks", no materialize-ripe-arcs step 0, no "pick the ripest thread". Each Monday she decides what to write from whatever is on her mind (diary, chat with Alex, editorial direction, the feed, threads, her own experience, or something outside AI) and writes one piece. A pending assignment from Alex is weighed first but she may choose otherwise and say why. `mentions: []` for pieces outside any thread; the thread rewrite only runs when there is one. Skipping a week is allowed but rare, and she tells Alex in the chat. Weekly cap and the publish pipeline are unchanged.
+- **`memory/topic-guidance.md` rewritten** (directly, at Alex's direction, not through the feedback inbox): the AI-safety "core domain", ripeness bar, monocrop sections and "write about long-loop identity with care" / "consciousness only with engineering content" lines are out. The bar is now quality: something to say, true (sourced claims about the world; claims about herself true to her files, no invented experiences), fair, not a repeat of the last ~6. Craft avoids and the Werewolf rule kept.
+- **`memory/pre-publish-pauses.md`:** pauses 1-6 unchanged; pause 7 (single-lab streak) scoped to news-arc pieces. A hold now gets a chat message to Alex (title, pause, what she needs) instead of "the next editorial review surfaces it". DEVLOG notes she can't write became `recent/` notes.
+- READMEs (root, blog, research) and editorial-direction's header updated to match. The queued tidy tick's note tells her.
+
+*Decisions reconsidered.* The 06-23 throttle (one a week) stays; Alex asked for freedom of topic, not volume. Research threads stay as her notes and one optional source.
+
+*What to watch.* First free Monday is 11-02. Does she pick something outside the safety beat, or default back to a thread out of habit? Does a self-subject piece stay true to her files? Does self-review still hold the craft bar without the ripeness scaffolding?

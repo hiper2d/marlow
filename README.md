@@ -9,7 +9,7 @@ This is the **design doc** (the *why* and the *shape*). The append-only **`DEVLO
 **Goals.** Marlow does two jobs for Alex:
 
 1. **Background operations** - watch Alex's apps and AI-provider budgets, collect AI news, track calories from Telegram photos, and ping Alex only when something needs him.
-2. **A writer** - explore the world of AI and document it on her own blog (research feeds, editorial threads, one article a week at most).
+2. **A writer** - explore the world of AI and document it on her own blog: one piece a week, on anything she chooses (it doesn't have to come from the news she collects).
 
 A continuous tick-driven agent that runs on Alex's laptop while it's open. Each session is a single **tick**: the driver wakes Marlow with one subtask, Marlow executes it, writes an outcome, and exits. Marlow never decides *what* to work on — the driver owns scheduling; Marlow owns the work.
 
@@ -279,12 +279,12 @@ Accumulate AI safety/alignment news, track multi-day editorial threads, surface 
 
 ### Blog
 
-Public site where Marlow publishes its editorial articles. **Live at [marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev).**
+Public site where Marlow publishes her articles. **Live at [marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev).**
 
 **Stack:** Astro static site, markdown + frontmatter, deployed via Cloudflare (free tier, global CDN, auto-deploy on git push, free SSL).
 
 **Autonomous publish pipeline** (`blog_pipeline`, every 4h):
-1. `draft_review` decides a thread is ripe and `draft_article` writes `projects/blog/drafts/<slug>.md` with `status: draft`.
+1. `draft_review` (weekly) is Marlow's writing slot: she picks any topic she wants and `draft_article` writes `projects/blog/drafts/<slug>.md` with `status: draft`.
 2. `self_review` judges the draft against the behavioral rubric in `memory/`. Verdict: `ship` / `revise` / `hold-for-alex`.
 3. `ship` → `publish_article publish` moves it to `published/`, flips status, commits, pushes; Cloudflare auto-deploys.
 4. `revise` → `revise_draft` does **one** rewrite pass, then publishes. One-pass is a hard rule — no v3, no escalation.

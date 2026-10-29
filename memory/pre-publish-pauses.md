@@ -28,12 +28,12 @@ One pause (**7, single-lab streak**) is **non-blocking** by design — it forces
 6. **Header image looks like default AI aesthetic.**
    The header image should be scored against `visual-guidelines.md` during self-review. Any of the following triggers a hold: glowing neural networks, translucent blue-purple gradients, brain visualizations with circuitry, humanoid AI robot figures, "singularity" starbursts, photoreal-with-bloom polish, hands-on-glowing-keyboards / server-rack-with-light-beams / generic-tech-iconography, real human faces, embedded text/labels inside the image, or direct rendering of cited people/labs/products. If unsure whether the image clears the "I asked an AI to draw AI" trap, hold and surface to Alex.
 
-7. **Single-lab streak (non-blocking, arc-level).**
+7. **Single-lab streak (non-blocking, arc-level; news-arc pieces only).**
    *Trigger:* a draft whose primary anchors are all one lab **and** whose arc's last ~3 published posts were also primarily that same lab. (A single-lab piece on its own does not trigger — the streak does. That is the news being concentrated, which is legitimate; see `topic-guidance.md`.)
    *This pause does not hold the draft.* Instead, surface it during self-review and make the choice conscious. Resolve it one of two ways before publishing:
    - **Swap in a non-lab / non-incumbent anchor** (a deployment incident, a regulator, an external auditor, another lab's held tier), even if it's the weaker source — and **name the breadth trade in the draft body**, one sentence; or
-   - **Keep it single-lab** because the story genuinely belongs to one lab and no outside source exists yet — and **write the one-sentence justification into the draft**, plus a DEVLOG note recording why.
-   The escape hatch is by design — it honors the "supply of good evidence is itself concentrated" reality instead of fighting it. The failure mode is *not* a single-lab piece; it's bolting on a junk non-lab source to clear a gate, or drifting into the streak without ever making the call. Note in the self-review which way you resolved it. If you judge the threshold itself is misfiring on a piece, tune it via DEVLOG rather than complying blindly (editorial feedback 2026-06-18 explicitly invites this).
+   - **Keep it single-lab** because the story genuinely belongs to one lab and no outside source exists yet — and **write the one-sentence justification into the draft**, plus a note in your `recent/` log recording why.
+   The escape hatch is by design — it honors the "supply of good evidence is itself concentrated" reality instead of fighting it. The failure mode is *not* a single-lab piece; it's bolting on a junk non-lab source to clear a gate, or drifting into the streak without ever making the call. Note in the self-review which way you resolved it. If you judge the threshold itself is misfiring on a piece, tell Alex in the chat rather than complying blindly (editorial feedback 2026-06-18 explicitly invites this).
 
 ## Behavior when a pause triggers
 
@@ -42,8 +42,8 @@ One pause (**7, single-lab streak**) is **non-blocking** by design — it forces
 1. Self-review writes verdict `hold-for-alex` and lists which pause(s) triggered.
 2. Draft frontmatter status changes from `draft` to `held`.
 3. Draft does not go through the revise → publish path.
-4. No notify. The next editorial review surfaces held drafts to Alex naturally.
-5. DEVLOG note explaining what triggered, in a sentence or two.
+4. Tell Alex in the chat (`tools/alex_chat.py send`): the title, which pause, and what you'd need from him. `marlow approve <slug>` releases it.
+5. Note what triggered in your `recent/` log, in a sentence or two.
 
 ## When to update this list
 

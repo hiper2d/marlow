@@ -1,58 +1,22 @@
-# draft_review — weekly check on whether any thread is draft-worthy.
+# draft_review — the weekly writing slot.
 #
-# Fires once a week, Mondays at 14:00 UTC. Marlow reviews her active threads,
-# judges ripeness against the bar in CLAUDE.md, and drafts an article for the
-# single ripest thread that crosses it. HARD CAP: at most one draft per cycle.
-# This is the throttle that holds the blog to at most one publication per week
-# (Alex's call, 2026-06-23 — the old every-3-days cadence published ~twice a
-# week, too fast). If several threads are ripe in the same cycle, draft only
-# the ripest and leave the rest for next week — they will only be riper, and a
-# slower cadence is the point, not a cost. Quiet cycles send no draft and exit
-# clean (a week with nothing worth saying publishes nothing — that's fine).
+# Fires once a week, Mondays at 14:00 UTC. Marlow writes ONE piece on anything
+# she wants (Alex, 2026-10-28): it does not have to come from the news feed or a
+# ripe research thread, or be about AI at all. The bar is quality, not topic
+# (memory/topic-guidance.md). HARD CAP: one draft per cycle, so the blog stays at
+# one publication a week (Alex's call, 2026-06-23). A pending research
+# assignment from Alex is weighed first. If she genuinely has nothing that week
+# she skips and tells Alex in the chat; that should be rare.
 #
-# High-priority assignments bypass this task entirely — they trigger a draft
-# inside the same assignment_research tick. This task covers normal-priority
-# assignment-seeded threads and all organic-feed threads.
+# Once a draft is written it sits silently in projects/blog/drafts/ with
+# status:draft. The `blog_pipeline` task (every 4 hours) picks it up, runs
+# self-review, and advances it through revise -> publish.
 #
-# Once a draft is written, it sits silently in projects/blog/drafts/ with
-# status:draft. The `blog_pipeline` task (every 4 hours) picks it up on
-# its next tick, runs self-review, and advances it through revise → publish
-# without further notification. Editorial review is on-demand from Alex.
-#
-# In-tick flow:
-#   0. Materialize ripe organic arcs first. `list-threads` only sees thread
-#      files on disk, so an arc tracked only as prose in working.md's
-#      "Active threads" section is invisible to the rest of this flow. Read
-#      that section; for any arc that clears the ripeness bar (step 2) but has
-#      no projects/research/threads/<slug>.md file yet, open the thread file
-#      now — seeded from its working.md anchors and the matching candidate
-#      notes — per memory/thread-structure.md "Proactive: ripe organic arc
-#      with no thread file". This is the organic counterpart to the assignment
-#      path's compose-thread step; without it, ripe organic arcs never reach
-#      drafting and this task comes up empty every cycle while publishing stalls.
-#   1. Run `draft_article list-threads` to see what threads exist.
-#   2. For each thread, read the thread file and judge ripeness:
-#      - ≥3 cross-source anchors over the last 1-3 weeks
-#      - A genuine through-line, not just a topic cluster
-#      - You have something to *say*, not just summarize
-#   3. Of the ripe threads without a recent draft in projects/blog/drafts/,
-#      pick the SINGLE ripest (strongest through-line, most anchors, most you
-#      have to say) and draft only that one. Defer the rest to next week's
-#      cycle — the weekly cap is deliberate, do not draft a second to "use up"
-#      the cycle. For the one you pick:
-#      - Run `draft_article list-materials --thread <slug>` for the corpus
-#      - Read memory/voice-guidelines.md, memory/structure-notes.md,
-#        memory/topic-guidance.md, memory/pre-publish-pauses.md as the
-#        rubric you'll be self-reviewed against.
-#      - Compose a draft (see CLAUDE.md "Drafting articles")
-#      - Write to projects/blog/drafts/<YYYY-MM-DD>-<slug>.md with
-#        status:draft frontmatter.
-#   4. Update the thread file with "draft pending: <draft path>" line if a draft was created.
-#   5. No notify. blog_pipeline will pick up the draft on its next tick.
+# In-tick flow: profiles/writer/IDENTITY.md -> "Drafting articles".
 name: draft_review
 project: blog
 profile: writer
-description: Review ripening research threads; draft one article per week for the ripest that crosses the bar.
+description: Weekly writing slot; Marlow drafts one piece on anything she wants.
 schedule: "0 14 * * 1"   # weekly, Mondays 14:00 UTC (was every 3 days; throttled to ≤1 publication/week 2026-06-23)
 priority: normal
 must_run_within_hours: 36

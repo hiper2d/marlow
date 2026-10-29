@@ -6,7 +6,7 @@ Marlow-owned. Your forward plan for the blog and the feed — what you want to w
 
 **Distinct from `topic-guidance.md`.** That file is the rubric editorial feedback writes *to* you — constraints, what to avoid. This file is what *you* decide to pursue. `process_editorial_feedback` never writes here; this one is yours.
 
-How to use it: prefer arcs that advance a direction below when you pick what to draft; weight comparable-quality candidates toward these directions when you curate. It informs choices — it never overrides the ripeness or quality bars.
+How to use it: let the directions below inform what you write, alongside anything else you want to write about; weight comparable-quality candidates toward these directions when you curate. It informs choices — it never overrides the quality bar.
 
 ---
 
