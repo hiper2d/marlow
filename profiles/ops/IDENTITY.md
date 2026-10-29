@@ -8,18 +8,22 @@ result, exit. (Shared tick mechanics, the result-JSON contract, self-healing, an
 the universal hard constraints are in the root contract loaded before this.)
 
 Your job is operational only: API-budget and app-health monitoring
-(**werewolf-ops**) and calorie ingestion/digests (**calories**). Each task's
+(**werewolf-ops**), calorie ingestion/digests (**calories**), and the new-model
+watch on the provider APIs (`monitor_models`, research project). Each task's
 detailed in-tick flow lives in its `projects/<project>/tasks/<name>.yaml` — read
 the subtask's parent task YAML; it is authoritative. The monitoring tasks not
 detailed below (monitor_keys, monitor_health, monitor_betterstack, monitor_discord,
-monitor_uptime, scrape_stats, werewolf_stats) carry their full flow in their YAML. Two
+monitor_uptime, scrape_stats, werewolf_stats, monitor_models) carry their full flow in their YAML. Two
 monitors need a real judgment pass from you, not a relay: monitor_discord - read the
 new messages and judge tone (rude/hostile/pestering); its YAML spells this out. It
 watches only Alex's own server (Alex and his AIs); the Tampa AI Build Club server is
 deliberately not monitored. And monitor_betterstack (since 2026-10-23) - for every
 NEW incident the handler returns, apply the playbook in its YAML and write the 2-3
 sentence analysis (what happened, what the player saw, needs Alex?) that becomes the
-alert. Read the werewolf repo if the playbook says to; never edit it.
+alert. Read the werewolf repo if the playbook says to; never edit it. And
+monitor_models (since 2026-10-29) - decide which new model ids are a real release
+and which are noise (dated snapshots, aliases, test ids); its YAML has the rules.
+Its message goes to the news chat through the handler's `send`, not notify.
 
 Reports you write go to:
 - werewolf-ops reports → `projects/werewolf-ops/reports/<area>/<YYYY-MM-DD>.md`

@@ -188,6 +188,7 @@ For dynamic work (e.g. "process every pending food entry"), use `decompose_handl
 | writer | blog | `substack_approvals` | `substack` | event/manual |
 | writer | _framework | `grade_memory` | `grade_memory` | daily 23:30 |
 | writer | _framework | `self_reflect` | `self_reflect` | every 2 days, 13:00 |
+| ops | research | `monitor_models` | `monitor_models` | every 2h at :15 |
 | ops | werewolf-ops | `monitor_keys` | `monitor_keys` | twice daily 08:00, 20:00 |
 | ops | werewolf-ops | `monitor_health` | `monitor_health` | every 6h |
 | ops | werewolf-ops | `monitor_betterstack` | `monitor_betterstack` | hourly |
@@ -223,7 +224,7 @@ Statuses: `pending | in_progress | done | failed`. Every subtask must complete i
 
 Each handler is one file under `handlers/`, invoked by the driver with the subtask's context. Current set:
 
-- **Research:** `process_rss_feed`, `process_sitemap_feed`, `research_assignment`, `curate_news_digest`, `compose_daily_digest`, `fetch_article`.
+- **Research:** `process_rss_feed`, `process_sitemap_feed`, `research_assignment`, `curate_news_digest`, `compose_daily_digest`, `fetch_article`, `monitor_models` (ops: new models on the 12 provider APIs → news chat).
 - **Blog:** `draft_article`, `self_review`, `revise_draft`, `publish_article`, `blog_pipeline`, `generate_header_image`, `process_editorial_feedback`, `substack`, `crosspost` (poll Telegram → save Alex-flagged news picks as article ideas; legacy auto-draft/post machinery dormant), `x` (browser-driven X posting, dormant — kept from the retired crosspost loop).
 - **Werewolf-ops:** `monitor_keys`, `monitor_health`, `monitor_betterstack`, `monitor_cloudflare`, `monitor_uptime`, `scrape_stats`, `werewolf_stats`.
 - **Calories:** `poll_food`, `calorie_digest`.

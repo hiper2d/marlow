@@ -1,0 +1,54 @@
+# monitor_models — new-model watch on the 12 providers Alex uses.
+#
+# Added 2026-10-29 (Alex): he kept hearing about new model releases from
+# other people's posts. Each provider's model-list API shows a new model the
+# moment it's callable, usually before anyone posts about it.
+#
+# The handler is deterministic (list, diff against the acknowledged
+# snapshot). Your job is the filter: which new ids are a real release Alex
+# would want to hear about.
+#
+# In-tick flow:
+#   1. `uv run python handlers/monitor_models.py check`
+#   2. `ok: false` → key load failed (Firestore creds). Treat like
+#      monitor_keys: framework bug, urgent notify only if it's the creds.
+#      Per-provider `errors` with others read fine → one digest line, go on.
+#   3. `seeded` providers are a first read: nothing to report for them.
+#   4. Judge each id in `new`:
+#        REAL release → report: a new model family or version (gpt-6,
+#          claude-*-6, gemini-4-pro, grok-5, kimi-k4, glm-5, a new
+#          "-preview" of an unreleased model, a new open-weights model on
+#          the provider's API).
+#        NOISE → skip silently: a dated snapshot of a model already in the
+#          list (gpt-5.5-2026-10-29 when gpt-5.5 exists), `-latest` /
+#          alias ids, internal test ids (`pre-mock_*`, `*-test`), embedding
+#          or moderation point-releases, regional duplicates.
+#      When unsure, report it; one extra line beats a missed release.
+#      `removed` matters only when a model the game uses disappears
+#      (deprecation) → mention it in the same message.
+#   5. Anything real → ONE message for the whole check, plain text:
+#        New on the APIs:
+#        - OpenAI: gpt-6, gpt-6-mini
+#        - Google: gemini-4-pro-preview
+#      Add one short line per model only if you know what it is from the id;
+#      don't invent specs. Send it with
+#        uv run python handlers/monitor_models.py send --stdin <<'EOF'
+#        ...
+#        EOF
+#      (quoted heredoc: no shell expansion). `send` posts to the news chat
+#      and moves the baseline.
+#   6. Nothing real → `uv run python handlers/monitor_models.py ack`. No
+#      message, no digest line.
+#   7. Write the tick result and exit. No report file; the log is
+#      projects/research/model_releases/log.md (written by `send`).
+name: monitor_models
+project: research
+profile: ops
+description: Every 2 hours, diff the model lists of the 12 provider APIs Alex uses and send real new releases to the news Telegram chat.
+schedule: "15 */2 * * *"
+priority: normal
+must_run_within_hours: 2
+subtasks:
+  - id: check_models
+    handler: monitor_models
+    context: {}

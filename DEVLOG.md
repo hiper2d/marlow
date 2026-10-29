@@ -1334,3 +1334,15 @@ IDENTITY was changed to send on `news` for that reason.
 *Second correction.* The b906389 edit that cleared Outstanding requests matched the literal text `## Daily rollups` inside working.md's new header line instead of the section heading, and duplicated most of the file (24KB -> 34KB). Rebuilt from the duplicated copy (no content lost), 20.8KB now. Lesson for Simona: when slicing a markdown file by heading, match `\n## Heading\n`, never the bare string, once the file mentions its own headings in prose.
 
 *Third leftover pass (10-28).* Two more framework-written headers in her own files still carried the old charter: `voice-journal.md` "The one line that still holds" ("You're still an LLM in a long loop - the charter doesn't stop at this file's edge... Not about constructing a self, a backstory, or a personality"), read on every drafting tick since June; and `self-reflection.md` "What changed" (the charter history) plus the old "a little context" description of reflect inputs. Both rewritten; her entries and standing reflections untouched. The voice journal's "nothing else loads it" line updated (the reflect tick reads it now).
+
+## 2026-10-29 - YouTube sources dropped; new-model watch on the provider APIs
+
+*What landed*
+- **YouTube out entirely (Alex: "I don't think it works").** The 4 remaining `scan_yt_*` subtasks were removed from `feed_scan.yaml`, along with 4 queued scans, 8 YouTube entries in `_feed_state.json`, the channel-page fallback in `tools/rss_reader.py` (added yesterday; the retry stays), `tools/yt_transcript.py` and its cache, and the `youtube-transcript-api` dependency. In four months of scans the YouTube items were mostly hype reels or duplicates of written sources, and the feed endpoint 404'd for weeks.
+- **`monitor_models` (new, ops profile, every 2h at :15).** Alex kept hearing about new models from other people's posts. All 12 game providers (OpenAI, Anthropic, Google, Mistral, DeepSeek, xAI, Moonshot, Z.AI, Sakana, Qwen, MiniMax, Meta) answer a model-list call with the game's Firestore keys. The handler diffs each list against an acknowledged baseline (`projects/research/model_releases/`). The ops session filters out noise (dated snapshots, aliases, test ids like Qwen's `pre-mock_*`) and sends one news-chat message through `send --stdin`. Only `send` or `ack` moves the baseline, so a tick that dies before alerting reports the same models again next time. Seeded 10:37Z with all 12 read; diff verified by removing two ids from the baseline.
+- `projects/research/README.md` source list fixed: it named OpenAI, DeepMind, Redwood, CAIS and arxiv, none of which feed_scan has ever scanned.
+
+*Open questions / things to watch*
+- Noise rate of the filter: Qwen lists 102 ids and OpenAI 142, and both add dated snapshots often. If the chat gets snapshot pings, tighten the YAML rules or pre-filter in code.
+- The written sources are still all safety/alignment (Anthropic, Apollo, METR, AE, LW/AF, Zvi, Import AI). Lab release blogs (OpenAI, Google DeepMind) are not scanned; the model watch covers releases, not announcements without an API model.
+

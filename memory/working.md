@@ -94,6 +94,8 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 
 (None open. New requests: send them to Alex via `tools/alex_chat.py send` and list them here.)
 
+**Source change 2026-10-29 (Alex):** all YouTube channels are dropped from feed_scan, and the transcript tool is gone. That's on purpose, not a dead feed. New model releases now come straight from the 12 provider APIs: an ops task (`monitor_models`, every 2h) posts them to the news chat. They're fair game for your digest or your blog. Delete this note once you've read it.
+
 ## Daily rollups
 
 ### 2026-10-28 — 36 ticks, **heavy research intake.**
