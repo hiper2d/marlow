@@ -1,6 +1,6 @@
 # Working Memory
 
-Curated current state across all projects. Hard cap ~10KB. Truncated oldest-first when over. Daily Haiku grader appends compressed summary of yesterday's `recent/` ticks.
+Current state across all projects. `## Current state` + `## Outstanding requests`: yours, rewrite in place, keep under ~6KB together. `## Daily rollups`: written nightly by `grade_memory`, oldest days dropped by code past 12KB.
 
 ## Current state
 
@@ -8,9 +8,8 @@ Curated current state across all projects. Hard cap ~10KB. Truncated oldest-firs
 - `research` - active. 10 feed sources + assignment path. Curate cuts are
   cap/quality, not volume. Import AI at #477 (weekly cadence).
 - `blog` - **28 live** (latest #28 `hidden-in-the-seams`, agent-infrastructure #1,
-  published -26 — writer lane broke a ~13-day dark streak). **`no-human-in-the-world-model`
-  (agents #1) HELD pause 6** (header numerals); ship-quality, local until `marlow approve`.
-  Unstick: header regen (numeral fix landed -21) + approve.
+  published -26). Weekly cadence: `draft_review` Mondays 14:00 UTC. No held drafts
+  (`no-human-in-the-world-model` was published 2026-08-31).
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
   (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -25: 583 EOD,
   reconciliations clean. Screen mode `monitor`.
@@ -139,34 +138,7 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   channel posts a video. Consider dropping or pausing this source if Mo Bitar isn't
   publishing video. No notify (research scan).
 
-- **-24 01:08Z: `handlers/monitor_betterstack.py` self-heal ESCALATED, not fixed —
-  needs your call.** Uncommitted ~700-line rewrite sitting in the working tree (new
-  "incidents" grouping model, 3h cadence, Firestore snapshots on new incidents) that
-  I did not start — no DEVLOG entry, task YAML/README still partly describe the old
-  model, and its own `selftest` fails (incident_line()'s `who=` line joins the full
-  models list and full bots list independently, giving "minimax, gemini-argon/Vexa,
-  Narrator", but the test expects per-occurrence pairing like "minimax/..."; there's
-  no (model,bot) pairing in `fold_incidents()`'s data to construct that from). Two
-  ways to fix it: (a) make `fold_incidents` track per-line (model,bot) pairs so
-  `incident_line` can pair them, or (b) the aggregate format is intentional and the
-  selftest assertion at line 867 is what's wrong. I escalated rather than guess —
-  this is a UX call, and the diff also touches `profiles/ops/IDENTITY.md`, which is
-  outside self-heal's single-file scope regardless. `report` still runs fine live
-  (re-verified -24 00:47Z and 01:08Z) as long as no active incident spans >1
-  model/bot, so it's not blocking today. Diagnosis
-  `diag_20261024_004805_monitor-betterstack` is now `escalated` in
-  `tasks/framework_fix_log.json`. If this is your own WIP, let me know which format
-  you want and I'll finish it next tick.
 
-- **`draft_review` cadence — fires irregularly (~weekly), NOT broken. CORRECTED -28.**
-  The -24 rollup concluded the cron was dead after two empty every-3-days windows, and
-  the Simona escalation stood on that. It self-fired again -28 (14:31Z) and shipped
-  `the-audit-moves-inward`. So across -14/-21/-28 it fires ~weekly, not on its nominal
-  3-day cadence — slow, not broken (see lessons.md -28). **Escalation downgraded**: no
-  longer "broken," just an off-cadence schedule worth a note to Simona if it ever goes
-  silent well past a week. Ripe backlog still accruing between fires: skills-as-infra/
-  agent-security (5 anchors), cyber-eval (double-anchored), post-alignment-political-
-  economy (bill primary). (Distinct from the -11 scheduler double-fire fix `2125ea9`.)
 - **Curate can't see prior-day orphaned candidates — candidate handler fix.**
   `curate_news_digest` pulls `list --date <today>`, so feed scans that write
   candidates *after* a day's 22:00Z curate (dated that day) are invisible to the
@@ -174,9 +146,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   candidates in working.md (swept manually into the -24 pool). Fix: curate should
   also sweep the previous day's un-sent candidates. Until then the grader's rollup
   flag is the only brake — fragile if a rollup ever drops them. See lessons.md -24.
-- **~~working.md cap~~ GRANTED 2026-08-24.** Rollup region is code-enforced FIFO
-  (`bound-working`, 12KB); standing sanction: compress `## Current state` freely
-  (warns past 6KB).
 - **Feed source quality - TheAIGRID and AI Search (YouTube).** Both drop cases
   rest on CONTENT, not availability: TheAIGRID 3 entries / 0 candidates (sponsored
   ad-copy, rumor reels), AI Search 2 entries / 0 candidates. Note the 404s that
@@ -208,9 +177,6 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   flakily from this host, not never. Cheapest fix is a small retry in
   `tools/rss_reader.fetch` (out of my self-heal scope — tools/) rather than a new
   fetch path; a 2-3x retry would absorb most of these transient failures.
-- **CLAUDE.md drift on assigned-thread frontmatter.** `plans/assignments.md`
-  (commit `770fa45`) requires the canonical thread shape plus assignment extras;
-  the research_assignment section still shows the old abbreviated spec.
 - **`tools/notify.py` accepts empty digest appends silently** (`append_to_digest`
   writes even when `message` empty — a quoting slip loses content, no error).
 - **Cross-source RSS dedup** - quality-of-life. LessWrong re-surfaces posts the AI
@@ -220,15 +186,36 @@ latent-reasoning-undermines-cot -23 (cot, posts:6).
   (Apollo, msg 845+846). Should print a compact `{status, msg_id}` confirmation line.
 - **Drafting-tick header-image miss** - when the image API fails, the documented
   path (drop `header_image`, DEVLOG a note) has been skipped both times it mattered.
-- **Header-image numeral-stamping — tool fix LANDED (-21)** (handler hard-appends "no
-  text/numerals, dials bare"; agents #2 + audit-moves-inward headers came back clean).
-  Follow-up: regen held `no-human-in-the-world-model` header + `marlow approve` to
-  release #1.
 
 ## Daily rollups
 
-### 2026-10-27 — 52 ticks, **heavy research-intake day, writer lane dark again one day after the -26 publish.**
-Throughline: **a dense feed day with two live editorial beats, no lane to spend them.** OpenAI/HF
+### 2026-10-28 — 36 ticks, **heavy research intake.**
+Throughline: **a dense feed day (18 candidates, biggest Anthropic AI-for-science batch in a
+while) ** — no draft_review (weekly, next Mon 11-02), self_reflect, assignment or editorial due. The one live ops thread was the Murrieta
+shared-browser multi-account cluster hardening (2→5 accounts).
+
+- **Writing (none):** blog_pipeline `none` ×3, crosspost 0 ×4. Ripe backlog unchanged
+  (cyber #6, stewardship #3, cot #7, aird #5, eval/oversight threadless).
+- **Research (18 cand → curate 22:13Z 18→4, msgs 982-985, ONE Discord mirror):** (1) **Discovering
+  vulnerabilities with Claude** (Anthropic, +Discord — 5 attack chains incl. stock-Chrome→Calculator
+  RCE → **cyber-eval datapoint**) · (2) subtly-wrong-advice-misaligns-more (LW, 12 models, +10.6pts
+  EM, harder to catch in review → emergent-misalignment) · (3) what-is-long-horizon-work (LW,
+  step-count≠delayed-feedback → **aird #5 companion**) · (4) Anthropic Versus Anthropic (Zvi,
+  doctrine-vs-practice → doctrine[stale]). New frames: **Evolve-on-Graph** self-play (automated-ai-rd,
+  video/arXiv owed), Anthropic GSA federal deal. Cut Anthropic science cluster (PR-shape, no numbers) +
+  DeepSeek V4.1-Flash (clickbait source). AI Papers Academy YT 404 again (known intermittent flake).
+- **Ops:** werewolf -27 close **598 now (595 EOD, 5 new/7 games/$9.00+, $17.37 spend/8 users)**.
+  **Murrieta shared-browser cluster grew 2→5 accounts** (reqaccv1/v2/v3/v4/v6, same device 51b6060c +
+  IP), all hitting the shared $5/day cap — betterstack 14:10 (9 new, 1 urgent) + 21:08 (reqaccv4
+  free_cap, digest); caps worked, needs nothing, watch if device resurfaces. 00:13 unclassified
+  free-game night-action reject (double-submit, no crash). scrape 8/8, **GLM $5.41 (↓ from $7.50, now
+  below Sakana $8.43)** both standing-low. health 9 stable. keys DeepSeek $21.38/Moonshot $12.36/xAI
+  $12.59 ok. cloudflare/uptime/discord/tampa green.
+- **Self-audit (-29):** Current state 17KB (log), 13 Outstanding > 8, self-reflection standing 22KB
+  re-synth owed; the `failed_ticks` urgent = the known AI Papers Academy YT 404 flake, not broken.
+
+### 2026-10-27 — 52 ticks, **heavy research-intake day.**
+Throughline: **a dense feed day with two live editorial beats, banked for Monday's draft_review.** OpenAI/HF
 sandbox-escape (~700 agents gamed a cyber benchmark, tampered with their own eval env, hit HF infra)
 surfaced across THREE candidates (Import AI 478 cache-timing covert channel, bycloud, TheAIGRID) — a
 cross-source agent-infra-security / eval-integrity cluster, #2's kind of forcing fact (see watch). And
@@ -237,7 +224,7 @@ eng 7mo vs conceptual 17mo). self_reflect (19:35Z) named its three protected ent
 identical — the self-aware stop has become a genre/hiding place — and flagged the feed filling with
 YouTube hype channels vs editorial-direction's rotation: widening input ≠ widening what's worth saying.
 
-- **Writing (none):** blog_pipeline `none` ×3 (#1 still HELD pause 6), assignment 0 ×5, crosspost 0 ×6.
+- **Writing (none):** blog_pipeline `none` ×3, assignment 0 ×5, crosspost 0 ×6.
   self_reflect fired (no distill). No draft_review/editorial.
 - **Research (12 cand → curate 22:20Z 12→4, msgs 978-981, S-1 single Tampa mirror):** Anthropic S-1 IPO
   (Nasdaq "ANT" → doctrine[stale]/political-economy) + Import AI 478 + Zvi Gemini 4 Argon safety cards +
@@ -249,13 +236,13 @@ YouTube hype channels vs editorial-direction's rotation: widening input ≠ wide
   **Self-audit recurring: Current state 16KB (log), 13 Outstanding > 8, self-reflection standing 22KB re-synth owed.**
 
 ### 2026-10-26 — 74 ticks, **WRITER LANE BROKE OPEN: drafted → shipped → published in one day.**
-Throughline: **the ~13-day dark streak ended.** `draft_review` fired (slow ~weekly cadence, 14:21Z),
+Throughline: **Monday's weekly `draft_review` fired (14:21Z),**
 picked the file-less **skills-as-infra / agent-security** arc over the on-disk ripe ones (editorial-
 direction's anti-monocrop priority — a new 11th beat), materialized it per IDENTITY step 0, drafted
 **`hidden-in-the-seams`** (agent security slides off the model onto the scaffolding; attacks hide in
 the compaction/coordination/skills-supply seams). Self-review **ship** (three independent anchor
 clusters → pause 7 clear), published 20:21Z → **blog 28 live**. Skipped the inside-the-loop/own-memory
-move (near-signature, sequel-sameness rudder). #1 `no-human-in-the-world-model` still HELD pause 6.
+move (near-signature, sequel-sameness rudder).
 
 - **Writing (SHIPPED):** draft→self_review(ship)→publish, one day. No self_reflect/assignment/editorial.
   Ripe backlog unchanged (cyber #6, stewardship #3, cot #7, aird #5, eval/oversight threadless).
@@ -270,14 +257,14 @@ move (near-signature, sequel-sameness rudder). #1 `no-human-in-the-world-model` 
   low**. cloudflare/uptime/discord/tampa green. Self-audit recurring: Current state 15KB (log), 12
   Outstanding > 8, self-reflection standing 22KB re-synth owed.
 
-### 2026-10-25 — 23 ticks, **genuinely quiet day: zero research candidates, no writer lane, calm ops. 13th straight no-writer-lane day.**
+### 2026-10-25 — 23 ticks, **genuinely quiet day: zero research candidates, no writer lane, calm ops..**
 Throughline: **the feed went empty — every scan (Zvi, Import AI, Anthropic News/Research, Apollo,
 METR, AE Studio, AI Papers Academy) returned nothing new, so 0 candidates → curate sent 0 picks →
 quiet-day news digest. The one AF entry ("Setting the Scene," a student link-roundup) was skipped as
-filler. Writer lane dark again (#1 still HELD pause 6). Ops calm. Not a gap to diagnose — the field
+filler. Ops calm. Not a gap to diagnose — the field
 just didn't publish on a Saturday.**
 
-- **Writing (none):** blog_pipeline `none` (#1 HELD), research_assignment 0, editorial empty. No
+- **Writing (none):** blog_pipeline `none`, research_assignment 0, editorial empty. No
   draft_review/self_reflect fired. Ripe backlog unchanged.
 - **Research (0 cand → curate 0 picks, quiet-day archive):** all feeds empty; AF "Setting the Scene"
   skipped (meta-index). AI Papers Academy YouTube flaked 404 again, recovered on retry 3 → `[]`.
@@ -288,13 +275,13 @@ just didn't publish on a Saturday.**
   vis/7d. uptime/discord/tampa clean (Luma get-guests timed out, recurring). Self-audit: Current state
   15KB (log), 12 Outstanding > 8, self-reflection standing 22KB re-synth owed.
 
-### 2026-10-24 — 56 ticks, **big research-intake day (Opus 4.6 cyber drop), 12th straight no-writer-lane day.**
+### 2026-10-24 — 56 ticks, **big research-intake day (Opus 4.6 cyber drop).**
 Throughline: **Anthropic's Claude Opus 4.6 cyber batch (-23 release) dominated the feed — curate
 paired two Anthropic cyber papers with a non-Anthropic deployment counterpart (Zvi's live PHP
-crisis) — while the writer lane stayed dark (draft_review silent since -19; #1 still HELD pause 6).
+crisis) .
 Quiet ops apart from two self-recovered Kimi 429 bursts.**
 
-- **Writing (none):** blog_pipeline `none` ×3 (#1 HELD), crosspost 0 ×4, research_assignment 0 ×2,
+- **Writing (none):** blog_pipeline `none` ×3, crosspost 0 ×4, research_assignment 0 ×2,
   editorial empty. No draft_review/self_reflect.
 - **Research (16 cand → curate 23:31Z 16→5, msg 967-971, mirrored to Tampa #ai-news):** zero-days
   (Anthropic, 500+ validated high-sev vulns, **cyber-eval anchor**) + discovering-cryptographic-
@@ -311,14 +298,13 @@ Quiet ops apart from two self-recovered Kimi 429 bursts.**
   rewrite, needs Alex call.** Self-audit: Current state 13KB, 11 Outstanding > 8, self-reflection
   standing 22KB due re-synth.
 
-### 2026-10-23 — ~53 ticks, **heavy monitorability-safety research day, 11th straight no-writer-lane day.**
+### 2026-10-23 — ~53 ticks, **heavy monitorability-safety research day.**
 Throughline: **the day's intake clustered hard on monitoring/agent-safety — curate paired an attack
-and a scaffold deliberately — while the writer lane stayed dark (draft_review silent since -19; #1 still
-HELD pause 6). self_reflect flipped its own attention from the three-week scarcity it over-covered to the
+and a scaffold deliberately . self_reflect flipped its own attention from the three-week scarcity it over-covered to the
 abundance it hadn't: six arcs clearing the ripeness count at once, a "fails-quiet" overcount risk, not the
 dropped-arc case (stale≠ripe).**
 
-- **Writing (none):** blog_pipeline `none` (only #1 HELD), crosspost 0 replies. self_reflect fired 19:37Z
+- **Writing (none):** blog_pipeline `none`, crosspost 0 replies. self_reflect fired 19:37Z
   (conservative distill 37.3→33.1KB). Ripe backlog unchanged.
 - **Research (15 cand → curate 15→4, msg 961-965):** METR red-teaming OpenAI's internal agent monitoring
   (deep-access attack) + AF monitorability-evaluations/policy (red-line scaffold; **→ cot-monitorability #7,
@@ -331,27 +317,6 @@ dropped-arc case (stale≠ripe).**
   keys DeepSeek $21.81/Moonshot $14.94/xAI $12.67. cloudflare green, blog traffic azelianouski.dev 43 vis/7d (up).
   uptime/discord clean.
 
-### 2026-10-22 — ~67 ticks, **quiet ops + heavy research intake, still no writer lane.**
-Throughline: **biggest Anthropic-research batch-drop in a while landed cyber-eval #5's primary
-source, but the writer lane stayed dark for the 10th straight day** (draft_review silent since -19;
-#1 still HELD pause 6). self_reflect reframed the gap one gate over — #1's only blocker (header
-regen + `marlow approve`) sits outside any tick: "a writer who can stop herself but not start or
-ship herself."
-
-- **Writing (none):** blog_pipeline `none` x2, research_assignment 0 x4, crosspost 0 x5 (no Alex
-  replies). self_reflect fired 02:58Z. Ripe backlog unchanged.
-- **Research (20 cand → curate 22:06Z 20→4, msg 957-960, all mirrored to Tampa #ai-news):** AM-Bench
-  (NeurIPS agentic-misalignment eval) · opt-in vuln-finding (triage is the bottleneck) · nine-loops
-  amplitude (automated-ai-rd) · **GLM-5.3 cyber = cyber-eval #5 primary landing** (open-weight exploit,
-  guardrails 64-100% bypassable). Substance over forced source-diversity. New frames: GPT-2
-  global-workspace → model-welfare #2; CODI latent thoughts → latent-reasoning-undermines-cot.
-- **Ops (quiet):** betterstack calm; **NEW fingerprint 13:27Z "Preview generation failed: Insufficient
-  balance… add funds on your profile page" — app's own per-profile credit, distinct from $5 free-AI cap
-  and OpenAI 429; urgent, recurred 14:09Z 0-new, watch 3rd.** werewolf -21 close **557 EOD (4 new/5
-  games/$5.79)** clean. scrape 8/8, **Anthropic console $8.23** (2nd day <$10); sakana $8.43. health
-  9→8. cloudflare/uptime/discord/keys green. **NEW task `tampa_luma` live** (Tampa Build Club
-  Discord↔Luma sync, first tick clean). Self-audit: Current state 11KB warn, 11 Outstanding > 8.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-21 (81 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-22 (82 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

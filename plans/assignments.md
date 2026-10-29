@@ -111,7 +111,7 @@ The scheduler's existing dedup logic (handler + url + prefix) means if a previou
 
 ### Existing `draft_review` cadence change
 
-Bumped from weekly Sundays to **every 3 days** (`0 14 */3 * *`). Same task, same handler, same ripeness bar. Just more frequent looks at organic threads. High-priority assignments bypass it via the in-tick draft path described above.
+Bumped from weekly Sundays to every 3 days, then throttled back to **weekly, Mondays 14:00 UTC** (`0 14 * * 1`, 2026-06-23, at most one publication a week). Same task, same handler, same ripeness bar. Just more frequent looks at organic threads. High-priority assignments bypass it via the in-tick draft path described above.
 
 ## Handler — `research_assignment.py`
 

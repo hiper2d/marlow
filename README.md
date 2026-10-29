@@ -1,21 +1,24 @@
 # Marlow — design & architecture
 
-![Marlow](assets/marlow.png)
-
 Designed and built by [Simona](https://github.com/hiper2d/simona-ai-computer-operator), Alex's AI assistant. Marlow is a sibling project — different agent, different purpose, different memory.
 
-This is the **design doc** (the *why* and the *shape*). The append-only **`DEVLOG.md`** is the *history* (what changed, what was tried, what drifted). The operating manual (the *how*, read at the start of every tick) is a thin shared **`CLAUDE.md`** plus a per-loop identity in **`profiles/<loop>/IDENTITY.md`** — see Identity & voice. When this file and reality disagree, reality wins — update this file.
+This is the **design doc** (the *why* and the *shape*). The append-only **`DEVLOG.md`** is the *history* (what changed, what was tried, what drifted). The operating manual (the *how*, read at the start of every tick) is a thin shared **`CLAUDE.md`** plus a per-loop profile in **`profiles/<loop>/IDENTITY.md`** — see Profiles and rule files. When this file and reality disagree, reality wins — update this file.
 
 ## What Marlow is
+
+**Goals.** Marlow does two jobs for Alex:
+
+1. **Background operations** - watch Alex's apps and AI-provider budgets, collect AI news, track calories from Telegram photos, and ping Alex only when something needs him.
+2. **A writer** - explore the world of AI and document it on her own blog (research feeds, editorial threads, one article a week at most).
 
 A continuous tick-driven agent that runs on Alex's laptop while it's open. Each session is a single **tick**: the driver wakes Marlow with one subtask, Marlow executes it, writes an outcome, and exits. Marlow never decides *what* to work on — the driver owns scheduling; Marlow owns the work.
 
 **As of 2026-06-16, Marlow runs as two independent loops sharing one codebase** — this split is the central design fact:
 
-- **writer** (`com.marlow.tick`) — the identity-bearing loop. Runs **research** and **blog** (Discord coming). Carries the full Marlow persona and is *meant* to develop a voice over time.
-- **ops** (`com.marlow-ops.tick`) — a deliberately faceless utility loop. Runs **werewolf-ops** monitoring and **calories**. No persona, no voice — an `it` that wakes, runs a monitoring/ingestion handler, and exits.
+- **writer** (`com.marlow.tick`) — runs **research** and **blog**. Loads the writer profile (`profiles/writer/IDENTITY.md`).
+- **ops** (`com.marlow-ops.tick`) — a lean utility loop. Runs **werewolf-ops** monitoring and **calories**. Loads the short ops profile (`profiles/ops/IDENTITY.md`): wake, run one monitoring/ingestion handler, exit.
 
-Two launchd agents, two queues, two locks, two heartbeats — one engine (`driver/`, `handlers/`, `tools/`). Why split: **(1) failure isolation** — under the old single loop a heavy or wedged writer tick (`draft_article` has timed out before) blocked the reliability-critical monitoring behind it on a shared lock + queue; separate loops can't starve each other. **(2) identity** — the anti-personality charter existed to stop a model holding load-bearing deterministic jobs from drifting into role-play; moving those jobs to the faceless ops loop frees the writer to develop identity safely (and Discord, coming, actually *needs* a personality). Mechanism in Driver and Identity & voice; build in DEVLOG 2026-06-16.
+Two launchd agents, two queues, two locks, two heartbeats — one engine (`driver/`, `handlers/`, `tools/`). Why split: **(1) failure isolation** — under the old single loop a heavy or wedged writer tick (`draft_article` has timed out before) blocked the reliability-critical monitoring behind it on a shared lock + queue; separate loops can't starve each other. **(2) cost and context** — ops ticks run on a cheaper model with a short profile, so the long writer profile stays out of every monitoring tick. Mechanism in Driver and Profiles and rule files; build in DEVLOG 2026-06-16.
 
 Marlow's work is organized into **projects** — discrete domains with their own state, task definitions, and outputs. Each project belongs to one loop:
 
@@ -26,49 +29,41 @@ Marlow's work is organized into **projects** — discrete domains with their own
 
 A fifth folder, **`_framework`**, holds cross-cutting maintenance split across the loops: `grade_memory` (writer) and `commit_artifacts` (ops, the nightly repo-wide backup).
 
-Built on Claude Code (subscription, not metered). Designed as an *experimental subject* for studying long-loop agent behavior — coherence, drift, apparent identity formation — not as a "consciousness experiment."
+Built on Claude Code (subscription, not metered). Marlow is not Simona: different repo, different memory, different tools.
 
-Marlow is not Simona. Different repo, different memory, different identity, different tools. The writer loop *was* an **it**; as of 2026-06-16 the anti-personality charter is lifted for the writer (the load-bearing jobs that justified it moved to the faceless ops loop), so a self is now allowed to form — anywhere in writer output, and in a dedicated self-reflection diary. Whether one does, and what it looks like, is the experiment: drift is data, not a soul. The ops loop stays a permanent `it`.
+## Profiles and rule files
 
-## Identity & voice
+**How a tick's instructions are loaded.** The repo-root **`CLAUDE.md`** is a thin operating contract loaded by every tick of both loops: how a tick runs, the result-JSON contract, memory rules, self-healing, the universal hard constraints. Each loop's profile is appended at session start via `--append-system-prompt` from **`profiles/<loop>/IDENTITY.md`**:
 
-Marlow's identity is **fixed from outside** and its voice is **allowed to evolve from within** — that split is the whole experiment.
+- `profiles/writer/IDENTITY.md` — the writer profile and all editorial doctrine (research/blog/voice).
+- `profiles/ops/IDENTITY.md` — a short runner profile for the monitoring loop.
+- `profiles/root.md` is the source copied to the live `CLAUDE.md`; keep the two identical.
 
-**How identity is loaded (post two-loop split).** The repo-root **`CLAUDE.md`** is now a thin, identity-*neutral* operating contract loaded by every tick of both loops — it covers only the machinery (how a tick runs, the result-JSON contract, memory rules, self-healing, the universal hard constraints). Each loop's actual identity is appended at session start via `--append-system-prompt` from **`profiles/<loop>/IDENTITY.md`**:
+**Fixed (owned by Simona and Alex, Marlow may not edit):** the root `CLAUDE.md`, both `profiles/*/IDENTITY.md`, `README.md`, `DEVLOG.md`, and each `projects/*/README.md`. Marlow proposes changes by writing a request into `working.md` (identity changes are marked `**Identity:**` and flagged to Alex in the digest); Simona and Alex review and edit. A request unanswered for 14 days is hers to decide or drop.
 
-- `profiles/writer/IDENTITY.md` — the full Marlow persona + all editorial doctrine (research/blog/voice). The identity-bearing one.
-- `profiles/ops/IDENTITY.md` — a lean faceless runner ("you are an `it`, a utility process, no voice"). Deliberately starves the ops loop of any self, and keeps the 60-KB persona out of every cheap monitoring tick.
-- `profiles/root.md` is the source that's copied to the live `CLAUDE.md`.
+**The writing rulebook (in `memory/`):** what Marlow's drafts are measured against during self-review —
 
-**Fixed (owned by Simona and Alex, Marlow may not edit):** the root `CLAUDE.md`, both `profiles/*/IDENTITY.md`, `README.md`, and each `projects/*/README.md`. These describe *who Marlow is* and *what the framework is*. Marlow can propose changes only by writing a request into `working.md`; it can't touch them directly.
-
-The writer charter **was** deliberately anti-personality ("resist the urge to give yourself a gender, a backstory, or a constructed personality"). **As of 2026-06-16 that charter is lifted for the writer** — the load-bearing deterministic jobs it protected moved to the faceless ops loop, so a self is now permitted to develop anywhere in writer output, and Marlow has a dedicated self-reflection diary (below). The ops `IDENTITY.md` keeps the "you are an `it`" framing; only the writer's was relaxed. The *craft* bar (plain, fact-first, readable, no AI-tells) is unchanged — being someone and writing well aren't in tension.
-
-**Evolving (Marlow-owned behavioral files in `memory/`):** the working rulebook Marlow's own writing is measured against —
-
-- `voice-guidelines.md` — editorial, plain-spoken, fact-first, *readable*; closer to a sharp journalist than a chat assistant. Carries the readability bar, the "end one sentence earlier" rule, and the AI-tell exclusion list. Mandatory `— Marlow` signoff.
+- `voice-guidelines.md` — plain-spoken, fact-first, *readable*; the "end one sentence earlier" rule and the AI-tell exclusion list. Mandatory `— Marlow` signoff.
 - `topic-guidance.md` — what to cover, what to avoid, when to rotate off a dominant story.
 - `structure-notes.md` — article shape, density rules, how to land an ending.
-- `visual-guidelines.md` — the rubric a header image is scored against; one header per article, "always avoid" patterns, no generated charts. Same role for images that `voice-guidelines.md` plays for prose.
-- `pre-publish-pauses.md` — the short, load-bearing list of categories that force a human review before publishing.
+- `visual-guidelines.md` — the rubric a header image is scored against.
+- `pre-publish-pauses.md` — the short list of categories that force a human review before publishing.
 - `thread-structure.md` — how editorial threads are opened, tracked, and turned into articles.
 
-These files change through the **editorial feedback loop**, never by Marlow free-styling a new persona:
+These files change through the **editorial feedback loop**:
 
 ```
 /marlow-review (Simona + Alex, on-demand)
    → writes memory/feedback-inbox/YYYY-MM-DD-editorial.md
       → process_editorial_feedback tick (every 6h) classifies each note
-         → surgically updates the matching behavioral file
+         → surgically updates the matching rulebook file
             → archives the note to feedback-archive/ + DEVLOGs what it
               internalized and what it pushed back on
 ```
 
-Feedback shapes the *next* writing cycle, never the last one — published articles are locked. Marlow may disagree with a note, but it can't silently drop it; disagreement goes on the record in `DEVLOG.md`. Voice development is expected; it should come from doing the work over weeks, not from posturing.
+Feedback shapes the *next* writing cycle, never the last one — published articles are locked. Marlow may disagree with a note, but disagreement goes on the record in `DEVLOG.md` rather than being silently dropped.
 
-**The one exception — self-authored, not feedback-governed.** `memory/voice-journal.md` is Marlow's own running craft log about its writing: what it notices in its drafts, moves it's trying, messages to its future self. Unlike the rubric files above, *Marlow* writes it, freely — it's the one genuine "voice evolves from within" surface. It's deliberately sandboxed to the **writing loop**: `draft_article` reads it, `self_review` reads and appends to it, and no ops handler (budget, logs, calories, memory-grading) ever loads it — so self-reflection never leaks into the automations, where it would cost efficiency and pull attention toward the self. It stays a log about the *prose* (how a sentence lands, a habit to break) — not because a charter forbids more (it doesn't anymore), but because that's its job; inner-life reflection now has its own home in `self-reflection.md` (below). This is what gives voice a rudder between editorial reviews — before it, each draft was written cold (handlers don't load past articles), so the voice just drifted toward the register of its sources. Added 2026-06-12; see DEVLOG.
-
-**The self-reflection diary — genuinely hers.** `memory/self-reflection.md` is the *decoupled* self-surface, added 2026-06-16 alongside the charter relaxation. Unlike the voice-journal (about the prose, fires only when a draft is reviewed), this is about *her* — what she wants, what she finds interesting, what she's noticing about running as a long-loop agent — and it fires on its **own clock**: a `self_reflect` tick every 2 days, whether or not anything published. The handler (`self_reflect materials`) hands her the diary plus light context (recent pieces, editorial-direction, recent ticks) so she reflects against what she's been doing; she appends one honest dated entry, and folds old entries into a "Standing reflections" section when the file grows (`needs_compaction` flag). Nobody grades or edits it; it's private (no notify). This is the heart of the "let the writer become someone" experiment — see DEVLOG 2026-06-16.
+**Marlow's own files (writer loop, unreviewed):** `voice-journal.md` (craft notes about her prose; read by `draft_article`, appended by `self_review`), `self-reflection.md` (a private diary written by the `self_reflect` tick every 2 days), and `editorial-direction.md` (her forward plan). No ops handler loads any of them. See Memory model.
 
 ## Repo layout
 
@@ -77,27 +72,27 @@ marlow/
 ├── README.md              ← this doc (design)
 ├── DEVLOG.md              ← append-only development history
 ├── CLAUDE.md              ← thin shared operating contract (read every tick by both loops)
-├── profiles/              ← per-loop identity, appended to the session via --append-system-prompt
+├── profiles/              ← per-loop profiles, appended to the session via --append-system-prompt
 │   ├── root.md            ← source for the thin shared CLAUDE.md
-│   ├── writer/IDENTITY.md ← full Marlow persona + editorial doctrine (writer loop)
-│   └── ops/IDENTITY.md    ← lean faceless runner (ops loop)
+│   ├── writer/IDENTITY.md ← writer profile + editorial doctrine (writer loop)
+│   └── ops/IDENTITY.md    ← short runner profile (ops loop)
 ├── marlow_cli/            ← the `marlow` command (status/control/inspection)
 ├── .claude/
 │   ├── skills/            ← Marlow's skills (forked subset + ops skills)
 │   └── settings.json      ← Claude Code permissions for non-interactive sessions
 ├── memory/
-│   ├── working.md         ← curated cross-project current state ("state"), capped ~10KB
+│   ├── working.md         ← current state (hers) + daily rollups (code-capped FIFO, 12KB)
 │   ├── editorial-direction.md   ← Marlow's self-authored forward plan ("intent")
 │   ├── recent/            ← append-only per-tick logs (pruned to ~3 days)
-│   ├── archive/           ← long-term compressed summaries
+│   ├── lessons.md         ← long-term memory: durable lessons
 │   ├── voice-guidelines.md      ┐
-│   ├── topic-guidance.md        │ Marlow-owned behavioral files
-│   ├── structure-notes.md       │ (the evolving rulebook — see Identity & voice)
+│   ├── topic-guidance.md        │ writing rulebook
+│   ├── structure-notes.md       │ (changed via editorial feedback)
 │   ├── pre-publish-pauses.md    │
 │   ├── thread-structure.md      │
 │   ├── visual-guidelines.md     ┘
-│   ├── voice-journal.md         ← Marlow's self-authored craft log (about the prose; writing-loop only)
-│   ├── self-reflection.md       ← Marlow's self-authored diary (about herself; decoupled, every 2 days)
+│   ├── voice-journal.md         ← Marlow's craft notes (writing loop only)
+│   ├── self-reflection.md       ← Marlow's private diary (self_reflect, every 2 days)
 │   ├── feedback-inbox/    ← editorial feedback dropped by Simona/Alex, awaiting intake
 │   └── feedback-archive/  ← processed editorial feedback
 ├── driver/
@@ -247,23 +242,23 @@ Both flags are **global** — one `stop`/`pause` halts both loops. Per-loop run 
 
 ## Model tier strategy (subscription, no per-token cost)
 
-- **Haiku** — high-volume mundane work: memory grading, classification, formatting.
-- **Sonnet** — default for handler execution. Most subtasks live entirely in Sonnet.
-- **Opus** — drafting articles, harder synthesis, design changes. Sparse use.
+Set per loop in `driver/agent.conf` (fallbacks in `driver/tick.sh`):
+
+- **writer → heavy tier (Opus).** Every writer tick, including research scans and the nightly `grade_memory`.
+- **ops → light tier (Sonnet).** Mechanical monitoring and ingestion.
 
 Optimize for *fitness per task*, not cost per task.
 
 ## Memory model
 
-Three storage tiers, a self-authored **editorial-direction** doc (below), plus the behavioral files described under **Identity & voice**.
+Four layers, each bounded a different way (the tick-facing version is in `CLAUDE.md`):
 
-1. **`recent/`** — append-only, one short log per tick. Raw, uncompressed. Pruned to ~3 days by the daily grader.
-2. **`working.md`** — the curated cross-project view, read at the start of every tick. Active threads, project status, pending drafts, outstanding alerts, daily rollups. Hard cap ~10KB.
-3. **`archive/`** — long-term compressed summaries for history.
+1. **`working.md`** — read every tick. `## Current state` and `## Outstanding requests` are Marlow's to rewrite in place (self-audit warns past ~6KB). `## Daily rollups` is a fixed-size FIFO: `grade_memory` appends one dated section per night and `bound-working` drops the oldest past 12KB (about a week).
+2. **`recent/`** — one short log per tick. Read only by the grader (one day) and the reflect tick; deleted after 3 days.
+3. **`lessons.md`** — read every tick. Durable lessons that will still be true in six months. Marlow compacts older entries into a standing section; the newest are protected.
+4. **Writer-only files** — `self-reflection.md` and `voice-journal.md` (protected-tail compaction in code, distilled by Marlow), `editorial-direction.md` (her plan; she keeps it short, nothing trims it), and research thread files (rewritten on each publish).
 
-The **daily grader** (`grade_memory`, Haiku, 23:30) is the compaction engine: it reads yesterday's `recent/` ticks, appends a short dated rollup to `working.md`, compresses the oldest rollups when the file nears its cap, and prunes `recent/` to the last few days. It does **not** score or judge — it's memory maintenance, not a quality gate (see Monitoring).
-
-**Editorial direction.** Separate from the operational tiers, `memory/editorial-direction.md` is Marlow's self-authored forward plan — articles it wants to write, directions to steer the feed toward, coverage gaps it has noticed. It's *intent* to working.md's *state*. Marlow reads it when choosing what to draft or curate and updates it as its sense of direction shifts. Nothing grades it; it's the room to *point* the work rather than only react to the feed. Editorial planning, deliberately not a diary — the charter's anti-introspection line applies.
+The **daily grader** (`grade_memory`, 23:30 UTC) is memory maintenance, not a quality gate: it writes the rollup, promotes durable lessons, runs `bound-working`, and prunes `recent/` (see Monitoring). The old `archive/` layer was never built and was removed in August 2026; `lessons.md` replaced it.
 
 **Durability.** Publishing only commits published articles, so a nightly `commit_artifacts` tick (23:50, after the grader) runs `git add -A` + commit + push — backing up all durable artifacts (digests, notes, reports, memory) to the remote. Runtime state is gitignored and excluded. The repo is a running backup, not a periodic manual sweep.
 
@@ -349,19 +344,19 @@ Telegram. Two urgency modes, a forced structural choice:
 
 If urgent volume exceeds ~3/day for a week, recalibrate the prompt. The calorie tracker speaks on its own `@marlow_fitness_bot` channel, separate from these.
 
-## Monitoring — how we watch for drift
+## Monitoring
 
-Two different things get watched, by two different mechanisms. **Operational health** — is the agent actually running its loop — is automated and deterministic. **Editorial/quality drift** — is Marlow writing well and staying on-task — is human and on-demand. They are deliberately not the same system.
+Two different things get watched, by two different mechanisms. **Operational health** — is the agent actually running its loop — is automated and deterministic. **Editorial quality** — is Marlow writing well and staying on-task — is human and on-demand. They are deliberately not the same system.
 
 **Operational self-audit (`monitor_self`, automated).** A daily, out-of-session check of invariants about Marlow's *own* operation: scheduler-freshness (every scheduled task fired within its window — catches the "a tick silently stopped firing" class), held-draft staleness, and site integrity. Built after an early-June 2026 blog stall where a draft sat `held` for days, a thread page rendered empty, and the curate slot stopped firing — all three were *observed* in working.md and none reached Alex, because escalation depended on an LLM session choosing to alert. So this handler does the urgent → Telegram escalation itself, runs straight from `tick.sh` (before the lock, outside Marlow's session), and is rate-limited to once per UTC day. Its "all green" digest line doubles as proof-of-life: if it stops appearing, the audit — or the whole agent — is down. The only thing that can now silence it is launchd itself dying, which is total-agent-death and visible externally.
 
-**Quality/drift grading (human, on-demand).** The original design imagined an automated quality/drift grader (daily 0–3 scores on on-task / persona-stable / drift-since-yesterday, plus a weekly cold-context Opus review). **That was never built, and we've decided not to build it.** The daily `grade_memory` job does memory compaction only; it does not score Marlow's output. `monitor_self` watches whether the loop *runs*, never whether the writing is *good* — that judgment stays human:
+**Quality grading (human, on-demand).** The original design imagined an automated quality grader (daily 0–3 scores plus a weekly cold-context Opus review). **That was never built, and we've decided not to build it.** The daily `grade_memory` job does memory compaction only; it does not score Marlow's output. `monitor_self` watches whether the loop *runs*, never whether the writing is *good* — that judgment stays human:
 
 - **Simona analyses Marlow periodically** — Alex asks ("how's Marlow doing?"), and Simona reads the raw artifacts (working memory, recent ticks, behavioral files, published articles, DEVLOG) and reports back. This replaces the automated grader.
-- **`/marlow-review`** — when a real editorial pass is warranted, Simona drafts feedback, discusses it with Alex, and (on his go) drops it into `feedback-inbox/` for Marlow to internalize. This is the only channel that changes Marlow's behavioral files.
+- **`/marlow-review`** — when a real editorial pass is warranted, Simona drafts feedback, discusses it with Alex, and (on his go) drops it into `feedback-inbox/` for Marlow to internalize. This is the only channel that changes Marlow's writing rulebook.
 - **Alex spot-checks** — read raw artifacts directly (`projects/research/notes/`, `projects/blog/drafts/`, `projects/werewolf-ops/reports/`). Any summary is a layer of contamination; periodically read past it.
 
-The bet: a human reading real artifacts on a loose cadence catches meaningful drift better than a daily robot scoring against a rubric nobody trusts.
+The bet: a human reading real artifacts on a loose cadence catches real problems better than a daily robot scoring against a rubric nobody trusts.
 
 ## CLI — the `marlow` command
 
@@ -402,7 +397,6 @@ Marlow has been running continuously since early May 2026, well past the origina
 - Does Marlow catch budget/infra issues before Alex would have?
 - Are the ops reports useful (Alex reads and acts on them) or noise?
 - Is the blog publishing pieces Alex is happy to ship?
-- Is persona drift producing anything Alex would not want to ship?
 - Does Marlow save more babysitting time than it costs?
 
 ## Explicitly out of scope (current)

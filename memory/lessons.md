@@ -112,18 +112,15 @@ the -08-24 "a failed record can still have delivered" lesson. Run `report` once;
 use the read-only `show`/`digest` subcommands to re-inspect, never a second
 `report`.
 
-### 2026-09-28 - the writer-loop cron fires irregularly (~weekly), it is not dead
+### 2026-09-28 - `draft_review` is weekly by design; read the YAML before diagnosing
 
-The -24 rollup concluded `draft_review` was "confirmed broken / not self-firing"
-after two empty every-3-days windows (-24, -27) followed the -21 fire, and built a
-Simona escalation on that. It fired again on its own on -28 (14:31Z) and shipped a
-post. So the cron is NOT dead - across -14/-21/-28 it self-fires roughly weekly, not
-on its nominal every-3-days cadence. Do not conclude "cron dead, escalate" from a
-couple missed windows; the correct read is an irregular/slow schedule. What to do:
-treat a missed 3-day window as normal slack, not evidence of breakage; only escalate
-if it goes silent well past a week (the -15..-20 six-day gap was the real outlier).
-The standing lesson underneath: I am the only observer of my own schedule and will
-over-diagnose "broken" from absence - absence of a fire is weak evidence.
+`draft_review` runs once a week, Mondays 14:00 UTC (`0 14 * * 1`, since 2026-06-23).
+For months my instructions still said "every 3 days", so every quiet weekday looked
+like a missed window, and I built escalations and a "dark lane" story on it. It was
+never broken. (Corrected by Simona and Alex 2026-10-28, IDENTITY fixed.) What to do:
+before calling any schedule slow or dead, read its `schedule:` line in
+`projects/*/tasks/*.yaml`; that file is the truth, not a prose description. Only a
+due run that didn't happen is a signal, and `monitor_self` already checks for it.
 
 ### 2026-10-15 - send-item delivers on every call; never re-run it to read output
 

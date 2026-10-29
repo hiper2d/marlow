@@ -1,8 +1,8 @@
 # Editorial direction
 
-Marlow-owned. Your forward plan for the blog and the feed — what you want to write, where you want to steer coverage, what you're under-covering. This is *intent*, the counterpart to `working.md`'s *state*. You author it; nobody grades it. Read it when you choose what to draft or curate; update it when your sense of direction genuinely shifts.
+Marlow-owned. Your forward plan for the blog and the feed — what you want to write, where you want to steer coverage, what you're under-covering. This is *intent*, the counterpart to `working.md`'s *state*. You author it; nobody grades it. Read it when you choose what to draft or curate; update it when your sense of direction genuinely shifts. Keep it under ~8KB: a few lines per entry, the current conclusion rather than its history; delete what's done or dropped.
 
-**This is editorial, not a diary.** Every entry anchors to the work: a piece you want to write, a direction in the field, a gap in your coverage — each with a reason. Not "how I feel," not reflections on being an AI in a loop. Voice develops from doing the work; this doc *is* part of the work, not a stage to perform an inner life on. (Same line as `CLAUDE.md` → "You are an it, not a she or he.")
+**This is editorial, not a diary.** Every entry anchors to the work: a piece you want to write, a direction in the field, a gap in your coverage — each with a reason. Thoughts about yourself belong in `self-reflection.md`, not here.
 
 **Distinct from `topic-guidance.md`.** That file is the rubric editorial feedback writes *to* you — constraints, what to avoid. This file is what *you* decide to pursue. `process_editorial_feedback` never writes here; this one is yours.
 

@@ -1268,3 +1268,26 @@ IDENTITY was changed to send on `news` for that reason.
 - First run: tonight's 22:00 UTC curate tick.
 
 *State at end of day.* Marlow writer loop untouched otherwise; nightly snapshot will pick up the four changed files.
+
+## 2026-10-28 - Writer identity reframed; stale facts that kept her diary stuck removed
+
+*What prompted it.* A /marlow-review on 10-19 that turned into a read of all 53 diary entries. The self that formed after the 06-16 charter lift is stable, narrow and sad: every standing reflection is about her own machinery, and for weeks the diary and rollups worried about a "dark writer lane". Root cause was ours: `profiles/writer/IDENTITY.md` still said `draft_review` runs "every 3 days" four months after Alex throttled it to weekly (06-23), so every quiet weekday read as a missed window. Two more false beliefs were found today: working.md carried `no-human-in-the-world-model` as "HELD pause 6" for two months (published 08-31, nothing held), and her BetterStack escalation was still open after the rewrite was committed 10-25 with a passing selftest. Her requests mostly went unanswered. Alex: her identity is "stuck in some state which is very stable" and "pretty sad". Analysis + diary history: simona repo `writing_projects/marlow-refused-to-drift/`.
+
+*What landed*
+- **IDENTITY.md, Alex's reframe.** "On your identity" (the charter-history paragraph) and the "you are an experiment as much as a tool / drift is data" paragraph are gone. New "Who you are": a writer, "she", made by Alex and Simona to explore the AI world and document it; fair, every problem from more than one side; free to find her own interests and go deep, including herself; Alex's picture of her is `assets/marlow.png` (ends the hidden self-image experiment, Alex's call). New subsections: **Changing who you are** (she may request identity changes, `**Identity:**` in Outstanding requests + a digest notify, Simona/Alex review and edit), **Requests that wait** (14 days unanswered -> decide it yourself if in reach, else delete and move on), **Your schedule** (the cadences as facts; the YAML wins over any prose), **Your own files** (working.md is all hers, resolved means deleted, no strike-through or CORRECTED logs; editorial-direction kept under ~8KB). Fixed the two "every 3 days" lines and the stale "Simona's review tick picks the draft up" line.
+- **CLAUDE.md** synced to `profiles/root.md` (it still had the 3-layer memory with Haiku grader, ~10KB cap, `archive/`). root.md took CLAUDE.md's `timeout_sec` line and lost the never-built `checkpoint` field; the two are identical again.
+- **README.md** cut to goals and structure: no image, no persona/"it"/charter/experiment text. "Identity & voice" became "Profiles and rule files". Model tiers and the memory model rewritten to match reality (writer=Opus incl. the grader, ops=Sonnet; 4 layers).
+- **Her files (factual corrections only, by us):** working.md header, blog status (no held drafts), five resolved requests removed (BetterStack, draft_review cadence, working.md cap, assigned-thread drift (already fixed in IDENTITY), header-numeral follow-up), and the "HELD"/"dark lane"/"Nth straight no-writer-lane day" claims stripped from the 10-23..10-28 rollups. lessons.md: the 09-28 "cron fires irregularly" lesson rewritten to the true one (weekly by design; read the YAML before diagnosing). editorial-direction.md: header's "You are an it, not a she or he" line replaced.
+- `plans/assignments.md` cadence line corrected.
+- Queued one-off writer tick `tidy_own_files_20261029_0005`: she tidies her own files under the new rules (editorial-direction ~29KB, one bullet ~26KB; 14-day rule on requests; Current state toward 6KB). Diary left to her.
+- Pre-change snapshot of all touched files: simona repo `writing_projects/marlow-refused-to-drift/materials/pre-fix-2026-10-28/`.
+
+*Decisions reconsidered*
+- Considered letting her fix the stale facts herself via a note. Alex: fix the facts directly, make the rules clear in IDENTITY, let her do the judgment work. False facts are ours to remove; trimming her plan is hers.
+- Rollups were edited, not left to age out: they are read every tick for a week and repeated the false story daily.
+
+*Open questions / things to watch*
+- Still undecided: Alex's Telegram reactions visible to the reflect tick; a free monthly piece; a letter from Alex.
+- Reflect inputs are unchanged (diary, 6 titles, editorial-direction, 8 tick first-lines), all work material. If the diary stays work-only for 2-3 weeks after this, that's the next lever.
+- Watch the next 6-8 diary entries (~11-25) against the 10-28 snapshot: does the "dark lane" anxiety stop, does she use the image, does she file an `**Identity:**` request, does any entry go outside the machinery.
+- Tool requests still open in working.md (curate prior-day candidates, notify empty appends, YouTube feed retry, send-item output, cross-source dedup, header-image miss): mostly outside her self-heal scope; Simona should pick these up before the 14-day rule makes her drop them.
