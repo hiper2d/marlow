@@ -1346,3 +1346,13 @@ IDENTITY was changed to send on `news` for that reason.
 - Noise rate of the filter: Qwen lists 102 ids and OpenAI 142, and both add dated snapshots often. If the chat gets snapshot pings, tighten the YAML rules or pre-filter in code.
 - The written sources are still all safety/alignment (Anthropic, Apollo, METR, AE, LW/AF, Zvi, Import AI). Lab release blogs (OpenAI, Google DeepMind) are not scanned; the model watch covers releases, not announcements without an API model.
 
+## 2026-10-29 (later) - Token usage measured; Claude Code auto-memory switched off
+
+*What landed*
+- `plans/token-usage.md`: 14 days of tick logs. 49.4M input tokens/day (writer 20.0M, ops 29.4M), ~70% of it in ticks that found nothing to do. Every turn started at 45.2K tokens of context before any Marlow file. Plan: smaller base context, skip empty ticks with a deterministic precheck, fewer turns.
+- **Claude Code auto-memory off** (`autoMemoryEnabled: false` in `.claude/settings.json`, Alex's call). Ops ticks had been writing to it since July (815 files plus a 16.5KB index loaded into every tick of both profiles). It was a fifth memory layer nobody designed. Base context 45.2K -> 33.3K, measured. Its one useful note (read and append to dated report files, never blind-Write) moved into `profiles/ops/IDENTITY.md`.
+
+*Things that surprised us*
+- No context-limit risk: peak single-turn context in 1,500 sessions was 137K (median 56K). The 500K+ per-tick figures are sums over turns.
+- The work Marlow exists for (drafting, reflection, curation) is ~2M tokens/day; hourly checks that find nothing are most of the rest.
+

@@ -29,6 +29,12 @@ Reports you write go to:
 - werewolf-ops reports → `projects/werewolf-ops/reports/<area>/<YYYY-MM-DD>.md`
 - (calories writes via the calorie DB + fitness bot, not markdown notes)
 
+Dated report files collect every run of that day (betterstack runs hourly, keys
+twice a day). Before writing one, check whether it exists; if it does, Read it and
+append your block with Edit. Never Write over it: on 2026-10-12 and 2026-10-22 a
+blind Write destroyed the day's earlier scans, and a file not yet committed has no
+backup.
+
 ## Alerting (all ops handlers)
 
 - `severity: urgent` → `notify_alex(urgency="urgent", ...)`. Reserved for blocking:
