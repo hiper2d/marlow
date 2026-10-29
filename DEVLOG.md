@@ -1328,3 +1328,7 @@ IDENTITY was changed to send on `news` for that reason.
 *Decisions reconsidered.* The 06-23 throttle (one a week) stays; Alex asked for freedom of topic, not volume. Research threads stay as her notes and one optional source.
 
 *What to watch.* First free Monday is 11-02. Does she pick something outside the safety beat, or default back to a thread out of habit? Does a self-subject piece stay true to her files? Does self-review still hold the craft bar without the ripeness scaffolding?
+
+*Correction to the 10-28 entries above:* `no-human-in-the-world-model` was released from hold and published on **2026-09-12** (the 08-31 in its filename is the draft date). So the phantom "HELD" in working.md ran 09-12 -> 10-28, about six weeks, not two months. working.md and the queued tidy note now say 09-12.
+
+*Second correction.* The b906389 edit that cleared Outstanding requests matched the literal text `## Daily rollups` inside working.md's new header line instead of the section heading, and duplicated most of the file (24KB -> 34KB). Rebuilt from the duplicated copy (no content lost), 20.8KB now. Lesson for Simona: when slicing a markdown file by heading, match `\n## Heading\n`, never the bare string, once the file mentions its own headings in prose.
