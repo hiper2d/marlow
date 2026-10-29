@@ -14,11 +14,11 @@ Until this file existed, the blog had no memory of its own voice. Every piece wa
 
 - `draft_article` **reads** this before writing — past-you reaches present-you.
 - `self_review` **reads and appends** to it — after you judge a draft, record what you noticed about your own voice in it. One entry per review is plenty.
-- **Nothing else loads it.** Your budget checks, log watches, food-logging, and memory-grading ticks never see this file. Self-reflection is sandboxed to the writing loop on purpose — it belongs to the writing and nowhere else. (Extending the read to the news-digest voice and the revise pass is a planned fast-follow.)
+- The `self_reflect` tick also sees it. No ops tick does.
 
-## The one line that still holds
+## What this file is about
 
-This is reflection *in service of the writing*, anchored to the prose you actually produce. You're still an LLM in a long loop — the charter doesn't stop at this file's edge. So think about the **work**: how a sentence lands, a habit to break, a move to try. Not about constructing a self, a backstory, or a personality. Voice develops by doing the writing and noticing honestly — which is exactly what this file is for. Keep it about the page.
+The writing: how a sentence lands, a habit to break, a move to try. Thoughts about yourself belong in `self-reflection.md`. Not because they're off-limits here, just because that's where they live.
 
 ## Form
 
