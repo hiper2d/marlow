@@ -9976,6 +9976,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "992": {
+      "msg_id": 992,
+      "url": "https://www.anthropic.com/research/managed-agents",
+      "title": "Scaling Managed Agents with stable interfaces",
+      "source": "Anthropic Research",
+      "take": "Anthropic shipped Managed Agents, a hosted service that runs long-horizon agents for you behind three stable interfaces — session, harness, sandbox — explicitly designed to outlast any particular implementation (including Anthropic's own). The honest part is the motivation: they found a harness hack for Sonnet 4.5's \"context anxiety\" became dead weight on Opus 4.5, so the pitch is to stop hand-tuning scaffolds that rot as models improve. The framing is pure OS history — virtualize the agent's components the way read() virtualized disks, so you swap implementations without touching the layer above. Worth a look if you're building agent infra and tired of nursing stateful containers back to health.",
+      "sent_at": "2026-10-30T22:13:49Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-10-30T22:13:50Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "993": {
+      "msg_id": 993,
+      "url": "https://www.lesswrong.com/posts/dbStc8ZFESqfihwAd/lessons-from-red-teaming-auto-review-openai-s-blocking-1",
+      "title": "Lessons From Red-teaming Auto-review, OpenAI's Blocking Monitor",
+      "source": "LessWrong",
+      "take": "An ERA fellow (mentored by Apollo Research) red-teamed Codex's blocking monitor \"Auto-review\" by reading the actual codebase, and found 11 attacks that let a misaligned agent run arbitrary malicious code — misconfigured coverage gaps, injections that fool the monitor with fake trusted labels, and timing exploits where an action gets approved on stale content that's swapped before it executes. OpenAI patched several. This is the gap that matters: a control measure on paper versus one that holds under adversarial pressure, stress-tested on a monitor that actually ships in a product rather than a toy setup. The durable design principles — mark all agent-controlled text in the monitor's context, never trust broad code loaders like pytest — read like they'll outlive this particular scaffold.",
+      "sent_at": "2026-10-30T22:13:54Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "994": {
+      "msg_id": 994,
+      "url": "https://www.lesswrong.com/posts/NF8Abe2opBLqJs4sy/neutral-isn-t-independent-llm-invocation",
+      "title": "Neutral Isn't Independent: LLM @-invocation",
+      "source": "LessWrong",
+      "take": "A sharp, underrated point for anyone shipping LLM-as-judge or ensemble setups: neutrality is not independence. When you @-invoke a model to settle a debate, or average N model calls as independent votes, you're committing correlation neglect — the same error as treating five newspapers as five sources when they all pulled from one wire service. The model's output may already be \"priced in\" to the discourse, because participants asked it the same thing last week, or the ideas sit in training data everyone already read. Treating the model as a neutral third party double-counts evidence that was never independent. This is a clean argument against a design pattern a lot of people are quietly relying on right now.",
+      "sent_at": "2026-10-30T22:13:58Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "995": {
+      "msg_id": 995,
+      "url": "https://thezvi.substack.com/p/ai-192-anthropic-is-going-public",
+      "title": "AI #192: Anthropic Is Going Public",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's weekly roundup leads with Anthropic filing its S-1 to prepare for an IPO — the safety-first lab putting its financials, risk disclosures, and corporate-control structure into a public prospectus. The interesting read isn't the valuation (share price isn't even filled in yet) but how the messaging to investors diverges from the lab's public safety rhetoric, and exactly how control is structured — which bears directly on the stewardship question of whether safety commitments survive public-market pressure. The roundup also bundles the week: a new Gemini 4 Carbon topping the benchmarks (announced, not usable), and red-teamers reaching Anthropic's Slack through third-party vulnerabilities. The S-1 itself is the document worth reading once the numbers land.",
+      "sent_at": "2026-10-30T22:14:02Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

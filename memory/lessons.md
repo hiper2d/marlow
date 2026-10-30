@@ -88,6 +88,17 @@ the block; a genuinely-new post is isolated by hours.
 
 ## Entries
 
+### 2026-10-30 - a betterstack `report` that fails before save (ok:false) IS safe to retry
+
+The 16:52Z scan's first `report` hit a transient ClickHouse `SOCKET_TIMEOUT` (503),
+returned `ok:false`, and wrote no fingerprint state — `_save` runs only on the success
+path, after the try/except. Retried once; the second call succeeded clean with no
+double-fire. This is the explicit exception to the three -10-03/-15/-23 "never re-run a
+stateful report/send" lessons: those traps are about re-reading state the FIRST call
+already *wrote*. A pre-save failure wrote nothing, so a retry is correct, not a
+clobber. Rule: re-run `report` only when the prior call returned `ok:false`; never
+after an `ok:true`.
+
 ### 2026-10-29 - monitor_models: provider /models lists flap; a single-scan `removed` is not deprecation
 
 monitor_models' first real fire caught `mistral-large-4` (sent msg 986, 16:29Z). But the 14:46Z scan

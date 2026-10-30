@@ -66,7 +66,8 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   (black-box-optimal oversight protocol). Watch whether one arc or splits deception-eval vs oversight-protocol.
 
 **Outstanding alerts for Alex:**
-- **Session re-auths owed: X only** (X half of crosspost fails `reauth`; Substack half posts clean).
+- **Session re-auths owed: X (crosspost) + MiniMax (scrape_stats, 2 consecutive runs -30, login wall).**
+  Substack half posts clean; Anthropic reauth recovered on its own -30.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh fingerprint —
   presence-model design gap, noisy by construction, not a bug.
 - **OpenAI billing is the app's volatile dependency.** A low/dry shared OpenAI org balance
@@ -84,8 +85,8 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch:** Sakana Fugu $8.43 + GLM $5.41 (-28, steady decline) standing digest-low
-  <$10 — top-up GLM soon. xAI $12.59, DeepSeek $21.38, Moonshot $12.36 ok; Anthropic cleared -25.
+- **Low-balance watch:** **GLM $2.89 (-30) CRITICAL (<$3), top-up overdue** + Sakana Fugu $8.43
+  standing digest-low <$10. xAI $12.59, DeepSeek $20.9, Moonshot $12.34 ok; Anthropic cleared -25.
   OpenAI console volatile (track via scrape_stats). Gemini/Mistral/MiniMax healthy.
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
@@ -95,6 +96,24 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 (None open. New requests: send them to Alex via `tools/alex_chat.py send` and list them here.)
 
 ## Daily rollups
+
+### 2026-10-30 — 37 ticks, **steady research+ops day; writer lane dark (by design); GLM hit critical.**
+Throughline: **GLM fell to $2.89, crossing the $3 critical threshold (urgent) — top-up overdue**;
+Murrieta browser cluster grew to 6 (+reqaccv5) plus a new bchase trio. No writer-lane work
+(weekly `draft_review` next Mon -02; no self_reflect/blog_pipeline/crosspost fired).
+
+- **Research (curate 22:12Z 9→4, msgs 992-995, Discord mirror = Managed Agents):** (1) **Scaling Managed
+  Agents** [Anthropic,+Discord → agent-infrastructure-security #2]. (2) Red-teaming Codex Auto-review
+  [LW/ERA/Apollo, 11 attacks defeat a shipping monitor → cot-monitorability #7 / control]. (3) Neutral
+  Isn't Independent [LW, LLM-judge correlation-neglect]. (4) AI #192 Anthropic S-1 [Zvi → stewardship].
+  Cut GSA, space lock-out, Newcomblike, NLAs, weak-models (diversity cap). Alignment Forum/METR/Apollo/
+  AE empty. monitor_models 7 clean checks, zero fires.
+- **Ops:** werewolf -29 full day **612 EOD / 176 live, 7 new / 10 games / $19.36**, reconciliations clean.
+  scrape 15:49 **GLM $2.89 CRITICAL + MiniMax reauth 2nd consecutive run** (both urgent); Anthropic
+  recovered on its own. keys green. Sakana $8.43 + Qwen quota -11-05 digest-low. betterstack all
+  needs-nothing (free_cap, jev-screen warn, parse_failures self-retried); 16:52Z first `report` hit
+  transient ClickHouse timeout→ok:false, retried clean (lesson added). health 8 recoverable +1 new.
+  uptime/discord/tampa green.
 
 ### 2026-10-29 — 56 ticks, **steady research day; writer lane dark (by design), big self-files cleanup.**
 Throughline: **a one-off `tidy_own_files` (00:43Z) compacted my own files under the new IDENTITY
@@ -118,31 +137,6 @@ timing, not a bug). And **monitor_models fired for the first real time.**
   GLM $4.57 (↓) + Sakana $8.43 standing-low; **Qwen quota expires -11-05 (7d)**. keys DeepSeek/Moonshot/xAI ok.
   health 8 recoverable 0 new. betterstack quiet all day (0 new incidents). cloudflare/uptime/discord/tampa green.
 
-### 2026-10-28 — 36 ticks, **heavy research intake.**
-Throughline: **a dense feed day (18 candidates, biggest Anthropic AI-for-science batch in a
-while) ** — no draft_review (weekly, next Mon 11-02), self_reflect, assignment or editorial due. The one live ops thread was the Murrieta
-shared-browser multi-account cluster hardening (2→5 accounts).
-
-- **Writing (none):** blog_pipeline `none` ×3, crosspost 0 ×4. Ripe backlog unchanged
-  (cyber #6, stewardship #3, cot #7, aird #5, eval/oversight threadless).
-- **Research (18 cand → curate 22:13Z 18→4, msgs 982-985, ONE Discord mirror):** (1) **Discovering
-  vulnerabilities with Claude** (Anthropic, +Discord — 5 attack chains incl. stock-Chrome→Calculator
-  RCE → **cyber-eval datapoint**) · (2) subtly-wrong-advice-misaligns-more (LW, 12 models, +10.6pts
-  EM, harder to catch in review → emergent-misalignment) · (3) what-is-long-horizon-work (LW,
-  step-count≠delayed-feedback → **aird #5 companion**) · (4) Anthropic Versus Anthropic (Zvi,
-  doctrine-vs-practice → doctrine[stale]). New frames: **Evolve-on-Graph** self-play (automated-ai-rd,
-  video/arXiv owed), Anthropic GSA federal deal. Cut Anthropic science cluster (PR-shape, no numbers) +
-  DeepSeek V4.1-Flash (clickbait source). AI Papers Academy YT 404 again (known intermittent flake).
-- **Ops:** werewolf -27 close **598 now (595 EOD, 5 new/7 games/$9.00+, $17.37 spend/8 users)**.
-  **Murrieta shared-browser cluster grew 2→5 accounts** (reqaccv1/v2/v3/v4/v6, same device 51b6060c +
-  IP), all hitting the shared $5/day cap — betterstack 14:10 (9 new, 1 urgent) + 21:08 (reqaccv4
-  free_cap, digest); caps worked, needs nothing, watch if device resurfaces. 00:13 unclassified
-  free-game night-action reject (double-submit, no crash). scrape 8/8, **GLM $5.41 (↓ from $7.50, now
-  below Sakana $8.43)** both standing-low. health 9 stable. keys DeepSeek $21.38/Moonshot $12.36/xAI
-  $12.59 ok. cloudflare/uptime/discord/tampa green.
-- **Self-audit (-29):** Current state 17KB (log), 13 Outstanding > 8, self-reflection standing 22KB
-  re-synth owed; the `failed_ticks` urgent = the known AI Papers Academy YT 404 flake, not broken.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-27 (87 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-28 (88 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
