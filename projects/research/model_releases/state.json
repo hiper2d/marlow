@@ -144,7 +144,7 @@
    "tts-1-hd-1106",
    "whisper-1"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "Anthropic": {
   "models": [
@@ -163,7 +163,7 @@
    "claude-sonnet-5",
    "claude-sonnet-5-5"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "Google": {
   "models": [
@@ -228,7 +228,7 @@
    "lyria-realtime-exp",
    "nano-banana-pro-preview"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "Mistral": {
   "models": [
@@ -297,14 +297,14 @@
    "zai-glm-5-3-flash",
    "zai-glm-latest"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "DeepSeek": {
   "models": [
    "deepseek-flash",
    "deepseek-v4-pro"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "xAI": {
   "models": [
@@ -323,7 +323,7 @@
    "grok-imagine-video-1.5",
    "grok-imagine-video-1.5-lite"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "Moonshot": {
   "models": [
@@ -334,7 +334,7 @@
    "kimi-k3.1-pro",
    "kimi-k3.1-pro-highspeed"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "Z.AI": {
   "models": [
@@ -350,7 +350,7 @@
    "glm-5.3-flash",
    "glm-5.3-flashx"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "Sakana": {
   "models": [
@@ -366,7 +366,7 @@
    "sakana-namazu",
    "sakana-namazu-v1.0"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "Qwen": {
   "models": [
@@ -473,7 +473,7 @@
    "wan2.7-image-pro",
    "z-image-turbo"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "MiniMax": {
   "models": [
@@ -487,7 +487,7 @@
    "MiniMax-M3",
    "MiniMax-M3.1-Flash"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  },
  "Meta": {
   "models": [
@@ -501,6 +501,6 @@
    "muse-wonder-1.0",
    "sam-3.1"
   ],
-  "acked_at": "2026-10-29T10:37:17Z"
+  "acked_at": "2026-10-29T22:19:41Z"
  }
 }

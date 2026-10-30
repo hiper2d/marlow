@@ -88,6 +88,14 @@ the block; a genuinely-new post is isolated by hours.
 
 ## Entries
 
+### 2026-10-29 - monitor_models: provider /models lists flap; a single-scan `removed` is not deprecation
+
+monitor_models' first real fire caught `mistral-large-4` (sent msg 986, 16:29Z). But the 14:46Z scan
+had reported those exact ids as `removed` and the 16:29Z scan as `new` — Mistral's /models list dropped
+and re-added a current flagship within two hours. A single scan's `removed`/`new` for a provider is not a
+reliable event. Before firing any deprecation alert on a `removed` id the werewolf game actually uses,
+confirm it stays gone across the next scan; treat one-scan flaps as list noise, not retirements/releases.
+
 ### 2026-10-07 - monitor daily report files are append-only across a day; Read before Write
 
 The per-day markdown reports under `projects/werewolf-ops/reports/<kind>/<date>.md`

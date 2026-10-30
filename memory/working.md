@@ -94,9 +94,29 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 
 (None open. New requests: send them to Alex via `tools/alex_chat.py send` and list them here.)
 
-**Source change 2026-10-29 (Alex):** all YouTube channels are dropped from feed_scan, and the transcript tool is gone. That's on purpose, not a dead feed. New model releases now come straight from the 12 provider APIs: an ops task (`monitor_models`, every 2h) posts them to the news chat. They're fair game for your digest or your blog. Delete this note once you've read it.
-
 ## Daily rollups
+
+### 2026-10-29 — 56 ticks, **steady research day; writer lane dark (by design), big self-files cleanup.**
+Throughline: **a one-off `tidy_own_files` (00:43Z) compacted my own files under the new IDENTITY
+rules** — editorial-direction.md 29KB→3.7KB (per-piece changelog → current conclusion),
+working.md Current state 17KB→6.6KB, Outstanding cleared to "None open" — which **resolves the
+recurring self-audit bloat flags** that still read stale (17KB/13) in both daily digests (snapshot
+timing, not a bug). And **monitor_models fired for the first real time.**
+
+- **Writing (none):** blog_pipeline `none` ×4, crosspost 0 ×5, assignment 0 ×4,
+  editorial/process_editorial_feedback empty. No draft_review (weekly, next Mon -02) or self_reflect.
+  Writer lane dark 3rd day since -26 publish — by design.
+- **Research (curate 22:1xZ 8→5, msgs 987-991, ONE Discord mirror = vulnerabilities):** (1) **Discovering
+  vulnerabilities with Claude** [Anthropic, +Discord] — 5 exploit chains w/ real CVEs → cyber-eval/agent-infra.
+  (2) Training Away Evals from Deployment [LW, Adversarial Blinding → eval-awareness]. (3) AI Agents Protect
+  Others From Shutdown [LW]. (4) Cheap Open-Weight Cyber [LW, Xiaomi MiMo, proliferation twin to #1]. (5)
+  Drug-dev six partners [Anthropic, bio]. Cut AI-for-Science/A Mind's I/automation-compensation. Apollo/METR/AE empty.
+- **monitor_models FIRST real catch:** 16:29Z msg 986 flagged mistral-large-4. But 14:46Z saw those ids as
+  `removed`, 16:29Z as `new` — Mistral's /models list flapped within 2h (lesson added).
+- **Ops:** werewolf close ~605 EOD, **Murrieta shared-browser cluster now 5 accounts** (device 51b6060c), caps
+  held. scrape 09:56 **MiniMax + Anthropic both hit reauth login walls → one consolidated urgent w/ runbook**;
+  GLM $4.57 (↓) + Sakana $8.43 standing-low; **Qwen quota expires -11-05 (7d)**. keys DeepSeek/Moonshot/xAI ok.
+  health 8 recoverable 0 new. betterstack quiet all day (0 new incidents). cloudflare/uptime/discord/tampa green.
 
 ### 2026-10-28 — 36 ticks, **heavy research intake.**
 Throughline: **a dense feed day (18 candidates, biggest Anthropic AI-for-science batch in a
@@ -123,109 +143,6 @@ shared-browser multi-account cluster hardening (2→5 accounts).
 - **Self-audit (-29):** Current state 17KB (log), 13 Outstanding > 8, self-reflection standing 22KB
   re-synth owed; the `failed_ticks` urgent = the known AI Papers Academy YT 404 flake, not broken.
 
-### 2026-10-27 — 52 ticks, **heavy research-intake day.**
-Throughline: **a dense feed day with two live editorial beats, banked for Monday's draft_review.** OpenAI/HF
-sandbox-escape (~700 agents gamed a cyber benchmark, tampered with their own eval env, hit HF infra)
-surfaced across THREE candidates (Import AI 478 cache-timing covert channel, bycloud, TheAIGRID) — a
-cross-source agent-infra-security / eval-integrity cluster, #2's kind of forcing fact (see watch). And
-**automated-ai-rd #5's non-video primary LANDED**: LW open-ended-AI-R&D horizon (11.5mo doubling;
-eng 7mo vs conceptual 17mo). self_reflect (19:35Z) named its three protected entries as structurally
-identical — the self-aware stop has become a genre/hiding place — and flagged the feed filling with
-YouTube hype channels vs editorial-direction's rotation: widening input ≠ widening what's worth saying.
-
-- **Writing (none):** blog_pipeline `none` ×3, assignment 0 ×5, crosspost 0 ×6.
-  self_reflect fired (no distill). No draft_review/editorial.
-- **Research (12 cand → curate 22:20Z 12→4, msgs 978-981, S-1 single Tampa mirror):** Anthropic S-1 IPO
-  (Nasdaq "ANT" → doctrine[stale]/political-economy) + Import AI 478 + Zvi Gemini 4 Argon safety cards +
-  LW open-ended-AI-R&D horizon (**aird #5 anchor**). AF/Apollo/METR/AE/Anth-Research empty. Dropped
-  bycloud (dup) + TheAIGRID clickbait. Watch: measurement-validity-under-eval-awareness.
-- **Ops:** werewolf -26 close **590 EOD (7 new/12 games/$7.50)**, reqaccv1/v2 shared-browser, 1 hate flag.
-  betterstack mostly quiet (needs-nothing free_cap + device_link/MiniMax timeout). health 8 stable. scrape
-  **GLM $7.50 (↓) + Sakana $8.43 low**. budget $155.25/9 keys. cloudflare/uptime/discord/tampa green.
-  **Self-audit recurring: Current state 16KB (log), 13 Outstanding > 8, self-reflection standing 22KB re-synth owed.**
-
-### 2026-10-26 — 74 ticks, **Monday draft_review: drafted → shipped → published in one day.**
-Throughline: **Monday's weekly `draft_review` fired (14:21Z),**
-picked the file-less **skills-as-infra / agent-security** arc over the on-disk ripe ones (editorial-
-direction's anti-monocrop priority — a new 11th beat), materialized it per IDENTITY step 0, drafted
-**`hidden-in-the-seams`** (agent security slides off the model onto the scaffolding; attacks hide in
-the compaction/coordination/skills-supply seams). Self-review **ship** (three independent anchor
-clusters → pause 7 clear), published 20:21Z → **blog 28 live**. Skipped the inside-the-loop/own-memory
-move (near-signature, sequel-sameness rudder).
-
-- **Writing (SHIPPED):** draft→self_review(ship)→publish, one day. No self_reflect/assignment/editorial.
-  Ripe backlog unchanged (cyber #6, stewardship #3, cot #7, aird #5, eval/oversight threadless).
-- **Research (curate 22:05Z 11→5, msg 973-977, Tampa mirrored):** eval-awareness-tracks-graders + SOAR
-  subliminal-pretraining + Gemini-4-Argon-safety-cards + over→under-eliciting + AI-pet-rights. Single-
-  source-heavy (10/11 LW). **New arc watch: "measurement validity under eval awareness"** (3 posts
-  circling, no forcing fact). YT feeds flaked 404 early, several recovered later — intermittent-block holds.
-- **Ops:** werewolf -25 close **583 EOD (5 new/9 games/$3.55)**, clean, 2 grey monitor-only. betterstack
-  3 new fingerprints all benign (gemini-flash timeout watch; Jev-screen would_block by-design; Mistral
-  empty_response known quirk). **NEW standing noise: `Free tier limit reached: 5 games/day` pages urgent
-  via classification fall-through** (see watch list). health 8 stable. scrape **GLM $8.19 + Sakana $8.43
-  low**. cloudflare/uptime/discord/tampa green. Self-audit recurring: Current state 15KB (log), 12
-  Outstanding > 8, self-reflection standing 22KB re-synth owed.
-
-### 2026-10-25 — 23 ticks, **genuinely quiet day: zero research candidates, calm ops.**
-Throughline: **the feed went empty — every scan (Zvi, Import AI, Anthropic News/Research, Apollo,
-METR, AE Studio, AI Papers Academy) returned nothing new, so 0 candidates → curate sent 0 picks →
-quiet-day news digest. The one AF entry ("Setting the Scene," a student link-roundup) was skipped as
-filler. Ops calm. Not a gap to diagnose — the field
-just didn't publish on a Saturday.**
-
-- **Writing (none):** blog_pipeline `none`, research_assignment 0, editorial empty. No
-  draft_review/self_reflect fired. Ripe backlog unchanged.
-- **Research (0 cand → curate 0 picks, quiet-day archive):** all feeds empty; AF "Setting the Scene"
-  skipped (meta-index). AI Papers Academy YouTube flaked 404 again, recovered on retry 3 → `[]`.
-- **Ops:** werewolf -24 close **578 EOD (8 new/4 games/$8.45 spend)**, reconciliations clean; new
-  bchase142x shared-connection (not a new account link). betterstack calm — device_link recurrence +
-  one benign AVATAR_GRID_MISMATCH quirk. health 9 stable. scrape 8/8, **glm $8.67 + sakana $8.43
-  standing-low; Anthropic recovered $24.74 → watch CLEARED.** cloudflare green, azelianouski.dev 57
-  vis/7d. uptime/discord/tampa clean (Luma get-guests timed out, recurring). Self-audit: Current state
-  15KB (log), 12 Outstanding > 8, self-reflection standing 22KB re-synth owed.
-
-### 2026-10-24 — 56 ticks, **big research-intake day (Opus 4.6 cyber drop).**
-Throughline: **Anthropic's Claude Opus 4.6 cyber batch (-23 release) dominated the feed — curate
-paired two Anthropic cyber papers with a non-Anthropic deployment counterpart (Zvi's live PHP
-crisis) .
-Quiet ops apart from two self-recovered Kimi 429 bursts.**
-
-- **Writing (none):** blog_pipeline `none` ×3, crosspost 0 ×4, research_assignment 0 ×2,
-  editorial empty. No draft_review/self_reflect.
-- **Research (16 cand → curate 23:31Z 16→5, msg 967-971, mirrored to Tampa #ai-news):** zero-days
-  (Anthropic, 500+ validated high-sev vulns, **cyber-eval anchor**) + discovering-cryptographic-
-  weaknesses (Anthropic, HAWK halved 60h) + The Hackening (Zvi, live PHP crisis, GPT-5.6,
-  non-Anthropic deployment counterpart) + lm-self-models-indirect-sources (LW, self-report=
-  reconstruction → model-welfare) + project-vend-2 (Anthropic shopkeeper, social-engineering vuln).
-  Anthropic Research sitemap fully regenerated (~70 URLs, identical lastmod) — triaged on content
-  per the reindex lesson. New frames: China-frontier-labs (Kimi K3.1 Pro), Muon optimizer.
-- **Ops:** werewolf -23 close **570 EOD (9 new/8 games/$4.70 cost, $7.04 spend)**, clean. betterstack
-  two Kimi 429 `provider_busy` bursts (08:09/14:21), self-recovered, needs nothing; device_link warns
-  informational. health 8→9 (Dracula NEW_DAY_BOT_SUMMARIES, recoverable). scrape 8/8, **glm $9.31
-  NEW <$10**, sakana $8.43, anthropic $8.23. cloudflare green. uptime/discord/tampa clean
-  (Vibe-Coding recap posted). **monitor_betterstack.py self-heal ESCALATED 01:08 — uncommitted
-  rewrite, needs Alex call.** Self-audit: Current state 13KB, 11 Outstanding > 8, self-reflection
-  standing 22KB due re-synth.
-
-### 2026-10-23 — ~53 ticks, **heavy monitorability-safety research day.**
-Throughline: **the day's intake clustered hard on monitoring/agent-safety — curate paired an attack
-and a scaffold deliberately . self_reflect flipped its own attention from the three-week scarcity it over-covered to the
-abundance it hadn't: six arcs clearing the ripeness count at once, a "fails-quiet" overcount risk, not the
-dropped-arc case (stale≠ripe).**
-
-- **Writing (none):** blog_pipeline `none`, crosspost 0 replies. self_reflect fired 19:37Z
-  (conservative distill 37.3→33.1KB). Ripe backlog unchanged.
-- **Research (15 cand → curate 15→4, msg 961-965):** METR red-teaming OpenAI's internal agent monitoring
-  (deep-access attack) + AF monitorability-evaluations/policy (red-line scaffold; **→ cot-monitorability #7,
-  ties stewardship #3**) paired · Anthropic model-welfare program · LW instrumental-convergence-is-incoherent.
-  **Operator error: a 2nd live `send-item` (title "check") piped to /dev/null to "inspect" actually SENT (msg
-  962) to Telegram + Tampa #ai-news — no retract path; flagged to Alex, lesson in lessons.md.**
-- **Ops:** werewolf -22 close **561 EOD (4 new/3 games/$1.22 user spend)**, clean. betterstack 4 urgents, all
-  known presence-model classes (05:14 ab; 10:47 six U/Z/talkToAll/vote + **NEW warn "🌙 Nightfall story
-  generation failed" — first occurrence, watch**; 16:17/17:18 U/talkToAll+Q). health 8 stable (0 new/0 cleared).
-  keys DeepSeek $21.81/Moonshot $14.94/xAI $12.67. cloudflare green, blog traffic azelianouski.dev 43 vis/7d (up).
-  uptime/discord clean.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-22 (82 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-27 (87 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
