@@ -79,7 +79,21 @@ Credentials (in the launchd plist, mirrored to os.environ by env_loader):
 Fails clean (ok: false) if the ClickHouse creds are unset — same failure
 contract as monitor_keys/health.
 
-CLI:
+── Two apps, one handler (2026-10-31) ───────────────────────────────────────
+Poker with AI (pokerwithai.net) is the second game on the same Betterstack
+account and the same Firebase project. `--app poker` runs the SAME scan against
+Poker's source: its own tables, its own state files (`betterstack_poker_*`), its
+own game snapshot (`poker_games`: two error lanes instead of one `errorState`),
+and Poker's field names mapped onto the common row shape (`action`→function,
+`actor`→botName, `user`→userEmail; plus `lane`, `failedAction`). The ClickHouse
+connection is account-wide, so the same credential reads both sources.
+Poker's tables are not known until its source exists in Betterstack: they come
+from BETTERSTACK_POKER_CH_TABLE / BETTERSTACK_POKER_CH_ALT_TABLE, else from
+`projects/werewolf-ops/config/betterstack_sources.json` ({"poker": {"table",
+"alt_table"}}). Until one of those is set, `--app poker` returns
+`ok: true, configured: false` and says so — not a failure, nothing to page.
+
+CLI (add `--app poker` before the subcommand for Poker; default werewolf):
     python handlers/monitor_betterstack.py report   → scan + persist, JSON
     python handlers/monitor_betterstack.py show      → last scan, human-readable
     python handlers/monitor_betterstack.py digest    → digest block for notify
@@ -125,17 +139,84 @@ INCIDENT_TTL_HOURS = 24  # a known incident is forgotten this long after its las
 SEEN_CAP = 500           # incident fingerprints retained (errors are rare → never hit)
 MESSAGES_PER_INCIDENT = 5
 
-# Structured fields read off each row. `message` first; the rest are what the game's
-# logger.error / logger.warn calls attach (see the Schema section).
-FIELDS = ("message", "error", "details", "gameId", "function", "botName", "model",
-          "gameState", "recoverable", "deviceId", "userEmail", "scope", "city", "ip")
+# Structured fields read off each row, as {column: json key in `raw`}. The columns are
+# the common row shape the rest of the handler reads; the keys are what each app's
+# logger attaches. `message` first; Werewolf's are in the Schema section, Poker's
+# come from lib/actions/game-action.ts (`log.with({action, gameId, user})`, the lane
+# failure warn carries {lane, message, details, failedAction, actor, model,
+# retryable}, the crash error carries {error, durationMs}).
+WEREWOLF_FIELDS = {f: f for f in ("message", "error", "details", "gameId", "function", "botName", "model",
+                                  "gameState", "recoverable", "deviceId", "userEmail", "scope", "city", "ip")}
+POKER_FIELDS = {"message": "message", "error": "error", "details": "details", "gameId": "gameId",
+                "function": "action", "botName": "actor", "model": "model", "gameState": "lane",
+                "recoverable": "retryable", "deviceId": "deviceId", "userEmail": "user",
+                "scope": "scope", "city": "city", "ip": "ip", "failedAction": "failedAction"}
 FIELD_CAP = {"message": 300, "error": 300, "details": 700}
 
+CONFIG_SOURCES = STATE_DIR.parent / "config" / "betterstack_sources.json"
+
+
+def _poker_tables() -> tuple[str, str]:
+    """Poker's (table, alt_table): env first, then the config file, else ('', '')."""
+    t = os.environ.get("BETTERSTACK_POKER_CH_TABLE", "")
+    a = os.environ.get("BETTERSTACK_POKER_CH_ALT_TABLE", "")
+    if t:
+        return (t, a)
+    try:
+        with CONFIG_SOURCES.open() as f:
+            cfg = (json.load(f) or {}).get("poker") or {}
+        return (cfg.get("table") or "", cfg.get("alt_table") or "")
+    except (OSError, json.JSONDecodeError, AttributeError):
+        return ("", "")
+
+
+APPS = {
+    "werewolf": {
+        "label": "Werewolf app logs",
+        "tables": (TABLE, ALT_TABLE),
+        "fields": WEREWOLF_FIELDS,
+        "games": "games", "messages": "messages",
+        "state": "betterstack",
+        "repo": "~/projects/werewolf-ai-party-game/werewolf-client",
+    },
+    "poker": {
+        "label": "Poker app logs",
+        "tables": _poker_tables(),
+        "fields": POKER_FIELDS,
+        "games": "poker_games", "messages": "messages",
+        "state": "betterstack_poker",
+        "repo": "~/projects/poker-with-ai",
+    },
+}
+
+# Selected app — module globals so the query/snapshot/render code stays flat.
+# `configure()` swaps them; the defaults are Werewolf so imports behave as before.
+APP = "werewolf"
+LABEL = APPS["werewolf"]["label"]
+FIELDS: tuple[str, ...] = tuple(WEREWOLF_FIELDS)
+FIELD_SRC: dict[str, str] = WEREWOLF_FIELDS
 BS_LATEST = STATE_DIR / "betterstack_latest.json"
 BS_HISTORY = STATE_DIR / "betterstack_history.jsonl"
-
 GAMES = "games"
 MESSAGES = "messages"
+
+
+def configure(app: str) -> None:
+    """Point the module at one app's source, state and collections."""
+    global APP, LABEL, TABLE, ALT_TABLE, FIELDS, FIELD_SRC, BS_LATEST, BS_HISTORY, GAMES, MESSAGES
+    cfg = APPS[app]
+    APP = app
+    LABEL = cfg["label"]
+    TABLE, ALT_TABLE = cfg["tables"]
+    FIELD_SRC = cfg["fields"]
+    FIELDS = tuple(FIELD_SRC)
+    BS_LATEST = STATE_DIR / f"{cfg['state']}_latest.json"
+    BS_HISTORY = STATE_DIR / f"{cfg['state']}_history.jsonl"
+    GAMES, MESSAGES = cfg["games"], cfg["messages"]
+
+
+def configured() -> bool:
+    return bool(TABLE)
 
 
 # ─── Failure classes ─────────────────────────────────────────────────────────
@@ -231,7 +312,7 @@ def _rows_sql(window: str) -> str:
     cols = ["dt", "JSONExtractString(raw,'level') AS lvl", "JSONExtractString(raw,'env') AS env"]
     for f in FIELDS:
         cap = FIELD_CAP.get(f)
-        expr = f"JSONExtractString(raw,'{f}')"
+        expr = f"JSONExtractString(raw,'{FIELD_SRC[f]}')"
         cols.append(f"substring({expr},1,{cap}) AS {f}" if cap else f"{expr} AS {f}")
     return (
         "SELECT " + ", ".join(cols) + " "
@@ -417,9 +498,83 @@ def _db():
         return None
 
 
+def _last_message(db, game_id: str, out: dict, now: datetime) -> None:
+    """Attach the newest message of the game's `messages` subcollection (both apps
+    keep {timestamp, authorName, messageType}; Werewolf adds `day`, Poker `handNumber`)."""
+    try:
+        last = list(db.collection(GAMES).document(game_id).collection(MESSAGES)
+                    .order_by("timestamp", direction="DESCENDING").limit(1).stream())
+        if last:
+            m = last[0].to_dict() or {}
+            out["last_message"] = {
+                "at": _ms_iso(m.get("timestamp")),
+                "author": m.get("authorName"),
+                "type": m.get("messageType"),
+                "day": m.get("day") if "day" in m else m.get("handNumber"),
+            }
+            iso = out["last_message"]["at"]
+            if iso:
+                dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+                out["minutes_since_last_message"] = int((now - dt).total_seconds() // 60)
+    except Exception as e:  # noqa: BLE001
+        out["last_message"] = {"error": str(e)[:120]}
+
+
+def poker_snapshot(db, game_id: str, now: datetime | None = None) -> dict:
+    """Poker's game doc: `status` + `handNumber` instead of gameState/day, seats
+    carry liveness (bots don't), and TWO error lanes. The first set lane is
+    reported as `errorState` so the renders read the same; both are in `lanes`."""
+    now = now or _now_utc()
+    try:
+        snap = db.collection(GAMES).document(game_id).get()
+        if not snap.exists:
+            return {"exists": False}
+        g = snap.to_dict() or {}
+        bots = g.get("bots") or []
+        seats = g.get("seats") or []
+        alive = {s.get("name") for s in seats if s.get("status") == "active" and not s.get("isHuman")}
+        out = {
+            "exists": True,
+            "theme": g.get("theme") or "(untitled)",
+            "owner": g.get("createdBy"),
+            "tier": g.get("createdWithTier"),
+            "state": g.get("status"),
+            "day": g.get("handNumber"),          # "day" slot = hand number for Poker
+            "gameMaster": g.get("gameMasterAiType"),
+            "createdAt": _ms_iso(g.get("createdAt")),
+            "bots_alive": len([b for b in bots if b.get("name") in alive]) if seats else len(bots),
+            "bots_total": len(bots),
+            "models": sorted({(b.get("aiType") or "?") for b in bots}),
+            "errorState": None,
+            "lanes": {},
+            "last_message": None,
+        }
+        for lane, field in (("game", "gameError"), ("chat", "chatError")):
+            err = g.get(field) or None
+            if not err:
+                continue
+            first = (err.get("details") or "").splitlines()
+            rec = {
+                "recoverable": bool(err.get("retryable", True)),
+                "function": f"{lane} lane / {err.get('failedAction') or '?'}",
+                "actor": err.get("actor"), "model": err.get("model"),
+                "at": _ms_iso(err.get("timestamp")),
+                "summary": (first[0].strip() if first else err.get("message") or "")[:160],
+            }
+            out["lanes"][lane] = rec
+            if out["errorState"] is None:
+                out["errorState"] = rec
+        _last_message(db, game_id, out, now)
+        return out
+    except Exception as e:  # noqa: BLE001
+        return {"error": str(e)[:160]}
+
+
 def game_snapshot(db, game_id: str, now: datetime | None = None) -> dict:
     """What the player sees: state, day, error state, who is at the table, when
     the game last moved. Fail-soft - returns {"error": ...} rather than raising."""
+    if APP == "poker":
+        return poker_snapshot(db, game_id, now)
     now = now or _now_utc()
     try:
         snap = db.collection(GAMES).document(game_id).get()
@@ -452,23 +607,7 @@ def game_snapshot(db, game_id: str, now: datetime | None = None) -> dict:
                 "at": ctx.get("timestamp"),
                 "summary": (first[0].strip() if first else "")[:160],
             }
-        try:
-            last = list(db.collection(GAMES).document(game_id).collection(MESSAGES)
-                        .order_by("timestamp", direction="DESCENDING").limit(1).stream())
-            if last:
-                m = last[0].to_dict() or {}
-                out["last_message"] = {
-                    "at": _ms_iso(m.get("timestamp")),
-                    "author": m.get("authorName"),
-                    "type": m.get("messageType"),
-                    "day": m.get("day"),
-                }
-                iso = out["last_message"]["at"]
-                if iso:
-                    dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
-                    out["minutes_since_last_message"] = int((now - dt).total_seconds() // 60)
-        except Exception as e:  # noqa: BLE001
-            out["last_message"] = {"error": str(e)[:120]}
+        _last_message(db, game_id, out, now)
         return out
     except Exception as e:  # noqa: BLE001
         return {"error": str(e)[:160]}
@@ -626,8 +765,19 @@ def _save(report: dict) -> None:
         pass
 
 
+def _unconfigured(now: datetime) -> dict:
+    """`--app poker` before its source exists: a quiet, non-failing report."""
+    return {"ok": True, "configured": False, "app": APP, "checked_at": _checked_at(now),
+            "incidents": [], "new_incidents": [], "issues": [], "any_urgent": False,
+            "error": f"{LABEL}: no Betterstack source configured yet — set "
+                     f"BETTERSTACK_POKER_CH_TABLE (or config/betterstack_sources.json) once the "
+                     f"source exists; nothing to scan until then"}
+
+
 def report() -> dict:
     now = _now_utc()
+    if not configured():
+        return _unconfigured(now)
     creds = _creds()
     if not creds:
         return {"ok": False, "checked_at": _checked_at(now),
@@ -651,6 +801,7 @@ def report() -> dict:
     counts = {lvl: sum(1 for r in rows if r["level"] == lvl) for lvl in ALERT_LEVELS}
     result = {
         "ok": True,
+        "app": APP,
         "checked_at": _checked_at(now),
         "window_min": WINDOW_MIN,
         "envs": list(ENVS),
@@ -723,9 +874,11 @@ def _snapshot_lines(game: dict) -> list[str]:
 def render(report: dict) -> str:
     if not report.get("ok"):
         return f"monitor_betterstack failed: {report.get('error', 'unknown')}"
+    if report.get("configured") is False:
+        return f"{LABEL} — {report.get('checked_at')}\n  {report.get('error')}"
     c = report.get("counts", {})
     envs = "/".join(report.get("envs") or ["?"])
-    out = [f"Werewolf app logs (Betterstack) — {report['checked_at']}",
+    out = [f"{LABEL} (Betterstack) — {report['checked_at']}",
            f"  window: last {report.get('window_min')}m   env: {envs}   "
            f"error={c.get('error', 0)} warn={c.get('warn', 0)}", ""]
     incidents = report.get("incidents", [])
@@ -759,12 +912,12 @@ def render_digest(report: dict) -> str | None:
     """Digest block — only when there's something new. Returns None on a quiet
     scan so it adds no line to the daily digest."""
     if not report.get("ok"):
-        return f"Werewolf app logs: scan failed ({report.get('error', 'unknown')})."
+        return f"{LABEL}: scan failed ({report.get('error', 'unknown')})."
     issues = report.get("issues", [])
     if not issues:
         return None
     date = (report.get("checked_at") or "")[:10]
-    head = f"Werewolf app logs — {date}: {len(issues)} new" \
+    head = f"{LABEL} — {date}: {len(issues)} new" \
            + (" (urgent)" if report.get("any_urgent") else "")
     lines = [head] + [f"  · {i['detail']}" for i in issues]
     return "\n".join(lines)
@@ -773,6 +926,8 @@ def render_digest(report: dict) -> str | None:
 def replay(since: datetime, until: datetime) -> dict:
     """The incidents a scan over [since, until) WOULD alert on, as if nothing were
     seen before, with game snapshots. Reads and writes no state."""
+    if not configured():
+        return {**_unconfigured(until), "ok": False}
     creds = _creds()
     if not creds:
         return {"ok": False, "error": "BETTERSTACK_CH_HOST/USER/PASS not set"}
@@ -892,6 +1047,44 @@ def selftest() -> None:
     w = _window_clause(datetime(2026, 9, 22, 18, tzinfo=timezone.utc),
                        datetime(2026, 9, 23, 2, tzinfo=timezone.utc))
     assert "2026-09-22 18:00:00" in w and "2026-09-23 02:00:00" in w, w
+
+    # ── Poker: same pipeline, its own source/state/fields ──
+    configure("poker")
+    assert BS_LATEST.name == "betterstack_poker_latest.json" and GAMES == "poker_games"
+    saved = (TABLE, ALT_TABLE)
+    globals()["TABLE"], globals()["ALT_TABLE"] = "remote(t1_poker_logs)", ""
+    sql = _rows_sql(_window_clause())
+    assert "JSONExtractString(raw,'action') AS function" in sql, sql      # Poker's names → common columns
+    assert "JSONExtractString(raw,'actor') AS botName" in sql and "AS failedAction" in sql, sql
+    assert "remote(t1_poker_logs)" in sql and "UNION" not in sql, sql    # single tier when no alt
+    # Poker's lane-failure warn + the crash error of one server action fold into one incident.
+    # (Rows arrive under the COMMON column names — the SQL above already aliased
+    # action→function, actor→botName, user→userEmail, lane→gameState.)
+    body = "\n".join([
+        line("2026-10-31 12:00:01", "error", "production", message="action failed", gameId="p1",
+             function="advanceGame", userEmail="ab@x", error="AiCallError: Claude did not respond within 60s"),
+        line("2026-10-31 12:00:00", "warn", "production", message="lane stopped — awaiting player retry",
+             gameId="p1", function="advanceGame", userEmail="ab@x", gameState="game", failedAction="DECISION",
+             botName="Paul", model="claude", details="AiCallError: Claude did not respond within 60s"),
+        line("2026-10-31 11:00:00", "error", "development", message="action failed", gameId="dev"),
+    ])
+    prow = _parse_rows(body)
+    assert len(prow) == 2 and prow[0]["function"] == "advanceGame" and prow[0]["userEmail"] == "ab@x", prow
+    assert prow[1]["botName"] == "Paul" and prow[1]["gameState"] == "game" and prow[1]["failedAction"] == "DECISION", prow[1]
+    pinc = fold_incidents(prow)
+    assert len(pinc) == 1 and pinc[0]["class"] == "timeout" and pinc[0]["level"] == "error", pinc
+    assert pinc[0]["actors"] == ["claude/Paul"] and pinc[0]["gameStates"] == ["game"], pinc[0]
+    pinc[0]["game"] = {"exists": True, "theme": "Dune", "owner": "ab@x"}
+    assert incident_line(pinc[0]).startswith("[error/production] · timeout · Dune (ab@x) · claude/Paul · in advanceGame"), incident_line(pinc[0])
+    # Unconfigured Poker: a quiet ok report, no digest line, render says why.
+    globals()["TABLE"], globals()["ALT_TABLE"] = "", ""
+    assert not configured()
+    u = _unconfigured(now)
+    assert u["ok"] and u["configured"] is False and render_digest(u) is None and "no Betterstack source" in render(u)
+    assert replay(now, now)["ok"] is False
+    globals()["TABLE"], globals()["ALT_TABLE"] = saved
+    configure("werewolf")
+    assert GAMES == "games" and "AS function" in _rows_sql(_window_clause()) and FIELD_SRC["function"] == "function"
     print("selftest ok")
 
 
@@ -905,6 +1098,8 @@ def _parse_utc(s: str) -> datetime:
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--app", choices=sorted(APPS), default="werewolf",
+                    help="which game's source to scan (default werewolf)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("report", help="Scan Betterstack for new incidents + persist (JSON)")
     sub.add_parser("show", help="Render the last persisted scan, human-readable")
@@ -915,6 +1110,7 @@ def main():
     p_replay.add_argument("--text", action="store_true", help="render like `show` instead of JSON")
     sub.add_parser("selftest", help="Offline asserts (no network)")
     args = ap.parse_args()
+    configure(args.app)
     if args.cmd == "selftest":
         selftest()
         return

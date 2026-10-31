@@ -94,9 +94,17 @@ Task: [`tasks/monitor_poker.yaml`](tasks/monitor_poker.yaml) — every 6h, offse
 3h from monitor_health. Because Poker sees a few tables a MONTH (2026-10-31: 14
 live games, 16 users, nobody has played twice), the scan also puts every new
 table and signup since the last scan into the digest — the only place Alex sees
-a stranger trying it. State in `state/poker_latest.json` (+ history). Betterstack
-is not part of it: Poker's production deploy has no log source token, so the app
-ships no logs; when it does, extend monitor_betterstack, not this.
+a stranger trying it. State in `state/poker_latest.json` (+ history).
+
+App-level logs: `monitor_betterstack.py --app poker` runs the Werewolf
+Betterstack scan against Poker's own source — same incident folding and
+classes, Poker's field names mapped onto the common shape, a Poker-shaped game
+snapshot (two error lanes), its own state (`state/betterstack_poker_*`). Task:
+[`tasks/monitor_betterstack_poker.yaml`](tasks/monitor_betterstack_poker.yaml),
+every 3h offset 90 min from the Werewolf scan. Poker's tables live in
+[`config/betterstack_sources.json`](config/betterstack_sources.json) and are
+EMPTY until the source exists (Poker's Vercel deploy had no log token as of
+2026-10-31); while empty the scan is a quiet `configured: false` no-op.
 
 ### App-level error watch — LIVE (Betterstack logs, since 2026-06-03)
 

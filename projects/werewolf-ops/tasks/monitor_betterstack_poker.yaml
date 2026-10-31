@@ -1,0 +1,60 @@
+# monitor_betterstack_poker — app-level error watch for Poker with AI (Betterstack),
+# the Poker twin of monitor_betterstack. Same handler, `--app poker`.
+#
+# Poker (pokerwithai.net) is the second game on the same Betterstack account and
+# the same Firebase project. The handler scans Poker's OWN log source with the
+# same incident logic (fold lines per game + failure class, snapshot the game
+# from `poker_games`, dedup by fingerprint, 24h TTL) and keeps its own state
+# (`state/betterstack_poker_*`). Poker's field names are mapped onto the common
+# shape: `action`→function, `actor`→botName, `user`→userEmail, `lane`→gameState
+# ("game" or "chat"), plus `failedAction`.
+#
+# UNTIL THE SOURCE EXISTS the report comes back `ok: true, configured: false`
+# with an `error` text saying so. That is the expected state right after
+# 2026-10-31: Poker's Vercel deployment had no LOGTAIL_SOURCE_TOKEN, so the app
+# shipped no logs at all. Alex creates the source (Betterstack → Telemetry →
+# Sources → Connect source, platform JavaScript/Node.js), sets the token in
+# Vercel, and the table name goes into
+# projects/werewolf-ops/config/betterstack_sources.json (or the
+# BETTERSTACK_POKER_CH_TABLE env). Nothing to page about while unconfigured —
+# do not file it as a framework bug, and write no report file.
+#
+# Cadence: every 3h like the Werewolf scan, offset by 90 minutes so the two
+# ClickHouse queries never run in the same tick.
+#
+# In-tick flow — identical to monitor_betterstack.yaml with these substitutions,
+# read THAT file for the full flow and the PLAYBOOK of failure classes:
+#   - every command takes `--app poker` BEFORE the subcommand:
+#       uv run python handlers/monitor_betterstack.py --app poker report
+#       uv run python handlers/monitor_betterstack.py --app poker digest
+#       uv run python handlers/monitor_betterstack.py --app poker replay --since … --until … --text
+#   - `configured: false` → write the tick result "poker source not configured
+#     yet" and exit. No notify, no report file, no framework_fix.
+#   - the game snapshot has Poker's shape: `state` is the poker status
+#     (WELCOME/HAND_SETUP/BETTING/SHOWDOWN/HAND_RESULTS/COMPACTION/GAME_OVER),
+#     `day` is the HAND number, `errorState` is the first set lane error and
+#     `lanes` has both (`game` = the hand is frozen until the player retries,
+#     `chat` = table talk stopped, the hand plays on). `recoverable: false` here
+#     means the banner offers no Retry (a routing failure left nothing queued) —
+#     the player recovers by nudging the table, so it is less severe, not more.
+#   - code reading for an `unclassified` incident happens in the POKER repo:
+#       grep -rn "<action name>" ~/projects/poker-with-ai/app/actions ~/projects/poker-with-ai/lib
+#     Read only. Never edit that repo.
+#   - the Telegram and the report say "Poker app logs", never "Werewolf": the
+#     digest is shared and the two games must not be confused. Reports go to
+#     projects/werewolf-ops/reports/poker-betterstack/<YYYY-MM-DD>.md.
+#   - models at a Poker table are the same catalog ids as Werewolf's, but the
+#     app is pinned to an OLD library release (ai-agents 0.4.2 as of 2026-10-31),
+#     so a retired model id failing is a KNOWN state until Alex updates the app —
+#     say so instead of calling it a provider outage.
+name: monitor_betterstack_poker
+project: werewolf-ops
+profile: ops
+description: App-level error watch for Poker with AI every 3h — the Werewolf Betterstack scan run against Poker's own log source (`--app poker`), with Poker's game snapshot and the same analysis pass. Quiet no-op while Poker has no Betterstack source configured.
+schedule: "30 1,4,7,10,13,16,19,22 * * *"
+priority: normal
+must_run_within_hours: 4
+subtasks:
+  - id: scan_poker_app_logs
+    handler: monitor_betterstack
+    context: {app: poker, timeout_sec: 900}
