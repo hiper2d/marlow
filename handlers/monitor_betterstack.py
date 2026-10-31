@@ -273,12 +273,21 @@ def _creds() -> dict | None:
     connection — BETTERSTACK_POKER_CH_HOST/USER/PASS. Falls back to the shared
     one when the app-specific set is absent."""
     prefix = APPS[APP].get("creds_prefix") or "BETTERSTACK_CH_"
-    host = os.environ.get(f"{prefix}HOST") or os.environ.get("BETTERSTACK_CH_HOST")
-    user = os.environ.get(f"{prefix}USER") or os.environ.get("BETTERSTACK_CH_USER")
-    pw = os.environ.get(f"{prefix}PASS") or os.environ.get("BETTERSTACK_CH_PASS")
+    host = os.environ.get(f"{prefix}HOST")
+    user = os.environ.get(f"{prefix}USER")
+    pw = os.environ.get(f"{prefix}PASS")
     if not (host and user and pw):
         return None
     return {"host": host, "user": user, "pw": pw}
+
+
+def _creds_pending() -> bool:
+    """An app with its own connection whose creds are not in the plist yet.
+    Treated as NOT CONFIGURED (quiet), never as a failure: the shared connection
+    is on another cluster, so falling back to it can only produce
+    CLUSTER_DOESNT_EXIST and page Alex every scan for a known setup gap
+    (2026-10-31, the first evening of the poker watch)."""
+    return bool(APPS[APP].get("creds_prefix")) and _creds() is None
 
 
 def _query(creds: dict, sql: str) -> str:
@@ -777,17 +786,24 @@ def _save(report: dict) -> None:
 
 
 def _unconfigured(now: datetime) -> dict:
-    """`--app poker` before its source exists: a quiet, non-failing report."""
+    """`--app poker` before its source or its own connection exists: a quiet,
+    non-failing report. The `error` text says which half is missing."""
+    prefix = APPS[APP].get("creds_prefix") or "BETTERSTACK_CH_"
+    if not configured():
+        why = (f"no Betterstack source configured yet — set BETTERSTACK_POKER_CH_TABLE "
+               f"(or config/betterstack_sources.json) once the source exists")
+    else:
+        why = (f"source table set but {prefix}HOST/USER/PASS are not in the plist — this app's "
+               f"source is on another cluster than the shared connection, so there is nothing to "
+               f"query with until that SQL API connection exists and its creds are installed")
     return {"ok": True, "configured": False, "app": APP, "checked_at": _checked_at(now),
             "incidents": [], "new_incidents": [], "issues": [], "any_urgent": False,
-            "error": f"{LABEL}: no Betterstack source configured yet — set "
-                     f"BETTERSTACK_POKER_CH_TABLE (or config/betterstack_sources.json) once the "
-                     f"source exists; nothing to scan until then"}
+            "error": f"{LABEL}: {why}; nothing to scan until then (not a failure — no report, no ping)"}
 
 
 def report() -> dict:
     now = _now_utc()
-    if not configured():
+    if not configured() or _creds_pending():
         return _unconfigured(now)
     creds = _creds()
     if not creds:
@@ -937,7 +953,7 @@ def render_digest(report: dict) -> str | None:
 def replay(since: datetime, until: datetime) -> dict:
     """The incidents a scan over [since, until) WOULD alert on, as if nothing were
     seen before, with game snapshots. Reads and writes no state."""
-    if not configured():
+    if not configured() or _creds_pending():
         return {**_unconfigured(until), "ok": False}
     creds = _creds()
     if not creds:
@@ -1091,8 +1107,22 @@ def selftest() -> None:
     globals()["TABLE"], globals()["ALT_TABLE"] = "", ""
     assert not configured()
     u = _unconfigured(now)
-    assert u["ok"] and u["configured"] is False and render_digest(u) is None and "no Betterstack source" in render(u)
+    assert u["ok"] and u["configured"] is False and render_digest(u) is None and "no Benchmark" not in render(u)
+    assert "no Betterstack source" in render(u), render(u)
     assert replay(now, now)["ok"] is False
+    # Tables set but Poker's own connection creds missing: STILL quiet — never fall
+    # back to the shared (other-cluster) connection and page on CLUSTER_DOESNT_EXIST.
+    globals()["TABLE"] = "remote(t1_poker_logs)"
+    for k in ("BETTERSTACK_POKER_CH_HOST", "BETTERSTACK_POKER_CH_USER", "BETTERSTACK_POKER_CH_PASS"):
+        os.environ.pop(k, None)
+    assert configured() and _creds() is None and _creds_pending()
+    u = _unconfigured(now)
+    assert u["ok"] and u["configured"] is False and "not in the plist" in u["error"], u
+    assert report()["configured"] is False          # the real entry point takes the quiet path too
+    os.environ.update(BETTERSTACK_POKER_CH_HOST="https://us", BETTERSTACK_POKER_CH_USER="u", BETTERSTACK_POKER_CH_PASS="p")
+    assert _creds() == {"host": "https://us", "user": "u", "pw": "p"} and not _creds_pending()
+    for k in ("BETTERSTACK_POKER_CH_HOST", "BETTERSTACK_POKER_CH_USER", "BETTERSTACK_POKER_CH_PASS"):
+        os.environ.pop(k, None)
     globals()["TABLE"], globals()["ALT_TABLE"] = saved
     configure("werewolf")
     assert GAMES == "games" and "AS function" in _rows_sql(_window_clause()) and FIELD_SRC["function"] == "function"

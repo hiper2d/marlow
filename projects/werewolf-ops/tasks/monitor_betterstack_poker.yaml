@@ -29,7 +29,11 @@
 #       uv run python handlers/monitor_betterstack.py --app poker digest
 #       uv run python handlers/monitor_betterstack.py --app poker replay --since … --until … --text
 #   - `configured: false` → write the tick result "poker source not configured
-#     yet" and exit. No notify, no report file, no framework_fix.
+#     yet" (the handler's `error` text says whether the TABLE or the CREDS are
+#     missing — Poker's source is on the us-west-2a cluster and needs its own
+#     SQL API connection, BETTERSTACK_POKER_CH_HOST/USER/PASS in the plist) and
+#     exit. No notify, no report file, no framework_fix. Alex knows; a digest
+#     or urgent line about it every 3h is noise, not news.
 #   - the game snapshot has Poker's shape: `state` is the poker status
 #     (WELCOME/HAND_SETUP/BETTING/SHOWDOWN/HAND_RESULTS/COMPACTION/GAME_OVER),
 #     `day` is the HAND number, `errorState` is the first set lane error and
