@@ -87,11 +87,14 @@ own game snapshot (`poker_games`: two error lanes instead of one `errorState`),
 and Poker's field names mapped onto the common row shape (`action`→function,
 `actor`→botName, `user`→userEmail; plus `lane`, `failedAction`). The ClickHouse
 connection is account-wide, so the same credential reads both sources.
-Poker's tables are not known until its source exists in Betterstack: they come
-from BETTERSTACK_POKER_CH_TABLE / BETTERSTACK_POKER_CH_ALT_TABLE, else from
-`projects/werewolf-ops/config/betterstack_sources.json` ({"poker": {"table",
-"alt_table"}}). Until one of those is set, `--app poker` returns
+Poker's tables come from BETTERSTACK_POKER_CH_TABLE / BETTERSTACK_POKER_CH_ALT_TABLE,
+else from `projects/werewolf-ops/config/betterstack_sources.json` ({"poker":
+{"table", "alt_table"}}). Until one of those is set, `--app poker` returns
 `ok: true, configured: false` and says so — not a failure, nothing to page.
+Poker's source lives on the us-west-2a cluster (Free plan: no region choice),
+Werewolf's on eu-fsn-3, and a SQL API connection sees one cluster only, so Poker
+queries go through its own connection: BETTERSTACK_POKER_CH_HOST/USER/PASS in
+the plist (falls back to the shared BETTERSTACK_CH_* when unset).
 
 CLI (add `--app poker` before the subcommand for Poker; default werewolf):
     python handlers/monitor_betterstack.py report   → scan + persist, JSON
@@ -186,6 +189,7 @@ APPS = {
         "games": "poker_games", "messages": "messages",
         "state": "betterstack_poker",
         "repo": "~/projects/poker-with-ai",
+        "creds_prefix": "BETTERSTACK_POKER_CH_",   # its own SQL API connection (US cluster)
     },
 }
 
@@ -262,9 +266,16 @@ def _checked_at(now: datetime) -> str:
 
 
 def _creds() -> dict | None:
-    host = os.environ.get("BETTERSTACK_CH_HOST")
-    user = os.environ.get("BETTERSTACK_CH_USER")
-    pw = os.environ.get("BETTERSTACK_CH_PASS")
+    """The ClickHouse connection for the selected app. A SQL API connection lives
+    on ONE cluster and a source's data region picks its cluster: Werewolf is on
+    eu-fsn-3 (BETTERSTACK_CH_*), Poker on us-west-2a (data regions are a paid
+    feature, every new Free-plan source lands in the US), so Poker needs its own
+    connection — BETTERSTACK_POKER_CH_HOST/USER/PASS. Falls back to the shared
+    one when the app-specific set is absent."""
+    prefix = APPS[APP].get("creds_prefix") or "BETTERSTACK_CH_"
+    host = os.environ.get(f"{prefix}HOST") or os.environ.get("BETTERSTACK_CH_HOST")
+    user = os.environ.get(f"{prefix}USER") or os.environ.get("BETTERSTACK_CH_USER")
+    pw = os.environ.get(f"{prefix}PASS") or os.environ.get("BETTERSTACK_CH_PASS")
     if not (host and user and pw):
         return None
     return {"host": host, "user": user, "pw": pw}

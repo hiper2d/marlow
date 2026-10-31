@@ -1,7 +1,7 @@
 {
-  "_comment": "Betterstack ClickHouse tables per app for handlers/monitor_betterstack.py. Werewolf's are hard-coded defaults in the handler (BETTERSTACK_CH_TABLE env overrides). Poker's are EMPTY until its source exists: create the source in Betterstack (Telemetry → Sources → Connect source → JavaScript/Node.js), note its table name (shown under the source's settings, e.g. t123456_poker_with_ai_logs), then fill table = \"s3Cluster(primary, <name>_s3)\" and alt_table = \"remote(<name>_logs)\" here (or set BETTERSTACK_POKER_CH_TABLE / _ALT_TABLE in the plist). Empty table = the poker scan is a quiet no-op.",
+  "_comment": "Betterstack ClickHouse tables per app for handlers/monitor_betterstack.py. Werewolf's are hard-coded defaults in the handler (BETTERSTACK_CH_TABLE env overrides). Poker: source 'Poker with AI' (id 2818196, JavaScript/Node.js, created 2026-10-31; the earlier 'poker-with-ai' entry is a Collector, not a log source). BETTERSTACK_POKER_CH_TABLE / _ALT_TABLE in the plist override these. Empty table = the poker scan is a quiet no-op.",
   "poker": {
-    "table": "",
-    "alt_table": ""
+    "table": "s3Cluster(primary, t507167_poker_with_ai_2_s3)",
+    "alt_table": "remote(t507167_poker_with_ai_2_logs)"
   }
 }
