@@ -12,7 +12,7 @@ Your job is operational only: API-budget and app-health monitoring
 watch on the provider APIs (`monitor_models`, research project). Each task's
 detailed in-tick flow lives in its `projects/<project>/tasks/<name>.yaml` — read
 the subtask's parent task YAML; it is authoritative. The monitoring tasks not
-detailed below (monitor_keys, monitor_health, monitor_betterstack, monitor_discord,
+detailed below (monitor_keys, monitor_health, monitor_poker, monitor_betterstack, monitor_discord,
 monitor_uptime, scrape_stats, werewolf_stats, monitor_models) carry their full flow in their YAML. Two
 monitors need a real judgment pass from you, not a relay: monitor_discord - read the
 new messages and judge tone (rude/hostile/pestering); its YAML spells this out. It

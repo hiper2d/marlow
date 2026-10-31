@@ -1,0 +1,55 @@
+# monitor_poker — broken-game watch + activity pulse for Poker with AI (pokerwithai.net).
+#
+# Poker is the second game on the SAME Firebase project as Werewolf; its
+# collections carry the `poker_` prefix (poker_games, poker_users). Same read-only
+# service account (MARLOW_FIREBASE_CREDS) — no new cred. monitor_uptime already
+# pings the site; this is the first look INSIDE it.
+#
+# Fires every 6h, offset 3h from monitor_health (03/09/15/21 UTC) so the two
+# Firestore scans never land in the same tick window.
+#
+# Signal 1 — lane errors. Poker runs two independent lanes, game (cards, betting,
+# compaction) and chat (intros, table talk); each keeps its own error slot on the
+# game doc (`gameError` / `chatError`: {message, details, failedAction, actor,
+# model, retryable, timestamp}). A set error stops that lane until the player
+# retries. A GAME-lane error = the hand is frozen → urgent. A CHAT-lane error =
+# the table went quiet, the hand plays on → digest. Errors are keyed
+# gameId:lane:timestamp, so retry-then-fail-again is a new error; cleared errors
+# drop out. First scan baselines the standing pile (one digest line, no urgent).
+#
+# Signal 2 — activity (digest only, never urgent). Poker gets a few tables a
+# MONTH, each from a stranger who plays once. Every new table since the last scan
+# is one digest line (theme, owner masked, new/returning player, hands, bots,
+# cost); new signups are one count line. Alex's own games are tagged "(own)".
+#
+# NOT covered: Betterstack. Poker's production deployment has no log source
+# token set (poker-with-ai TODO.md), so the app ships no logs. When Alex creates a
+# source and sets LOGTAIL_SOURCE_TOKEN in Vercel, extend monitor_betterstack
+# (table + `env` field handling) rather than this task.
+#
+# In-tick flow:
+#   1. Run `uv run python handlers/monitor_poker.py report`.
+#   2. Parse JSON. If `ok: false` (MARLOW_FIREBASE_CREDS missing/invalid — same
+#      failure mode as monitor_health), treat as a framework bug: record via
+#      framework_fix; notify urgent only if it's the Firestore creds failing.
+#   3. If `any_urgent: true`, send ONE urgent Telegram listing each stuck hand:
+#      theme, owner, hand number, which bot/model failed, the error summary.
+#      Say it is Poker, not Werewolf — the digest and alerts are shared.
+#   4. Otherwise append the handler's digest block to the end-of-day digest:
+#      `uv run python handlers/monitor_poker.py digest` → if non-empty, pass to
+#      `notify --digest`. A quiet scan prints nothing → no line.
+#   5. Write the report to projects/werewolf-ops/reports/poker/<YYYY-MM-DD>.md
+#      (append per-scan; `monitor_poker.py show` renders the current scan).
+#      Skip the file entirely on a quiet scan — most scans are.
+#   6. Write the tick result and exit.
+name: monitor_poker
+project: werewolf-ops
+profile: ops
+description: Every-6h Poker with AI watch — scans poker_games for lane errors (urgent when the hand is frozen, digest when only chat failed) and reports new tables and signups in the digest. Baselines the pre-existing pile; never re-pings unchanged.
+schedule: "0 3,9,15,21 * * *"
+priority: normal
+must_run_within_hours: 4
+subtasks:
+  - id: scan_poker
+    handler: monitor_poker
+    context: {}

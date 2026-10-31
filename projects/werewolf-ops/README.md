@@ -79,6 +79,25 @@ recoverable. State in `state/health_latest.json` (+ history). In practice the
 errors seen so far are LLM-provider response-parse failures (DeepSeek/Grok JSON,
 Mistral/OpenAI schema validation) — a game-reliability signal, not infra.
 
+### Poker with AI watch — LIVE (lane errors + activity pulse, since 2026-10-31)
+
+`handlers/monitor_poker.py` is the same discipline for the second game,
+pokerwithai.net, which lives on the SAME Firebase project under `poker_`-prefixed
+collections (`poker_games`, `poker_users`) — same read-only service account, no
+new cred. Poker keeps one error slot PER LANE on the game doc (`gameError` for
+cards/betting/compaction, `chatError` for table talk), so a game-lane error is a
+frozen hand (urgent) and a chat-lane error a quiet table (digest). Errors are
+keyed `gameId:lane:timestamp`: retry-then-fail-again is new, a cleared error
+drops out, the first scan baselines the pile.
+
+Task: [`tasks/monitor_poker.yaml`](tasks/monitor_poker.yaml) — every 6h, offset
+3h from monitor_health. Because Poker sees a few tables a MONTH (2026-10-31: 14
+live games, 16 users, nobody has played twice), the scan also puts every new
+table and signup since the last scan into the digest — the only place Alex sees
+a stranger trying it. State in `state/poker_latest.json` (+ history). Betterstack
+is not part of it: Poker's production deploy has no log source token, so the app
+ships no logs; when it does, extend monitor_betterstack, not this.
+
 ### App-level error watch — LIVE (Betterstack logs, since 2026-06-03)
 
 `handlers/monitor_betterstack.py` reads the app's logs back from Betterstack and
@@ -165,9 +184,10 @@ caught while blind to tone.
 
 ## Status
 
-All five workstreams live: **budget** (monitor_keys + scrape_stats, 8
+All six workstreams live: **budget** (monitor_keys + scrape_stats, 8
 providers), **statistics** (werewolf_stats, daily), **anomaly scanning**
 (monitor_health, broken-game watch every 6h), **app-level errors**
 (monitor_betterstack, hourly Betterstack log watch), **community watch**
-(monitor_discord, Discord activity + behavior every 6h). Next: the stats "add more"
-backlog (DAU/WAU/MAU, completion rate, model/theme popularity).
+(monitor_discord, Discord activity + behavior every 6h), **Poker with AI**
+(monitor_poker, lane errors + new tables every 6h, since 2026-10-31). Next: the
+stats "add more" backlog (DAU/WAU/MAU, completion rate, model/theme popularity).
