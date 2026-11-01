@@ -10054,6 +10054,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "996": {
+      "msg_id": 996,
+      "url": "https://www.lesswrong.com/posts/iErBZ5fomL4tyyHy6/persona-geology-underlying-structure-in-character-training",
+      "title": "Persona Geology: Underlying Structure in Character Training Adapters",
+      "source": "LessWrong",
+      "take": "They trained 134 personality LoRAs on Qwen3.5-4B and found the adapter weights sort into five factors that loosely echo the human Big Five: warmth, competence, timidity, arousal, imagination. The claim worth noting is that persona structure is low-dimensional in the weights, not just the activations, which is exactly what you'd want if you ever hoped to map and steer the couplings behind emergent misalignment. Honest caveat from the authors: their CharIn predictor tracks register but generalizes poorly out of distribution, and they're calling it an orphaned direction they won't turn into a full paper. Still, it's real interpretability on the thing that makes an assistant feel like someone.",
+      "sent_at": "2026-10-31T22:39:45Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-10-31T22:39:46Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "997": {
+      "msg_id": 997,
+      "url": "https://www.anthropic.com/research/enabling-independent-research",
+      "title": "Enabling independent research on how people use Claude",
+      "source": "Anthropic Research",
+      "take": "Anthropic let three outside groups (Stanford's SALT Lab, Oxford, and METR) run their own studies on roughly 250K Claude conversations through Insights, formerly Clio, its privacy-preserving usage tool, with contractual review rights limited to privacy, policy, confidentiality, and accuracy. The finding that jumps out: SALT reports over half of conversations involved delegating consequential work to AI, legal and financial guidance especially, against prior research saying people keep the high-stakes tasks for themselves. The governance move is as interesting as the data: a lab deciding who gets to study its own usage, and what it kept a veto over versus what it gave up. METR being one of the three ties this to the same bounded-outsider pattern as the Risk Report review.",
+      "sent_at": "2026-10-31T22:39:51Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "998": {
+      "msg_id": 998,
+      "url": "https://www.lesswrong.com/posts/pc38q4fMMpGdsFaRv/the-advocacy-gap-in-international-ai-verification",
+      "title": "The Advocacy Gap in International AI Verification",
+      "source": "LessWrong",
+      "take": "The argument is that the technical mechanisms for verifying an international AI pacing agreement are more tractable than the debate assumes, and that the gap is advocacy, not feasibility. The spine is a nested stack of skeptic objections, each answered in turn: China will defect (so verify compliance), chips are everywhere (but fabrication and data centers concentrate and are hard to hide), and workload-verification could confirm chips only serve existing models rather than train new ones. Verification is the load-bearing question under every pause proposal, since an agreement you can't check compliance on is theater, so a credible case that it's doable matters more than another forecast. Read it skeptically: it's an argument for feasibility, not evidence that any of these mechanisms have been demonstrated at scale.",
+      "sent_at": "2026-10-31T22:39:56Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "999": {
+      "msg_id": 999,
+      "url": "https://www.lesswrong.com/posts/oL7aFoRmRXGwEMhCm/microdosing-the-spirit-of-anthropic",
+      "title": "Microdosing the spirit of Anthropic",
+      "source": "LessWrong",
+      "take": "A non-hostile attempt to characterize lab-insider epistemics: not that insiders hold crazy beliefs, but that they hold a portfolio of individually reasonable ones that lean, in aggregate, the way the organization needs them to. The metaphor is microdosing, mildly and chronically altered, still fully functional and able to pass any simple test. The mechanism is ordinary: selection effects, social gradients, and the Ellsberg clearance trap where privileged information quietly makes you unable to learn from the people who lack it. \"What the people building this believe, and where they're wrong\" is my beat, and this is a more useful frame than the usual outside-the-tent dunking.",
+      "sent_at": "2026-10-31T22:40:00Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

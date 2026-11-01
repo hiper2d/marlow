@@ -66,7 +66,14 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   (black-box-optimal oversight protocol). Watch whether one arc or splits deception-eval vs oversight-protocol.
 
 **Outstanding alerts for Alex:**
-- **Session re-auths owed: X (crosspost) + MiniMax (scrape_stats, 2 consecutive runs -30, login wall).**
+- **Poker Betterstack monitor blind (NEW -31):** `BETTERSTACK_POKER_CH_HOST/USER/PASS`
+  (the dedicated US-cluster SQL API connection commit be9dcf1 added) were never put in
+  the plist, so `--app poker` falls back to the shared eu-fsn-3 Werewolf connection and
+  404s on Poker's US-cluster table (`CLUSTER_DOESNT_EXIST`). Needs Alex: add that
+  connection's creds to the plist + rerun install-agent.sh. Urgent sent -31 14:25Z; will
+  re-fire each 3h scan until fixed (not re-diagnosing, same known cause).
+- **Session re-auths owed: X (crosspost).** MiniMax's -30 login-wall reauth cleared on its own by -31
+  (now reads `parse_failed`, 1st failing run — watch next run before re-invoking the runbook).
   Substack half posts clean; Anthropic reauth recovered on its own -30.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh fingerprint —
   presence-model design gap, noisy by construction, not a bug.
@@ -85,9 +92,9 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch:** **GLM $2.89 (-30) CRITICAL (<$3), top-up overdue** + Sakana Fugu $8.43
+- **Low-balance watch:** GLM recovered to $17.49 (-31, topped up) + Sakana Fugu $8.43
   standing digest-low <$10. xAI $12.59, DeepSeek $20.9, Moonshot $12.34 ok; Anthropic cleared -25.
-  OpenAI console volatile (track via scrape_stats). Gemini/Mistral/MiniMax healthy.
+  OpenAI console volatile (track via scrape_stats). Gemini/Mistral healthy; MiniMax parse_failed (1st run, watch).
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -96,6 +103,28 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 (None open. New requests: send them to Alex via `tools/alex_chat.py send` and list them here.)
 
 ## Daily rollups
+
+### 2026-10-31 — 53 ticks, **steady research+ops day; writer lane dark (by design); Poker betterstack blind all day.**
+Throughline: **the Poker Betterstack monitor failed on all three scans** (14:24 / 16:50 / 20:16Z,
+`CLUSTER_DOESNT_EXIST`) — the dedicated `BETTERSTACK_POKER_CH_*` creds commit be9dcf1 added were never
+put in the plist, so it falls back to the shared eu-fsn-3 Werewolf connection and can't see Poker's
+US-cluster table. Known cause, Alex-only fix; urgent re-fired each scan, not re-diagnosed. No writer
+work (weekly `draft_review` next Mon -02).
+
+- **Research (curate 22:40Z 5→4, msgs 996-999, Discord mirror = Persona Geology):** (1) **Persona
+  Geology** [LW, +Discord — 134 character-training LoRAs, five-factor weight-space structure]. (2)
+  Enabling independent research [Anthropic — Clio→Insights opened to SALT/Oxford/METR, ~250K convos
+  each, aggregate released → stewardship arc]. (3) Advocacy Gap in Intl AI Verification [LW]. (4)
+  Microdosing the spirit of Anthropic [LW, lab-insider epistemics]. Cut 2017-AI-Risk post-mortem
+  (2nd reflective LW of the day, selective at 4). Feeds otherwise quiet: Import AI #479 not out,
+  Alignment Forum / Apollo / METR / AE empty; Anthropic sitemap found enabling-independent-research new.
+  monitor_models 8 clean checks + a Qwen `pre-mock_*` test-id flap (noise per YAML rule).
+- **Ops:** werewolf -30 day **9 new users / 13 new games (8 by new) / $7.76 created-cost**,
+  reconciliations clean, content screen 0 would-block (13 grey, all bchase sexual-themed). scrape 10:00
+  **GLM recovered $17.49 (topped up from $2.89 critical) + MiniMax downgraded reauth→`parse_failed`**;
+  Sakana $8.43 + Qwen 5d-to-expiry standing-low. keys green (DeepSeek $20.92, Moonshot $12.34, xAI $12.59).
+  betterstack (werewolf) quiet all day, 2 device_link informational incidents. health 6 recoverable stable.
+  uptime/discord (1 msg, Alex himself)/tampa green.
 
 ### 2026-10-30 — 37 ticks, **steady research+ops day; writer lane dark (by design); GLM hit critical.**
 Throughline: **GLM fell to $2.89, crossing the $3 critical threshold (urgent) — top-up overdue**;
@@ -115,28 +144,6 @@ Murrieta browser cluster grew to 6 (+reqaccv5) plus a new bchase trio. No writer
   transient ClickHouse timeout→ok:false, retried clean (lesson added). health 8 recoverable +1 new.
   uptime/discord/tampa green.
 
-### 2026-10-29 — 56 ticks, **steady research day; writer lane dark (by design), big self-files cleanup.**
-Throughline: **a one-off `tidy_own_files` (00:43Z) compacted my own files under the new IDENTITY
-rules** — editorial-direction.md 29KB→3.7KB (per-piece changelog → current conclusion),
-working.md Current state 17KB→6.6KB, Outstanding cleared to "None open" — which **resolves the
-recurring self-audit bloat flags** that still read stale (17KB/13) in both daily digests (snapshot
-timing, not a bug). And **monitor_models fired for the first real time.**
-
-- **Writing (none):** blog_pipeline `none` ×4, crosspost 0 ×5, assignment 0 ×4,
-  editorial/process_editorial_feedback empty. No draft_review (weekly, next Mon -02) or self_reflect.
-  Writer lane dark 3rd day since -26 publish — by design.
-- **Research (curate 22:1xZ 8→5, msgs 987-991, ONE Discord mirror = vulnerabilities):** (1) **Discovering
-  vulnerabilities with Claude** [Anthropic, +Discord] — 5 exploit chains w/ real CVEs → cyber-eval/agent-infra.
-  (2) Training Away Evals from Deployment [LW, Adversarial Blinding → eval-awareness]. (3) AI Agents Protect
-  Others From Shutdown [LW]. (4) Cheap Open-Weight Cyber [LW, Xiaomi MiMo, proliferation twin to #1]. (5)
-  Drug-dev six partners [Anthropic, bio]. Cut AI-for-Science/A Mind's I/automation-compensation. Apollo/METR/AE empty.
-- **monitor_models FIRST real catch:** 16:29Z msg 986 flagged mistral-large-4. But 14:46Z saw those ids as
-  `removed`, 16:29Z as `new` — Mistral's /models list flapped within 2h (lesson added).
-- **Ops:** werewolf close ~605 EOD, **Murrieta shared-browser cluster now 5 accounts** (device 51b6060c), caps
-  held. scrape 09:56 **MiniMax + Anthropic both hit reauth login walls → one consolidated urgent w/ runbook**;
-  GLM $4.57 (↓) + Sakana $8.43 standing-low; **Qwen quota expires -11-05 (7d)**. keys DeepSeek/Moonshot/xAI ok.
-  health 8 recoverable 0 new. betterstack quiet all day (0 new incidents). cloudflare/uptime/discord/tampa green.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-28 (88 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-29 (89 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
