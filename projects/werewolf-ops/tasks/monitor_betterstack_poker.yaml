@@ -9,15 +9,15 @@
 # shape: `action`→function, `actor`→botName, `user`→userEmail, `lane`→gameState
 # ("game" or "chat"), plus `failedAction`.
 #
-# UNTIL THE SOURCE EXISTS the report comes back `ok: true, configured: false`
-# with an `error` text saying so. That is the expected state right after
-# 2026-10-31: Poker's Vercel deployment had no LOGTAIL_SOURCE_TOKEN, so the app
-# shipped no logs at all. Alex creates the source (Betterstack → Telemetry →
-# Sources → Connect source, platform JavaScript/Node.js), sets the token in
-# Vercel, and the table name goes into
-# projects/werewolf-ops/config/betterstack_sources.json (or the
-# BETTERSTACK_POKER_CH_TABLE env). Nothing to page about while unconfigured —
-# do not file it as a framework bug, and write no report file.
+# CONFIGURED since 2026-11-01: source "Poker with AI" (id 2818196, JavaScript/
+# Node.js, created 2026-10-31) lives on the us-west-2a cluster (Free plan picks
+# the region), so the shared eu-fsn-3 SQL API connection cannot see it. It has
+# its OWN connection: BETTERSTACK_POKER_CH_HOST/USER/PASS in the plist (host
+# https://us-west-2a-connect.betterstackdata.com), tables in
+# projects/werewolf-ops/config/betterstack_sources.json. If the creds or the
+# table ever go missing the report comes back `ok: true, configured: false`
+# with an `error` text saying which half — nothing to page about, no report
+# file, not a framework bug.
 #
 # Cadence: every 3h like the Werewolf scan, offset by 90 minutes so the two
 # ClickHouse queries never run in the same tick.
