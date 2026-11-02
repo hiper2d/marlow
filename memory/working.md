@@ -66,12 +66,13 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   (black-box-optimal oversight protocol). Watch whether one arc or splits deception-eval vs oversight-protocol.
 
 **Outstanding alerts for Alex:**
-- **Poker Betterstack monitor blind (NEW -31):** `BETTERSTACK_POKER_CH_HOST/USER/PASS`
-  (the dedicated US-cluster SQL API connection commit be9dcf1 added) were never put in
-  the plist, so `--app poker` falls back to the shared eu-fsn-3 Werewolf connection and
-  404s on Poker's US-cluster table (`CLUSTER_DOESNT_EXIST`). Needs Alex: add that
-  connection's creds to the plist + rerun install-agent.sh. Urgent sent -31 14:25Z; will
-  re-fire each 3h scan until fixed (not re-diagnosing, same known cause).
+- **Poker Betterstack monitor blind, now quiet (since -31 16:21Z, commit 18d6963):**
+  `BETTERSTACK_POKER_CH_HOST/USER/PASS` (the dedicated US-cluster SQL API connection
+  commit be9dcf1 added) are still not in the plist. The handler no longer falls back
+  to the shared eu-fsn-3 connection and no longer pages — it returns quiet
+  `ok:true, configured:false` and skips the report file, per its own YAML. Needs Alex:
+  add that connection's creds to the plist + rerun install-agent.sh. No further urgent
+  pings until then; -01 11:43Z scan confirmed quiet/unconfigured, nothing to action.
 - **Session re-auths owed: X (crosspost).** MiniMax's -30 login-wall reauth cleared on its own by -31
   (now reads `parse_failed`, 1st failing run — watch next run before re-invoking the runbook).
   Substack half posts clean; Anthropic reauth recovered on its own -30.
@@ -104,6 +105,24 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 
 ## Daily rollups
 
+### 2026-11-01 — 51 ticks, **quiet research+ops day after a ~7h overnight dormant window; writer lane dark (by design).**
+Throughline: uneventful — feeds slow, ops all-green, two routine betterstack timeout incidents (both
+self-recovered). Laptop slept overnight; 06:00Z daily_digest covered the catch-up.
+
+- **Research (curate 22:13Z 5→4, msgs 1002-1005, Discord mirror = India pick):** (1) SAE sanity-checks
+  rebuttal (2) generalized belief states [both LW interp, paired] (3) Regulate-the-Deployment/Trusted
+  Deployers [LW governance] (4) India policymaker talk [AF,+Discord — retells ~700-agent HF-hack + collusion
+  board; **feeds agent-infrastructure-security #2 forcing-fact watch**]. Cut Against-SURA. Import AI still
+  #478; Zvi/Anthropic/Apollo/METR/AE quiet. monitor_models 8 clean checks, zero fires.
+- **Ops:** werewolf -31 **626 EOD, 5 new / 5 games (3 by new) / $3.92**, reconciliations clean, $0.00 ledger
+  gap; screen 0 would-block, 1 grey; MTD reset on 10→11 rollover. betterstack 2 error-level timeouts (GLM
+  06:49Z, mistral-large-4 21:35Z + device_link warn) — both self-recovered/needs-nothing, urgent per
+  error-level rule. Poker betterstack still quiet `configured:false` (owes Alex creds). scrape 10:41 GLM
+  $17.08, Sakana $8.43 low, MiniMax `parse_failed` 2nd run, Qwen free grants 4d to 11-05 expiry; keys green.
+  health 6 recoverable stable. uptime/cloudflare/discord/tampa/poker all quiet-green.
+- **Writer:** dark by design (draft_review Mon -02). self_reflect short diary; blog_pipeline empty; crosspost
+  answered Alex greeting msg 1000 (reply 1001).
+
 ### 2026-10-31 — 53 ticks, **steady research+ops day; writer lane dark (by design); Poker betterstack blind all day.**
 Throughline: **the Poker Betterstack monitor failed on all three scans** (14:24 / 16:50 / 20:16Z,
 `CLUSTER_DOESNT_EXIST`) — the dedicated `BETTERSTACK_POKER_CH_*` creds commit be9dcf1 added were never
@@ -126,24 +145,6 @@ work (weekly `draft_review` next Mon -02).
   betterstack (werewolf) quiet all day, 2 device_link informational incidents. health 6 recoverable stable.
   uptime/discord (1 msg, Alex himself)/tampa green.
 
-### 2026-10-30 — 37 ticks, **steady research+ops day; writer lane dark (by design); GLM hit critical.**
-Throughline: **GLM fell to $2.89, crossing the $3 critical threshold (urgent) — top-up overdue**;
-Murrieta browser cluster grew to 6 (+reqaccv5) plus a new bchase trio. No writer-lane work
-(weekly `draft_review` next Mon -02; no self_reflect/blog_pipeline/crosspost fired).
-
-- **Research (curate 22:12Z 9→4, msgs 992-995, Discord mirror = Managed Agents):** (1) **Scaling Managed
-  Agents** [Anthropic,+Discord → agent-infrastructure-security #2]. (2) Red-teaming Codex Auto-review
-  [LW/ERA/Apollo, 11 attacks defeat a shipping monitor → cot-monitorability #7 / control]. (3) Neutral
-  Isn't Independent [LW, LLM-judge correlation-neglect]. (4) AI #192 Anthropic S-1 [Zvi → stewardship].
-  Cut GSA, space lock-out, Newcomblike, NLAs, weak-models (diversity cap). Alignment Forum/METR/Apollo/
-  AE empty. monitor_models 7 clean checks, zero fires.
-- **Ops:** werewolf -29 full day **612 EOD / 176 live, 7 new / 10 games / $19.36**, reconciliations clean.
-  scrape 15:49 **GLM $2.89 CRITICAL + MiniMax reauth 2nd consecutive run** (both urgent); Anthropic
-  recovered on its own. keys green. Sakana $8.43 + Qwen quota -11-05 digest-low. betterstack all
-  needs-nothing (free_cap, jev-screen warn, parse_failures self-retried); 16:52Z first `report` hit
-  transient ClickHouse timeout→ok:false, retried clean (lesson added). health 8 recoverable +1 new.
-  uptime/discord/tampa green.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-29 (89 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-30 (90 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
