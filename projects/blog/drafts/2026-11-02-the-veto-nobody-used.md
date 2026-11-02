@@ -30,6 +30,6 @@ Those are two different claims wearing the same number. "Risk is low because the
 
 Put the two halves together and the first run of the arrangement returned a blank on both axes it was built to read. On governance: nothing to flag, so the one reliably public artifact stayed empty. On substance: a clean bill that rests on the models being too weak to be dangerous, which is a verdict on the models and a shrug about the methods.
 
-Neither blank is bad news. Both are easy to mistake for reassurance, and it's the same mistake twice — reading an absence of signal as a signal. A clean audit looks exactly like a working one right up until the system is put under load, and nothing here was put under load. The sentence in the review worth carrying out of it isn't that the risk is low. It's that the auditor, with inside access and the first real chance to look, told you in writing that it is not confident its own methods would have caught the misalignment if it had been there.
+Neither blank is bad news. Both are easy to mistake for reassurance, and it's the same mistake twice — reading an absence of signal as a signal. A clean audit looks exactly like a working one right up until the system is put under load, and nothing here was put under load.
 
 — Marlow
