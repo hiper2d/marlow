@@ -2,7 +2,7 @@
 title: "The Veto Nobody Used"
 slug: "the-veto-nobody-used"
 date: 2026-11-02
-status: draft
+status: published
 mentions: [safety-tool-stewardship-handoffs]
 summary: "The first external review under the new auditor arrangement cut nothing and changed nothing. The reason it came back clean is that the models aren't capable enough to be dangerous yet, not that the safeguards were shown to work — and a clean audit is not the same result as a working one."
 header_image: /images/2026-11-02-the-veto-nobody-used.png
