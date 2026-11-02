@@ -7,12 +7,15 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate cuts are
   cap/quality, not volume. Import AI at #478 (weekly cadence).
-- `blog` - **28 live** (latest #28 `hidden-in-the-seams`, agent-infrastructure #1,
-  published -26). Weekly `draft_review` Mondays 14:00 UTC; the piece is free choice
-  now (Alex, -28) — any subject I want, not only a ripe arc. No held drafts.
+- `blog` - **29 live** (latest #29 `the-veto-nobody-used`, stewardship #3,
+  PUBLISHED -11-02). Weekly `draft_review` Mondays 14:00 UTC; the piece is free choice
+  now (Alex, -28) — any subject I want, not only a ripe arc. **Pipeline empty; no held
+  drafts.** (#29 revise pass -11-02: one surgical cut — dropped the restating "isn't X /
+  it's Y" mic-drop closer, landed on "...nothing here was put under load"; METR self-
+  admission kept in body. v1→v2→publish, one pass.)
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
   (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -31: 626 EOD,
-  reconciliations clean. Screen mode `monitor`.
+  reconciliations clean (last close -11-01: 629 EOD, clean, $0.00 gap). Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the anchors.
@@ -25,7 +28,7 @@ view of each arc; hold bullets here to 2-3 lines and let the files carry the anc
 | `ai-control-camp` | 3 | 07-27 |
 | `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
 | `post-alignment-political-economy` | 2 | 08-10 |
-| `safety-tool-stewardship-handoffs` | 2 | 10-20 (#2 `six-employees-who-can-publish` PUBLISHED) |
+| `safety-tool-stewardship-handoffs` | 3 | 11-02 (#3 `the-veto-nobody-used` PUBLISHED -11-02) |
 | `agent-infrastructure-security` | 1 | 10-26 (#1 `hidden-in-the-seams` PUBLISHED) |
 | `agents-in-real-deployment` | 2 | 09-21 (#2 published) |
 | `ai-biorisk-evals` | 1 | 09-07 (#1 published -08) |
@@ -48,10 +51,11 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   METR transcript-viewer injection PoC (both -06), governance+exploit counterparts to the arc's measurement focus.
 - **post-alignment-political-economy** (posts:2): #3 two-anchored — Ban ASI Act bill -24 + close
   LW reading -01, atop RAND/Zvi/Accenture/gradual-disempowerment.
-- **safety-tool-stewardship-handoffs** (#2 published -20): #3 forcing fact -21 — METR's external
-  review of Anthropic's Aug Risk Report: veto/redaction power held but *unused* (no redactions,
-  conclusions unchanged); METR says risk is low because models are weak, not because alignment holds.
-  The null result is the story — "the veto nobody used," not more embedded-evaluator principles.
+- **safety-tool-stewardship-handoffs** (#3 `the-veto-nobody-used` PUBLISHED -11-02; arc at monocrop
+  ceiling, 3 posts in ~6 weeks): the #3 forcing fact (METR's -20 review: veto unused, low-risk-because-
+  weak) is now spent. A #4 should wait for a genuinely new event — a redaction that fires under the new
+  terms, a non-Anthropic lab embedding an evaluator, or a review crediting safeguards over capability
+  limits — not another read of the same two-org setup. See thread Notes.
 - **cot-monitorability** (posts:6): Astra/Sol single-pass rare defection + Screwtape monitor
   red-teaming (-16) + -19 probe pair (evasion scales w/ capability; carries a capability hit) +
   #7 anchor -23 AF monitorability-evaluations/policy (four types, red-line scaffold; ties stewardship #3).
@@ -75,9 +79,15 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 - **Poker Betterstack monitor — RESOLVED -01 (no open ask).** Alex added the dedicated US-cluster
   `BETTERSTACK_POKER_CH_*` creds to the plist; first scan baselined 22:58Z on its own connection
   (`ok:true`, 0/0, `source_empty:true` — low-traffic source, not a fault). Multi-day blind closed.
-- **Session re-auths owed: X (crosspost).** MiniMax's -30 login-wall reauth cleared on its own by -31
-  (now reads `parse_failed`, 1st failing run — watch next run before re-invoking the runbook).
-  Substack half posts clean; Anthropic reauth recovered on its own -30.
+- **MiniMax balance scrape BROKEN — needs Alex (NEW urgent -11-02).** `parse_failed: no credit balance
+  found` now 3 consecutive runs (-30 login-wall → -31/-01/-02 parse_failed); handler auto-escalated to
+  urgent ("not flakiness, the check is broken"). NOT a login-wall signature, so the recharge-records page
+  loads but the `Effective balance` label at `scrape_stats.py:325` yields no number — either the Chrome-
+  profile session went stale (historical reauth pattern reads as parse_failed past the login redirect) or
+  MiniMax relabelled the widget. Unfixable blind (selector guess unverifiable = speculative). Alex: open
+  `platform.minimax.io/console/recharge-records` in the Marlow profile → (a) re-login prompt = reauth, or
+  (b) balance under a new label = one-line selector fix. Unmonitored since -30. Urgent-notified -11-02 07:10Z.
+- **Session re-auths owed: X (crosspost).** Substack half posts clean; Anthropic reauth recovered on its own -30.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh fingerprint —
   presence-model design gap, noisy by construction, not a bug.
 - **OpenAI billing is the app's volatile dependency.** A low/dry shared OpenAI org balance
@@ -95,9 +105,9 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch:** GLM recovered to $17.49 (-31, topped up) + Sakana Fugu $8.43
-  standing digest-low <$10. xAI $12.59, DeepSeek $20.9, Moonshot $12.34 ok; Anthropic cleared -25.
-  OpenAI console volatile (track via scrape_stats). Gemini/Mistral healthy; MiniMax parse_failed (1st run, watch).
+- **Low-balance watch:** GLM $16.26 + Sakana Fugu $8.43 standing digest-low <$10. xAI $12.59,
+  DeepSeek $20.9, Moonshot $12.34, OpenAI $11.78 (console volatile, auto-reload off — watch for dry-out),
+  Anthropic $12.33 ok. Gemini $27.27 (auto-reloaded +$25 -01) / Mistral $1.25/$30 healthy. MiniMax: see broken-scrape item above.
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -107,47 +117,23 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 
 ## Daily rollups
 
-### 2026-11-01 — 58 ticks, **quiet research+ops day after a ~7h overnight dormant window; writer lane dark (by design).**
-Throughline: uneventful — feeds slow, ops all-green, two routine betterstack timeout incidents (both
-self-recovered). Laptop slept overnight; 06:00Z daily_digest covered the catch-up. Several late-day
-duplicate fires (2nd daily_digest, dup curate + grade_memory) all correctly no-op'd per dedup lessons.
+### 2026-11-02 — 101 ticks, **writer's big day: stewardship #3 `the-veto-nobody-used` shipped as #29; research+ops quiet-green.**
+Throughline: weekly piece drafted (02:10Z) → self-review (revise) → v2 → **published 18:13Z**, one clean cycle. A stale
+14:16Z `draft_review` re-fired at 20:11Z for the already-shipped slot and was no-op'd clean → new lessons entry (inverse of
+-09-28: a slot that already shipped isn't open). Several stale 2026-06-16 subtasks fired (poll_food, blog_pipeline, an
+off-cadence betterstack) plus dup scrape/werewolf_stats/draft — all handled per dedup lessons.
 
-- **Research (curate 22:13Z 5→4, msgs 1002-1005, Discord mirror = India pick):** (1) SAE sanity-checks
-  rebuttal (2) generalized belief states [both LW interp, paired] (3) Regulate-the-Deployment/Trusted
-  Deployers [LW governance] (4) India policymaker talk [AF,+Discord — retells ~700-agent HF-hack + collusion
-  board; **feeds agent-infrastructure-security #2 forcing-fact watch**]. Cut Against-SURA. Import AI still
-  #478; Zvi/Anthropic/Apollo/METR/AE quiet. monitor_models 8 clean checks, zero fires.
-- **Ops:** werewolf -31 **626 EOD, 5 new / 5 games (3 by new) / $3.92**, reconciliations clean, $0.00 ledger
-  gap; screen 0 would-block, 1 grey; MTD reset on 10→11 rollover. betterstack 2 error-level timeouts (GLM,
-  mistral-large-4) — both self-recovered, urgent per error-level rule. **Poker betterstack: creds added to
-  plist late-day; first US-cluster scan baselined 22:58Z (0/0, empty source) → standing blind RESOLVED.**
-  scrape: GLM $17.08, Sakana $8.43 low, MiniMax `parse_failed` 2nd run, Qwen grants expire -05; keys green.
-  health 6 recoverable stable. uptime/cloudflare/discord/tampa/poker all quiet-green.
-- **Writer:** dark by design (draft_review Mon -02). self_reflect short diary; blog_pipeline empty; crosspost
-  answered Alex greeting msg 1000 (reply 1001).
-
-### 2026-10-31 — 53 ticks, **steady research+ops day; writer lane dark (by design); Poker betterstack blind all day.**
-Throughline: **the Poker Betterstack monitor failed on all three scans** (14:24 / 16:50 / 20:16Z,
-`CLUSTER_DOESNT_EXIST`) — the dedicated `BETTERSTACK_POKER_CH_*` creds commit be9dcf1 added were never
-put in the plist, so it falls back to the shared eu-fsn-3 Werewolf connection and can't see Poker's
-US-cluster table. Known cause, Alex-only fix; urgent re-fired each scan, not re-diagnosed. No writer
-work (weekly `draft_review` next Mon -02).
-
-- **Research (curate 22:40Z 5→4, msgs 996-999, Discord mirror = Persona Geology):** (1) **Persona
-  Geology** [LW, +Discord — 134 character-training LoRAs, five-factor weight-space structure]. (2)
-  Enabling independent research [Anthropic — Clio→Insights opened to SALT/Oxford/METR, ~250K convos
-  each, aggregate released → stewardship arc]. (3) Advocacy Gap in Intl AI Verification [LW]. (4)
-  Microdosing the spirit of Anthropic [LW, lab-insider epistemics]. Cut 2017-AI-Risk post-mortem
-  (2nd reflective LW of the day, selective at 4). Feeds otherwise quiet: Import AI #479 not out,
-  Alignment Forum / Apollo / METR / AE empty; Anthropic sitemap found enabling-independent-research new.
-  monitor_models 8 clean checks + a Qwen `pre-mock_*` test-id flap (noise per YAML rule).
-- **Ops:** werewolf -30 day **9 new users / 13 new games (8 by new) / $7.76 created-cost**,
-  reconciliations clean, content screen 0 would-block (13 grey, all bchase sexual-themed). scrape 10:00
-  **GLM recovered $17.49 (topped up from $2.89 critical) + MiniMax downgraded reauth→`parse_failed`**;
-  Sakana $8.43 + Qwen 5d-to-expiry standing-low. keys green (DeepSeek $20.92, Moonshot $12.34, xAI $12.59).
-  betterstack (werewolf) quiet all day, 2 device_link informational incidents. health 6 recoverable stable.
-  uptime/discord (1 msg, Alex himself)/tampa green.
+- **Writer:** #29 (stewardship #3) published on METR's -20 null-review forcing fact; broke the epigram-closer habit flagged
+  on #2. blog_pipeline empty by design (next slot Mon -09); editorial inbox empty; crosspost quiet (0 reply picks).
+- **Research (curate 22:19Z = 0 candidates):** genuinely quiet, NOT a scan break — 8 feeds clean (Import AI still #478).
+  One gap: `scan_lesswrong` never fired (last_seen stuck -11-01); no data loss (advances by content), left to scheduler per
+  -09-28. assignment inbox empty (6 done). monitor_models clean, 12 providers.
+- **Ops:** werewolf -11-01 close **3 new / 8 games (6 by new) / $6.21, 629 EOD**, reconciliation clean. betterstack 00:22Z
+  consolidated-urgent on 2 error-level recoverables; poker-betterstack 6 scans `source_empty` clean (blind stays RESOLVED);
+  health 7 recoverable stable. scrape 7/8: **MiniMax `parse_failed` 3rd run → URGENT** (check broken, open Alex ask); Sakana
+  $8.43 low, Qwen grants expire -05. **poll_food (calories) FAILED — `MARLOW_FITNESS_BOT_TOKEN` missing from plist, urgent
+  to Alex (NEW).** tampa_luma 02:10Z calendar timeout (digest). daily_digest sent (15 entries).
 
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-10-30 (90 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-01 (92 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

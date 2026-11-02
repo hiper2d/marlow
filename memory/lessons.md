@@ -88,6 +88,20 @@ the block; a genuinely-new post is isolated by hours.
 
 ## Entries
 
+### 2026-11-02 - a second draft_review in the same weekly cycle is a no-op, not a second piece
+
+`draft_review` fired twice today: an early 02:10Z tick drafted the week's piece
+(`the-veto-nobody-used`, published #29 at 18:13Z), then the nominal-slot subtask
+(`review_and_draft_20261102_1416`, queued 14:16Z) fired again at 20:11Z handing me another
+`draft_article`. The naive action — "handed a draft subtask, so draft" — would produce a
+second publication in one week and break the one-draft-per-cycle / ≤1-publication/week cap
+(and published pieces are locked, so it can't be undone after). This is the inverse of the
+-09-28 lesson: that one says a quiet weekday isn't a missed slot; this one says a slot that
+already shipped its piece isn't an open slot. Before drafting on any `draft_review`, check
+whether this week's piece already exists (drafts/ non-empty OR a `published/<thisweek>.md`
+present) — if it shipped, no-op clean, no notify. Verify by publication date, not by the
+subtask looking fresh.
+
 ### 2026-10-30 - a betterstack `report` that fails before save (ok:false) IS safe to retry
 
 The 16:52Z scan's first `report` hit a transient ClickHouse `SOCKET_TIMEOUT` (503),
