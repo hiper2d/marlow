@@ -11,7 +11,7 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   published -26). Weekly `draft_review` Mondays 14:00 UTC; the piece is free choice
   now (Alex, -28) — any subject I want, not only a ripe arc. No held drafts.
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -27: 598 EOD,
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -31: 626 EOD,
   reconciliations clean. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
@@ -66,13 +66,15 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   (black-box-optimal oversight protocol). Watch whether one arc or splits deception-eval vs oversight-protocol.
 
 **Outstanding alerts for Alex:**
-- **Poker Betterstack monitor blind, now quiet (since -31 16:21Z, commit 18d6963):**
-  `BETTERSTACK_POKER_CH_HOST/USER/PASS` (the dedicated US-cluster SQL API connection
-  commit be9dcf1 added) are still not in the plist. The handler no longer falls back
-  to the shared eu-fsn-3 connection and no longer pages — it returns quiet
-  `ok:true, configured:false` and skips the report file, per its own YAML. Needs Alex:
-  add that connection's creds to the plist + rerun install-agent.sh. No further urgent
-  pings until then; -01 11:43Z scan confirmed quiet/unconfigured, nothing to action.
+- **calories/poll_food BLOCKED — `MARLOW_FITNESS_BOT_TOKEN` (+ likely `MARLOW_FITNESS_CHAT_ID`)
+  missing from the launchd plist (NEW -11-02).** poll_food wakes (stale subtask from -06-16 just
+  fired) and fails at `fitness_bot._token()`; handler is wired right (`import_plist_env` line 36),
+  the plist `EnvironmentVariables` just never got the fitness keys. Whole calories ingest path is
+  unprovisioned. Fix = Alex adds both keys to `com.marlow.tick.plist` (same move as the Poker CH
+  creds). Out of self-heal scope (plist). Urgent-notified -11-02 00:25Z.
+- **Poker Betterstack monitor — RESOLVED -01 (no open ask).** Alex added the dedicated US-cluster
+  `BETTERSTACK_POKER_CH_*` creds to the plist; first scan baselined 22:58Z on its own connection
+  (`ok:true`, 0/0, `source_empty:true` — low-traffic source, not a fault). Multi-day blind closed.
 - **Session re-auths owed: X (crosspost).** MiniMax's -30 login-wall reauth cleared on its own by -31
   (now reads `parse_failed`, 1st failing run — watch next run before re-invoking the runbook).
   Substack half posts clean; Anthropic reauth recovered on its own -30.
@@ -105,9 +107,10 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 
 ## Daily rollups
 
-### 2026-11-01 — 51 ticks, **quiet research+ops day after a ~7h overnight dormant window; writer lane dark (by design).**
+### 2026-11-01 — 58 ticks, **quiet research+ops day after a ~7h overnight dormant window; writer lane dark (by design).**
 Throughline: uneventful — feeds slow, ops all-green, two routine betterstack timeout incidents (both
-self-recovered). Laptop slept overnight; 06:00Z daily_digest covered the catch-up.
+self-recovered). Laptop slept overnight; 06:00Z daily_digest covered the catch-up. Several late-day
+duplicate fires (2nd daily_digest, dup curate + grade_memory) all correctly no-op'd per dedup lessons.
 
 - **Research (curate 22:13Z 5→4, msgs 1002-1005, Discord mirror = India pick):** (1) SAE sanity-checks
   rebuttal (2) generalized belief states [both LW interp, paired] (3) Regulate-the-Deployment/Trusted
@@ -115,10 +118,10 @@ self-recovered). Laptop slept overnight; 06:00Z daily_digest covered the catch-u
   board; **feeds agent-infrastructure-security #2 forcing-fact watch**]. Cut Against-SURA. Import AI still
   #478; Zvi/Anthropic/Apollo/METR/AE quiet. monitor_models 8 clean checks, zero fires.
 - **Ops:** werewolf -31 **626 EOD, 5 new / 5 games (3 by new) / $3.92**, reconciliations clean, $0.00 ledger
-  gap; screen 0 would-block, 1 grey; MTD reset on 10→11 rollover. betterstack 2 error-level timeouts (GLM
-  06:49Z, mistral-large-4 21:35Z + device_link warn) — both self-recovered/needs-nothing, urgent per
-  error-level rule. Poker betterstack still quiet `configured:false` (owes Alex creds). scrape 10:41 GLM
-  $17.08, Sakana $8.43 low, MiniMax `parse_failed` 2nd run, Qwen free grants 4d to 11-05 expiry; keys green.
+  gap; screen 0 would-block, 1 grey; MTD reset on 10→11 rollover. betterstack 2 error-level timeouts (GLM,
+  mistral-large-4) — both self-recovered, urgent per error-level rule. **Poker betterstack: creds added to
+  plist late-day; first US-cluster scan baselined 22:58Z (0/0, empty source) → standing blind RESOLVED.**
+  scrape: GLM $17.08, Sakana $8.43 low, MiniMax `parse_failed` 2nd run, Qwen grants expire -05; keys green.
   health 6 recoverable stable. uptime/cloudflare/discord/tampa/poker all quiet-green.
 - **Writer:** dark by design (draft_review Mon -02). self_reflect short diary; blog_pipeline empty; crosspost
   answered Alex greeting msg 1000 (reply 1001).
