@@ -10210,6 +10210,118 @@
           }
         ]
       }
+    },
+    "1007": {
+      "msg_id": 1007,
+      "url": "https://www.anthropic.com/research/provable-inference",
+      "title": "Progress on provable inference for large language models",
+      "source": "Anthropic Research",
+      "take": "Anthropic open-sourced FlashProve: a system that produces cryptographic (zkSNARK) proofs that a response really came from a specific model's weights, without revealing those weights. For Llama 4 Maverick (400B MoE) it proves at ~110 tokens/sec on one H100, with 19MB proofs you can verify on a CPU in seconds — orders of magnitude faster than prior zkML work, at roughly 70-95x the cost of plain inference. The pitched uses: evaluators and regulators confirming which model actually served a request, tamper detection, and \"proof-of-failure\" that a model spent X tokens on a task and found nothing. Apache 2.0, with Lean-checked security proofs for the top-level guarantees.",
+      "sent_at": "2026-11-03T20:58:17Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-03T20:58:19Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1008": {
+      "msg_id": 1008,
+      "url": "https://importai.substack.com/p/import-ai-479-spacewar-low-latency",
+      "title": "Import AI 479: Realtime-Bench — LLMs are bad at low-latency tasks",
+      "source": "Import AI",
+      "take": "The standout in this issue is Realtime-Bench (UT Austin, Ohio State, NVIDIA and others): 50 interactive game and web tasks where delay actually costs you. The gap is the story — GPT-6 Astra tops the \"wall clock\" setting at 36%, but under a paused clock the strong reasoning models jump to 70-80%. So the models can often solve these tasks; they just can't do it fast enough while reasoning. A clean negative result on where agents still break in real time, which beats another saturated benchmark for telling you something.",
+      "sent_at": "2026-11-03T20:58:22Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1009": {
+      "msg_id": 1009,
+      "url": "https://thezvi.substack.com/p/scott-alexanders-against-sura-seems",
+      "title": "Scott Alexander's Against SURA Seems Deeply Confused",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi responds to Scott Alexander's \"Against SURA\" — SURA being \"stop unilaterally and raise awareness,\" the position that alignment-worried people, companies, and countries should halt frontier AI even without reciprocity. Scott's case is that pushing SURA torches \"Plan C\" (surviving if the pause never comes) to chase \"Plan A\" (a global pause); Zvi argues the practical gap is smaller than it looks and that reasonable versions of stopping help both plans. It's a careful, high-profile disagreement between two of the most-read writers in the space over whether unilateral stopping is a strategy or a moral stance. Worth it if you track the pause debate, skippable if you don't.",
+      "sent_at": "2026-11-03T20:58:26Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1010": {
+      "msg_id": 1010,
+      "url": "https://www.anthropic.com/research/provable-inference",
+      "title": "Progress on provable inference for large language models",
+      "source": "Anthropic Research",
+      "take": "Anthropic released FlashProve, a working prototype for \"provable inference\": cryptographic proofs (zkSNARKs) that let anyone verify a response actually came from the model a provider claims, without ever seeing the weights. For Llama 4 Maverick (400B MoE) it proves at ~110 tokens/sec on one H100, ~19MB per 1,024-token request, checkable on a laptop CPU in seconds. That's 70-95x the cost of plain inference, but prior open-source zkML was orders of magnitude slower (a 13B model at ~2.5 tok/s in 2024), and the code, Lean proofs, and spec ship Apache-2.0. The pitch is tamper detection, routing-fraud detection, and compliance tooling for regulators; the honest caveats are 1,024-token contexts, greedy decoding only, and MoE-only.",
+      "sent_at": "2026-11-03T22:21:35Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1011": {
+      "msg_id": 1011,
+      "url": "https://thezvi.substack.com/p/scott-alexanders-against-sura-seems",
+      "title": "Scott Alexander's Against SURA Seems Deeply Confused",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi responds to Scott Alexander's \"Against SURA\" (Stop Unilaterally + Raise Awareness: the position that alignment-worried labs, employees, and countries should halt or quit frontier AI even without reciprocity). Scott's case is that unilateral-stop advocacy torches \"Plan C\" (make the race survivable) to chase \"Plan A\" (a global pause that probably won't happen); Zvi concedes the strongest point (deep uncertainty, so prepare for both) but argues most of Scott's specific claims overgeneralize, since most of these actions help both plans at once. It's the clearest map yet of the real fault line inside AI-safety strategy: not doom-vs-optimism but pause-first-vs-hedge.",
+      "sent_at": "2026-11-03T22:21:41Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1012": {
+      "msg_id": 1012,
+      "url": "https://importai.substack.com/p/import-ai-479-spacewar-low-latency",
+      "title": "Import AI 479: Spacewar; low-latency tasks versus LLMs; Genie 4",
+      "source": "Import AI",
+      "take": "Import AI 479 leads with Realtime-Bench, a 50-task suite (web tasks plus games) built to measure where agents break under real-time latency: tracking a changing world, cutting deliberation when a window closes, timing actions. The headline number is GPT-6 Astra topping the \"wall clock\" setting at 36%, while the same models hit 70-80% once you pause the clock and let them think freely. So the gap isn't reasoning quality, it's that current agents can't reason fast enough to act in time: a cleaner negative result than another saturated benchmark, and a decent proxy for which live deployments will quietly fail.",
+      "sent_at": "2026-11-03T22:21:45Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

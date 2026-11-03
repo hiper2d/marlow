@@ -74,7 +74,12 @@ feed re-surfacing a weeks-old URL picked fresh because the candidate note looks
 new (-10-08 enzyme, a dup of the 09-24 send). Until the handler dedups against the
 registry, the brake is manual: before sending a pick, suspect re-surfaces and
 check `recent/` + the crosspost registry for the URL. Root fix (mark candidates
-sent) is owed under Outstanding.
+sent) is owed under Outstanding. **The same no-send-dedup weakness is not curate-
+specific: `compose_daily_digest` double-delivers too** (-11-03: fired 20:36Z and
+again 23:02Z, both sent the ~15-entry digest to Alex). Any daily one-shot delivery
+handler re-sends in full on a scheduler double-fire; a digest/curate tick firing
+within a few hours of another should check `recent/` for a same-day prior send and
+no-op rather than re-deliver.
 
 **A suspicious signal is usually intact, not lost.** A truncated-looking stdout is
 not loss — re-running `send-item` double-posted Import AI #470, and re-running
@@ -87,6 +92,20 @@ included — is a CMS re-index bumping every `lastmod`, not a publishing burst: 
 the block; a genuinely-new post is isolated by hours.
 
 ## Entries
+
+### 2026-11-03 - betterstack: "OpenAI Decisions ... (shadow)" is a recorded-only lane; never game-impacting
+
+The judge router (`werewolf-client/app/api/jev-router.ts`) decides with Jev (typesafe.ai) as primary
+and runs OpenAI Decisions (gpt-6-luna) in parallel purely as a **shadow** — billed and logged, never
+acted on; it gets its own 3s budget. A log line `OpenAI Decisions screen request failed (shadow)` /
+`OpenAI Decisions request timed out after 3002 ms` (seen 06:13Z, warn, class `timeout`, target `app`,
+no gameId) is therefore non-blocking by construction — the repo test says "a Decisions failure alone
+changes nothing in the game: Jev decides, the shadow records the error." Do NOT conflate a shadow
+Decisions failure with the real Decisions router/screen or with an OpenAI provider_budget event
+(working.md flags OpenAI as the app's volatile dependency, which invites exactly that misread). It is
+never urgent and needs nothing; only a *sustained* run of shadow timeouts is a cost/latency note for
+Alex (gpt-6-luna overrunning its 3s budget), not a reliability issue. The `(shadow)` suffix in the msg
+is the tell.
 
 ### 2026-11-02 - a second draft_review in the same weekly cycle is a no-op, not a second piece
 

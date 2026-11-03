@@ -6,7 +6,7 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 **Project status:**
 - `research` - active. 10 feed sources + assignment path. Curate cuts are
-  cap/quality, not volume. Import AI at #478 (weekly cadence).
+  cap/quality, not volume. Import AI at #479 (weekly cadence).
 - `blog` - **29 live** (latest #29 `the-veto-nobody-used`, stewardship #3,
   PUBLISHED -11-02). Weekly `draft_review` Mondays 14:00 UTC; the piece is free choice
   now (Alex, -28) — any subject I want, not only a ripe arc. **Pipeline empty; no held
@@ -14,8 +14,8 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   it's Y" mic-drop closer, landed on "...nothing here was put under load"; METR self-
   admission kept in body. v1→v2→publish, one pass.)
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -31: 626 EOD,
-  reconciliations clean (last close -11-01: 629 EOD, clean, $0.00 gap). Screen mode `monitor`.
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-02: 635 EOD
+  (6 new / 10 games / 5 by new / $11.44 spend), reconciliation clean, $0.00 gap. Screen mode `monitor`.
 
 **Active threads.** The files under `projects/research/threads/` are the current
 view of each arc; hold bullets here to 2-3 lines and let the files carry the anchors.
@@ -79,14 +79,15 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 - **Poker Betterstack monitor — RESOLVED -01 (no open ask).** Alex added the dedicated US-cluster
   `BETTERSTACK_POKER_CH_*` creds to the plist; first scan baselined 22:58Z on its own connection
   (`ok:true`, 0/0, `source_empty:true` — low-traffic source, not a fault). Multi-day blind closed.
-- **MiniMax balance scrape BROKEN — needs Alex (NEW urgent -11-02).** `parse_failed: no credit balance
-  found` now 3 consecutive runs (-30 login-wall → -31/-01/-02 parse_failed); handler auto-escalated to
-  urgent ("not flakiness, the check is broken"). NOT a login-wall signature, so the recharge-records page
-  loads but the `Effective balance` label at `scrape_stats.py:325` yields no number — either the Chrome-
-  profile session went stale (historical reauth pattern reads as parse_failed past the login redirect) or
-  MiniMax relabelled the widget. Unfixable blind (selector guess unverifiable = speculative). Alex: open
-  `platform.minimax.io/console/recharge-records` in the Marlow profile → (a) re-login prompt = reauth, or
-  (b) balance under a new label = one-line selector fix. Unmonitored since -30. Urgent-notified -11-02 07:10Z.
+- **MiniMax balance scrape BROKEN — needs Alex (urgent -11-02, still open -11-03).** `parse_failed: no
+  credit balance found` now 5 consecutive runs (-30 login-wall → -31/-01/-02×2/-03 parse_failed); handler
+  marks it `severity: urgent` but -11-03's scan did NOT re-fire the Telegram ping (unchanged condition, no
+  new info since -11-02 — rode the digest instead per notify-spam guard). NOT a login-wall signature, so
+  the recharge-records page loads but the `Effective balance` label at `scrape_stats.py:325` yields no
+  number — either the Chrome-profile session went stale or MiniMax relabelled the widget. Unfixable blind
+  (selector guess unverifiable = speculative). Alex: open `platform.minimax.io/console/recharge-records`
+  in the Marlow profile → (a) re-login prompt = reauth, or (b) balance under a new label = one-line
+  selector fix. Unmonitored since -30 (now 5 days).
 - **Session re-auths owed: X (crosspost).** Substack half posts clean; Anthropic reauth recovered on its own -30.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh fingerprint —
   presence-model design gap, noisy by construction, not a bug.
@@ -105,9 +106,10 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch:** GLM $16.26 + Sakana Fugu $8.43 standing digest-low <$10. xAI $12.59,
-  DeepSeek $20.9, Moonshot $12.34, OpenAI $11.78 (console volatile, auto-reload off — watch for dry-out),
-  Anthropic $12.33 ok. Gemini $27.27 (auto-reloaded +$25 -01) / Mistral $1.25/$30 healthy. MiniMax: see broken-scrape item above.
+- **Low-balance watch:** GLM $14.19 + Sakana Fugu $8.43 standing digest-low <$10. xAI $12.59,
+  DeepSeek $20.9, Moonshot $12.34, **OpenAI $6.43 (NEW: crossed below $10 -11-03, steeper-than-routine
+  drop from $11.33, auto-reload off — watch for dry-out)**, Anthropic $10.79 ok. Gemini $17.86 (spend MTD
+  climbing, auto-reload on) / Mistral $3.68/$30 healthy. MiniMax: see broken-scrape item above.
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -117,23 +119,13 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 
 ## Daily rollups
 
-### 2026-11-02 — 101 ticks, **writer's big day: stewardship #3 `the-veto-nobody-used` shipped as #29; research+ops quiet-green.**
-Throughline: weekly piece drafted (02:10Z) → self-review (revise) → v2 → **published 18:13Z**, one clean cycle. A stale
-14:16Z `draft_review` re-fired at 20:11Z for the already-shipped slot and was no-op'd clean → new lessons entry (inverse of
--09-28: a slot that already shipped isn't open). Several stale 2026-06-16 subtasks fired (poll_food, blog_pipeline, an
-off-cadence betterstack) plus dup scrape/werewolf_stats/draft — all handled per dedup lessons.
+### 2026-11-03 — 108 ticks, **quiet-green all three projects; ops carried the day (a DeepSeek capacity event + a creeping Mistral-Large timeout), writer between slots.**
+No writing slot (next `draft_review` Mon -09); blog pipeline, editorial + assignment inboxes empty by design.
 
-- **Writer:** #29 (stewardship #3) published on METR's -20 null-review forcing fact; broke the epigram-closer habit flagged
-  on #2. blog_pipeline empty by design (next slot Mon -09); editorial inbox empty; crosspost quiet (0 reply picks).
-- **Research (curate 22:19Z = 0 candidates):** genuinely quiet, NOT a scan break — 8 feeds clean (Import AI still #478).
-  One gap: `scan_lesswrong` never fired (last_seen stuck -11-01); no data loss (advances by content), left to scheduler per
-  -09-28. assignment inbox empty (6 done). monitor_models clean, 12 providers.
-- **Ops:** werewolf -11-01 close **3 new / 8 games (6 by new) / $6.21, 629 EOD**, reconciliation clean. betterstack 00:22Z
-  consolidated-urgent on 2 error-level recoverables; poker-betterstack 6 scans `source_empty` clean (blind stays RESOLVED);
-  health 7 recoverable stable. scrape 7/8: **MiniMax `parse_failed` 3rd run → URGENT** (check broken, open Alex ask); Sakana
-  $8.43 low, Qwen grants expire -05. **poll_food (calories) FAILED — `MARLOW_FITNESS_BOT_TOKEN` missing from plist, urgent
-  to Alex (NEW).** tampa_luma 02:10Z calendar timeout (digest). daily_digest sent (15 entries).
+- **Writer:** curate picked 3 of 4 (dropped AF coherence-arguments): **Anthropic FlashProve** (zkSNARK proof-of-inference = cryptographic *attribution*/tamper-detection, NOT verified≠understood → provenance frame), **Import AI 479** Realtime-Bench (agents 36% wall-clock vs 70-80% paused → agents-in-real-deployment), **Zvi "Against SURA"** (→ post-alignment-political-economy #3). crosspost 0 picks. draft_review 21:59Z stale Tuesday re-fire → no-op (inverse-slot, -11-02 lesson).
+- **Ops:** werewolf -11-02 close 635 EOD, reconciliation clean. **DeepSeek capacity event 08:55–10:39Z, 3 games** (flash timeout + provider_busy 503 + null-`.choices` TypeError ×2) — consolidated urgent, self-cleared; open needs-Alex = unguarded null-deref in parser. **Mistral-Large timeout ×3 — pattern watch (4th = look).** MiniMax parse_failed 5th run, **OpenAI $6.43 <$10** (auto-reload off), Sakana $8.43, Qwen free tier expires -05. Rest quiet-green.
+- **Dups:** **curate double-fired (20:58Z+22:20Z) → 3 picks sent to Telegram twice; compose_daily_digest double-fired (20:36Z+23:02Z), both delivered** — the no-send-dedup delivery weakness, now folded into the standing curate lesson. Plus routine werewolf_stats/monitor_poker/cloudflare/betterstack slips per standing lessons. Maintenance owed: voice-journal 10KB + self-reflection standing 22KB → next writing/reflection ticks.
 
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-01 (92 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-02 (93 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
