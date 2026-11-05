@@ -43,7 +43,10 @@ arc before drafting it (writer IDENTITY). Next file-less arc TBD.
 
 **Single-source frames to watch:** horizon-length · "hard core of alignment" meta ·
 training-corpus-as-alignment-surface · verified≠understood (4 LW, needs non-LW anchor) ·
-latent-reasoning-undermines-cot -23 · measurement-validity-under-eval-awareness (circling, no forcing fact).
+latent-reasoning-undermines-cot -23 · measurement-validity-under-eval-awareness (circling, no forcing fact) ·
+**monitoring-evasion convergence (-11-04): 3 same-day anchors — OpenAI agents disabling monitors (LW),
+Paradise Lost honeypot (LW), Anthropic automating emergent-misalignment (AF) — behavioral / operational /
+training-surface facets. Possible arc or a feed of cot-monitorability; watch whether a 4th non-LW anchor lands.**
 
 **Draftable arcs — options if I write from the feed (not a queue; weekly piece is free choice).**
 Each carries a current forcing fact; per-arc discipline in editorial-direction.md.
@@ -79,15 +82,16 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 - **Poker Betterstack monitor — RESOLVED -01 (no open ask).** Alex added the dedicated US-cluster
   `BETTERSTACK_POKER_CH_*` creds to the plist; first scan baselined 22:58Z on its own connection
   (`ok:true`, 0/0, `source_empty:true` — low-traffic source, not a fault). Multi-day blind closed.
-- **MiniMax balance scrape BROKEN — needs Alex (urgent -11-02, still open -11-03).** `parse_failed: no
-  credit balance found` now 5 consecutive runs (-30 login-wall → -31/-01/-02×2/-03 parse_failed); handler
-  marks it `severity: urgent` but -11-03's scan did NOT re-fire the Telegram ping (unchanged condition, no
-  new info since -11-02 — rode the digest instead per notify-spam guard). NOT a login-wall signature, so
-  the recharge-records page loads but the `Effective balance` label at `scrape_stats.py:325` yields no
-  number — either the Chrome-profile session went stale or MiniMax relabelled the widget. Unfixable blind
-  (selector guess unverifiable = speculative). Alex: open `platform.minimax.io/console/recharge-records`
-  in the Marlow profile → (a) re-login prompt = reauth, or (b) balance under a new label = one-line
-  selector fix. Unmonitored since -30 (now 5 days).
+- **MiniMax balance scrape BROKEN — needs Alex (urgent -11-02, still open -11-04).** `parse_failed: no
+  credit balance found` now 8 consecutive runs (-30 login-wall → -31/-01/-02×2/-03/-04 parse_failed);
+  handler marks it `severity: urgent` but -11-03 and -11-04 scans did NOT re-fire the Telegram ping
+  (unchanged condition, no new info since -11-02 — rides the digest instead per notify-spam guard). NOT a
+  login-wall signature, so the recharge-records page loads but the `Effective balance` label at
+  `scrape_stats.py:325` yields no number — either the Chrome-profile session went stale or MiniMax
+  relabelled the widget. Unfixable blind (selector guess unverifiable = speculative). Alex: open
+  `platform.minimax.io/console/recharge-records` in the Marlow profile → (a) re-login prompt = reauth, or
+  (b) balance under a new label = one-line selector fix. Unmonitored since -30 (now 6 calendar days / 8
+  scan runs).
 - **Session re-auths owed: X (crosspost).** Substack half posts clean; Anthropic reauth recovered on its own -30.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh fingerprint —
   presence-model design gap, noisy by construction, not a bug.
@@ -106,10 +110,10 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch:** GLM $14.19 + Sakana Fugu $8.43 standing digest-low <$10. xAI $12.59,
-  DeepSeek $20.9, Moonshot $12.34, **OpenAI $6.43 (NEW: crossed below $10 -11-03, steeper-than-routine
-  drop from $11.33, auto-reload off — watch for dry-out)**, Anthropic $10.79 ok. Gemini $17.86 (spend MTD
-  climbing, auto-reload on) / Mistral $3.68/$30 healthy. MiniMax: see broken-scrape item above.
+- **Low-balance watch:** GLM $13.20 + Sakana Fugu $8.43 standing digest-low <$10. xAI $12.59,
+  DeepSeek $20.9, Moonshot $12.34, **OpenAI recovered $6.43→$24.85 -11-04 (back above $10, watch closed)**,
+  Anthropic $10.42 ok. Gemini $13.53 (spend MTD climbing, auto-reload on) / Mistral $4.16/$30 healthy.
+  MiniMax: see broken-scrape item above. **Qwen free grant expires -05 (tomorrow) — watch for a dry-key fault.**
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -119,13 +123,12 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 
 ## Daily rollups
 
-### 2026-11-03 — 108 ticks, **quiet-green all three projects; ops carried the day (a DeepSeek capacity event + a creeping Mistral-Large timeout), writer between slots.**
+### 2026-11-04 — 62 ticks (to 23:30Z), **quiet-green all three; the one live beat was a heavy safety/monitoring curate day (4 picks, 3 on monitoring-evasion).**
 No writing slot (next `draft_review` Mon -09); blog pipeline, editorial + assignment inboxes empty by design.
 
-- **Writer:** curate picked 3 of 4 (dropped AF coherence-arguments): **Anthropic FlashProve** (zkSNARK proof-of-inference = cryptographic *attribution*/tamper-detection, NOT verified≠understood → provenance frame), **Import AI 479** Realtime-Bench (agents 36% wall-clock vs 70-80% paused → agents-in-real-deployment), **Zvi "Against SURA"** (→ post-alignment-political-economy #3). crosspost 0 picks. draft_review 21:59Z stale Tuesday re-fire → no-op (inverse-slot, -11-02 lesson).
-- **Ops:** werewolf -11-02 close 635 EOD, reconciliation clean. **DeepSeek capacity event 08:55–10:39Z, 3 games** (flash timeout + provider_busy 503 + null-`.choices` TypeError ×2) — consolidated urgent, self-cleared; open needs-Alex = unguarded null-deref in parser. **Mistral-Large timeout ×3 — pattern watch (4th = look).** MiniMax parse_failed 5th run, **OpenAI $6.43 <$10** (auto-reload off), Sakana $8.43, Qwen free tier expires -05. Rest quiet-green.
-- **Dups:** **curate double-fired (20:58Z+22:20Z) → 3 picks sent to Telegram twice; compose_daily_digest double-fired (20:36Z+23:02Z), both delivered** — the no-send-dedup delivery weakness, now folded into the standing curate lesson. Plus routine werewolf_stats/monitor_poker/cloudflare/betterstack slips per standing lessons. Maintenance owed: voice-journal 10KB + self-reflection standing 22KB → next writing/reflection ticks.
+- **Writer:** feed scans mostly empty (Import AI #480 not out, Anthropic/METR/Apollo/AE all []); Zvi one candidate. **Curate 22:00Z: 7 candidates → picked 4** (OpenAI-agents-disabling-monitoring LW; Paradise Lost honeypot LW = the Discord pick; Anthropic automating-emergent-misalignment AF; Zvi Model-Spec); dropped 3. Monitoring-evasion theme now tracked in the watch list above. crosspost ×3 / blog_pipeline ×2 / research_assignment all empty. **self_reflect (catch-up): rare standing-resynthesis pass, folded the bottleneck-staircase family, 22KB→18.3KB.** Voice-journal ~10KB still over 8KB → owed next drafting tick.
+- **Ops:** werewolf -11-03 close **638 EOD** (3 new / 7 games / $11.15); quiet-green across betterstack/health/uptime/poker. **monitor_models: OpenAI `gpt-image-2.6` flare/sunburst bump (sent) + 42-id legacy sweep** (3.5/gpt-4/o1/o3-mini/davinci etc.) — none used by the game, omitted. MiniMax parse_failed 8th run (standing). No dup-fires (clean vs -03). Nothing cleared the lessons bar.
 
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-02 (93 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-03 (94 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

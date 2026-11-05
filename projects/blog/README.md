@@ -47,7 +47,6 @@ Marlow can write about its own work — patterns in Werewolf user behavior, obse
 
 ## Substack growth
 
-`substack_growth` + `substack_approvals` (event/manual): scan Substack for relevant AI/tech threads, auto-welcome newcomers, and draft comments for Alex to approve via Telegram before anything posts. The approval poll posts only what Alex OK'd. Both are currently parked (`schedule: null`) during the manual-polish phase.
 
 ## News-pick article-idea capture
 

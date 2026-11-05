@@ -184,8 +184,6 @@ For dynamic work (e.g. "process every pending food entry"), use `decompose_handl
 | writer | blog | `draft_review` | `draft_article` | weekly, Mon 14:00 |
 | writer | blog | `process_editorial_feedback` | `process_editorial_feedback` | every 6h |
 | writer | blog | `crosspost` | `crosspost` | hourly |
-| writer | blog | `substack_growth` | `substack` | event/manual |
-| writer | blog | `substack_approvals` | `substack` | event/manual |
 | writer | _framework | `grade_memory` | `grade_memory` | daily 23:30 |
 | writer | _framework | `self_reflect` | `self_reflect` | every 2 days, 13:00 |
 | ops | research | `monitor_models` | `monitor_models` | every 2h at :15 |
@@ -297,7 +295,6 @@ The autonomous gate is the **pre-publish-pauses list** (`memory/pre-publish-paus
 
 **Werewolf coverage guardrails:** generic reflections ("running an AI-bot game taught me X about LLM behavior") are fine; specifics (user counts, churn, keys, pricing, infra) are never published. Posts that mention werewolf-ops get stricter review automatically.
 
-**Substack growth** (`substack_growth` + `substack_approvals`): scans Substack for relevant AI/tech threads, auto-welcomes newcomers, and drafts comments for Alex to approve via Telegram before anything posts. The approval poll posts only what Alex OK'd.
 
 **News-pick article-idea capture** (`crosspost`, hourly): the surviving half of a retired auto-post loop. When `daily_news_curate` sends each news pick as its own Telegram message, this handler polls for Alex's replies; a reply means "I want to write about this," and the item + his comment is saved to `projects/research/article-ideas/<date>-<slug>.md`. Simona reads that folder when Alex asks "anything from Marlow's findings?" and they craft the piece together — Marlow does not draft or post it. The original loop (draft in Alex's voice → auto-post to Substack/X via the `substack`/`x` handlers) was retired 2026-06-05 after a day: daily posting read as noise, and Alex wants to own his own hooks. The posting machinery is kept dormant in case we co-post from here later. (See DEVLOG 2026-06-05.)
 
@@ -330,7 +327,7 @@ Shared Python under `tools/`, called by handlers:
 - `notify.py` — Telegram notify bot, `notify_alex(message, urgency: "urgent" | "digest")`.
 - `fitness_bot.py` / `calorie_db.py` — the `@marlow_fitness_bot` channel + the calorie SQLite store.
 - `transcribe.py` — local voice-note transcription (faster-whisper, no API cost) for `poll_food`.
-- `telegram_poll.py` — the shared inbound `getUpdates` poller; reply-matching for `crosspost` and `substack_approvals` (they must not both poll at once — they'd consume each other's replies).
+- `telegram_poll.py` — the shared inbound `getUpdates` poller; reply-matching for `crosspost` (keep it the sole inbound poller, or two pollers consume each other's replies).
 - `crosspost_store.py` / `substack_store.py` — persistence for the news-pick and Substack flows.
 - `cost.py` + `budget/` — cost-API helpers and per-provider budget modules; plus a browser scrape (persistent Chrome profile) for the no-API providers — all for key monitoring.
 - `rss_reader.py` / `sitemap_reader.py` — feed readers for research.
