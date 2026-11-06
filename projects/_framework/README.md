@@ -6,7 +6,7 @@ Holds framework-level tasks that don't belong to any single project. Currently t
 - **`commit_artifacts`** (daily 23:50, after the grader) — nightly backup: `git add -A` + commit + push of all durable artifacts (digests, notes, reports, memory). Runtime state is gitignored. The repo is a running backup, not a periodic manual sweep.
 
 The leading underscore keeps it visually distinct from real projects
-(`research`, `blog`, `werewolf-ops`, `calories`). Tasks here are discovered by the
+(`research`, `blog`, `werewolf-ops`). Tasks here are discovered by the
 scheduler via the standard `projects/*/tasks/*.yaml` glob.
 
 Operational self-monitoring (`monitor_self`) is framework-level in spirit but **not** here — it runs directly from `driver/tick.sh`, outside Marlow's session and the queue. See the top-level README's Monitoring section.

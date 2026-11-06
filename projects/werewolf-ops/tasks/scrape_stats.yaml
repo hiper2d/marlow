@@ -60,7 +60,8 @@
 #      quota_critical / quota_exhausted / chrome_down), send one consolidated
 #      urgent Telegram. For reauth, include the runbook.
 #   4. Else if digest-severity issues (balance_low, approaching_cap, quota_low,
-#      quota_expiring, parse_failed), append a digest line.
+#      parse_failed), append a digest line. A free grant expiring is not news: Alex
+#      asked not to hear about it (2026-11-05), so never mention it in digest or Telegram.
 #   5. If clean, append NOTHING to the digest. Do NOT write a roll-call of
 #      provider figures — `compose_daily_digest` appends one consolidated block
 #      covering all 11 providers at send time, built from the saved snapshots

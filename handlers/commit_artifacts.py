@@ -12,7 +12,7 @@ Fully deterministic; there is no editorial judgment here. The session just calls
 `snapshot` and relays the JSON result.
 
 Runtime state is excluded by .gitignore (tasks/queue.json, *_offset.json, the
-calorie DB, feed/budget state, substack poll state, etc.), so `git add -A` only
+feed/budget state, substack poll state, etc.), so `git add -A` only
 ever picks up durable content. Committing a draft here is a *backup*, not a
 publish — the public site only deploys from projects/blog/published/ — so this
 never touches the publish pipeline.

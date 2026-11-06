@@ -1356,3 +1356,34 @@ IDENTITY was changed to send on `news` for that reason.
 - No context-limit risk: peak single-turn context in 1,500 sessions was 137K (median 56K). The 500K+ per-tick figures are sums over turns.
 - The work Marlow exists for (drafting, reflection, curation) is ~2M tokens/day; hourly checks that find nothing are most of the rest.
 
+
+## 2026-11-05 - Triage of Marlow's open alerts: one real fix, one wrong diagnosis, one reauth
+
+*What landed*
+- **MiniMax scrape fixed (`handlers/scrape_stats.py`, MINIMAX js).** MiniMax relabelled "Effective balance" to "Available balance (USD)"; the session was never stale. Read `Available balance`, old label kept as fallback. `scrape_stats.py check minimax` on the live page: ok, $18.80. Blind since 10-30, 9 runs. Uncommitted at time of writing; the next nightly snapshot or Alex picks it up.
+
+*Things that surprised us*
+- **The `poll_food` alert is a phantom and her suggested fix is harmful.** `poll_food.yaml` is `.disabled`. The fitness bot token was repurposed as the Monitoring bot on 09-22 (`TELEGRAM_MONITOR_*`), so adding the old token back to the plist would let `poll_food` eat Monitoring replies. Reviving calories needs a new bot. Nothing is broken today beyond the tracker being off, which it has been since September.
+- **Why a June subtask fired on 11-02:** `com.marlow.tick.plist` lost its `writer` argument around the 11-01 poker creds edit (`.bak-20261103` has no argument). From 11-01 22:35Z to 11-03 20:16Z the writer loop ran unprofiled: it logged to `~/.marlow/log`, drained the legacy `tasks/queue.json`, and hit the stale `fetch_and_estimate_20260616_1524`. Fixed by the 11-03 15:16 local plist edit, which had no DEVLOG entry until now. Any plist rewrite must keep the profile argument.
+
+*What's deferred*
+- Anthropic console reauth (session really expired, confirmed login wall on platform.claude.com): needs Alex in a headful window.
+- `tasks/queue.json` still holds 11 orphaned subtasks. No loop reads it; left alone.
+- working.md still lists the `poll_food` ask, Marlow-owned; not edited pending Alex's call.
+
+*Open questions / things to watch*
+- Next `scrape_stats` scan should read MiniMax ok and close its streak; check it does.
+
+## 2026-11-05 (later) - Calorie tracker removed; Qwen expiry notice dropped
+
+*What prompted it.* Alex, on the `poll_food` alert: "We don't need this functionality at all. Can we entirely remove it?" And: "I don't need to be notified about Qwen free grant expiring."
+
+*What landed*
+- **Calorie tracker gone.** Deleted `handlers/poll_food.py`, `handlers/calorie_digest.py`, `tools/fitness_bot.py`, `tools/calorie_db.py`, `tools/transcribe.py`, `projects/calories/`, the ops IDENTITY section, README sections and table rows, env and gitignore entries, Simona's `calories` skill. `faster-whisper` removed from dependencies; it had no other consumer.
+- **Data kept out of the repo, not destroyed:** `calories.db`, 10 food photos/voice notes and state moved to `~/.marlow/archive/calories-2026-11-05/` (1.4M). They were gitignored, so a plain delete would have been unrecoverable. Alex can delete on his say.
+- **working.md:** removed the `poll_food` bullet from her Outstanding alerts, overriding the "pending Alex's call" note in the entry above. The rest of her file is untouched.
+- **Qwen:** removed the `quota_expiring` issue and `QUOTA_EXPIRY_WARN_DAYS` from `scrape_stats.py`, plus a line in `scrape_stats.yaml` telling the session not to mention grant expiry. Low-quota and exhausted alerts stay, since those change whether calls fail.
+
+*Still in old files on purpose:* `self-reflection.md` mentions of calories (hers), old reports and digests (history).
+
+*Reauths, same day.* Alex logged in; verified 14:13Z: `scrape_stats.py check anthropic` ok ($10.21, auto-reload on), `x.py session-check` logged_in. Removed the X re-auth bullet from working.md because no tick would ever close it; the Anthropic and MiniMax bullets should close on the next `scrape_stats` scan.

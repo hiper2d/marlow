@@ -6,3 +6,7 @@ New on the APIs:
 New on the APIs:
 - OpenAI: gpt-image-2.6-flare, gpt-image-2.6-sunburst — version bump of the gpt-image line (2.5 → 2.6), same flare/sunburst checkpoint pair as before.
 
+## 2026-11-05T16:35:15Z
+New on the APIs:
+- Google: gemini-omni-1.2-flash (version bump of the gemini-omni flash multimodal family, 1.1 -> 1.2)
+

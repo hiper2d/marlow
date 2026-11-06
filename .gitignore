@@ -52,12 +52,6 @@ projects/research/threads/_yt_transcripts/
 # Werewolf API-budget snapshots (runtime; written every monitor run)
 projects/werewolf-ops/state/*
 
-# Calorie tracker — runtime data: the SQLite log, Alex's food photos,
-# and the Telegram poll offset. Personal + regenerable, not source.
-projects/calories/calories.db
-projects/calories/inbox/
-projects/calories/state/
-
 # Substack growth — runtime poll state + pending comment outbox
 # (the outbox drains when Alex approves; the dir is kept via .gitkeep)
 projects/blog/substack/state.json

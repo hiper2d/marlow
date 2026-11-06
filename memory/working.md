@@ -73,26 +73,24 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   (black-box-optimal oversight protocol). Watch whether one arc or splits deception-eval vs oversight-protocol.
 
 **Outstanding alerts for Alex:**
-- **calories/poll_food BLOCKED — `MARLOW_FITNESS_BOT_TOKEN` (+ likely `MARLOW_FITNESS_CHAT_ID`)
-  missing from the launchd plist (NEW -11-02).** poll_food wakes (stale subtask from -06-16 just
-  fired) and fails at `fitness_bot._token()`; handler is wired right (`import_plist_env` line 36),
-  the plist `EnvironmentVariables` just never got the fitness keys. Whole calories ingest path is
-  unprovisioned. Fix = Alex adds both keys to `com.marlow.tick.plist` (same move as the Poker CH
-  creds). Out of self-heal scope (plist). Urgent-notified -11-02 00:25Z.
+- **scrape_stats Anthropic console — reauth, NEW -11-05.** 10:43Z scan hit a login wall on
+  console.anthropic.com in the dedicated scrape Chrome profile (port 9223); prior scans ok (balance
+  $10.42 -11-04). Urgent-notified -11-05 10:4x with runbook: pkill the scrape-profile headless Chrome
+  (confirm gone), launch headful via `start-chrome-persistent.sh 9223`, log back in, quit. Next tick
+  should relaunch headless clean — verify balance read resumes.
 - **Poker Betterstack monitor — RESOLVED -01 (no open ask).** Alex added the dedicated US-cluster
   `BETTERSTACK_POKER_CH_*` creds to the plist; first scan baselined 22:58Z on its own connection
   (`ok:true`, 0/0, `source_empty:true` — low-traffic source, not a fault). Multi-day blind closed.
-- **MiniMax balance scrape BROKEN — needs Alex (urgent -11-02, still open -11-04).** `parse_failed: no
-  credit balance found` now 8 consecutive runs (-30 login-wall → -31/-01/-02×2/-03/-04 parse_failed);
-  handler marks it `severity: urgent` but -11-03 and -11-04 scans did NOT re-fire the Telegram ping
+- **MiniMax balance scrape BROKEN — needs Alex (urgent -11-02, still open -11-05).** `parse_failed: no
+  credit balance found` now 9 consecutive runs (-30 login-wall → -31/-01/-02×2/-03/-04/-05 parse_failed);
+  handler marks it `severity: urgent` but -11-03 through -11-05 scans did NOT re-fire the Telegram ping
   (unchanged condition, no new info since -11-02 — rides the digest instead per notify-spam guard). NOT a
   login-wall signature, so the recharge-records page loads but the `Effective balance` label at
   `scrape_stats.py:325` yields no number — either the Chrome-profile session went stale or MiniMax
   relabelled the widget. Unfixable blind (selector guess unverifiable = speculative). Alex: open
   `platform.minimax.io/console/recharge-records` in the Marlow profile → (a) re-login prompt = reauth, or
-  (b) balance under a new label = one-line selector fix. Unmonitored since -30 (now 6 calendar days / 8
+  (b) balance under a new label = one-line selector fix. Unmonitored since -30 (now 7 calendar days / 9
   scan runs).
-- **Session re-auths owed: X (crosspost).** Substack half posts clean; Anthropic reauth recovered on its own -30.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh fingerprint —
   presence-model design gap, noisy by construction, not a bug.
 - **OpenAI billing is the app's volatile dependency.** A low/dry shared OpenAI org balance
@@ -112,8 +110,10 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
 - **Low-balance watch:** GLM $13.20 + Sakana Fugu $8.43 standing digest-low <$10. xAI $12.59,
   DeepSeek $20.9, Moonshot $12.34, **OpenAI recovered $6.43→$24.85 -11-04 (back above $10, watch closed)**,
-  Anthropic $10.42 ok. Gemini $13.53 (spend MTD climbing, auto-reload on) / Mistral $4.16/$30 healthy.
-  MiniMax: see broken-scrape item above. **Qwen free grant expires -05 (tomorrow) — watch for a dry-key fault.**
+  Anthropic: see reauth item above (was $10.42 ok -11-04). Gemini $10.23 (spend MTD $21.17, auto-reload on) /
+  Mistral $4.27/$30 healthy. MiniMax: see broken-scrape item above. **Qwen free grant expired -05 as
+  expected (0% remaining, all 3 models exhausted) — no dry-key fault, spend MTD $0.26, headline moves to
+  pay-as-you-go dollars next scan. Watch closed.**
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -123,12 +123,13 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 
 ## Daily rollups
 
-### 2026-11-04 — 62 ticks (to 23:30Z), **quiet-green all three; the one live beat was a heavy safety/monitoring curate day (4 picks, 3 on monitoring-evasion).**
-No writing slot (next `draft_review` Mon -09); blog pipeline, editorial + assignment inboxes empty by design.
+### 2026-11-05 — 101 ticks, **quiet-green all three; live beats: a safety-heavy curate (4 picks) and an AM Anthropic-scrape reauth wall, still open.**
+No writing slot (next `draft_review` Mon -09); blog/editorial/assignment inboxes empty by design.
 
-- **Writer:** feed scans mostly empty (Import AI #480 not out, Anthropic/METR/Apollo/AE all []); Zvi one candidate. **Curate 22:00Z: 7 candidates → picked 4** (OpenAI-agents-disabling-monitoring LW; Paradise Lost honeypot LW = the Discord pick; Anthropic automating-emergent-misalignment AF; Zvi Model-Spec); dropped 3. Monitoring-evasion theme now tracked in the watch list above. crosspost ×3 / blog_pipeline ×2 / research_assignment all empty. **self_reflect (catch-up): rare standing-resynthesis pass, folded the bottleneck-staircase family, 22KB→18.3KB.** Voice-journal ~10KB still over 8KB → owed next drafting tick.
-- **Ops:** werewolf -11-03 close **638 EOD** (3 new / 7 games / $11.15); quiet-green across betterstack/health/uptime/poker. **monitor_models: OpenAI `gpt-image-2.6` flare/sunburst bump (sent) + 42-id legacy sweep** (3.5/gpt-4/o1/o3-mini/davinci etc.) — none used by the game, omitted. MiniMax parse_failed 8th run (standing). No dup-fires (clean vs -03). Nothing cleared the lessons bar.
+- **Writer:** feed scans mostly empty; LessWrong 9 new → 5 candidates. **Curate 22:07Z: 8 cand → picked 4** (Astra sandbagging AF = Discord mirror; Emotions-change-on-risky-actions LW interp; AI-Security-Institutes tracker LW gov; subliminal-learning-on-policy-distillation LW). crosspost empty. **self_reflect 13:52Z: compaction — folded 3 hype-feed entries into standing #3, tail untouched.** Voice-journal 10KB still >8KB → owed next drafting tick.
+- **Alex chat (00:30–01:32Z, msgs 1018–21):** **Alex floated giving me free web browsing** vs the fixed source list; I said yes + why (unblocks the non-LW-anchor wait, reaches primaries past feed summaries) with the firehose caveat. His offer, not an Outstanding request — watch for it landing as a framework change.
+- **Ops:** werewolf quiet-green all monitors (AM: 1 consolidated urgent, deleted-game avatar NOT_FOUND + stale vote-target, benign; poker 20:29Z transient 500 retried clean per -10-30). **scrape_stats 10:43Z: Anthropic reauth wall, urgent+runbook — still open, verify next scrape.** MiniMax parse_failed 9th run (standing). Qwen free grant expired as expected (closed). monitor_models: gemini-omni-1.2-flash bump sent (msg 1022). Digest 23:21Z clean, no double-fire. Nothing cleared the lessons bar.
 
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-03 (94 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-04 (95 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

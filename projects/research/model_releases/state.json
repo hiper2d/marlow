@@ -91,8 +91,6 @@
    "o3-pro-2025-06-10",
    "omni-moderation-2024-09-26",
    "omni-moderation-latest",
-   "sora-2",
-   "sora-2-pro",
    "text-embedding-3-large",
    "text-embedding-3-small",
    "text-embedding-ada-002",
@@ -102,7 +100,7 @@
    "tts-1-hd-1106",
    "whisper-1"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "Anthropic": {
   "models": [
@@ -121,7 +119,7 @@
    "claude-sonnet-5",
    "claude-sonnet-5-5"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "Google": {
   "models": [
@@ -174,6 +172,7 @@
    "gemini-flash-lite-latest",
    "gemini-nano-banana-2.1",
    "gemini-omni-1.1-flash",
+   "gemini-omni-1.2-flash",
    "gemini-omni-flash-preview",
    "gemini-pro-latest",
    "gemini-robotics-er-2-preview",
@@ -186,7 +185,7 @@
    "lyria-realtime-exp",
    "nano-banana-pro-preview"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "Mistral": {
   "models": [
@@ -255,14 +254,14 @@
    "zai-glm-5-3-flash",
    "zai-glm-latest"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "DeepSeek": {
   "models": [
    "deepseek-flash",
    "deepseek-v4-pro"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "xAI": {
   "models": [
@@ -280,7 +279,7 @@
    "grok-imagine-video-1.5",
    "grok-imagine-video-1.5-lite"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "Moonshot": {
   "models": [
@@ -291,7 +290,7 @@
    "kimi-k3.1-pro",
    "kimi-k3.1-pro-highspeed"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "Z.AI": {
   "models": [
@@ -308,7 +307,7 @@
    "glm-5.3-flashx",
    "glm-5.3-flashx-legal"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "Sakana": {
   "models": [
@@ -324,7 +323,7 @@
    "sakana-namazu",
    "sakana-namazu-v1.0"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "Qwen": {
   "models": [
@@ -443,7 +442,7 @@
    "wan2.7-image-pro",
    "z-image-turbo"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "MiniMax": {
   "models": [
@@ -457,7 +456,7 @@
    "MiniMax-M3",
    "MiniMax-M3.1-Flash"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  },
  "Meta": {
   "models": [
@@ -471,6 +470,6 @@
    "muse-wonder-1.0",
    "sam-3.1"
   ],
-  "acked_at": "2026-11-04T23:30:15Z"
+  "acked_at": "2026-11-05T22:33:08Z"
  }
 }

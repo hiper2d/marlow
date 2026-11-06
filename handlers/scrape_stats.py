@@ -81,7 +81,6 @@ CRITICAL_CAP_FRAC = 0.95  # urgent
 # the crossover alone.
 QUOTA_LOW_PCT = 50.0       # digest
 QUOTA_CRITICAL_PCT = 20.0  # urgent
-QUOTA_EXPIRY_WARN_DAYS = 7  # digest — the grant expires on a date, not just on use
 # Consecutive runs of the SAME failure on the SAME provider before a digest
 # issue escalates to urgent. A one-off is console flakiness; a run of them is a
 # broken extractor that nobody is going to notice in a digest line.
@@ -322,7 +321,7 @@ MINIMAX = {
       const after=(label,win)=>{const i=t.indexOf(label); if(i<0)return null;
         const m=t.slice(i+label.length,i+label.length+(win||40))
                  .match(/\\$?\\s*([0-9][0-9,]*\\.?[0-9]*)/); return m?parseFloat(m[1].replace(/,/g,'')):null;};
-      return JSON.stringify({login_wall:false, balance:after('Effective balance'),
+      return JSON.stringify({login_wall:false, balance:after('Available balance')??after('Effective balance'),
         cash:after('Cash'), voucher:after('Voucher'), outstanding:after('Outstanding')});
     })()""",
 }
@@ -800,10 +799,6 @@ def _derive_issues(results: list[dict]) -> list[dict]:
                 issues.append({"severity": "digest", "kind": "quota_guarded", "target": name,
                                "detail": f"{name} auto-stop still ON for: {', '.join(others)}. "
                                          "Those fail instead of billing when their grant runs out."})
-            days = r.get("days_left")
-            if days is not None and days <= QUOTA_EXPIRY_WARN_DAYS:
-                issues.append({"severity": "digest", "kind": "quota_expiring", "target": name,
-                               "detail": f"{name} free tier expires in {days}d ({r.get('expires')}) — unused grant is lost."})
             if r.get("missing_models"):
                 # A tracked model that no longer resolves is either renamed or the
                 # search/layout changed; either way its grant is unwatched.

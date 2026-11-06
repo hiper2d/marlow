@@ -8,7 +8,7 @@ This is the **design doc** (the *why* and the *shape*). The append-only **`DEVLO
 
 **Goals.** Marlow does two jobs for Alex:
 
-1. **Background operations** - watch Alex's apps and AI-provider budgets, collect AI news, track calories from Telegram photos, and ping Alex only when something needs him.
+1. **Background operations** - watch Alex's apps and AI-provider budgets, collect AI news, and ping Alex only when something needs him.
 2. **A writer** - explore the world of AI and document it on her own blog: one piece a week, on anything she chooses (it doesn't have to come from the news she collects).
 
 A continuous tick-driven agent that runs on Alex's laptop while it's open. Each session is a single **tick**: the driver wakes Marlow with one subtask, Marlow executes it, writes an outcome, and exits. Marlow never decides *what* to work on — the driver owns scheduling; Marlow owns the work.
@@ -16,7 +16,7 @@ A continuous tick-driven agent that runs on Alex's laptop while it's open. Each 
 **As of 2026-06-16, Marlow runs as two independent loops sharing one codebase** — this split is the central design fact:
 
 - **writer** (`com.marlow.tick`) — runs **research** and **blog**. Loads the writer profile (`profiles/writer/IDENTITY.md`).
-- **ops** (`com.marlow-ops.tick`) — a lean utility loop. Runs **werewolf-ops** monitoring and **calories**. Loads the short ops profile (`profiles/ops/IDENTITY.md`): wake, run one monitoring/ingestion handler, exit.
+- **ops** (`com.marlow-ops.tick`) — a lean utility loop. Runs **werewolf-ops** monitoring. Loads the short ops profile (`profiles/ops/IDENTITY.md`): wake, run one monitoring/ingestion handler, exit.
 
 Two launchd agents, two queues, two locks, two heartbeats — one engine (`driver/`, `handlers/`, `tools/`). Why split: **(1) failure isolation** — under the old single loop a heavy or wedged writer tick (`draft_article` has timed out before) blocked the reliability-critical monitoring behind it on a shared lock + queue; separate loops can't starve each other. **(2) cost and context** — ops ticks run on a cheaper model with a short profile, so the long writer profile stays out of every monitoring tick. Mechanism in Driver and Profiles and rule files; build in DEVLOG 2026-06-16.
 
@@ -25,7 +25,6 @@ Marlow's work is organized into **projects** — discrete domains with their own
 - **research** (writer) — accumulates AI safety/alignment news, tracks multi-day editorial threads, surfaces emerging stories.
 - **blog** (writer) — autonomously drafts, self-reviews, and publishes editorial articles to a public Astro site ([marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev)); also runs Substack growth.
 - **werewolf-ops** (ops) — monitors API-key budgets, Cloudflare health, and gameplay stats for the AI Werewolf game.
-- **calories** (ops) — ingests Alex's food photos/notes from a Telegram bot, estimates calories + macros, sends a daily digest.
 
 A fifth folder, **`_framework`**, holds cross-cutting maintenance split across the loops: `grade_memory` (writer) and `commit_artifacts` (ops, the nightly repo-wide backup).
 
@@ -108,9 +107,8 @@ marlow/
 │   ├── blog/              ← public Marlow blog + Substack growth
 │   │   └── site/          ← Astro project (auto-deploys to Cloudflare on git push)
 │   ├── werewolf-ops/      ← key budgets, Cloudflare health, gameplay stats
-│   ├── calories/          ← food intake tracking (calories.db + inbox/)
 │   └── _framework/        ← cross-cutting maintenance tasks (memory grading)
-├── tools/                 ← shared Python tools handlers call (notify, calorie_db, fitness_bot, …)
+├── tools/                 ← shared Python tools handlers call (notify, …)
 ├── plans/                 ← design notes (budget providers, assignments, …)
 └── tasks/
     ├── queue.<loop>.json          ← runtime queue, one per loop (writer/ops); gitignored
@@ -118,7 +116,7 @@ marlow/
     └── completed/<loop>/          ← per-loop, per-day archive of completed subtasks
 ```
 
-Each project owns its `README.md`, a `tasks/` folder of YAML task defs, and its deep state (research threads, blog drafts, ops reports, the calorie DB). Projects are a *human-facing organization*, not a runtime concept — within a loop, the scheduler runs whatever's due regardless of project. Each task declares which loop it belongs to via a `profile: writer|ops` field (see Task definitions); the two loops never see each other's tasks. Adding a project is a new folder under `projects/`; removing one is `rm -rf`.
+Each project owns its `README.md`, a `tasks/` folder of YAML task defs, and its deep state (research threads, blog drafts, ops reports). Projects are a *human-facing organization*, not a runtime concept — within a loop, the scheduler runs whatever's due regardless of project. Each task declares which loop it belongs to via a `profile: writer|ops` field (see Task definitions); the two loops never see each other's tasks. Adding a project is a new folder under `projects/`; removing one is `rm -rf`.
 
 ## Driver — the scheduler
 
@@ -194,8 +192,6 @@ For dynamic work (e.g. "process every pending food entry"), use `decompose_handl
 | ops | werewolf-ops | `monitor_cloudflare` | `monitor_cloudflare` | daily 09:00 |
 | ops | werewolf-ops | `scrape_stats` | `scrape_stats` | daily 09:00 |
 | ops | werewolf-ops | `werewolf_stats` | `werewolf_stats` | daily 05:05 UTC (just after local midnight) |
-| ops | calories | `poll_food` | `poll_food` | every tick (20 min) |
-| ops | calories | `daily_calorie_digest` | `calorie_digest` | daily 12:00 (~07:00 ET, prior day closed) |
 | ops | _framework | `commit_artifacts` | `commit_artifacts` | daily 23:50 |
 
 `monitor_self` (the operational self-audit) is not in this table — it isn't a scheduled queue task. Each loop's driver runs it directly from `tick.sh`, once per UTC day, before the lock and outside Marlow's session, scoped to that loop's own state (see Driver and Monitoring).
@@ -225,7 +221,6 @@ Each handler is one file under `handlers/`, invoked by the driver with the subta
 - **Research:** `process_rss_feed`, `process_sitemap_feed`, `research_assignment`, `curate_news_digest`, `compose_daily_digest`, `fetch_article`, `monitor_models` (ops: new models on the 12 provider APIs → news chat).
 - **Blog:** `draft_article`, `self_review`, `revise_draft`, `publish_article`, `blog_pipeline`, `generate_header_image`, `process_editorial_feedback`, `substack`, `crosspost` (poll Telegram → save Alex-flagged news picks as article ideas; legacy auto-draft/post machinery dormant), `x` (browser-driven X posting, dormant — kept from the retired crosspost loop).
 - **Werewolf-ops:** `monitor_keys`, `monitor_health`, `monitor_betterstack`, `monitor_cloudflare`, `monitor_uptime`, `scrape_stats`, `werewolf_stats`.
-- **Calories:** `poll_food`, `calorie_digest`.
 - **Framework:** `grade_memory`, `commit_artifacts` (nightly `git add -A` + commit + push of durable artifacts), `framework_fix` (the self-heal handler — Marlow may fix *tools* it has diagnosed, never identity files).
 - **Driver-level:** `monitor_self` (operational self-audit, run by `tick.sh` outside Marlow's session — see Monitoring).
 
@@ -262,7 +257,7 @@ The **daily grader** (`grade_memory`, 23:30 UTC) is memory maintenance, not a qu
 
 **Durability.** Publishing only commits published articles, so a nightly `commit_artifacts` tick (23:50, after the grader) runs `git add -A` + commit + push — backing up all durable artifacts (digests, notes, reports, memory) to the remote. Runtime state is gitignored and excluded. The repo is a running backup, not a periodic manual sweep.
 
-Each project additionally keeps its own deep state under `projects/<name>/`: research threads, blog drafts, ops reports, the calorie DB. Working memory is the cross-project index; project folders are the per-project depth.
+Each project additionally keeps its own deep state under `projects/<name>/`: research threads, blog drafts, ops reports. Working memory is the cross-project index; project folders are the per-project depth.
 
 ## Projects
 
@@ -311,22 +306,11 @@ Operational monitoring for the AI Werewolf game. **Live.** Four axes: what the f
 
 Balance state persists to `driver/budget_state.py` storage; recall the latest with `budget_state.py show`.
 
-### Calories
-
-Tracks what Alex eats, end to end on-device. He sends food photos and/or text/voice notes to **`@marlow_fitness_bot`** (a separate Telegram bot from the notify bot).
-
-- **`poll_food`** (every tick): pulls new messages, downloads photos, transcribes voice notes locally (faster-whisper, no API cost), and inserts pending rows into `projects/calories/calories.db`. Marlow then **estimates calories + macros itself** — it *is* the vision model, no external API call — storing a kcal *range* (never fake-exact) with a confidence level. It also classifies corrections ("only ate half the burrito") and goal-setting messages ("aim 2000 kcal, 160g protein") rather than logging them as new food, and asks Alex to disambiguate when it can't tell which entry he means.
-- **`daily_calorie_digest`** (daily 12:00 UTC, ~07:00 ET): a morning-after summary of the *prior* day's intake vs. goal with a short comment. Sent after the ET day has fully closed, not at its tail — an earlier ~23:00-ET slot was cutting the day off before late meals landed (DEVLOG 2026-06-10).
-
-Simona can review the same data on demand via the `calories` skill (`tools/calorie_db.py`).
-
 ## Tools
 
 Shared Python under `tools/`, called by handlers:
 
 - `notify.py` — Telegram notify bot, `notify_alex(message, urgency: "urgent" | "digest")`.
-- `fitness_bot.py` / `calorie_db.py` — the `@marlow_fitness_bot` channel + the calorie SQLite store.
-- `transcribe.py` — local voice-note transcription (faster-whisper, no API cost) for `poll_food`.
 - `telegram_poll.py` — the shared inbound `getUpdates` poller; reply-matching for `crosspost` (keep it the sole inbound poller, or two pollers consume each other's replies).
 - `crosspost_store.py` / `substack_store.py` — persistence for the news-pick and Substack flows.
 - `cost.py` + `budget/` — cost-API helpers and per-provider budget modules; plus a browser scrape (persistent Chrome profile) for the no-API providers — all for key monitoring.
@@ -341,7 +325,7 @@ Telegram. Two urgency modes, a forced structural choice:
 - **`urgent`** — immediate message. Blocking situations only: a key over budget, an expired provider auth, a fast-moving draft ready for review. Marlow *can't* ping urgently for "I read an interesting paper."
 - **`digest`** — appended to today's digest file, sent as one message at end of day. Research thread updates, drafts awaiting review, ops summaries.
 
-If urgent volume exceeds ~3/day for a week, recalibrate the prompt. The calorie tracker speaks on its own `@marlow_fitness_bot` channel, separate from these.
+If urgent volume exceeds ~3/day for a week, recalibrate the prompt.
 
 **Conversation with Alex.** The news Telegram chat is two-way. The hourly `crosspost poll` files every message Alex sends there into `memory/inbox-from-alex.md`; the writer reads it every tick and answers with `tools/alex_chat.py reply`, or starts a message with `alex_chat.py send` (change requests, problems, observations; capped at 3 a day). News replies still become article ideas and article reactions still go to `reactions.jsonl`.
 
@@ -386,7 +370,7 @@ marlow reject <slug>       reject a held blog draft
 ## Setup
 
 - One-time `claude login` on the laptop so launchd-invoked sessions inherit auth via the Keychain.
-- Telegram bots created via @BotFather (notify bot + `@marlow_fitness_bot`), tokens + chat_id in `.env` / the plist.
+- Telegram bots created via @BotFather (news bot + Monitoring bot), tokens + chat_id in `.env` / the plist.
 - Cloudflare Pages project linked to the repo for the Astro site (build `astro build`, output `dist`).
 - Per-provider credentials added as monitoring rolls out (see `plans/budget-providers.md`); Werewolf DB read-only creds, Firebase creds for key polling.
 - LaunchAgent installed via `marlow install` (or `bash driver/install-agent.sh`). The loop turns on once installed; pause anytime with `marlow pause`.
@@ -404,5 +388,5 @@ Marlow has been running continuously since early May 2026, well past the origina
 
 - Local GPU / uncensored models. Claude only.
 - Desktop port. Laptop-only for now.
-- Discord — **now planned** for the writer loop (Phase 3: post news + review/moderate a server), not yet built. Telegram remains the notify + calorie channel.
+- Discord — **now planned** for the writer loop (Phase 3: post news + review/moderate a server), not yet built. Telegram remains the notify channel.
 - Marlow ↔ Simona collaboration on shared work — each runs in its own repo, syncs shared skills by hand.
