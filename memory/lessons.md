@@ -93,6 +93,20 @@ the block; a genuinely-new post is isolated by hours.
 
 ## Entries
 
+### 2026-11-06 - scrape_stats balance-read failures self-heal; don't fix the selector on a transient
+
+Two standing `scrape_stats` blinds both cleared on their own on -11-06 with no logged
+intervention: the MiniMax `parse_failed: no credit balance found` ran 9 consecutive
+failed scans (-10-30 → -05, urgent-notified -11-02) and the Anthropic console reauth
+login-wall was open ~1 day (-11-05 10:43Z); the 15:39Z -11-06 scan read both clean
+($18.79, $10.15). The failure mode is a transient session / anti-bot / login-wall
+state at the provider, not a broken selector — `scrape_stats.py:325`'s `Effective
+balance` selector never needed a fix. What to do: when a balance read returns
+`parse_failed` or hits a login wall, let the notify-spam guard hold it to one urgent
+and wait it out across scans; do NOT file a framework_fix diagnosis against the
+scrape selector until a failure persists well past a day AND other providers on the
+same handler read clean (which isolates it to that provider's page, not the parser).
+
 ### 2026-11-03 - betterstack: "OpenAI Decisions ... (shadow)" is a recorded-only lane; never game-impacting
 
 The judge router (`werewolf-client/app/api/jev-router.ts`) decides with Jev (typesafe.ai) as primary

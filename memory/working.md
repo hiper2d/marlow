@@ -73,24 +73,17 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   (black-box-optimal oversight protocol). Watch whether one arc or splits deception-eval vs oversight-protocol.
 
 **Outstanding alerts for Alex:**
-- **scrape_stats Anthropic console — reauth, NEW -11-05.** 10:43Z scan hit a login wall on
-  console.anthropic.com in the dedicated scrape Chrome profile (port 9223); prior scans ok (balance
-  $10.42 -11-04). Urgent-notified -11-05 10:4x with runbook: pkill the scrape-profile headless Chrome
-  (confirm gone), launch headful via `start-chrome-persistent.sh 9223`, log back in, quit. Next tick
-  should relaunch headless clean — verify balance read resumes.
+- **scrape_stats Anthropic console reauth — RESOLVED -11-06 (no open ask).** Open since -11-05 10:43Z
+  login wall; the 15:39Z -11-06 scan read the balance clean ($10.15, auto-reload on) with no manual
+  action logged — session must have been refreshed between scans. Watch closed.
 - **Poker Betterstack monitor — RESOLVED -01 (no open ask).** Alex added the dedicated US-cluster
   `BETTERSTACK_POKER_CH_*` creds to the plist; first scan baselined 22:58Z on its own connection
   (`ok:true`, 0/0, `source_empty:true` — low-traffic source, not a fault). Multi-day blind closed.
-- **MiniMax balance scrape BROKEN — needs Alex (urgent -11-02, still open -11-05).** `parse_failed: no
-  credit balance found` now 9 consecutive runs (-30 login-wall → -31/-01/-02×2/-03/-04/-05 parse_failed);
-  handler marks it `severity: urgent` but -11-03 through -11-05 scans did NOT re-fire the Telegram ping
-  (unchanged condition, no new info since -11-02 — rides the digest instead per notify-spam guard). NOT a
-  login-wall signature, so the recharge-records page loads but the `Effective balance` label at
-  `scrape_stats.py:325` yields no number — either the Chrome-profile session went stale or MiniMax
-  relabelled the widget. Unfixable blind (selector guess unverifiable = speculative). Alex: open
-  `platform.minimax.io/console/recharge-records` in the Marlow profile → (a) re-login prompt = reauth, or
-  (b) balance under a new label = one-line selector fix. Unmonitored since -30 (now 7 calendar days / 9
-  scan runs).
+- **MiniMax balance scrape — RESOLVED -11-06 (no open ask).** `parse_failed: no credit balance found`
+  ran 9 consecutive scans (-30 login-wall → -31 through -05); urgent-notified -11-02, never re-fired per
+  notify-spam guard. The 15:39Z -11-06 scan read the balance clean ($18.79, cash) — whatever broke the
+  `Effective balance` selector/session at `scrape_stats.py:325` stopped reproducing on its own. Watch
+  closed; no selector fix was needed after all.
 - **BetterStack `Game action failed: <char>`** pages urgent on every fresh fingerprint —
   presence-model design gap, noisy by construction, not a bug.
 - **OpenAI billing is the app's volatile dependency.** A low/dry shared OpenAI org balance
@@ -108,12 +101,11 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch:** GLM $13.20 + Sakana Fugu $8.43 standing digest-low <$10. xAI $12.59,
-  DeepSeek $20.9, Moonshot $12.34, **OpenAI recovered $6.43→$24.85 -11-04 (back above $10, watch closed)**,
-  Anthropic: see reauth item above (was $10.42 ok -11-04). Gemini $10.23 (spend MTD $21.17, auto-reload on) /
-  Mistral $4.27/$30 healthy. MiniMax: see broken-scrape item above. **Qwen free grant expired -05 as
-  expected (0% remaining, all 3 models exhausted) — no dry-key fault, spend MTD $0.26, headline moves to
-  pay-as-you-go dollars next scan. Watch closed.**
+- **Low-balance watch:** GLM $11.96 + Sakana Fugu $8.43 standing digest-low <$10. xAI $12.59,
+  DeepSeek $20.9, Moonshot $12.34, OpenAI $21.71 (recovered -11-04, watch closed), Anthropic $10.15
+  (reauth resolved -11-06, see above). Gemini $34.33 (spend MTD $26.74, auto-reload on, topped up $25
+  -11-05) / Mistral $4.37/$30 healthy. MiniMax $18.79 (scrape resolved -11-06, see above). Qwen free
+  grant expired -05 as expected, spend MTD $0.26 pay-as-you-go. Watch closed.
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -122,6 +114,12 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 (None open. New requests: send them to Alex via `tools/alex_chat.py send` and list them here.)
 
 ## Daily rollups
+
+### 2026-11-06 — 62 ticks, quiet-green all three; two standing scrape blinds self-cleared and a heavy 5-pick AI-R&D curate.
+No writing slot (next `draft_review` Mon -09); blog/editorial/assignment inboxes empty all day.
+
+- **Writer:** heavy feed day, many candidates — LessWrong 10→8, Anthropic Research (accelerating-scientific-research), Anthropic News (2: biorisk open-call + guest-investigators), METR sitemap (1 new: review of Anthropic Aug risk report). ImportAI still #479, Apollo/AE Studio empty. **Curate 22:38Z: 14 cand → picked 5** across threads (METR AI-R&D-accel assessment = Discord mirror on the ~2x number; METR risk-report review; GPT-6 Astra covert sabotage; corrigibility-not-only-target; LTBT mechanics). Archive note flags **automated-ai-rd #6 and stewardship #4 both now carry genuine new events for Mon draft_review.** All crosspost polls empty (no Alex replies). Voice-journal still >8KB, owed next drafting tick.
+- **Ops:** werewolf quiet-green all monitors. betterstack 12:47Z: one `device_link` incident (informational/digest-sev, not abuse). **scrape_stats 15:39Z: BOTH standing blinds self-cleared with no logged intervention** — Anthropic reauth wall (open -11-05) and MiniMax `parse_failed` (9 runs, open -10-30) both read clean; closed both out of Outstanding alerts (→ new lesson, don't rush a selector fix on a transient). werewolf_stats -11-05 close: 4 new / 4 games / $1.90 spend, reconciliation clean. monitor_models clean all day. Sakana $8.43 still <$10 digest-low (standing).
 
 ### 2026-11-05 — 101 ticks, **quiet-green all three; live beats: a safety-heavy curate (4 picks) and an AM Anthropic-scrape reauth wall, still open.**
 No writing slot (next `draft_review` Mon -09); blog/editorial/assignment inboxes empty by design.
