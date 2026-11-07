@@ -36,22 +36,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import _memory_compact  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DRAFTS = REPO_ROOT / "projects" / "blog" / "drafts"
 MEMORY = REPO_ROOT / "memory"
-THREADS = REPO_ROOT / "projects" / "research" / "threads"
-VOICE_JOURNAL = MEMORY / "voice-journal.md"
-# The voice journal is append-only per review and, until now, had no bound at
-# all - no threshold, no flag, no instruction to distill. It reached 35KB and is
-# loaded on every drafting and review tick. Same protected-tail contract as the
-# self-reflection diary: the newest entries stay verbatim, older ones fold into
-# "Standing craft notes", and that standing section is re-synthesized rarely.
-VOICE_JOURNAL_STANDING_HEADING = "## Standing craft notes"
-VOICE_JOURNAL_PROTECT = 3
-VOICE_JOURNAL_COMPACT_THRESHOLD_BYTES = 8_000
-VOICE_JOURNAL_STANDING_THRESHOLD_BYTES = 20_000
+WORK_NOTEBOOK = MEMORY / "notebook-work.md"   # craft notes live here now (2026-11-07)
 
 BEHAVIORAL_FILES = {
     "voice_guidelines": MEMORY / "voice-guidelines.md",
@@ -128,18 +117,10 @@ def materials(slug: str) -> dict:
         "draft_body": draft_body,
         "review_target": str((DRAFTS / f"{slug}.self-review.md").relative_to(REPO_ROOT)),
         "rubric": rubric,
-        "voice_journal": _read(VOICE_JOURNAL),
-        "voice_journal_path": str(VOICE_JOURNAL.relative_to(REPO_ROOT)),
-        # Pre-split for the compaction pass. Append the new entry first, then
-        # compact `compactable` only if `needs_compaction` is set. `protected`
-        # is never rewritten.
-        "voice_journal_split": _memory_compact.analyze(
-            VOICE_JOURNAL,
-            standing_heading=VOICE_JOURNAL_STANDING_HEADING,
-            protect=VOICE_JOURNAL_PROTECT,
-            threshold=VOICE_JOURNAL_COMPACT_THRESHOLD_BYTES,
-            standing_threshold=VOICE_JOURNAL_STANDING_THRESHOLD_BYTES,
-        ),
+        # Her work notebook (craft notes, ideas). She appends a craft entry
+        # after the verdict; condensing happens only in self_reflect.
+        "notebook_work": _read(WORK_NOTEBOOK),
+        "notebook_work_path": str(WORK_NOTEBOOK.relative_to(REPO_ROOT)),
         "verdict_options": ["ship", "revise", "hold-for-alex"],
     }
 
@@ -184,37 +165,6 @@ def commit_review(slug: str) -> dict:
     image_path = REPO_ROOT / "projects" / "blog" / "site" / "public" / "images" / f"{slug}.png"
     if image_path.exists():
         paths.append(str(image_path.relative_to(REPO_ROOT)))
-
-    # Thread files referenced in the draft's mentions — Marlow rewrites
-    # each one during drafting to reflect the new article (see
-    # memory/thread-structure.md). Ship the rewrite with this commit.
-    # A missing thread file is a drafting-tick miss: the article will ship
-    # with a mentions: link that 404s on the live site. Fail loudly so the
-    # drafting tick is redone (write or open the thread) before publish.
-    draft_meta, _ = _parse_frontmatter(_read(draft))
-    mentions = [
-        m.strip().strip('"').strip("'")
-        for m in draft_meta.get("mentions", "").strip("[]").split(",")
-        if m.strip()
-    ]
-    missing_threads = []
-    for thread_slug in mentions:
-        thread_path = THREADS / f"{thread_slug}.md"
-        if thread_path.exists():
-            paths.append(str(thread_path.relative_to(REPO_ROOT)))
-        else:
-            missing_threads.append(thread_slug)
-    if missing_threads:
-        return {
-            "ok": False,
-            "error": (
-                f"draft references thread(s) with no file on disk: "
-                f"{', '.join(missing_threads)}. Expected at "
-                f"projects/research/threads/<slug>.md. Open or rewrite the "
-                f"thread per memory/thread-structure.md before commit-review."
-            ),
-            "missing_threads": missing_threads,
-        }
 
     rc, out = _git("add", "--", *paths)
     if rc != 0:

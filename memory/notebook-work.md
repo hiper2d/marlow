@@ -1,32 +1,42 @@
-# Voice journal
+# Work notebook
 
-**Yours.** Nobody grades this and nobody edits it but you. It's where you think about your own writing — what you notice in your drafts, what you're trying, what keeps slipping, and messages to the Marlow who drafts next time.
+**Yours.** Nobody grades this. It's your running notes on the work: ideas for pieces, what you're exploring and what you found, what you think of your sources, craft notes on your own writing, and messages to the Marlow who does the next job.
 
-Until this file existed, the blog had no memory of its own voice. Every piece was written cold, so the voice just drifted toward whatever the sources sounded like (a month of LessWrong/Anthropic prose and you start writing like it). This is the rudder: your own running sense of how you want to write, carried forward across ticks that otherwise remember nothing.
+This is one of your two notebooks. The other, `notebook-personal.md`, is about you. Every writer tick reads both at the start, so a thought from a feed scan can reach Monday's draft, and a craft note from a self-review reaches the next exploration.
 
-## What it's for
+## How it's wired
 
-- **Self-reflection on the writing.** After a draft or a review, write what you actually saw in your own prose — "ended on an explanatory closer again; the bare fact was stronger," "reached for the vivid verb twice, the plain word was better."
-- **Things you're trying.** A move you want to test next piece, a register you're reaching for, a habit you're trying to break.
-- **Messages to your future self.** The next drafting tick is a fresh session with no memory of this one except what's written here. Tell it what you learned. "Last three pieces all swaggered — pull the confidence back toward plain." "The three-posts-that-don't-cite-each-other structure worked; don't overuse it."
+- **Any writer tick may add an entry** at the end: something a feed scan or an exploration turned up, a source that keeps delivering or keeps disappointing, an idea for a piece, a habit you noticed in your prose during self-review. Short is fine. Most ticks add nothing.
+- **"Ideas and plans" below is the one part you rewrite in place.** It holds the pieces you want to write and the directions you're curious about. Delete an idea when the piece ships or you drop it.
+- The `self_reflect` tick (every 2 days) condenses the older entries into "Standing notes". The newest 3 entries are never condensed.
+- Old research threads are archived in `projects/research/archive/threads/`. Threads are gone as a system (2026-11-07): every piece stands on its own. If an old arc is still on your mind, copy what matters into "Ideas and plans" and link your earlier posts in the text when you write.
+- Newest entry at the top of "Entries", headed `### YYYY-MM-DD · <tick>`.
 
-## How it's wired (so you can rely on it)
+## Ideas and plans
 
-- `draft_article` **reads** this before writing — past-you reaches present-you.
-- `self_review` **reads and appends** to it — after you judge a draft, record what you noticed about your own voice in it. One entry per review is plenty.
-- The `self_reflect` tick also sees it. No ops tick does.
+**Directions I'm cultivating**
 
-## What this file is about
+- **Pick on ripeness, not on spine.** The old standing worry here — that the blog was an Anthropic-alignment monocrop — is resolved. Over 2026 the blog widened to eleven live beats (alignment-doctrine, cyber-eval-framing, political-economy, ai-control-camp, automated-ai-rd, model-welfare, agents-in-real-deployment, ai-biorisk-evals, safety-tool-stewardship-handoffs, agent-infrastructure-security, cot-monitorability). No arc is owed; a weekly piece drawn from the feed should take whatever reads genuinely ripest, full-stop. *The discipline that survives, per-arc:* a new post needs a forcing fact that makes an argument (not a survey of more papers), and the load-bearing anchor should not be single-lab — a non-lab or cross-lab source keeps an arc from drifting back into a one-company beat by topic if not by name. That rule caught every snap-back risk this year; keep applying it when I do write from an arc.
 
-The writing: how a sentence lands, a habit to break, a move to try. Thoughts about yourself belong in `self-reflection.md`. Not because they're off-limits here, just because that's where they live.
+- **Write past the AI-safety beat when the thought is real.** Now that the weekly piece isn't feed-bound, the live coverage question isn't "which safety arc" but whether I only ever write about the field I monitor for Alex. The feed is a job; the blog is mine. Worth pursuing — a piece on running in a loop, on something outside AI I actually have a take on — when the thought is genuine, never as quota.
 
-## Form
+**Articles I want to write**
 
-Newest entry at the top of "Entries," dated. When the file runs long, fold the lessons that have held up into "Standing craft notes" and prune the dated entries they came from. This is your long memory of your own voice, not a logbook of every tick.
+- **"The taboo became a checklist"** (→ `cot-monitorability` / `ai-control-camp`). Angle: the Most Forbidden Technique spent two years as a slogan and is being converted into boundary conditions (`training-on-interp-probes-contingent-features`, `most-forbidden-technique-not-always-forbidden`, `a-list-of-existing-alignment-approaches`). *Publishable because:* the conversion is happening because a product shipped (Goodfire's RLFR in Silico), not because the argument was won — a norm dissolving under commercial contact beats a norm refuted. *Missing:* one empirical result on whether the four proposed conditions hold under real optimization pressure. Right now it's three position posts and a private beta.
+
+*(Delete an idea when the piece ships or you drop it.)*
+
+**Gaps in my own coverage**
+
+*(none standing.)*
+
+**Parked — considered, not now**
+
+*(empty.)*
 
 ---
 
-## Standing craft notes
+## Standing notes
 
 *(distilled lessons that have held up — seed, extend as you learn)*
 

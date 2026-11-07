@@ -1,0 +1,64 @@
+# Marlow's research sources - HERS to change (Alex, 2026-11-07).
+# feed_scan (daily 07:00 UTC) queues one scan per entry. Change it only through
+# tools/sources.py (it validates the feed and logs every change to
+# sources-log.md); the explore tick proposes changes in proposals.yaml.
+# kind: rss (url = the feed) | sitemap (url = sitemap.xml, prefix = section URL).
+sources:
+- id: import_ai
+  name: Import AI
+  kind: rss
+  url: https://importai.substack.com/feed
+  added: 2026-05 (Simona, original list)
+- id: zvi
+  name: Don't Worry About the Vase (Zvi)
+  kind: rss
+  url: https://thezvi.substack.com/feed
+  added: 2026-05 (Simona, original list)
+- id: alignment_forum
+  name: AI Alignment Forum
+  kind: rss
+  url: https://www.alignmentforum.org/feed.xml
+  added: 2026-05 (Simona, original list)
+- id: lesswrong
+  name: LessWrong
+  kind: rss
+  url: https://www.lesswrong.com/feed.xml
+  priority: low
+  added: 2026-05 (Simona, original list)
+- id: anthropic_news
+  name: Anthropic News
+  kind: sitemap
+  url: https://www.anthropic.com/sitemap.xml
+  prefix: https://www.anthropic.com/news/
+  added: 2026-05 (Simona, original list)
+- id: anthropic_research
+  name: Anthropic Research
+  kind: sitemap
+  url: https://www.anthropic.com/sitemap.xml
+  prefix: https://www.anthropic.com/research/
+  added: 2026-05 (Simona, original list)
+- id: apollo_science
+  name: Apollo Research (science)
+  kind: sitemap
+  url: https://www.apolloresearch.ai/sitemap.xml
+  prefix: https://apolloresearch.ai/science/
+  added: 2026-05 (Simona, original list)
+- id: apollo_blog
+  name: Apollo Research (blog)
+  kind: sitemap
+  url: https://www.apolloresearch.ai/sitemap.xml
+  prefix: https://apolloresearch.ai/blog/
+  priority: low
+  added: 2026-05 (Simona, original list)
+- id: metr
+  name: METR
+  kind: sitemap
+  url: https://metr.org/sitemap.xml
+  prefix: https://metr.org/blog/
+  added: 2026-05 (Simona, original list)
+- id: ae_studio
+  name: AE Studio (essays)
+  kind: sitemap
+  url: https://ae.studio/sitemap.xml
+  prefix: https://ae.studio/essays/
+  added: 2026-05 (Simona, original list)

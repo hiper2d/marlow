@@ -51,13 +51,12 @@ Invariant registry — each check(now) returns a list of Issue dicts:
                          snapshot.)
   - held_artifacts       no blog draft has been status:held past the SLA.
                          Catches "draft blocked on Alex, nobody told Alex".
-  - site_integrity       every active thread file has >=1 published post and
-                         its `posts:` count matches reality. Catches the
-                         empty-thread / bookkeeping-drift class.
+  - (site_integrity, the thread-page check, was retired with the threads on
+    2026-11-07.)
   - memory_bounds        every memory file that is loaded into a tick stays
                          inside its bound. Catches the class this audit missed
                          entirely for two months: working.md drifting to 149KB
-                         against a documented 10KB cap, and voice-journal.md
+                         against a documented 10KB cap, and the old voice journal
                          growing to 35KB with no bound declared at all. Both are
                          prepended to real ticks, so unbounded growth is a
                          silent per-tick context tax that nothing else reports -
@@ -109,7 +108,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import _memory_compact  # noqa: E402
 import grade_memory  # noqa: E402
 import self_reflect  # noqa: E402
-import self_review  # noqa: E402
 
 MEMORY_DIR = REPO_ROOT / "memory"
 # Retained daily-rollup sections below which the history window is too short to
@@ -126,7 +124,6 @@ MIN_ROLLUP_DAYS = 5
 MAX_OPEN_REQUESTS = 8
 REQUESTS_HEADING = "## Outstanding requests for Alex/Simona"
 DRAFTS_DIR = REPO_ROOT / "projects" / "blog" / "drafts"
-THREADS_DIR = REPO_ROOT / "projects" / "research" / "threads"
 PUBLISHED_DIR = REPO_ROOT / "projects" / "blog" / "published"
 COMPLETED_DIR = REPO_ROOT / "tasks" / "completed" / _PROFILE
 REPORT_DIR = REPO_ROOT / "projects" / "_framework" / "reports" / "self-audit"
@@ -192,10 +189,6 @@ DEFAULT_GRACE_HOURS = 6
 # tick is a genuine "stopped firing" bug and pages urgent.
 DRIVER_DORMANT_GAP_MIN = 60
 HELD_SLA_HOURS = 48
-# A thread opened with no published post is NORMAL in Marlow's pipeline (she
-# opens thread files before the first article). Only flag it once it's gone
-# this long without an article — i.e. genuinely abandoned, not in-progress.
-STALE_THREAD_DAYS = 14
 
 
 def _now() -> datetime:
@@ -233,23 +226,6 @@ def _frontmatter(path: Path) -> dict:
     except yaml.YAMLError:
         return {}
 
-
-def _thread_age_days(fm: dict, now: datetime) -> int | None:
-    """Days since a thread's `opened` date. None if unparseable — in which
-    case we don't raise a staleness flag (don't nag on uncertain metadata)."""
-    opened = fm.get("opened")
-    if isinstance(opened, datetime):
-        dt = _aware(opened)
-    elif isinstance(opened, date):  # yaml parses `opened: 2026-05-31` to a date
-        dt = datetime(opened.year, opened.month, opened.day, tzinfo=timezone.utc)
-    elif isinstance(opened, str):
-        try:
-            dt = _parse_iso(opened)
-        except ValueError:
-            return None
-    else:
-        return None
-    return (now - dt).days
 
 
 def _issue(check: str, severity: str, summary: str, action: str, detail: str = "") -> dict:
@@ -372,70 +348,6 @@ def check_held_artifacts(now: datetime) -> list[dict]:
     return issues
 
 
-def _published_mention_counts() -> dict[str, int]:
-    counts: dict[str, int] = {}
-    if not PUBLISHED_DIR.exists():
-        return counts
-    for md in PUBLISHED_DIR.glob("*.md"):
-        mentions = _frontmatter(md).get("mentions") or []
-        if isinstance(mentions, str):
-            mentions = [mentions]
-        for slug in mentions:
-            counts[slug] = counts.get(slug, 0) + 1
-    return counts
-
-
-def _pending_mention_counts() -> dict[str, int]:
-    """Drafts still in the pipeline (top-level drafts/, any status) that mention
-    a thread. A thread's `posts:` is bumped when the draft is materialized, so
-    while the draft is held or in review the count runs one ahead of published.
-    That is bookkeeping doing its job, not drift - `held_artifacts` already
-    escalates the held draft itself."""
-    counts: dict[str, int] = {}
-    if not DRAFTS_DIR.exists():
-        return counts
-    for md in DRAFTS_DIR.glob("*.md"):
-        mentions = _frontmatter(md).get("mentions") or []
-        if isinstance(mentions, str):
-            mentions = [mentions]
-        for slug in mentions:
-            counts[slug] = counts.get(slug, 0) + 1
-    return counts
-
-
-def check_site_integrity(now: datetime) -> list[dict]:
-    """Every active thread file should have >=1 published post mentioning it,
-    and its `posts:` frontmatter should match the real count (published plus
-    drafts still in flight). Catches threads opened ahead of their first
-    article and stale post-count bookkeeping."""
-    issues: list[dict] = []
-    if not THREADS_DIR.exists():
-        return issues
-    counts = _published_mention_counts()
-    pending = _pending_mention_counts()
-    for tf in sorted(THREADS_DIR.glob("*.md")):
-        fm = _frontmatter(tf)
-        slug = fm.get("slug", tf.stem)
-        status = fm.get("status", "active")
-        actual = counts.get(slug, 0)
-        if status != "archived" and actual == 0:
-            age = _thread_age_days(fm, now)
-            if age is not None and age >= STALE_THREAD_DAYS:
-                issues.append(_issue(
-                    "site_integrity", "digest",
-                    f"Thread '{slug}' has been active with 0 published posts for {age}d (opened {fm.get('opened')}).",
-                    "Write its first article, or set status: archived in the thread file.",
-                ))
-        claimed = fm.get("posts")
-        in_flight = pending.get(slug, 0)
-        if isinstance(claimed, int) and claimed != actual + in_flight:
-            issues.append(_issue(
-                "site_integrity", "digest",
-                f"Thread '{slug}' frontmatter says posts:{claimed} but {actual} published"
-                + (f" + {in_flight} in drafts/" if in_flight else "") + " mention it.",
-                "Correct the posts: count in the thread file.",
-            ))
-    return issues
 
 
 def _completed_records(now: datetime, hours: int) -> list[tuple[Path, dict]]:
@@ -715,14 +627,17 @@ def check_memory_bounds(now: datetime) -> list[dict]:
 
     # 3. The judgment-compacted files. A flag that stays set means she was asked
     #    to distill and hasn't - the failure mode that let the journals grow.
-    for label, path, heading in (
-        ("voice-journal.md", MEMORY_DIR / "voice-journal.md", self_review.VOICE_JOURNAL_STANDING_HEADING),
-        ("self-reflection.md", MEMORY_DIR / "self-reflection.md", self_reflect.STANDING_HEADING),
-        ("lessons.md", MEMORY_DIR / "lessons.md", grade_memory.LESSONS_STANDING_HEADING),
+    nb = dict(protect=self_reflect.PROTECT_ENTRIES,
+              threshold=self_reflect.COMPACT_THRESHOLD_BYTES,
+              standing_threshold=self_reflect.STANDING_THRESHOLD_BYTES)
+    for label, path, heading, knobs in (
+        ("notebook-personal.md", self_reflect.PERSONAL, self_reflect.STANDING_HEADING, nb),
+        ("notebook-work.md", self_reflect.WORK, self_reflect.WORK_STANDING_HEADING, nb),
+        ("lessons.md", MEMORY_DIR / "lessons.md", grade_memory.LESSONS_STANDING_HEADING, {}),
     ):
         if not path.exists():
             continue
-        info = _memory_compact.analyze(path, standing_heading=heading)
+        info = _memory_compact.analyze(path, standing_heading=heading, **knobs)
         if info["needs_compaction"]:
             sev = "digest"
             issues.append(_issue(
@@ -730,7 +645,8 @@ def check_memory_bounds(now: datetime) -> list[dict]:
                 f"{label} compactable region {info['compactable_bytes'] / 1000:.0f}KB "
                 f"over its {info['thresholds']['compact_bytes'] / 1000:.0f}KB threshold "
                 f"({info['compactable_count']} entries awaiting distillation).",
-                f"Next tick that opens {label} should run its compaction pass "
+                (f"The next self_reflect tick condenses {label} " if label.startswith("notebook") else f"Next tick that opens {label} should run its compaction pass ")
+                + 
                 f"(protected tail: {info['protected_count']} newest entries).",
             ))
         if info["needs_standing_resynthesis"]:
@@ -804,25 +720,67 @@ def check_session_limits(now: datetime) -> list[dict]:
     return issues
 
 
+def check_web_access(now: datetime) -> list[dict]:
+    """Every WebSearch/WebFetch call is logged by driver/log_web_access.py
+    (PreToolUse hook) to ~/.marlow/<profile>/web-access.jsonl. Only the explore
+    tick runs in the web sandbox (web_mode). A web attempt from any other tick
+    is refused by settings, but it still means something pointed a normal,
+    shell-enabled session at the web: injection or drift. Flag it. Also report
+    the explore tick's call count, so Alex sees the volume daily."""
+    issues: list[dict] = []
+    log = _MARLOW_DIR / "web-access.jsonl"
+    if not log.exists():
+        return issues
+    cutoff = now - timedelta(hours=24)
+    sandboxed, outside = 0, []
+    for line in log.read_text().splitlines():
+        try:
+            rec = json.loads(line)
+            if _parse_iso(rec["ts"]) < cutoff:
+                continue
+        except (ValueError, KeyError):
+            continue
+        if rec.get("web_mode"):
+            sandboxed += 1
+        else:
+            outside.append(rec)
+    if outside:
+        ex = outside[-1]
+        issues.append(_issue(
+            "web_access", "urgent",
+            f"{len(outside)} web call(s) in 24h from OUTSIDE the explore sandbox "
+            f"(latest: {ex.get('tool')} {ex.get('url') or ex.get('query')} in subtask {ex.get('subtask')}). "
+            "They were refused, but a normal tick should never try.",
+            f"Read that tick's session log and what it had just read; see {log}.",
+        ))
+    if sandboxed:
+        issues.append(_issue(
+            "web_access", "digest",
+            f"explore used the web {sandboxed}x in 24h (log: {log}).",
+            "Information only.",
+        ))
+    return issues
+
+
 CHECKS = [
     check_claude_auth,
     check_scheduler_freshness,
     check_failed_ticks,
     check_output_freshness,
     check_held_artifacts,
-    check_site_integrity,
     check_memory_bounds,
     check_lock_health,
     check_session_limits,
+    check_web_access,
 ]
 
 
-# Checks over REPO-GLOBAL state (drafts/, threads/, memory/), which both loops
+# Checks over REPO-GLOBAL state (drafts/, memory/), which both loops
 # share. Each loop runs its own daily audit, so without this the same held-draft
 # urgent and the same site/memory digest lines went to Telegram twice a day (the
 # "self-audit double-fire" working.md tracked for weeks). The writer loop owns
 # that content; ops audits only its own loop-local invariants.
-GLOBAL_CHECKS = {check_held_artifacts, check_site_integrity, check_memory_bounds}
+GLOBAL_CHECKS = {check_held_artifacts, check_memory_bounds}
 GLOBAL_CHECKS_OWNER = "writer"
 
 

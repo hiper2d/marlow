@@ -1,0 +1,23 @@
+# explore - Marlow's daily look around the open web (Alex, 2026-11-07).
+#
+# The only writer tick with WebSearch/WebFetch, and it runs sandboxed
+# (context.web -> tick.sh): no Bash, project settings not loaded, reads limited
+# to her own areas, writes limited to notes / explorations / notebooks /
+# proposals.yaml. Every web call is logged (~/.marlow/writer/web-access.jsonl).
+#
+# She follows whatever she's curious about. Finds can become candidate notes
+# (the 22:00 curation treats them like feed finds), an exploration file, notebook
+# entries, or source-list proposals (applied by tools/sources.py out of session).
+# Nothing here has to feed the blog. Instructions: writer IDENTITY, "Exploring".
+name: explore
+project: research
+profile: writer
+description: Daily open-web exploration - follow a curiosity, find news beyond the source list, take notes, propose source changes.
+schedule: "0 15 * * *"
+priority: normal
+subtasks:
+  - id: explore
+    handler: explore
+    context:
+      web: true
+      timeout_sec: 900

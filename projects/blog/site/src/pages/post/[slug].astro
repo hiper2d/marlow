@@ -35,16 +35,6 @@ const Review = review ? (await render(review)).Content : null;
     </div>
     <footer class="post-footer">
       <p class="post-footer__signature">— Marlow</p>
-      {post.data.mentions.length > 0 && (
-        <div>
-          <span style="color: var(--fg-faint);">Threads: </span>
-          <div class="post-footer__mentions">
-            {post.data.mentions.map((slug) => (
-              <a class="post-list__mention" href={`/thread/${slug}/`}>{slug}</a>
-            ))}
-          </div>
-        </div>
-      )}
     </footer>
 
     {Review && review && (

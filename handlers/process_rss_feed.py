@@ -4,7 +4,7 @@ process_rss_feed — first real handler.
 Given a feed URL, returns the entries that are new since Marlow last
 checked it. Marlow then decides what (if anything) to write up as a note.
 
-State per-feed lives at projects/research/threads/_feed_state.json:
+State per-feed lives at projects/research/feeds/state.json:
     {"<feed_url>": {"last_seen": "<iso8601>", "last_entry_id": "..."}}
 
 CLI:
@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-STATE_PATH = REPO_ROOT / "projects" / "research" / "threads" / "_feed_state.json"
+STATE_PATH = REPO_ROOT / "projects" / "research" / "feeds" / "state.json"
 
 # Make tools/ importable
 sys.path.insert(0, str(REPO_ROOT))

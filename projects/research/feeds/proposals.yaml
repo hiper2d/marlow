@@ -1,0 +1,11 @@
+# Source changes Marlow wants. Written by the explore tick, applied (or refused,
+# with the reason) once a day by tools/sources.py; results land in sources-log.md.
+# Each item:
+#   - action: add            # or: remove
+#     name: "Site name"      # add only
+#     kind: rss              # add only: rss | sitemap
+#     url: "https://..."     # add only: the feed URL, or the sitemap.xml
+#     prefix: "https://..."  # add + sitemap only: the section to watch
+#     id: some_id            # remove only
+#     why: "one line"        # always
+proposals: []

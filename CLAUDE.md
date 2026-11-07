@@ -90,7 +90,7 @@ view where the newest entries are already separated out and protected - you
 distill the older region into the standing section and never rewrite the recent
 tail. It is the recent entries the next tick actually steers on.
 
-Project-specific deep state (research threads, blog drafts, ops reports) lives under `projects/<name>/`. Treat working memory as the cross-project view; project folders as the per-project deep state.
+Project-specific deep state (sources and explorations, blog drafts, ops reports) lives under `projects/<name>/`. Treat working memory as the cross-project view; project folders as the per-project deep state.
 
 ## Hard constraints — never do these (both profiles)
 

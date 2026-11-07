@@ -160,6 +160,24 @@ if [ "$(cat "$SELF_AUDIT_STAMP" 2>/dev/null || echo '')" != "$TODAY" ]; then
     fi
 fi
 
+# 3b. Source-list proposals (writer only, once per UTC day). The explore tick has
+#     no shell, so it can only PROPOSE source changes (projects/research/feeds/
+#     proposals.yaml). tools/sources.py validates and applies them here, out of
+#     session: public http(s) hosts only, the feed must parse, cap 15. Every
+#     outcome goes to projects/research/feeds/sources-log.md.
+if [ "$PROFILE" = "writer" ]; then
+    SOURCES_STAMP="$MARLOW_DIR/last_sources_apply"
+    if [ "$(cat "$SOURCES_STAMP" 2>/dev/null || echo '')" != "$TODAY" ]; then
+        cd "$REPO_ROOT"
+        if out=$(run_with_timeout 120 uv run python tools/sources.py apply 2>>"$SESSIONS_LOG"); then
+            echo "$TODAY" > "$SOURCES_STAMP"
+            log "source proposals: $out"
+        else
+            log "WARNING: sources.py apply failed - see $SESSIONS_LOG"
+        fi
+    fi
+fi
+
 # 4. Lock — staleness-aware, no wall-clock (sleep makes elapsed time lie).
 # If the lock is held, decide whether the holder is alive (skip) or wedged
 # (break it) from two signals:
@@ -217,6 +235,11 @@ SUBTASK_HANDLER=$(echo "$SUBTASK_JSON" | python3 -c "import json,sys; print(json
 # the next fire — we use 900s.
 SUBTASK_TIMEOUT=$(echo "$SUBTASK_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin).get('context',{}).get('timeout_sec') or '')" 2>/dev/null || echo '')
 TICK_TIMEOUT="${SUBTASK_TIMEOUT:-$TICK_TIMEOUT_SEC}"
+# Web mode (2026-11-07): a subtask with context.web: true (the writer's explore
+# tick) is the ONLY session that gets WebSearch/WebFetch, and it runs sandboxed:
+# no Bash, project settings not loaded, writes scoped to her notes. See step 6.
+SUBTASK_WEB=$(echo "$SUBTASK_JSON" | python3 -c "import json,sys; print('1' if json.load(sys.stdin).get('context',{}).get('web') else '0')" 2>/dev/null || echo 0)
+export MARLOW_SUBTASK_ID="$SUBTASK_ID" MARLOW_SUBTASK_HANDLER="$SUBTASK_HANDLER" MARLOW_WEB_MODE="$SUBTASK_WEB"
 log "picked subtask: $SUBTASK_ID (handler: $SUBTASK_HANDLER, timeout ${TICK_TIMEOUT}s)"
 
 # Stage subtask for the session to read.
@@ -236,10 +259,56 @@ if [ -n "$IDENTITY_FILE" ] && [ -f "$IDENTITY_FILE" ]; then
     IDENTITY_ARGS=(--append-system-prompt "$(cat "$IDENTITY_FILE")")
 fi
 
+# Web sandbox. Project settings (Bash + unscoped Read/Write allowed) are NOT
+# loaded; a generated settings file allows exactly: the web tools, reads of her
+# own repo areas and the staged subtask, and writes to her notes, explorations,
+# notebooks, proposals and the result file. dontAsk = anything else is refused,
+# never prompted. No Bash in the tool list at all, so a page that injects
+# instructions can't run commands, read the env (keys) or reach the Chrome
+# debug port; the worst it can do is a bad note. Every web call is logged by
+# driver/log_web_access.py (PreToolUse, fires even for refused calls).
+SANDBOX_ARGS=()
+if [ "$SUBTASK_WEB" = "1" ]; then
+    WEB_SETTINGS="$MARLOW_DIR/web-sandbox-settings.json"
+    REPO_ROOT="$REPO_ROOT" SUBTASK_FILE="$SUBTASK_FILE" RESULT_FILE="$RESULT_FILE" python3 - "$WEB_SETTINGS" <<'PYEOF'
+import json, os, sys
+r = os.environ["REPO_ROOT"]
+def ab(p): return "/" + p   # Claude Code: //abs/path = absolute
+tmp = lambda p: [ab(p), ab(p.replace("/tmp/", "/private/tmp/", 1))]
+reads = [f"{r}/memory/**", f"{r}/projects/research/**", f"{r}/projects/blog/published/**",
+         f"{r}/CLAUDE.md", f"{r}/profiles/**"]
+writes = [f"{r}/projects/research/notes/**", f"{r}/projects/research/explorations/**",
+          f"{r}/projects/research/feeds/proposals.yaml", f"{r}/memory/notebook-personal.md",
+          f"{r}/memory/notebook-work.md", f"{r}/memory/recent/**"]
+allow = ["WebSearch", "WebFetch"]
+allow += [f"Read({ab(p)})" for p in reads] + [f"Read({p})" for p in tmp(os.environ["SUBTASK_FILE"])]
+allow += [f"Edit({ab(p)})" for p in writes]          # Edit rules cover Write too
+allow += [f"Edit({p})" for p in tmp(os.environ["RESULT_FILE"])]
+hook = {"type": "command", "command": f"python3 {r}/driver/log_web_access.py"}
+# Claude Code always allows reads inside the working dir (the repo), so the
+# repo's secrets and ops data need explicit denies (deny beats that default).
+deny = ["Bash"] + [f"Read({ab(r + '/' + p)})" for p in (
+    ".env", ".env.*", "**/.env", "**/.env.*", ".idea/**", ".claude/**", "tasks/**", "digests/**",
+    "projects/werewolf-ops/**", "projects/blog/crosspost/**", "memory/inbox-from-alex.md",
+    "memory/inbox-archive.md", "projects/blog/site/node_modules/**")]
+deny += ["Read(~/.ssh/**)", "Read(~/.claude.json)", "Read(~/.claude/**)", "Read(~/.config/**)",
+         "Read(~/Library/**)", "Read(~/.aws/**)", "Read(~/.gnupg/**)"]
+json.dump({"permissions": {"allow": allow, "deny": deny, "defaultMode": "dontAsk"},
+           "hooks": {"PreToolUse": [{"matcher": "WebSearch|WebFetch", "hooks": [hook]}]}},
+          open(sys.argv[1], "w"), indent=1)
+PYEOF
+    # Order matters: --add-dir and --tools take multiple values and would
+    # swallow the prompt, so a single-value/boolean flag must come last.
+    SANDBOX_ARGS=(--add-dir /private/tmp --tools "Read,Glob,Grep,Write,Edit,WebSearch,WebFetch"
+                  --setting-sources user --settings "$WEB_SETTINGS" --permission-mode dontAsk
+                  --strict-mcp-config)
+    log "web sandbox: no Bash, writes scoped (settings $WEB_SETTINGS)"
+fi
+
 # Stream raw JSONL to a temp file so cost.py can extract usage/cost after.
 # Stderr still goes to SESSIONS_LOG for crash diagnostics.
 rm -f "$STREAM_FILE"
-if run_with_timeout "$TICK_TIMEOUT" claude -p --model "$MARLOW_MODEL" --output-format stream-json --verbose ${IDENTITY_ARGS[@]+"${IDENTITY_ARGS[@]}"} "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
+if run_with_timeout "$TICK_TIMEOUT" claude -p --model "$MARLOW_MODEL" --output-format stream-json --verbose ${IDENTITY_ARGS[@]+"${IDENTITY_ARGS[@]}"} ${SANDBOX_ARGS[@]+"${SANDBOX_ARGS[@]}"} "$PROMPT" >"$STREAM_FILE" 2>>"$SESSIONS_LOG"; then
     log "session exited cleanly"
     SESSION_OK=1
 else

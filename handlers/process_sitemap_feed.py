@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-STATE_PATH = REPO_ROOT / "projects" / "research" / "threads" / "_feed_state.json"
+STATE_PATH = REPO_ROOT / "projects" / "research" / "feeds" / "state.json"
 
 sys.path.insert(0, str(REPO_ROOT))
 from tools import sitemap_reader  # noqa: E402

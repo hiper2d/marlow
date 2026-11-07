@@ -187,6 +187,34 @@ def _is_duplicate(item: QueueItem, queue: list[QueueItem]) -> bool:
     return False
 
 
+_SOURCE_HANDLERS = {"rss": "process_rss_feed", "sitemap": "process_sitemap_feed"}
+
+
+def _subtasks_from_sources(rel_path: str) -> list[dict]:
+    """Expand a source list (projects/research/feeds/sources.yaml, Marlow's own
+    list since 2026-11-07) into one scan subtask per source. A malformed entry
+    is skipped, never fatal: a bad edit must not kill the whole scan."""
+    path = REPO_ROOT / rel_path
+    try:
+        data = yaml.safe_load(path.read_text()) or {}
+    except Exception:
+        return []
+    subs = []
+    for src in data.get("sources") or []:
+        try:
+            handler = _SOURCE_HANDLERS[src["kind"]]
+            ctx = {"url": src["url"], "source_name": src.get("name", src["id"])}
+            if src.get("prefix"):
+                ctx["prefix"] = src["prefix"]
+            sub = {"id": f"scan_{src['id']}", "handler": handler, "context": ctx}
+            if src.get("priority"):
+                sub["priority"] = src["priority"]
+            subs.append(sub)
+        except (KeyError, TypeError):
+            continue
+    return subs
+
+
 def decompose(task: dict, now: datetime) -> list[QueueItem]:
     """Expand a task definition into queue items.
 
@@ -195,6 +223,8 @@ def decompose(task: dict, now: datetime) -> list[QueueItem]:
     """
     items = []
     subtasks = task.get("subtasks", [])
+    if task.get("sources_file"):
+        subtasks = subtasks + _subtasks_from_sources(task["sources_file"])
     project = task.get("project", "unknown")
     priority = task.get("priority", "normal")
     timestamp = now.strftime("%Y%m%d_%H%M")

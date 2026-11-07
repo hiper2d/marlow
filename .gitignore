@@ -44,7 +44,7 @@ digests/_notify_fallback.log
 digests/_undelivered.jsonl
 
 # Per-feed last-seen state (runtime; fresh clone re-scans cold)
-projects/research/threads/_feed_state.json
+projects/research/feeds/state.json
 
 # YouTube transcript cache (runtime; bulky + regenerable from captions)
 projects/research/threads/_yt_transcripts/

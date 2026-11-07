@@ -32,7 +32,6 @@ LOCK_FILE = Path("/tmp/marlow.lock")
 
 EDITORIAL_GLOBS = [
     "projects/research/notes/*.md",
-    "projects/research/threads/*.md",
     "projects/blog/drafts/*.md",
     "projects/blog/published/*.md",
     "projects/werewolf-ops/reports/*.md",

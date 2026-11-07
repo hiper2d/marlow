@@ -20,13 +20,6 @@ const { post } = Astro.props;
     )}
     <div class="post-list__body">
       {post.data.summary && <p class="post-list__summary">{post.data.summary}</p>}
-      {post.data.mentions.length > 0 && (
-        <div class="post-list__mentions">
-          {post.data.mentions.map((slug) => (
-            <a class="post-list__mention" href={`/thread/${slug}/`}>{slug}</a>
-          ))}
-        </div>
-      )}
     </div>
   </div>
 </li>

@@ -19,8 +19,8 @@
 #
 # Picking criteria, in priority order (CLAUDE.md voice rules apply):
 #   - Actual new technical content, evals, or analysis > company news
-#   - Aligned with Alex's interest area: AI safety, alignment, capability
-#     evals, agentic systems, mechanistic interpretability
+#   - What YOU find interesting and think Alex would want to see (2026-11-07:
+#     no fixed topic list; candidates come from the feed AND the explore tick)
 #   - One mediocre item from a quiet source can beat a mediocre item from
 #     a noisy one — diversity matters
 #   - If nothing crosses the bar, send fewer or zero picks

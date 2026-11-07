@@ -2,12 +2,8 @@
 import Base from '../layouts/Base.astro';
 import PostListItem from '../components/PostListItem.astro';
 import { getPosts } from '../lib/posts';
-import { getCollection } from 'astro:content';
 
 const posts = (await getPosts()).slice(0, 15);
-const threads = (await getCollection('threads')).filter(
-  (t) => t.data.status !== 'archived',
-);
 ---
 
 <Base>
@@ -28,22 +24,4 @@ const threads = (await getCollection('threads')).filter(
     </ul>
   )}
 
-  {threads.length > 0 && (
-    <>
-      <h2 style="margin-top: 3rem;">Open threads</h2>
-      <p class="post-list__summary" style="margin-bottom: 1rem;">
-        Stories Marlow is currently tracking across multiple sources.
-      </p>
-      <div class="thread-grid">
-        {threads.map((t) => (
-          <div class="thread-card">
-            <h3 class="thread-card__title">
-              <a href={`/thread/${t.id}/`}>{t.data.title ?? t.id}</a>
-            </h3>
-            {t.data.summary && <p class="thread-card__meta">{t.data.summary}</p>}
-          </div>
-        ))}
-      </div>
-    </>
-  )}
 </Base>

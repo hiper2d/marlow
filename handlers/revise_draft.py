@@ -20,7 +20,7 @@ self-review used.
 CLI:
     python handlers/revise_draft.py materials --slug <slug>
         → JSON: draft + self-review + version count + terminal flag +
-          rubric + thread bodies.
+          rubric.
     python handlers/revise_draft.py archive --slug <slug>
         → move current drafts/<slug>.md → drafts/versions/<slug>/v<N>.md
           and remove the existing self-review file (archived alongside).
@@ -38,7 +38,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DRAFTS = REPO_ROOT / "projects" / "blog" / "drafts"
 VERSIONS = DRAFTS / "versions"
-THREADS = REPO_ROOT / "projects" / "research" / "threads"
 MEMORY = REPO_ROOT / "memory"
 
 MAX_VERSIONS = 2  # one revision pass; v2 ships regardless.
@@ -112,17 +111,6 @@ def materials(slug: str) -> dict:
     version_count = _version_count(slug)
     term_reason = _terminal_reason(verdict, version_count)
 
-    mentions = [
-        m.strip().strip('"').strip("'")
-        for m in draft_meta.get("mentions", "").strip("[]").split(",")
-        if m.strip()
-    ]
-    thread_bodies = []
-    for thread_slug in mentions:
-        tpath = THREADS / f"{thread_slug}.md"
-        if tpath.exists():
-            thread_bodies.append({"slug": thread_slug, "body": _read(tpath)})
-
     rubric = {key: _read(path) for key, path in BEHAVIORAL_FILES.items()}
 
     return {
@@ -140,7 +128,6 @@ def materials(slug: str) -> dict:
         "review_path": str(review.relative_to(REPO_ROOT)),
         "review_meta": review_meta,
         "review_body": review_body,
-        "threads": thread_bodies,
         "rubric": rubric,
     }
 

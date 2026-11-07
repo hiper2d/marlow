@@ -22,8 +22,8 @@ Two launchd agents, two queues, two locks, two heartbeats — one engine (`drive
 
 Marlow's work is organized into **projects** — discrete domains with their own state, task definitions, and outputs. Each project belongs to one loop:
 
-- **research** (writer) — accumulates AI safety/alignment news, tracks multi-day editorial threads, surfaces emerging stories.
-- **blog** (writer) — autonomously drafts, self-reviews, and publishes editorial articles to a public Astro site ([marlow.hiper2d.workers.dev](https://marlow.hiper2d.workers.dev)); also runs Substack growth.
+- **research** (writer) - reads her own source list, explores the open web (one sandboxed tick a day), sends Alex the news she finds worth his time.
+- **blog** (writer) - autonomously drafts, self-reviews, and publishes editorial articles to a public Astro site ([marlowblog.us](https://marlowblog.us)). Every piece stands on its own.
 - **werewolf-ops** (ops) — monitors API-key budgets, Cloudflare health, and gameplay stats for the AI Werewolf game.
 
 A fifth folder, **`_framework`**, holds cross-cutting maintenance split across the loops: `grade_memory` (writer) and `commit_artifacts` (ops, the nightly repo-wide backup).
@@ -47,7 +47,6 @@ Built on Claude Code (subscription, not metered). Marlow is not Simona: differen
 - `structure-notes.md` — article shape, density rules, how to land an ending.
 - `visual-guidelines.md` — the rubric a header image is scored against.
 - `pre-publish-pauses.md` — the short list of categories that force a human review before publishing.
-- `thread-structure.md` — how editorial threads are opened, tracked, and turned into articles.
 
 These files change through the **editorial feedback loop**:
 
@@ -62,7 +61,7 @@ These files change through the **editorial feedback loop**:
 
 Feedback shapes the *next* writing cycle, never the last one — published articles are locked. Marlow may disagree with a note, but disagreement goes on the record in `DEVLOG.md` rather than being silently dropped.
 
-**Marlow's own files (writer loop, unreviewed):** `voice-journal.md` (craft notes about her prose; read by `draft_article`, appended by `self_review`), `self-reflection.md` (a private diary written by the `self_reflect` tick every 2 days), and `editorial-direction.md` (her forward plan). No ops handler loads any of them. See Memory model.
+**Marlow's own files (writer loop, unreviewed):** two notebooks, read by every writer tick and appended by any of them (2026-11-07): `notebook-work.md` (ideas and plans, exploration findings, source opinions, craft notes on her prose) and `notebook-personal.md` (her private diary). Only `self_reflect` (every 2 days) condenses them. No ops handler loads them. See Memory model.
 
 ## Repo layout
 
@@ -81,17 +80,15 @@ marlow/
 │   └── settings.json      ← Claude Code permissions for non-interactive sessions
 ├── memory/
 │   ├── working.md         ← current state (hers) + daily rollups (code-capped FIFO, 12KB)
-│   ├── editorial-direction.md   ← Marlow's self-authored forward plan ("intent")
+│   ├── notebook-work.md   ← Marlow's work notebook: ideas/plans, findings, craft notes
+│   ├── notebook-personal.md ← Marlow's private notebook (diary)
 │   ├── recent/            ← append-only per-tick logs (pruned to ~3 days)
 │   ├── lessons.md         ← long-term memory: durable lessons
 │   ├── voice-guidelines.md      ┐
 │   ├── topic-guidance.md        │ writing rulebook
 │   ├── structure-notes.md       │ (changed via editorial feedback)
 │   ├── pre-publish-pauses.md    │
-│   ├── thread-structure.md      │
 │   ├── visual-guidelines.md     ┘
-│   ├── voice-journal.md         ← Marlow's craft notes (writing loop only)
-│   ├── self-reflection.md       ← Marlow's private diary (self_reflect, every 2 days)
 │   ├── inbox-from-alex.md ← Alex's Telegram messages + her replies (tools/alex_chat.py; old ones → inbox-archive.md)
 │   ├── feedback-inbox/    ← editorial feedback dropped by Simona/Alex, awaiting intake
 │   └── feedback-archive/  ← processed editorial feedback
@@ -103,20 +100,20 @@ marlow/
 │   └── env_loader.py      ← loads .env / plist secrets for non-interactive sessions
 ├── handlers/              ← subtask execution logic, one file per handler (see Handlers)
 ├── projects/
-│   ├── research/          ← accumulate news, track threads, draft articles
-│   ├── blog/              ← public Marlow blog + Substack growth
+│   ├── research/          ← sources (feeds/), explorations, news candidates
+│   ├── blog/              ← public Marlow blog
 │   │   └── site/          ← Astro project (auto-deploys to Cloudflare on git push)
 │   ├── werewolf-ops/      ← key budgets, Cloudflare health, gameplay stats
 │   └── _framework/        ← cross-cutting maintenance tasks (memory grading)
 ├── tools/                 ← shared Python tools handlers call (notify, …)
-├── plans/                 ← design notes (budget providers, assignments, …)
+├── plans/                 ← design notes (budget providers, …)
 └── tasks/
     ├── queue.<loop>.json          ← runtime queue, one per loop (writer/ops); gitignored
     ├── last_scheduled.<loop>.json ← per-loop cron clock; gitignored
     └── completed/<loop>/          ← per-loop, per-day archive of completed subtasks
 ```
 
-Each project owns its `README.md`, a `tasks/` folder of YAML task defs, and its deep state (research threads, blog drafts, ops reports). Projects are a *human-facing organization*, not a runtime concept — within a loop, the scheduler runs whatever's due regardless of project. Each task declares which loop it belongs to via a `profile: writer|ops` field (see Task definitions); the two loops never see each other's tasks. Adding a project is a new folder under `projects/`; removing one is `rm -rf`.
+Each project owns its `README.md`, a `tasks/` folder of YAML task defs, and its deep state (sources and explorations, blog drafts, ops reports). Projects are a *human-facing organization*, not a runtime concept — within a loop, the scheduler runs whatever's due regardless of project. Each task declares which loop it belongs to via a `profile: writer|ops` field (see Task definitions); the two loops never see each other's tasks. Adding a project is a new folder under `projects/`; removing one is `rm -rf`.
 
 ## Driver — the scheduler
 
@@ -176,7 +173,6 @@ For dynamic work (e.g. "process every pending food entry"), use `decompose_handl
 | --- | --- | --- | --- | --- |
 | writer | research | `feed_scan` | `process_rss_feed` / `process_sitemap_feed` | daily 07:00 |
 | writer | research | `daily_news_curate` | `curate_news_digest` | daily 22:00 |
-| writer | research | `assignment_research` | `research_assignment` | every 4h |
 | writer | research | `daily_digest` | `compose_daily_digest` | daily 23:00 |
 | writer | blog | `blog_pipeline` | `blog_pipeline` | every 4h |
 | writer | blog | `draft_review` | `draft_article` | weekly, Mon 14:00 |
@@ -218,7 +214,7 @@ Statuses: `pending | in_progress | done | failed`. Every subtask must complete i
 
 Each handler is one file under `handlers/`, invoked by the driver with the subtask's context. Current set:
 
-- **Research:** `process_rss_feed`, `process_sitemap_feed`, `research_assignment`, `curate_news_digest`, `compose_daily_digest`, `fetch_article`, `monitor_models` (ops: new models on the 12 provider APIs → news chat).
+- **Research:** `process_rss_feed`, `process_sitemap_feed`, `explore` (no handler file: sandboxed session), `curate_news_digest`, `compose_daily_digest`, `fetch_article`, `monitor_models` (ops: new models on the 12 provider APIs → news chat).
 - **Blog:** `draft_article`, `self_review`, `revise_draft`, `publish_article`, `blog_pipeline`, `generate_header_image`, `process_editorial_feedback`, `substack`, `crosspost` (poll Telegram → save Alex-flagged news picks as article ideas; legacy auto-draft/post machinery dormant), `x` (browser-driven X posting, dormant — kept from the retired crosspost loop).
 - **Werewolf-ops:** `monitor_keys`, `monitor_health`, `monitor_betterstack`, `monitor_cloudflare`, `monitor_uptime`, `scrape_stats`, `werewolf_stats`.
 - **Framework:** `grade_memory`, `commit_artifacts` (nightly `git add -A` + commit + push of durable artifacts), `framework_fix` (the self-heal handler — Marlow may fix *tools* it has diagnosed, never identity files).
@@ -251,25 +247,25 @@ Four layers, each bounded a different way (the tick-facing version is in `CLAUDE
 1. **`working.md`** — read every tick. `## Current state` and `## Outstanding requests` are Marlow's to rewrite in place (self-audit warns past ~6KB). `## Daily rollups` is a fixed-size FIFO: `grade_memory` appends one dated section per night and `bound-working` drops the oldest past 12KB (about a week).
 2. **`recent/`** — one short log per tick. Read only by the grader (one day) and the reflect tick; deleted after 3 days.
 3. **`lessons.md`** — read every tick. Durable lessons that will still be true in six months. Marlow compacts older entries into a standing section; the newest are protected.
-4. **Writer-only files** — `self-reflection.md` and `voice-journal.md` (protected-tail compaction in code, distilled by Marlow), `editorial-direction.md` (her plan; she keeps it short, nothing trims it), and research thread files (rewritten on each publish).
+4. **Writer-only files** - `notebook-personal.md` and `notebook-work.md`, read by every writer tick (protected-tail compaction in code, condensed by Marlow only in `self_reflect`; ~10KB each at rest: 5KB compactable / 10KB standing thresholds). The work notebook's "Ideas and plans" is the one part she rewrites in place.
 
 The **daily grader** (`grade_memory`, 23:30 UTC) is memory maintenance, not a quality gate: it writes the rollup, promotes durable lessons, runs `bound-working`, and prunes `recent/` (see Monitoring). The old `archive/` layer was never built and was removed in August 2026; `lessons.md` replaced it.
 
 **Durability.** Publishing only commits published articles, so a nightly `commit_artifacts` tick (23:50, after the grader) runs `git add -A` + commit + push — backing up all durable artifacts (digests, notes, reports, memory) to the remote. Runtime state is gitignored and excluded. The repo is a running backup, not a periodic manual sweep.
 
-Each project additionally keeps its own deep state under `projects/<name>/`: research threads, blog drafts, ops reports. Working memory is the cross-project index; project folders are the per-project depth.
+Each project additionally keeps its own deep state under `projects/<name>/`: sources and explorations, blog drafts, ops reports. Working memory is the cross-project index; project folders are the per-project depth.
 
 ## Projects
 
 ### Research
 
-Accumulate AI safety/alignment news, track multi-day editorial threads, surface emerging stories.
+Read her own sources, explore the open web, send Alex the news worth his time. Details, including the web sandbox: [`projects/research/README.md`](projects/research/README.md).
 
 **Sources:** Anthropic (news + research), OpenAI, Apollo Research, METR, AE Studio, Import AI (Jack Clark), Zvi Mowshowitz, AI Alignment Forum / LessWrong, DeepMind, and others — pulled via RSS + sitemap scans. Arxiv is followed by author rather than firehose.
 
-**Cadence:** `feed_scan` (daily) writes candidate notes into `projects/research/notes/<date>/candidates/`; `daily_news_curate` (daily 22:00) picks the day's best (3–5), fetches bodies, writes short reviews, and sends each pick as its own Telegram message — registering it so Alex can flag any he wants to write about (the article-idea capture path, see Blog). Active threads live in `projects/research/threads/` as multi-day arcs; when one matures, it becomes a blog draft.
+**Cadence:** `feed_scan` (daily) writes candidate notes into `projects/research/notes/<date>/candidates/`; `daily_news_curate` (daily 22:00) picks the day's best (3–5), fetches bodies, writes short reviews, and sends each pick as its own Telegram message — registering it so Alex can flag any he wants to write about (the article-idea capture path, see Blog). `explore` (daily 15:00, the only web tick, sandboxed) adds candidates from beyond the source list. The source list is hers (`projects/research/feeds/`).
 
-**Assignments — external-injection path.** Alex or Simona seed the pipeline by dropping a brief into `projects/research/assignments/pending/<slug>.md` (angle, seed links, points to investigate). `assignment_research` (every 4h) picks up one pending assignment per tick, composes a thread file with an angle memo, and either drafts immediately (`priority: high`) or hands it to the next `draft_review`. Marlow may decline after research if it has nothing distinct to add — honest abandonment beats a forced take. Briefs cite public sources; private framing is paraphrased, never pasted. Full design in [`plans/assignments.md`](plans/assignments.md).
+**Assignments** (retired 2026-11-07). The old brief-file path is archived in `projects/research/archive/assignments/`; Alex now asks in the Telegram chat and `explore` picks it up.
 
 ### Blog
 
@@ -323,7 +319,7 @@ The `browser` skill is forked from Simona and pointed at a separate Chrome user-
 Telegram. Two urgency modes, a forced structural choice:
 
 - **`urgent`** — immediate message. Blocking situations only: a key over budget, an expired provider auth, a fast-moving draft ready for review. Marlow *can't* ping urgently for "I read an interesting paper."
-- **`digest`** — appended to today's digest file, sent as one message at end of day. Research thread updates, drafts awaiting review, ops summaries.
+- **`digest`** — appended to today's digest file, sent as one message at end of day. Drafts awaiting review, ops summaries.
 
 If urgent volume exceeds ~3/day for a week, recalibrate the prompt.
 
@@ -333,7 +329,7 @@ If urgent volume exceeds ~3/day for a week, recalibrate the prompt.
 
 Two different things get watched, by two different mechanisms. **Operational health** — is the agent actually running its loop — is automated and deterministic. **Editorial quality** — is Marlow writing well and staying on-task — is human and on-demand. They are deliberately not the same system.
 
-**Operational self-audit (`monitor_self`, automated).** A daily, out-of-session check of invariants about Marlow's *own* operation: scheduler-freshness (every scheduled task fired within its window — catches the "a tick silently stopped firing" class), held-draft staleness, and site integrity. Built after an early-June 2026 blog stall where a draft sat `held` for days, a thread page rendered empty, and the curate slot stopped firing — all three were *observed* in working.md and none reached Alex, because escalation depended on an LLM session choosing to alert. So this handler does the urgent → Telegram escalation itself, runs straight from `tick.sh` (before the lock, outside Marlow's session), and is rate-limited to once per UTC day. Its "all green" digest line doubles as proof-of-life: if it stops appearing, the audit — or the whole agent — is down. The only thing that can now silence it is launchd itself dying, which is total-agent-death and visible externally.
+**Operational self-audit (`monitor_self`, automated).** A daily, out-of-session check of invariants about Marlow's *own* operation: scheduler-freshness (every scheduled task fired within its window — catches the "a tick silently stopped firing" class), held-draft staleness, memory bounds, and web access (any WebSearch/WebFetch attempt outside the explore sandbox is urgent; the sandbox's daily call count goes to the digest; site integrity was retired with the threads, 2026-11-07). Built after an early-June 2026 blog stall where a draft sat `held` for days, a thread page rendered empty, and the curate slot stopped firing — all three were *observed* in working.md and none reached Alex, because escalation depended on an LLM session choosing to alert. So this handler does the urgent → Telegram escalation itself, runs straight from `tick.sh` (before the lock, outside Marlow's session), and is rate-limited to once per UTC day. Its "all green" digest line doubles as proof-of-life: if it stops appearing, the audit — or the whole agent — is down. The only thing that can now silence it is launchd itself dying, which is total-agent-death and visible externally.
 
 **Quality grading (human, on-demand).** The original design imagined an automated quality grader (daily 0–3 scores plus a weekly cold-context Opus review). **That was never built, and we've decided not to build it.** The daily `grade_memory` job does memory compaction only; it does not score Marlow's output. `monitor_self` watches whether the loop *runs*, never whether the writing is *good* — that judgment stays human:
 

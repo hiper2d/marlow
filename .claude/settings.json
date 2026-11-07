@@ -26,8 +26,23 @@
       "Edit(/.claude/settings.json)",
       "Edit(~/.claude/settings.json)",
       "Edit(~/.claude.json)",
-      "Bash(sudo:*)"
+      "Bash(sudo:*)",
+      "WebSearch",
+      "WebFetch"
     ]
   },
-  "autoMemoryEnabled": false
+  "autoMemoryEnabled": false,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "WebSearch|WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/driver/log_web_access.py\""
+          }
+        ]
+      }
+    ]
+  }
 }

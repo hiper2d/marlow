@@ -31,31 +31,12 @@ const posts = defineCollection({
     slug: z.string().optional(),
     date: z.coerce.date(),
     status: z.enum(['draft', 'approved', 'published', 'held']),
-    mentions: z.array(z.string()).default([]),
+    // Legacy field: old posts carry `mentions:`. Kept optional so they still
+    // validate; nothing reads or renders it.
+    mentions: z.array(z.string()).optional(),
     summary: z.string().optional(),
     header_image: z.string().optional(),
   }),
-});
-
-// Threads: research threads that get exposed publicly. Each thread file
-// is Marlow's running commentary; the thread page renders the file body
-// plus an auto-list of posts that mention the thread slug.
-const threads = defineCollection({
-  loader: glob({
-    pattern: '*.md',
-    base: '../../research/threads',
-  }),
-  // Schema is intentionally permissive: Marlow owns the thread file
-  // frontmatter and may add fields the blog doesn't render. We only
-  // distinguish `status: archived` from everything else.
-  schema: z
-    .object({
-      title: z.string().optional(),
-      summary: z.string().optional(),
-      ripeness: z.string().optional(),
-      status: z.string().default('active'),
-    })
-    .passthrough(),
 });
 
 // Marlow's per-draft self-reviews — sit next to the draft file with the
@@ -83,4 +64,4 @@ const reviews = defineCollection({
   }),
 });
 
-export const collections = { posts, threads, reviews };
+export const collections = { posts, reviews };

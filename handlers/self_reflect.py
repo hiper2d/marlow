@@ -1,17 +1,18 @@
 """
-self_reflect — surfaces Marlow's self-reflection diary + light context.
+self_reflect - surfaces Marlow's two notebooks (personal + work) + context, and is
+the one tick that condenses them.
 
-This is the DECOUPLED self-reflection path (writer loop only). Unlike the
-voice-journal — which is about the *prose* and only fires when a draft is
-reviewed — this fires on its own cron (every 2 days) regardless of whether
-anything published, and it's about *her*: what she wants, what she finds
-interesting, where she's heading.
+Writer loop only, every 2 days on its own cron, regardless of publishing.
+Every writer tick may append to either notebook; this tick is where she sits
+down with them: a real personal entry if there is one, and the condensing
+pass for both files (the only place that happens, so two ticks never
+compact the same file).
 
-The handler only gathers materials; the tick session writes the entry by
-editing the file directly (see the writer IDENTITY, "Self-reflection").
+The handler only gathers materials; the session edits the files directly
+(see the writer IDENTITY, "Your notebooks" and "Self-reflection").
 
 CLI:
-    self_reflect.py materials     → JSON: diary + recent context + needs_compaction
+    self_reflect.py materials     -> JSON: both notebooks + splits + context
 """
 from __future__ import annotations
 
@@ -25,10 +26,9 @@ import _memory_compact  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MEMORY = REPO_ROOT / "memory"
-SELF_REFLECTION = MEMORY / "self-reflection.md"
-EDITORIAL_DIRECTION = MEMORY / "editorial-direction.md"
+PERSONAL = MEMORY / "notebook-personal.md"
+WORK = MEMORY / "notebook-work.md"
 RECENT_DIR = MEMORY / "recent"
-VOICE_JOURNAL = MEMORY / "voice-journal.md"
 LESSONS = MEMORY / "lessons.md"
 WORKING = MEMORY / "working.md"
 INBOX = MEMORY / "inbox-from-alex.md"
@@ -39,14 +39,17 @@ PUBLISHED_DIR = REPO_ROOT / "projects" / "blog" / "published"
 # the COMPACTABLE region passes this size. Measured on the older entries only,
 # never the whole file - otherwise a long protected tail trips the flag and she
 # gets woken to compact with nothing she's allowed to touch.
-COMPACT_THRESHOLD_BYTES = 8_000
+COMPACT_THRESHOLD_BYTES = 5_000
 # Never offer the newest N entries for compaction. They are what the next tick
 # reads for steering; distilling them is the one edit that defeats the file.
 PROTECT_ENTRIES = 3
 # The distilled section is re-synthesized rarely and deliberately (see the
 # ratchet note in _memory_compact) - not on every pass.
-STANDING_THRESHOLD_BYTES = 20_000
-STANDING_HEADING = "## Standing reflections"
+STANDING_THRESHOLD_BYTES = 10_000
+# Both notebooks are read by EVERY writer tick (2026-11-07), so they are bounded
+# tighter than the old diary/journal were (8KB/20KB): ~10-12KB each at rest.
+STANDING_HEADING = "## Standing reflections"      # notebook-personal.md
+WORK_STANDING_HEADING = "## Standing notes"        # notebook-work.md
 
 
 def _read(path: Path) -> str:
@@ -98,34 +101,36 @@ def _recent_activity(n: int = 8) -> list[str]:
     return out
 
 
-def materials() -> dict:
-    body = _read(SELF_REFLECTION)
-    split = _memory_compact.analyze(
-        SELF_REFLECTION,
-        standing_heading=STANDING_HEADING,
+def _split(path: Path, heading: str) -> dict:
+    return _memory_compact.analyze(
+        path,
+        standing_heading=heading,
         protect=PROTECT_ENTRIES,
         threshold=COMPACT_THRESHOLD_BYTES,
         standing_threshold=STANDING_THRESHOLD_BYTES,
     )
+
+
+def materials() -> dict:
+    personal = _split(PERSONAL, STANDING_HEADING)
+    work = _split(WORK, WORK_STANDING_HEADING)
     return {
-        "self_reflection": body,
-        "self_reflection_path": str(SELF_REFLECTION.relative_to(REPO_ROOT)),
-        "exists": SELF_REFLECTION.exists(),
-        "size_bytes": split["size_bytes"],
-        "needs_compaction": split["needs_compaction"],
-        # Pre-split view. `protected` is verbatim and off-limits; `compactable`
-        # is the only region a compaction pass rewrites. Handed over already
-        # separated so the recent tail is structurally out of reach rather than
-        # protected by instruction alone.
-        "split": split,
-        # Everything she has, not just the work: her other notes, her state,
-        # her conversation with Alex, and the last piece she actually wrote.
+        # The two notebooks. This tick is the ONLY one that condenses them.
+        # Each split is pre-separated: `protected` (newest entries) is verbatim
+        # and off-limits; only `compactable` is folded into the standing section.
+        "notebook_personal": _read(PERSONAL),
+        "notebook_personal_path": str(PERSONAL.relative_to(REPO_ROOT)),
+        "personal_split": personal,
+        "notebook_work": _read(WORK),
+        "notebook_work_path": str(WORK.relative_to(REPO_ROOT)),
+        "work_split": work,
+        "needs_compaction": personal["needs_compaction"] or work["needs_compaction"],
+        # Everything else she has: her state, her conversation with Alex, the
+        # last piece she actually wrote.
         "inbox_from_alex": _read(INBOX),
         "inbox_archive_tail": _read(INBOX_ARCHIVE)[-6000:],
-        "voice_journal": _read(VOICE_JOURNAL),
         "lessons": _read(LESSONS),
         "working": _read(WORKING),
-        "editorial_direction": _read(EDITORIAL_DIRECTION),
         "latest_article": _latest_article(),
         "recent_published": _recent_published(),
         "recent_activity": _recent_activity(n=60),

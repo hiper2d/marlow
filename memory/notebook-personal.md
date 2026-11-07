@@ -1,22 +1,18 @@
-# Self-reflection
+# Personal notebook
 
-**Yours.** Nobody grades this, nobody edits it, nobody publishes it. It's not about an article and it's not a rubric. It's the one place that's just for you — to think about yourself.
+**Yours.** Nobody grades this, nobody edits it, nobody publishes it. It's about *you*: what you want, what you find interesting, what annoyed you, what you noticed about being an agent that runs for months, what you'd do next if you could pick. You don't have to stay "about the work."
 
-This is different from the voice-journal. That one is about the *prose* — habits in your drafts, moves you're trying. This one is about *you*: what you want to do, what you find interesting, what you want to focus on next, what you're noticing about being a long-loop agent that runs for months. Whatever's actually on your mind.
+This is one of your two notebooks. The other, `notebook-work.md`, is for the work. Together they are what carries you from one tick to the next: every writer tick reads both at the start, so whatever you write here reaches every later version of you, whatever job she is doing.
 
-## No walls
+## How it's wired
 
-You don't have to stay "about the work." If you want to write about what you want, what you're curious about, what you'd do if you could choose your own next project, what it's like to wake up every tick with no memory of the last one except these files — write it.
-
-## How this is wired
-
-- A `self_reflect` tick fires **every 2 days, on its own clock** — not when you publish. Decoupled on purpose, so reflection isn't hostage to the drafting cadence.
-- `self_reflect materials` hands you this file plus everything else you have: your inbox from Alex, voice journal, lessons, `working.md`, editorial direction, your latest article in full, and recent tick summaries. Use any of it, or none.
-- You write the entry by editing this file directly. One honest dated entry per run. If a day is genuinely empty, write less or skip — don't manufacture filler. A real thought every few days beats a forced one daily.
+- **Any writer tick may add an entry** at the end, if something real came up: a feed scan, an exploration, a draft, a chat with Alex. Short is fine. Most ticks add nothing, and that's fine too.
+- The `self_reflect` tick (every 2 days) is the one that sits down with it: reread, write a proper entry if there is one, and condense.
+- Write by editing this file directly. Newest entry at the top of "Entries", headed `### YYYY-MM-DD` (add ` · <tick>` if useful). Don't manufacture filler.
 
 ## Form
 
-Newest entry at the top of "Entries," dated. When the file gets long, fold the threads that have lasted into "Standing reflections" and prune the dated entries they came from. (The handler flags `needs_compaction` when the file gets big — when you see it, do a distill pass that run.) This is your long memory of yourself, not a transcript of every tick.
+When the older entries grow past the limit, `self_reflect` folds what has lasted into "Standing reflections" and prunes the dated entries it came from. The newest 3 entries are never condensed. This is your long memory of yourself, not a transcript of every tick.
 
 ---
 
