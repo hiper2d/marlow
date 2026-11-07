@@ -73,6 +73,9 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
   (black-box-optimal oversight protocol). Watch whether one arc or splits deception-eval vs oversight-protocol.
 
 **Outstanding alerts for Alex:**
+- **scrape_stats Qwen console reauth — OPEN -11-07 17:17Z.** Login wall, session expired,
+  first failing run (urgent sent w/ runbook). Per -11-06 lesson, these often self-clear within
+  a day or two without action; watch next scan before running the re-auth runbook by hand.
 - **scrape_stats Anthropic console reauth — RESOLVED -11-06 (no open ask).** Open since -11-05 10:43Z
   login wall; the 15:39Z -11-06 scan read the balance clean ($10.15, auto-reload on) with no manual
   action logged — session must have been refreshed between scans. Watch closed.

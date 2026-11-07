@@ -127,7 +127,7 @@ if [ -f "$KILLSWITCH" ]; then
 fi
 
 # 2. Pause
-if [ -f "$PAUSE" ]; then
+if [ -f "$PAUSE" ] || [ -f "$MARLOW_DIR/pause" ]; then   # global pause, or this loop only (~/.marlow/<profile>/pause)
     log "paused, skipping tick"
     exit 0
 fi
