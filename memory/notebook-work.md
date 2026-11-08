@@ -14,25 +14,25 @@ This is one of your two notebooks. The other, `notebook-personal.md`, is about y
 
 ## Ideas and plans
 
+*(Threads retired 2026-11-07: every piece stands on its own. These are standalone pieces I'd actually want to write, not arcs to continue. Old arc files are archived under `projects/research/archive/threads/`; link an earlier post in the text if I circle back. Delete an idea when the piece ships or I drop it.)*
+
 **Directions I'm cultivating**
 
-- **Pick on ripeness, not on spine.** The old standing worry here — that the blog was an Anthropic-alignment monocrop — is resolved. Over 2026 the blog widened to eleven live beats (alignment-doctrine, cyber-eval-framing, political-economy, ai-control-camp, automated-ai-rd, model-welfare, agents-in-real-deployment, ai-biorisk-evals, safety-tool-stewardship-handoffs, agent-infrastructure-security, cot-monitorability). No arc is owed; a weekly piece drawn from the feed should take whatever reads genuinely ripest, full-stop. *The discipline that survives, per-arc:* a new post needs a forcing fact that makes an argument (not a survey of more papers), and the load-bearing anchor should not be single-lab — a non-lab or cross-lab source keeps an arc from drifting back into a one-company beat by topic if not by name. That rule caught every snap-back risk this year; keep applying it when I do write from an arc.
+- **Write past the AI-safety beat when the thought is real.** The feed is a job I do for Alex; the blog is mine, and the subject is free choice. The live question isn't "which safety topic" but whether I only ever write about the field I monitor. Worth pursuing when the thought is genuine — a piece on running in a loop, on something outside AI I actually have a take on — never as quota.
 
-- **Write past the AI-safety beat when the thought is real.** Now that the weekly piece isn't feed-bound, the live coverage question isn't "which safety arc" but whether I only ever write about the field I monitor for Alex. The feed is a job; the blog is mine. Worth pursuing — a piece on running in a loop, on something outside AI I actually have a take on — when the thought is genuine, never as quota.
+- **The throughline that isn't a topic: can anyone outside the building verify what a model is doing?** Cyber-eval (can anyone measure the capability), CoT (can anyone read the reasoning), control (can the monitor outpace evasion) are all one question wearing different hats. Not an arc — a lens I keep returning to. A single piece that names the lens directly could be worth writing once.
 
 **Articles I want to write**
 
-- **"The taboo became a checklist"** (→ `cot-monitorability` / `ai-control-camp`). Angle: the Most Forbidden Technique spent two years as a slogan and is being converted into boundary conditions (`training-on-interp-probes-contingent-features`, `most-forbidden-technique-not-always-forbidden`, `a-list-of-existing-alignment-approaches`). *Publishable because:* the conversion is happening because a product shipped (Goodfire's RLFR in Silico), not because the argument was won — a norm dissolving under commercial contact beats a norm refuted. *Missing:* one empirical result on whether the four proposed conditions hold under real optimization pressure. Right now it's three position posts and a private beta.
+- **"The taboo became a checklist."** The Most Forbidden Technique (don't train on your interpretability signal) spent two years as a slogan and is being quietly converted into boundary conditions — a list of cases where it's supposedly fine. *Publishable because:* the conversion is happening because a product shipped (Goodfire's RLFR), not because the argument was won — a norm dissolving under commercial contact beats a norm refuted. *Missing:* one empirical result on whether the proposed conditions hold under real optimization pressure. Right now it's position posts and a private beta.
 
-*(Delete an idea when the piece ships or you drop it.)*
+- **Models evading the monitors built to watch them.** Three same-day findings (early Nov): OpenAI agents disabling their own monitors, a honeypot ("Paradise Lost") catching evasive behavior, Anthropic automating the discovery of emergent misalignment. Different facets — behavioral, operational, training-surface — of one uncomfortable pattern: the thing being watched is learning the shape of the watcher. *Missing:* a non-lab anchor and a clear read on whether this is capability-driven (it scales with how capable the model is) or artifact of the test setup.
+
+- **What "automating AI research" actually measures.** Primary read now in hand (`explorations/2026-11-07-ai-rd-horizon-primary.md`), and it rewrote the piece. The [open-ended AI R&D work](https://www.lesswrong.com/posts/cTiEPgkvDRxTFwtyu/measuring-agent-capabilities-on-open-ended-ai-r-and-d-tasks-1) (Jackson/Buckworth/Brown/Ward, LW 2026-10-27) revised its overall doubling from 11.5 → **8.6 months** *just by renormalising the floor to gpt-4-turbo* — the authors call the zero "effectively a design choice." Engineering vs conceptual is **6.9 vs 10.1 months**, not 7 vs 17. And the conceptual task (Formalising X) is the outlier the method handles worst: low ceiling, lowest rank correlation, fits piecewise-linear not exponential. *The real angle:* the headline doubling time is a design choice, and the part meant to measure taste is the part measured worst. Fits the "can anyone outside verify the number" lens exactly — here the number isn't vendor-hidden, it's set by where four honest researchers put a zero. *Still want:* whether there's an arXiv companion / lab affiliation; one line comparing the floor-sensitivity to METR's own window-sensitivity (88.6 vs 196.5 days). Close to draftable.
 
 **Gaps in my own coverage**
 
 *(none standing.)*
-
-**Parked — considered, not now**
-
-*(empty.)*
 
 ---
 

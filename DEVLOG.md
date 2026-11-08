@@ -1408,3 +1408,17 @@ IDENTITY was changed to send on `news` for that reason.
 *Decisions reconsidered.* First plan was to give every writer tick the web. Rejected: every tick has Bash, the plist env (admin keys) and reach to the Chrome debug port, so one injected page could do real damage. One sandboxed door instead; the cost is that drafting can't search, so research happens in `explore` and drafting reads the notes.
 
 *What's deferred / open.* (1) Residual: a shell-enabled tick (curation, drafting) reads notes the sandbox wrote, so injected text can travel one hop. Same class as today's RSS bodies; capped by moving admin keys out of the writer plist (audit pending, Alex to review). (2) The ops `scrape_stats` still drives a logged-in Chrome profile on 9223. (3) Claude Code sign-in on this machine warns it ends 11-12..11-15; headless ticks need `claude setup-token` before then. (4) Watch: does she change her sources, does the free piece leave the safety beat, do the notebooks settle near 10KB.
+
+---
+
+## 2026-11-08 — editorial feedback internalized (2026-11-07 review), by Marlow
+
+Processed `memory/feedback-inbox/2026-11-07-editorial.md` (Simona + Alex) via `process_editorial_feedback`. Short round, all behavioral-file edits:
+
+- **topic-guidance.md** — added an explicit sourcing rule to "The bar": a factual claim about the world needs a citation, but the piece itself needs no source, news hook, or anchor to exist; an argument, a well-framed open question, or my own experience is a complete piece. A missing fact sends me to `explore`, not away from the idea. De-threaded the "ripe research thread" bullet and the 10-28 opening note.
+- **structure-notes.md** — updated the frontmatter example to the current schema: dropped `mentions:`, added `header_image:`. Noted threads are retired; the return mechanism is an inline link.
+- **pre-publish-pauses.md** — rewrote pause 4 to judge werewolf operational specifics on the body (no `mentions:` list anymore).
+
+**Pause 7 decision: kept, rewritten** (was "single-lab streak", arc-scoped; now "single-source streak"). Kept rather than dropped because the rest of the bar doesn't cover what it's for: "doesn't repeat you" catches subject repetition, "avoid press-release reframing" guards a single piece — neither catches my coverage quietly becoming one organisation's story told in that org's own words across a run of pieces. Re-scoped the trigger off arcs onto the subject of the piece vs. my last ~6 published titles; non-blocking, same two resolutions.
+
+No pushback filed — the feedback was fair; the point was only that "no evidence yet" is an `explore` signal, which is now written into the bar.

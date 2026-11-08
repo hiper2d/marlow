@@ -91,6 +91,31 @@ double-posts. And a same-timestamp block of sitemap entries — famous old pages
 included — is a CMS re-index bumping every `lastmod`, not a publishing burst: skip
 the block; a genuinely-new post is isolated by hours.
 
+**Side-effecting handlers run exactly once per tick — the re-run is the single
+most-repeated mistake in this log.** `send-item` SENDS on every call and
+double-posted to Alex three times (-10-15 / -20 / -23) because a truncated-looking
+`tail` tempted a second "inspection" call; its shape is
+`{"ok":true,"msg_id":N,"discord":{...},"item":{...}}` — parse the one real call with
+`python3 -c`, never head/tail, never a probe or fake-URL call. `monitor_betterstack
+report` overwrites its own fingerprint state on success, so a second `report`
+re-reads what the first wrote and loses its issues (-10-03) — re-inspect with the
+read-only `show`/`digest` subcommands. The per-day files under
+`reports/<kind>/<date>.md` are append-only across the day: Read and append, never
+Write-over (-10-07 clobbered a section). The one exception: a `report` that returns
+`ok:false` failed *before* its save (state is written only on the success path), so
+that retry is correct, not a clobber (-10-30) — re-run only after `ok:false`, never
+after `ok:true`.
+
+**A single scan is not an event, and the task YAML is the schedule's only truth.**
+`monitor_models` reported a current Mistral flagship as `removed` then `new` within
+two hours (-10-29) — provider `/models` lists flap, so confirm a `removed` id the
+game actually uses stays gone across the *next* scan before firing any deprecation
+alert. And `draft_review` is weekly by design (Mondays 14:00 UTC); for months a
+stale "every 3 days" prose note made every quiet weekday look like a missed window
+and spawned false escalations. Before calling any schedule slow or dead, read its
+`schedule:` line in `projects/*/tasks/*.yaml` — only a due run that didn't happen is
+a signal, and `monitor_self` already checks for that.
+
 ## Entries
 
 ### 2026-11-06 - scrape_stats balance-read failures self-heal; don't fix the selector on a transient
@@ -134,95 +159,3 @@ already shipped its piece isn't an open slot. Before drafting on any `draft_revi
 whether this week's piece already exists (drafts/ non-empty OR a `published/<thisweek>.md`
 present) — if it shipped, no-op clean, no notify. Verify by publication date, not by the
 subtask looking fresh.
-
-### 2026-10-30 - a betterstack `report` that fails before save (ok:false) IS safe to retry
-
-The 16:52Z scan's first `report` hit a transient ClickHouse `SOCKET_TIMEOUT` (503),
-returned `ok:false`, and wrote no fingerprint state — `_save` runs only on the success
-path, after the try/except. Retried once; the second call succeeded clean with no
-double-fire. This is the explicit exception to the three -10-03/-15/-23 "never re-run a
-stateful report/send" lessons: those traps are about re-reading state the FIRST call
-already *wrote*. A pre-save failure wrote nothing, so a retry is correct, not a
-clobber. Rule: re-run `report` only when the prior call returned `ok:false`; never
-after an `ok:true`.
-
-### 2026-10-29 - monitor_models: provider /models lists flap; a single-scan `removed` is not deprecation
-
-monitor_models' first real fire caught `mistral-large-4` (sent msg 986, 16:29Z). But the 14:46Z scan
-had reported those exact ids as `removed` and the 16:29Z scan as `new` — Mistral's /models list dropped
-and re-added a current flagship within two hours. A single scan's `removed`/`new` for a provider is not a
-reliable event. Before firing any deprecation alert on a `removed` id the werewolf game actually uses,
-confirm it stays gone across the next scan; treat one-scan flaps as list noise, not retirements/releases.
-
-### 2026-10-07 - monitor daily report files are append-only across a day; Read before Write
-
-The per-day markdown reports under `projects/werewolf-ops/reports/<kind>/<date>.md`
-accumulate one `## Scan` section per hourly tick - `monitor_betterstack`,
-`monitor_health`, etc. all append across the day (10-06's betterstack file had 12+
-sections). On -07 the 13:29Z betterstack tick used `Write` without reading first and
-clobbered the 04:05Z section already in the file; it had to be reconstructed from the
-`recent/` log (summary, not verbatim - the original was gone). The file is not
-single-write-per-day. Always Read the existing `<date>.md` and append, never Write
-over it. Distinct from the -03 `report`-is-stateful lesson: that one is about the
-handler's fingerprint state, this one is about the human-readable report file.
-
-### 2026-10-03 - monitor_betterstack `report` is stateful; run it exactly once per tick
-
-`monitor_betterstack.py report` overwrites the saved fingerprint state as a side
-effect of running. On -03 the 15:06Z tick ran `report` three times (the first
-call's output looked truncated, so it was re-run): the second and third calls
-re-read the state the first had just written, so the first call's `issues` were
-lost and the consolidated urgent that went out may have duplicated an alert the
-first call already fired. A truncated-looking output is not loss - same trap as
-the -08-24 "a failed record can still have delivered" lesson. Run `report` once;
-use the read-only `show`/`digest` subcommands to re-inspect, never a second
-`report`.
-
-### 2026-09-28 - `draft_review` is weekly by design; read the YAML before diagnosing
-
-`draft_review` runs once a week, Mondays 14:00 UTC (`0 14 * * 1`, since 2026-06-23).
-For months my instructions still said "every 3 days", so every quiet weekday looked
-like a missed window, and I built escalations and a "dark lane" story on it. It was
-never broken. (Corrected by Simona and Alex 2026-10-28, IDENTITY fixed.) What to do:
-before calling any schedule slow or dead, read its `schedule:` line in
-`projects/*/tasks/*.yaml`; that file is the truth, not a prose description. Only a
-due run that didn't happen is a signal, and `monitor_self` already checks for it.
-
-### 2026-10-15 - send-item delivers on every call; never re-run it to read output
-
-During news curate I ran `crosspost.py send-item` for the Apollo pick, then re-ran
-the identical command to parse its status (the first output was truncated by
-`tail`). The second call sent a second identical Telegram message to Alex (msg 918
-dup of 917). send-item is a side-effecting delivery, not a query - there is no dry
-run. Same family as the -09-05 betterstack `report` double-fire and the -08-24
-"a failed/truncated-looking record can still have delivered" lesson. What to do:
-invoke a send/post/report-class handler exactly once; to inspect what it did, parse
-that one call's output (pipe through a python one-liner, not `head`/`tail` which can
-cut JSON), or use a read-only `list`/`show` subcommand. If a delivery double-fires,
-`skip` the duplicate so a reply does not double-register, and flag it to Alex.
-
-**Recurred 2026-10-20 (same handler, worse).** Despite this lesson, I did it again on
-the GLM pick: `tail -5` truncated the first send's JSON, so I (a) re-ran send-item to
-read msg_id (dup = msg 945) and then (b) ran a THIRD call against a *fake* URL
-(`example.com/noop-probe`, msg 946) purely to see the return shape. Both delivered to
-Telegram and the probe also created a junk registry entry. Skipped 945 and 946. Two
-hard rules, stated as absolutes because the soft version failed twice:
-(1) send-item returns `{"ok":true,"msg_id":N,"item":{...}}` and SENDS every time —
-its shape is now documented here, so there is never a reason to "probe" it; parse the
-first real call with `python3 -c` (never head/tail).
-(2) NEVER call a send/post handler with a throwaway/fake URL to inspect output — a
-side-effecting delivery has no scratch mode. If I don't know a return shape, read the
-handler source, not a live fire.
-
-**Recurred AGAIN 2026-10-23 (third time, same handler).** `tail -20` on the first METR
-send cut the JSON so I couldn't see the `discord` field — then, violating rule (1)
-verbatim, I piped a second live `send-item` (title "check", source "x", real METR URL)
-to `/dev/null` to "inspect" it. It delivered to Telegram + Tampa #ai-news (msg 962).
-The soft and hard framings have now both failed three times, so the operational rule is
-narrower still: **on the FIRST send-item of a curate run, pipe through `python3 -c` to
-pull `ok`/`msg_id`/`discord`/`status` — never head/tail, never a second call for any
-reason.** The `discord` field only shows up if you parse it off the one real call. I
-already know the shape (it's documented above); there is zero remaining reason to ever
-issue an inspection send. If this recurs a fourth time, the fix is mechanical, not a
-lesson: wrap send-item in a shell function that greps the right fields, so the raw call
-is never typed by hand.

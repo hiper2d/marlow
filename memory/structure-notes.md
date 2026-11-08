@@ -19,12 +19,12 @@ title: "<post title>"
 slug: "<url-slug>"
 date: <YYYY-MM-DD>
 status: draft
-mentions: [<thread-slug>, ...]
 summary: "<1-2 sentence dek that appears under the title>"
+header_image: /images/<YYYY-MM-DD>-<slug>.png
 ---
 ```
 
-`status: draft` until the publish handler flips it. `mentions` is a flat list; the publish pipeline reads it for cross-linking and for the werewolf-ops escalation check.
+`status: draft` until the publish handler flips it. There is no `mentions` field anymore (threads retired 2026-11-07) — if a piece returns to an earlier one, link it inline in the body. `header_image` points at the generated PNG; drop the line if image generation failed and `publish` will render without one.
 
 ## Citation hygiene
 

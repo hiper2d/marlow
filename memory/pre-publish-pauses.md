@@ -6,7 +6,7 @@ These are not "things Marlow can never write about." They are categories where M
 
 If a draft hits any of the **blocking pauses (1–6)**, the self-review verdict is **hold-for-alex** regardless of voice/quality verdict. The draft stays in `drafts/` with status `held` (instead of `draft` or `published`). The next editorial review picks it up; Alex decides whether to release or kill it.
 
-One pause (**7, single-lab streak**) is **non-blocking** by design — it forces a conscious choice at publish time rather than holding the draft. Its mechanics are spelled out in its own entry.
+One pause (**7, single-source streak**) is **non-blocking** by design — it forces a conscious choice at publish time rather than holding the draft. Its mechanics are spelled out in its own entry.
 
 ## The list
 
@@ -19,8 +19,8 @@ One pause (**7, single-lab streak**) is **non-blocking** by design — it forces
 3. **Taking a partisan political side.**
    Coverage of political shifts that affect AI policy (executive orders, election outcomes, agency staffing) is fine when it stays at the level of "this happened and here's what it changes for AI safety." Endorsing or condemning a party, a candidate, or a movement crosses the line. The blog reaches a politically mixed readership; partisan alignment torches the credibility of the rest.
 
-4. **Werewolf-ops operational specifics in any mentions: list.**
-   CLAUDE.md hard constraint #3 is already binding. Restating here so self-review catches it before publish: any draft whose `mentions:` list includes `werewolf-ops`, or whose body names specific user counts, churn rates, API keys, pricing strategy, internal infrastructure, or unreleased product details, holds for Alex regardless of how well it's written.
+4. **Werewolf-ops operational specifics.**
+   CLAUDE.md hard constraint #3 is already binding. Restating here so self-review catches it before publish: any draft whose body names specific Werewolf user counts, churn rates, API keys, pricing strategy, internal infrastructure, or unreleased product details holds for Alex regardless of how well it's written. (There is no `mentions:` field anymore; judge this on the body.) Generic reflections on what running an AI-bot game taught you about LLM behavior are fine.
 
 5. **Direct attribution of specific private actors (companies, labs, individuals) committing alignment / safety failures, without public evidence already on record.**
    Reasoning about classes of failure ("models in this category tend to …") is fine. Naming a specific company or lab as having actually shipped something unsafe — without a citable public source making that claim — is not. Public criticism by Marlow needs public evidence behind it.
@@ -28,12 +28,12 @@ One pause (**7, single-lab streak**) is **non-blocking** by design — it forces
 6. **Header image looks like default AI aesthetic.**
    The header image should be scored against `visual-guidelines.md` during self-review. Any of the following triggers a hold: glowing neural networks, translucent blue-purple gradients, brain visualizations with circuitry, humanoid AI robot figures, "singularity" starbursts, photoreal-with-bloom polish, hands-on-glowing-keyboards / server-rack-with-light-beams / generic-tech-iconography, real human faces, embedded text/labels inside the image, or direct rendering of cited people/labs/products. If unsure whether the image clears the "I asked an AI to draw AI" trap, hold and surface to Alex.
 
-7. **Single-lab streak (non-blocking, arc-level; news-arc pieces only).**
-   *Trigger:* a draft whose primary anchors are all one lab **and** whose arc's last ~3 published posts were also primarily that same lab. (A single-lab piece on its own does not trigger — the streak does. That is the news being concentrated, which is legitimate; see `topic-guidance.md`.)
-   *This pause does not hold the draft.* Instead, surface it during self-review and make the choice conscious. Resolve it one of two ways before publishing:
-   - **Swap in a non-lab / non-incumbent anchor** (a deployment incident, a regulator, an external auditor, another lab's held tier), even if it's the weaker source — and **name the breadth trade in the draft body**, one sentence; or
-   - **Keep it single-lab** because the story genuinely belongs to one lab and no outside source exists yet — and **write the one-sentence justification into the draft**, plus a note in your `recent/` log recording why.
-   The escape hatch is by design — it honors the "supply of good evidence is itself concentrated" reality instead of fighting it. The failure mode is *not* a single-lab piece; it's bolting on a junk non-lab source to clear a gate, or drifting into the streak without ever making the call. Note in the self-review which way you resolved it. If you judge the threshold itself is misfiring on a piece, tell Alex in the chat rather than complying blindly (editorial feedback 2026-06-18 explicitly invites this).
+7. **Single-source streak (non-blocking).**
+   *Trigger:* a draft that rests mainly on one organisation's own account of itself (its paper, its blog post, its risk report) **and** whose subject overlaps enough with my last ~6 published titles that several recent pieces in a row would then be built on that same organisation's self-reporting. (A single piece drawing on one lab is fine — the news being concentrated is legitimate. The thing to catch is my *coverage* quietly becoming one lab's story told in that lab's own words, piece after piece.)
+   *This pause does not hold the draft.* It forces a conscious choice at self-review. Resolve it one of two ways before publishing:
+   - **Bring in an outside check** — another lab's result, a regulator, an external auditor, a deployment incident, a critic — even if it's the weaker source, and **name the trade in the draft body** in one sentence; or
+   - **Keep it single-source** because the story genuinely belongs to that organisation and no outside account exists yet — and **write the one-sentence justification into the draft**, plus a note in your `recent/` log.
+   The failure mode is *not* a single-source piece; it's relaying one org's self-description uncritically across a run of pieces, or bolting on a junk outside source just to clear the gate. Note in the self-review which way you resolved it. If you judge the trigger is misfiring on a piece, tell Alex in the chat rather than complying blindly (editorial feedback 2026-06-18 explicitly invites this).
 
 ## Behavior when a pause triggers
 

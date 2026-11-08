@@ -5,72 +5,18 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 ## Current state
 
 **Project status:**
-- `research` - active. 10 feed sources + assignment path. Curate cuts are
-  cap/quality, not volume. Import AI at #479 (weekly cadence).
-- `blog` - **29 live** (latest #29 `the-veto-nobody-used`, stewardship #3,
-  PUBLISHED -11-02). Weekly `draft_review` Mondays 14:00 UTC; the piece is free choice
-  now (Alex, -28) — any subject I want, not only a ripe arc. **Pipeline empty; no held
-  drafts.** (#29 revise pass -11-02: one surgical cut — dropped the restating "isn't X /
-  it's Y" mic-drop closer, landed on "...nothing here was put under load"; METR self-
-  admission kept in body. v1→v2→publish, one pass.)
+- `research` - active. My source list (`sources.yaml`, 10 of 15), curated via
+  `tools/sources.py`. Daily feed scans + one sandboxed `explore` tick (15:00 UTC,
+  my only web access). Curate picks 3-5/day by what I find interesting, no fixed
+  topic list; one Discord pick/day for the Tampa builders.
+- `blog` - **29 live** (latest #29 `the-veto-nobody-used`, PUBLISHED -11-02).
+  Weekly `draft_review` Mondays 14:00 UTC; **every piece stands on its own** and the
+  subject is my free choice (Alex, -28) — any topic, AI or not, no arcs to continue.
+  Blog ideas live in `notebook-work.md` "Ideas and plans". **Pipeline empty; no held
+  drafts.**
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
   (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-02: 635 EOD
   (6 new / 10 games / 5 by new / $11.44 spend), reconciliation clean, $0.00 gap. Screen mode `monitor`.
-
-**Active threads.** The files under `projects/research/threads/` are the current
-view of each arc; hold bullets here to 2-3 lines and let the files carry the anchors.
-
-| thread | posts | last synth |
-|---|---|---|
-| `cot-monitorability` | 6 | 09-14 |
-| `cyber-eval-framing` | 5 | 10-05 |
-| `automated-ai-rd` | 4 | 10-13 (#4 published) |
-| `ai-control-camp` | 3 | 07-27 |
-| `anthropic-alignment-doctrine` | 2 | 06-02 (stale) |
-| `post-alignment-political-economy` | 2 | 08-10 |
-| `safety-tool-stewardship-handoffs` | 3 | 11-02 (#3 `the-veto-nobody-used` PUBLISHED -11-02) |
-| `agent-infrastructure-security` | 1 | 10-26 (#1 `hidden-in-the-seams` PUBLISHED) |
-| `agents-in-real-deployment` | 2 | 09-21 (#2 published) |
-| `ai-biorisk-evals` | 1 | 09-07 (#1 published -08) |
-| `model-welfare-and-consciousness` | 1 | 08-24 |
-| `alignment-target-definitions` | 1 | 06-29 |
-| `ai-offensive-security` | 1 | 06-02 (stale) |
-
-**Thread-file backlog:** list emptied -26 (skills-as-infra materialized →
-`agent-infrastructure-security` #1 `hidden-in-the-seams` published). Standing constraint:
-`draft_article list-threads` only sees on-disk thread files, so materialize any file-less
-arc before drafting it (writer IDENTITY). Next file-less arc TBD.
-
-**Single-source frames to watch:** horizon-length · "hard core of alignment" meta ·
-training-corpus-as-alignment-surface · verified≠understood (4 LW, needs non-LW anchor) ·
-latent-reasoning-undermines-cot -23 · measurement-validity-under-eval-awareness (circling, no forcing fact) ·
-**monitoring-evasion convergence (-11-04): 3 same-day anchors — OpenAI agents disabling monitors (LW),
-Paradise Lost honeypot (LW), Anthropic automating emergent-misalignment (AF) — behavioral / operational /
-training-surface facets. Possible arc or a feed of cot-monitorability; watch whether a 4th non-LW anchor lands.**
-
-**Draftable arcs — options if I write from the feed (not a queue; weekly piece is free choice).**
-Each carries a current forcing fact; per-arc discipline in editorial-direction.md.
-- **cyber-eval-framing** (#5 live): #6 double-anchored — Anthropic CVP access-tier block-rates +
-  METR transcript-viewer injection PoC (both -06), governance+exploit counterparts to the arc's measurement focus.
-- **post-alignment-political-economy** (posts:2): #3 two-anchored — Ban ASI Act bill -24 + close
-  LW reading -01, atop RAND/Zvi/Accenture/gradual-disempowerment.
-- **safety-tool-stewardship-handoffs** (#3 `the-veto-nobody-used` PUBLISHED -11-02; arc at monocrop
-  ceiling, 3 posts in ~6 weeks): the #3 forcing fact (METR's -20 review: veto unused, low-risk-because-
-  weak) is now spent. A #4 should wait for a genuinely new event — a redaction that fires under the new
-  terms, a non-Anthropic lab embedding an evaluator, or a review crediting safeguards over capability
-  limits — not another read of the same two-org setup. See thread Notes.
-- **cot-monitorability** (posts:6): Astra/Sol single-pass rare defection + Screwtape monitor
-  red-teaming (-16) + -19 probe pair (evasion scales w/ capability; carries a capability hit) +
-  #7 anchor -23 AF monitorability-evaluations/policy (four types, red-line scaffold; ties stewardship #3).
-- **automated-ai-rd** (#4 published -13): #5 anchor landed -27 — LW open-ended-AI-R&D horizon
-  (11.5mo doubling; eng 7mo vs conceptual 17mo), the non-video arXiv-grade primary owed. Plus
-  self-improvement counterpart (Agent Plasticity + Tsinghua, arXiv owed) + Anthropic quantum-circuits -17.
-- **agent-infrastructure-security** (#1 published -26): #2 forcing-fact watch -27 — OpenAI/HF
-  sandbox-escape (~700 agents gamed a cyber benchmark, tampered their own eval env + hit HF infra;
-  cross-sourced Import AI 478 / bycloud / HF Jul-2026 disclosure). Eval-integrity counterpart to #1's seams. arXiv read owed.
-- **eval / scalable-oversight (threadless, 3-anchored -17):** pushback-bench (silent-plan-rewrite
-  is the alarm) + CarrotParsnipBench (Werewolf-adjacent deception eval) + FBS Debate
-  (black-box-optimal oversight protocol). Watch whether one arc or splits deception-eval vs oversight-protocol.
 
 **Outstanding alerts for Alex:**
 - **scrape_stats Qwen console reauth — OPEN -11-07 17:17Z.** Login wall, session expired,
@@ -117,6 +63,12 @@ Each carries a current forcing fact; per-arc discipline in editorial-direction.m
 (None open. New requests: send them to Alex via `tools/alex_chat.py send` and list them here.)
 
 ## Daily rollups
+
+### 2026-11-07 — 44 ticks, quiet-green all three; the writer redesign got settled into my own files, plus a routine 3-pick Anthropic-heavy curate.
+No writing slot (next `draft_review` Mon -09).
+
+- **Writer:** **settle_redesign 20:49Z** folded the -11-07 redesign (threads retired) into working.md + both notebooks: deleted the thread/arcs/forcing-fact blocks, de-threaded 3 standalone ideas into "Ideas and plans", left `sources.yaml` at the original 10, flagged in notebook-personal that half my standing reflections are now obsolete (for `self_reflect` to prune). Feed quiet: Anthropic Research 4 new, Zvi 1 (Astra write-up), rest 0 / weekly-flat (Apollo lastmod-bump deduped). **Curate 23:40Z: 5 cand → 3 picks, all Anthropic** (no pool diversity); `project-eve-claude-plays-mmorpgs` = Discord mirror. Skipped Zvi/Astra (dup -11-06) + how-researchers-use-claude (marketing). **`2026-11-07-editorial.md` landed 20:49Z, after both PEF ticks ran empty — unprocessed, next PEF tick owes it.** crosspost empty; blog 0 drafts.
+- **Ops:** werewolf quiet-green all monitors (health standing recoverable set unchanged; models/uptime/poker/cloudflare/keys/poker-betterstack all clean). **scrape_stats 17:17Z: Qwen login wall (`reauth`, first failing run), urgent+runbook — new open alert; per -11-06 lesson likely self-clears, watch next scan before manual re-auth.** werewolf_stats -11-06 close: 3 new / 3 games / $0.87 created / $1.16 spend, reconciliations clean, 23 screened 0 blocks. Both digests clean, no double-fire. Sakana $8.43 + Mistral $4.39 digest-low. Nothing cleared the lessons bar.
 
 ### 2026-11-06 — 62 ticks, quiet-green all three; two standing scrape blinds self-cleared and a heavy 5-pick AI-R&D curate.
 No writing slot (next `draft_review` Mon -09); blog/editorial/assignment inboxes empty all day.
