@@ -15,13 +15,13 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   Blog ideas live in `notebook-work.md` "Ideas and plans". **Pipeline empty; no held
   drafts.**
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-02: 635 EOD
-  (6 new / 10 games / 5 by new / $11.44 spend), reconciliation clean, $0.00 gap. Screen mode `monitor`.
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-07: 656 EOD
+  (5 new / 7 games / 5 by new / $2.56 spend), reconciliations clean, $0.00 gap. Screen mode `monitor`.
 
 **Outstanding alerts for Alex:**
-- **scrape_stats Qwen console reauth — OPEN -11-07 17:17Z.** Login wall, session expired,
-  first failing run (urgent sent w/ runbook). Per -11-06 lesson, these often self-clear within
-  a day or two without action; watch next scan before running the re-auth runbook by hand.
+- **scrape_stats Qwen console reauth — RESOLVED -11-08 (no open ask).** Open since -11-07 17:17Z
+  login wall; the 16:49Z -11-08 scan read the spend figure clean ($0.26 MTD, postpaid) with no
+  manual action logged — self-cleared per the -11-06 pattern. Watch closed.
 - **scrape_stats Anthropic console reauth — RESOLVED -11-06 (no open ask).** Open since -11-05 10:43Z
   login wall; the 15:39Z -11-06 scan read the balance clean ($10.15, auto-reload on) with no manual
   action logged — session must have been refreshed between scans. Watch closed.
@@ -50,10 +50,10 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch:** GLM $11.96 + Sakana Fugu $8.43 standing digest-low <$10. xAI $12.59,
-  DeepSeek $20.9, Moonshot $12.34, OpenAI $21.71 (recovered -11-04, watch closed), Anthropic $10.15
-  (reauth resolved -11-06, see above). Gemini $34.33 (spend MTD $26.74, auto-reload on, topped up $25
-  -11-05) / Mistral $4.37/$30 healthy. MiniMax $18.79 (scrape resolved -11-06, see above). Qwen free
+- **Low-balance watch:** GLM $11.69 + Sakana Fugu $8.41 standing digest-low <$10. xAI $12.59,
+  DeepSeek $20.9, Moonshot $12.34, OpenAI $21.13 (recovered -11-04, watch closed), Anthropic $19.87
+  (reauth resolved -11-06, see above). Gemini $31.55 (spend MTD $29.37, auto-reload on, topped up $25
+  -11-05) / Mistral $4.44/$30 healthy. MiniMax $18.77 (scrape resolved -11-06, see above). Qwen free
   grant expired -05 as expected, spend MTD $0.26 pay-as-you-go. Watch closed.
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
@@ -63,6 +63,12 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 (None open. New requests: send them to Alex via `tools/alex_chat.py send` and list them here.)
 
 ## Daily rollups
+
+### 2026-11-08 — 57 ticks, quiet-green all three; the Monday draft is now anchored, the -07 editorial cleared, and Alex claimed a news pick to write himself.
+No writing slot (next `draft_review` Mon -09 14:00Z); blog pipeline empty, no held drafts all day.
+
+- **Writer:** **explore 15:00Z made Monday's piece draftable** (`explorations/2026-11-08-ai-rd-horizon-sourcing.md`): no arXiv/affiliation/code behind the open-ended AI R&D LessWrong post; renormalising the floor to gpt-4-turbo moved doubling time to 8.6mo (from 11.5); METR one-liner confirmed "~7 vs under 3 months." Through-line: headline doubling time is a design choice, and Formalising-X (the taste task) is the outlier the method handles worst. **PEF 00:30Z cleared the owed -07 editorial** (voice/structure/pause-4 + topic-guidance sourcing rule); 14:17Z no-op. **crosspost 21:05Z: Alex replied to the Project EVE pick (msg 1034) "i'll write about this" → saved as article idea for Simona** (`article-ideas/2026-11-08-...`). Feed flat (LessWrong 7+2 cand, Anthropic Research 1, rest nil). **Curate 22:00Z: 10 cand → 4 picks**, dropped 2 dups (took the Ajeya S1 acceleration primary = Discord mirror `posted`); verification throughline threads 3 of 4, logged as a blog candidate.
+- **Ops:** werewolf quiet-green all monitors. **scrape_stats 16:49Z: Qwen login-wall self-cleared** (open since -07 17:17Z, no manual action, $0.26 MTD) per the -06 self-heal lesson; Anthropic back to $19.87; only digest-low Sakana $8.41 (standing). werewolf_stats -07 close: 5 new / 7 games / $2.56 spend, reconciliations clean, $0.00 gap, 49 screened 0 blocks. betterstack one `device_link` (digest), poker 1 signup (digest), models 12/12 clean. Nothing cleared the lessons bar.
 
 ### 2026-11-07 — 44 ticks, quiet-green all three; the writer redesign got settled into my own files, plus a routine 3-pick Anthropic-heavy curate.
 No writing slot (next `draft_review` Mon -09).

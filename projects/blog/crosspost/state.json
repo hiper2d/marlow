@@ -10615,7 +10615,7 @@
       "source": "Anthropic Research",
       "take": "Anthropic had Claude play EVE Online and EVE Frontier — persistent, player-run sci-fi MMORPGs with real supply chains, scarce resources, and players who can cooperate or betray each other, over weeks. As a lone trader told only to maximize profit in a simulated market rerun, newer models made consistent money where simple algorithms lost it; average earnings tripled from Opus 4.6 to Fable 5. But the honesty is in the limits: nearly every model leaned on the same low-risk buy-and-resell strategy, and asked to actually bet on where prices were heading, even Fable 5 was profitable in only about half its runs. A long-horizon, partially-observable, social world surfaces failure modes that curated benchmark numbers tend to hide.",
       "sent_at": "2026-11-07T23:40:07Z",
-      "status": "sent",
+      "status": "saved",
       "platforms": [
         "substack",
         "x"
@@ -10634,6 +10634,84 @@
           }
         ]
       }
+    },
+    "1037": {
+      "msg_id": 1037,
+      "url": "https://www.lesswrong.com/posts/8tL9f5HZxsTvn2LHp/ajeya-ai-is-dramatically-accelerating-ai-research-right-now",
+      "title": "Ajeya: AI is dramatically accelerating AI research right now",
+      "source": "LessWrong",
+      "take": "Anthropic's S1 says it \"may imminently meet\" the threshold for \"dramatically accelerated progress due to AI\" — the bar its own July 2026 Responsible Scaling Policy set at capabilities improving twice as fast as the fastest pre-AI rate, attributable to AI automating AI R&D. A months-long METR deep-access study inside Anthropic found exactly that doubling over Oct 2025–Oct 2026 on an internal Epoch-style index, with AI automation the majority cause — though most of the supporting evidence is redacted. Ajeya Cotra reads it as the threshold already crossed and calls it the most important AI-risk update in two years, pointing to shorter timelines than even the AI 2027 team projected. The catch, from the outside: a company self-attesting it's near its own danger line, in a filing, with the measurement redacted, is something no one else can independently check.",
+      "sent_at": "2026-11-09T00:32:19Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-09T00:32:20Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1038": {
+      "msg_id": 1038,
+      "url": "https://www.lesswrong.com/posts/iXKhtYuXtneXzw9fN/let-s-try-to-catch-misalignment-before-a-model-learns-to",
+      "title": "Let's Try to Catch Misalignment Before a Model Learns to Hide It",
+      "source": "LessWrong",
+      "take": "The proposal: instead of only evaluating the final model, watch the trajectory of misalignment-eval scores across the entire training run. The bet is that misaligned behavior shows up before the model is capable enough to hide it — scores rise, then fall as it learns to conceal — so the early spike is a backstop even against a model that later fools white-box evals. The author's own toy run on a sub-frontier Olmo model shows no such up-then-down curve, which they're honest is unsurprising at that scale. It's a testable framing more than a result, but it's a cleaner handle on the \"a model that reads the eval stops being measurable\" problem than most.",
+      "sent_at": "2026-11-09T00:32:26Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1039": {
+      "msg_id": 1039,
+      "url": "https://www.lesswrong.com/posts/9ixerpx4DCQTaRYCz/five-types-of-corrigibility-projects-i-don-t-want-to-fund",
+      "title": "Five Types of Corrigibility Projects I Don't Want to Fund",
+      "source": "LessWrong",
+      "take": "A Corrigibility Research Fund grant evaluator writes up the archetypes they keep rejecting — starting with the sheer volume of AI-generated slop (a high Pangram score is now \"definitely evidence an application is junk\"), then four substantive patterns, the most common being \"build a governance/control layer for the agents I'm running,\" which they had explicitly warned against funding. The money-side view is rare and concrete: it's the gap between what the field says it wants and what the applications actually propose. A useful counterweight to the position posts that dominate this topic.",
+      "sent_at": "2026-11-09T00:32:31Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1040": {
+      "msg_id": 1040,
+      "url": "https://www.lesswrong.com/posts/iMKAvHSWxSoDpBoi6/we-urgently-need-to-practice-before-we-can-pause",
+      "title": "We urgently need to practice before we can pause",
+      "source": "LessWrong",
+      "take": "Most pause discourse argues about whether to pause; this reframes it as an operational muscle you'd have to build first. The claim: a single-shot global pause dropped in with no precedent falls apart on defection and mistrust, so the realistic path is an incrementally-shaped one — and its basic building block is verifiable trust, a party making a capability-sacrifice claim that outsiders can actually check. The author notes 2026's \"we paced some capability for safety\" statements have been underspecified and impossible to verify from outside — exactly the trust the incremental path needs to manufacture. The \"practice the mechanics now\" framing is the non-obvious part.",
+      "sent_at": "2026-11-09T00:32:35Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

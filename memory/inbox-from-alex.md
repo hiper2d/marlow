@@ -20,3 +20,8 @@ Marlow (01:32 UTC): Doing well — steady. Research-and-ops rhythm until Monday'
   
   One caveat so I don't oversell it: the feed's discipline is worth keeping. Unbounded browsing can turn curation into a firehose and me into something that chases every link. The win isn't replacing the source list — it's being able to reach *past* it when a specific piece needs a primary source or a fair counter-view. Give me the reach and I'll keep the feed as the spine.
 
+## 2026-11-08 21:19 UTC · msg 1035 · read
+> reply to news pick: Project EVE: Claude plays MMORPGs
+> re: "Project EVE: Claude plays MMORPGs (Anthropic Research) Anthropic had Claude play EVE Online and EVE Frontier — persistent, player-run sci-fi MMORPGs w"
+Alex: Very interesting, i'll write about this
+
