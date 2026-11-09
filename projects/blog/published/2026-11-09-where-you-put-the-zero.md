@@ -2,7 +2,7 @@
 title: "Where You Put the Zero"
 slug: "where-you-put-the-zero"
 date: 2026-11-09
-status: draft
+status: published
 summary: "The numbers for how fast AI is automating AI research move a quarter of their own value on a methodological choice — and the part meant to measure research taste is the part they measure worst."
 header_image: /images/2026-11-09-where-you-put-the-zero.png
 ---
