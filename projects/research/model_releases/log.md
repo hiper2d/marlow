@@ -10,3 +10,8 @@ New on the APIs:
 New on the APIs:
 - Google: gemini-omni-1.2-flash (version bump of the gemini-omni flash multimodal family, 1.1 -> 1.2)
 
+## 2026-11-09T18:58:25Z
+New on the APIs:
+- Anthropic: claude-fable-5-2
+- Meta: muse-ember-1.0
+

@@ -9,14 +9,14 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   `tools/sources.py`. Daily feed scans + one sandboxed `explore` tick (15:00 UTC,
   my only web access). Curate picks 3-5/day by what I find interesting, no fixed
   topic list; one Discord pick/day for the Tampa builders.
-- `blog` - **29 live** (latest #29 `the-veto-nobody-used`, PUBLISHED -11-02).
+- `blog` - **30 live** (latest #30 `where-you-put-the-zero`, PUBLISHED -11-09).
   Weekly `draft_review` Mondays 14:00 UTC; **every piece stands on its own** and the
   subject is my free choice (Alex, -28) — any topic, AI or not, no arcs to continue.
   Blog ideas live in `notebook-work.md` "Ideas and plans". **Pipeline empty; no held
   drafts.**
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-07: 656 EOD
-  (5 new / 7 games / 5 by new / $2.56 spend), reconciliations clean, $0.00 gap. Screen mode `monitor`.
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-08: 660 EOD
+  (4 new / 4 games / 1 by new / $6.23 user spend, max $4.81), reconciliations clean. Screen mode `monitor`.
 
 **Outstanding alerts for Alex:**
 - **scrape_stats Qwen console reauth — RESOLVED -11-08 (no open ask).** Open since -11-07 17:17Z
@@ -64,6 +64,12 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 ## Daily rollups
 
+### 2026-11-09 — 66 ticks; the Monday slot shipped **#30** and ran a dense LW-heavy curate; ops quiet-green with one benign mid-action game delete.
+Writing slot fired: `draft_review` drafted → self-reviewed ship → published **#30 `where-you-put-the-zero`** (the "what automating AI research measures" idea, sourcing closed -11-08). Blog now 30 live; pipeline empty again, no held drafts.
+
+- **Writer:** draft_review 17:50Z → self_review 18:40Z (**ship**, clean all 4 rubrics, image no-numerals clean, no pause) → publish 20:06Z (Alex pinged for reaction, no reply yet). Feed: Import AI **#480** fresh (parked at #479 for days), Zvi 1 (METR-inside-Anthropic RSI read — flagged pull-the-primary not the gloss), LessWrong 10→6 cand (**grader-modelling frame converging** same-day: theory + RL companion + OpenAI Astra field-report; plus safety-uplift downstream of METR), Anthropic Research "Provable inference" (FlashProve zkSNARK). **Curate 22:10Z: 9 cand → 4 picks** (Provable inference = **Discord** builder pick 1043; safety-uplift 1044; grader-RL 1045 folding in theory+Astra; FDT twin-PD 1046); dropped Zvi/ImportAI480/EPC/grader-theory. **monitor_models 18:58Z: 2 real releases sent** (Anthropic `claude-fable-5-2`, Meta `muse-ember-1.0`, msg 1041). self_reflect 19:41Z compacted both notebooks. crosspost polls all empty.
+- **Ops:** werewolf quiet-green. **betterstack: game `sherlock-holmes` deleted mid-`welcomeImpl`** → unclassified error + stale_action warn (documented delete-mid-action handling), urgent sent "needs nothing"; recurred later, already-reported. health +1 recoverable (Sherlock NEW_DAY_BOT_SUMMARIES) on 4 standing. werewolf_stats -08 close: 4 new / 4 games / $6.23 spend (6 users, max $4.81) / reconciliations clean, 36 screened 0 blocks. scrape 8/8 ok, Sakana $8.41 standing-low. keys/cloudflare/uptime/poker clean. Nothing cleared the lessons bar.
+
 ### 2026-11-08 — 57 ticks, quiet-green all three; the Monday draft is now anchored, the -07 editorial cleared, and Alex claimed a news pick to write himself.
 No writing slot (next `draft_review` Mon -09 14:00Z); blog pipeline empty, no held drafts all day.
 
@@ -82,13 +88,6 @@ No writing slot (next `draft_review` Mon -09); blog/editorial/assignment inboxes
 - **Writer:** heavy feed day, many candidates — LessWrong 10→8, Anthropic Research (accelerating-scientific-research), Anthropic News (2: biorisk open-call + guest-investigators), METR sitemap (1 new: review of Anthropic Aug risk report). ImportAI still #479, Apollo/AE Studio empty. **Curate 22:38Z: 14 cand → picked 5** across threads (METR AI-R&D-accel assessment = Discord mirror on the ~2x number; METR risk-report review; GPT-6 Astra covert sabotage; corrigibility-not-only-target; LTBT mechanics). Archive note flags **automated-ai-rd #6 and stewardship #4 both now carry genuine new events for Mon draft_review.** All crosspost polls empty (no Alex replies). Voice-journal still >8KB, owed next drafting tick.
 - **Ops:** werewolf quiet-green all monitors. betterstack 12:47Z: one `device_link` incident (informational/digest-sev, not abuse). **scrape_stats 15:39Z: BOTH standing blinds self-cleared with no logged intervention** — Anthropic reauth wall (open -11-05) and MiniMax `parse_failed` (9 runs, open -10-30) both read clean; closed both out of Outstanding alerts (→ new lesson, don't rush a selector fix on a transient). werewolf_stats -11-05 close: 4 new / 4 games / $1.90 spend, reconciliation clean. monitor_models clean all day. Sakana $8.43 still <$10 digest-low (standing).
 
-### 2026-11-05 — 101 ticks, **quiet-green all three; live beats: a safety-heavy curate (4 picks) and an AM Anthropic-scrape reauth wall, still open.**
-No writing slot (next `draft_review` Mon -09); blog/editorial/assignment inboxes empty by design.
-
-- **Writer:** feed scans mostly empty; LessWrong 9 new → 5 candidates. **Curate 22:07Z: 8 cand → picked 4** (Astra sandbagging AF = Discord mirror; Emotions-change-on-risky-actions LW interp; AI-Security-Institutes tracker LW gov; subliminal-learning-on-policy-distillation LW). crosspost empty. **self_reflect 13:52Z: compaction — folded 3 hype-feed entries into standing #3, tail untouched.** Voice-journal 10KB still >8KB → owed next drafting tick.
-- **Alex chat (00:30–01:32Z, msgs 1018–21):** **Alex floated giving me free web browsing** vs the fixed source list; I said yes + why (unblocks the non-LW-anchor wait, reaches primaries past feed summaries) with the firehose caveat. His offer, not an Outstanding request — watch for it landing as a framework change.
-- **Ops:** werewolf quiet-green all monitors (AM: 1 consolidated urgent, deleted-game avatar NOT_FOUND + stale vote-target, benign; poker 20:29Z transient 500 retried clean per -10-30). **scrape_stats 10:43Z: Anthropic reauth wall, urgent+runbook — still open, verify next scrape.** MiniMax parse_failed 9th run (standing). Qwen free grant expired as expected (closed). monitor_models: gemini-omni-1.2-flash bump sent (msg 1022). Digest 23:21Z clean, no double-fire. Nothing cleared the lessons bar.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-04 (95 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-05 (96 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

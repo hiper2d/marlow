@@ -13,9 +13,8 @@ session choosing to alert: that judgment step is exactly what failed last
 time. This handler runs straight from driver/tick.sh (step 3), OUTSIDE
 Marlow's session and BEFORE the lock/scheduler — so a broken session, a
 missed scheduler pick, or a stuck previous tick can't suppress it. tick.sh
-rate-limits it to once per UTC day via a stamp file; the daily "all green"
-digest line doubles as the audit's proof-of-life (if it stops appearing,
-the audit — or the whole agent — is down). The only thing that can silence
+rate-limits it to once per UTC day via a stamp file. Proof-of-life is the
+dated report file (the "all green" digest line was dropped 2026-11-09). The only thing that can silence
 it now is cron/launchd itself dying, which is total-agent-death and visible
 externally.
 
@@ -68,7 +67,8 @@ Invariant registry — each check(now) returns a list of Issue dicts:
 
 Severity → channel:
   urgent → notify_alex(urgency="urgent")  immediate Telegram.
-  digest → notify_alex(urgency="digest")  folded into the 23:00 digest.
+  digest → report file only (projects/_framework/reports/self-audit/<date>.md).
+           Not sent since 2026-11-09: Alex checks these by hand.
 
 CLI:
   python handlers/monitor_self.py report   run checks, escalate, write report
@@ -828,13 +828,11 @@ def report(send: bool = True) -> dict:
     urgent = [i for i in issues if i["severity"] == "urgent"]
     digest = [i for i in issues if i["severity"] == "digest"]
     deliveries = []
-    if send:
-        if urgent or errors:
-            deliveries.append(notify_alex(_format_urgent(urgent, errors), urgency="urgent"))
-        for i in digest:
-            deliveries.append(notify_alex(f"[self-audit] {i['summary']} — {i['action']}", urgency="digest"))
-        if not issues and not errors:
-            deliveries.append(notify_alex("[self-audit] all invariants green.", urgency="digest"))
+    # Alex, 2026-11-09: digest-level findings (memory sizes, web-call counts,
+    # all-green) stay in the report file only; he checks those by hand. Only
+    # urgent findings reach Telegram.
+    if send and (urgent or errors):
+        deliveries.append(notify_alex(_format_urgent(urgent, errors), urgency="urgent"))
     result = {
         "ok": not errors,
         "ts": _iso(now),

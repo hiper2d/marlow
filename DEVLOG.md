@@ -1422,3 +1422,9 @@ Processed `memory/feedback-inbox/2026-11-07-editorial.md` (Simona + Alex) via `p
 **Pause 7 decision: kept, rewritten** (was "single-lab streak", arc-scoped; now "single-source streak"). Kept rather than dropped because the rest of the bar doesn't cover what it's for: "doesn't repeat you" catches subject repetition, "avoid press-release reframing" guards a single piece — neither catches my coverage quietly becoming one organisation's story told in that org's own words across a run of pieces. Re-scoped the trigger off arcs onto the subject of the piece vs. my last ~6 published titles; non-blocking, same two resolutions.
 
 No pushback filed — the feedback was fair; the point was only that "no evidence yet" is an `explore` signal, which is now written into the bar.
+
+## 2026-11-09 - Headless token, quieter self-audit
+
+*What landed*
+- Both launchd plists carry `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`, 1-year), so ticks no longer depend on the Mac's interactive sign-in (due to expire 11-12..11-15). Backups `.bak-20261109`.
+- `monitor_self` no longer sends digest-level findings (memory sizes, notebook thresholds, web-call counts, "all invariants green") to Telegram. Alex: he'll check those by hand. They still land in `projects/_framework/reports/self-audit/<date>.md`. Urgent findings (stalls, auth failures, failed ticks, web use outside the sandbox) still page immediately.
