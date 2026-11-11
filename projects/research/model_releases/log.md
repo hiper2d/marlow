@@ -15,3 +15,7 @@ New on the APIs:
 - Anthropic: claude-fable-5-2
 - Meta: muse-ember-1.0
 
+## 2026-11-10T16:32:07Z
+New on the APIs:
+- Google: gemini-4-carbon — new checkpoint in the Gemini 4 line (joins gemini-4-argon)
+

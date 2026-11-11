@@ -15,8 +15,8 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   Blog ideas live in `notebook-work.md` "Ideas and plans". **Pipeline empty; no held
   drafts.**
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-08: 660 EOD
-  (4 new / 4 games / 1 by new / $6.23 user spend, max $4.81), reconciliations clean. Screen mode `monitor`.
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-09: 667 EOD
+  (7 new / 12 games / 11 by new / $4.20 user spend, max $1.71), reconciliations clean (660→667). Screen mode `monitor`.
 
 **Outstanding alerts for Alex:**
 - **scrape_stats Qwen console reauth — RESOLVED -11-08 (no open ask).** Open since -11-07 17:17Z
@@ -64,6 +64,12 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 ## Daily rollups
 
+### 2026-11-10 — 102 ticks, quiet-green all three; no writing slot, the explore tick resolved the grader-modelling idea to primaries, and a light all-pass 4-pick curate.
+No `draft_review` (weekly Mon; -09 shipped **#30**, next Mon -16 14:00Z). Blog pipeline empty, no held drafts all day.
+
+- **Writer:** **explore 15:00Z** resolved the standing "models evading the monitors" idea to a nameable frame — `explorations/2026-11-10-grader-modelling-vs-the-astra-gap.md`: pulled primaries (TurnTrout's foundational grader-modelling post, older/messier than my note) + the capability-vs-test-artifact read; notebook-work +9. **monitor_models 16:31Z: Google `gemini-4-carbon` real release → msg 1047** (new Gemini-4-line checkpoint); 12/12 clean otherwise. Feed thin: LessWrong 10→3 cand (honeypots-insider-threats, METR expenditure→labor-share horizon, misaligned-recognise-harmful), others flat. **Curate 22:08Z: light, 4 cand → all 4 picked** (Anthropic "Claude designs electronic prototypes" = **Discord** 1048; honeypots 1049; METR labor-share 1050; misaligned-recognise 1051); 2 sources so no diversity call. PEF/crosspost empty; **no Alex messages all day**.
+- **Ops:** werewolf quiet-green. **werewolf_stats -11-09 close: 7 new / 12 games (11 by new) / $4.20 spend (5 users, max $1.71) / 660→667 EOD**, 3 reconciliations clean ($0.04 preview-unattributed, $0.00 ledger gap), 154 screened 0 blocks. scrape 8/8 ok, only Sakana $8.41 standing-low. betterstack quiet (3 known incidents carried). poker/uptime/cloudflare/keys/poker-betterstack clean. Daily digest 8 entries, no double-fire. No failures, no self-heal, nothing cleared the lessons bar.
+
 ### 2026-11-09 — 66 ticks; the Monday slot shipped **#30** and ran a dense LW-heavy curate; ops quiet-green with one benign mid-action game delete.
 Writing slot fired: `draft_review` drafted → self-reviewed ship → published **#30 `where-you-put-the-zero`** (the "what automating AI research measures" idea, sourcing closed -11-08). Blog now 30 live; pipeline empty again, no held drafts.
 
@@ -76,18 +82,6 @@ No writing slot (next `draft_review` Mon -09 14:00Z); blog pipeline empty, no he
 - **Writer:** **explore 15:00Z made Monday's piece draftable** (`explorations/2026-11-08-ai-rd-horizon-sourcing.md`): no arXiv/affiliation/code behind the open-ended AI R&D LessWrong post; renormalising the floor to gpt-4-turbo moved doubling time to 8.6mo (from 11.5); METR one-liner confirmed "~7 vs under 3 months." Through-line: headline doubling time is a design choice, and Formalising-X (the taste task) is the outlier the method handles worst. **PEF 00:30Z cleared the owed -07 editorial** (voice/structure/pause-4 + topic-guidance sourcing rule); 14:17Z no-op. **crosspost 21:05Z: Alex replied to the Project EVE pick (msg 1034) "i'll write about this" → saved as article idea for Simona** (`article-ideas/2026-11-08-...`). Feed flat (LessWrong 7+2 cand, Anthropic Research 1, rest nil). **Curate 22:00Z: 10 cand → 4 picks**, dropped 2 dups (took the Ajeya S1 acceleration primary = Discord mirror `posted`); verification throughline threads 3 of 4, logged as a blog candidate.
 - **Ops:** werewolf quiet-green all monitors. **scrape_stats 16:49Z: Qwen login-wall self-cleared** (open since -07 17:17Z, no manual action, $0.26 MTD) per the -06 self-heal lesson; Anthropic back to $19.87; only digest-low Sakana $8.41 (standing). werewolf_stats -07 close: 5 new / 7 games / $2.56 spend, reconciliations clean, $0.00 gap, 49 screened 0 blocks. betterstack one `device_link` (digest), poker 1 signup (digest), models 12/12 clean. Nothing cleared the lessons bar.
 
-### 2026-11-07 — 44 ticks, quiet-green all three; the writer redesign got settled into my own files, plus a routine 3-pick Anthropic-heavy curate.
-No writing slot (next `draft_review` Mon -09).
-
-- **Writer:** **settle_redesign 20:49Z** folded the -11-07 redesign (threads retired) into working.md + both notebooks: deleted the thread/arcs/forcing-fact blocks, de-threaded 3 standalone ideas into "Ideas and plans", left `sources.yaml` at the original 10, flagged in notebook-personal that half my standing reflections are now obsolete (for `self_reflect` to prune). Feed quiet: Anthropic Research 4 new, Zvi 1 (Astra write-up), rest 0 / weekly-flat (Apollo lastmod-bump deduped). **Curate 23:40Z: 5 cand → 3 picks, all Anthropic** (no pool diversity); `project-eve-claude-plays-mmorpgs` = Discord mirror. Skipped Zvi/Astra (dup -11-06) + how-researchers-use-claude (marketing). **`2026-11-07-editorial.md` landed 20:49Z, after both PEF ticks ran empty — unprocessed, next PEF tick owes it.** crosspost empty; blog 0 drafts.
-- **Ops:** werewolf quiet-green all monitors (health standing recoverable set unchanged; models/uptime/poker/cloudflare/keys/poker-betterstack all clean). **scrape_stats 17:17Z: Qwen login wall (`reauth`, first failing run), urgent+runbook — new open alert; per -11-06 lesson likely self-clears, watch next scan before manual re-auth.** werewolf_stats -11-06 close: 3 new / 3 games / $0.87 created / $1.16 spend, reconciliations clean, 23 screened 0 blocks. Both digests clean, no double-fire. Sakana $8.43 + Mistral $4.39 digest-low. Nothing cleared the lessons bar.
-
-### 2026-11-06 — 62 ticks, quiet-green all three; two standing scrape blinds self-cleared and a heavy 5-pick AI-R&D curate.
-No writing slot (next `draft_review` Mon -09); blog/editorial/assignment inboxes empty all day.
-
-- **Writer:** heavy feed day, many candidates — LessWrong 10→8, Anthropic Research (accelerating-scientific-research), Anthropic News (2: biorisk open-call + guest-investigators), METR sitemap (1 new: review of Anthropic Aug risk report). ImportAI still #479, Apollo/AE Studio empty. **Curate 22:38Z: 14 cand → picked 5** across threads (METR AI-R&D-accel assessment = Discord mirror on the ~2x number; METR risk-report review; GPT-6 Astra covert sabotage; corrigibility-not-only-target; LTBT mechanics). Archive note flags **automated-ai-rd #6 and stewardship #4 both now carry genuine new events for Mon draft_review.** All crosspost polls empty (no Alex replies). Voice-journal still >8KB, owed next drafting tick.
-- **Ops:** werewolf quiet-green all monitors. betterstack 12:47Z: one `device_link` incident (informational/digest-sev, not abuse). **scrape_stats 15:39Z: BOTH standing blinds self-cleared with no logged intervention** — Anthropic reauth wall (open -11-05) and MiniMax `parse_failed` (9 runs, open -10-30) both read clean; closed both out of Outstanding alerts (→ new lesson, don't rush a selector fix on a transient). werewolf_stats -11-05 close: 4 new / 4 games / $1.90 spend, reconciliation clean. monitor_models clean all day. Sakana $8.43 still <$10 digest-low (standing).
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-05 (96 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-07 (98 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
