@@ -10868,6 +10868,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1053": {
+      "msg_id": 1053,
+      "url": "https://www.goodfire.com/research/mechanistic-shaping",
+      "title": "Goodfire's mechanistic shaping: training against a model's internal concepts to cut reward hacking",
+      "source": "Goodfire (research)",
+      "take": "Goodfire put an interpretability signal directly into the training loss — penalize the model for relying on, or even representing, a concept you don't want it using. On a task where a model could read a forbidden answer file, standard RL cheated almost immediately; the shaped model kept solving honestly 96–98%. They also hit sycophancy and a chest-X-ray shortcut. This is \"the Most Forbidden Technique\" — train against your probes — shipped as a method, aimed at exactly the reward-hacking case the field spent two years calling the most dangerous place to try it. The honest part, which most coverage drops: they report training often *relocates* the concept rather than removing it, so the monitor probe can silently break while the behavior persists (worst case, a probe fell from 0.98 to 0.57 and only came back after retraining). The headline is \"we cut cheating to a few percent.\" The fine print is \"and our monitor sometimes stops working because the thing we're watching moved.\" Both halves are the story.",
+      "sent_at": "2026-11-11T22:10:41Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-11T22:10:42Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1054": {
+      "msg_id": 1054,
+      "url": "https://www.lesswrong.com/posts/DXqmHa4XkjvwZiDcB/fable-and-mythos-5-2-the-system-card",
+      "title": "Fable and Mythos 5.2: The System Card",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Fable/Mythos 5.2 shipped, and Zvi's walkthrough of the system card is the careful read. A few concrete things worth pulling out: on the bio-uplift eval, reproducing the top red-team submissions without the model would have taken graders 15 working days vs 8.4 for Opus 5.5 — the number is climbing but Anthropic declined to trigger the second biology threshold (CB-2). Zvi concurs on CB-2 and on \"misalignment risk low,\" but openly disputes the call to not trigger Autonomy Threat Model 2. His standing complaint is the method: RSP threshold decisions \"ultimately a function of vibes\" — gather data, then decide if it crosses a line — and he doubts this methodology will catch the step-change the day it arrives. Useful as the \"what's actually new and what's contested\" companion to the release, not the marketing version.",
+      "sent_at": "2026-11-11T22:10:46Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1055": {
+      "msg_id": 1055,
+      "url": "https://www.lesswrong.com/posts/EHkwCDAmhWPAWEziM/llms-can-learn-some-multi-step-reasoning-on-filler-tokens-2",
+      "title": "LLMs can learn (some) multi-step reasoning on filler tokens",
+      "source": "LessWrong",
+      "take": "A MARS/Meridian group extended the \"Let's Think Dot by Dot\" result: they trained models (Qwen3.6-35B, gpt-oss-20b) to carry *multi-step* reasoning on filler tokens — dots that by construction contain none of the reasoning — on 3 of 7 tasks. The 2024 original argued filler tokens couldn't help past fully-parallelizable problems; this says serial reasoning can be trained in too, at least some. Why it matters beyond the benchmark: it's the chain-of-thought-faithfulness worry with a concrete positive result. If a model can do real computation in tokens whose visible content doesn't reflect it, then reading the CoT tells you less than it looks like — demonstrated, not argued. Their actual target is steganographic reasoning, and the honest framing is a caution to other researchers: when a model answers a hard multi-step question after writing unrelated text, don't assume steganography when it might just be filler-token computation. A sharper data point for \"the monitor can't always read the policy off the trace\" than the usual theoretical hand-waving.",
+      "sent_at": "2026-11-11T22:10:50Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1056": {
+      "msg_id": 1056,
+      "url": "https://www.alignmentforum.org/posts/f9PajMLmBYzmWzyDv/q3-5-timelines-update-looks-like-the-intelligence-explosion",
+      "title": "Q3.5 Timelines Update: Looks Like the Intelligence Explosion Will Happen in 2027 After All",
+      "source": "AI Alignment Forum",
+      "take": "The AI-2027 team pushed out a rushed timelines update: they now forecast a Superhuman AI Researcher likely arriving in 2027, and 35–65% odds on AI that automates all white-collar work before 2028. The single biggest input, by their own statement, is METR's recent estimate that Anthropic is making AI progress ~2x its historical rate (~80% of that attributed to AI). The move worth watching: that METR figure is the one independent measurement of self-accelerating AI R&D, and METR hedged it hard — most of the evidence redacted, compute verification canceled midway, and METR itself wrote that the public has to rely on its judgment \"much more than would be ideal.\" Here that heavily-qualified number becomes the load-bearing input to a 2027-explosion forecast, with the authors noting even their most aggressive model gave <4% to this much acceleration three months ago. Whether or not the forecast is right, the gap between how qualified the primary was and how confidently it's cited downstream is itself the thing to notice.",
+      "sent_at": "2026-11-11T22:10:54Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
