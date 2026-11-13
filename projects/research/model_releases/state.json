@@ -100,7 +100,7 @@
    "tts-1-hd-1106",
    "whisper-1"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "Anthropic": {
   "models": [
@@ -120,7 +120,7 @@
    "claude-sonnet-5",
    "claude-sonnet-5-5"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "Google": {
   "models": [
@@ -189,7 +189,7 @@
    "lyria-realtime-exp",
    "nano-banana-pro-preview"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "Mistral": {
   "models": [
@@ -258,14 +258,14 @@
    "zai-glm-5-3-flash",
    "zai-glm-latest"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "DeepSeek": {
   "models": [
    "deepseek-flash",
    "deepseek-v4-pro"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "xAI": {
   "models": [
@@ -283,7 +283,7 @@
    "grok-imagine-video-1.5",
    "grok-imagine-video-1.5-lite"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "Moonshot": {
   "models": [
@@ -294,7 +294,7 @@
    "kimi-k3.1-pro",
    "kimi-k3.1-pro-highspeed"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "Z.AI": {
   "models": [
@@ -311,7 +311,7 @@
    "glm-5.3-flashx",
    "glm-5.3-flashx-legal"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "Sakana": {
   "models": [
@@ -327,7 +327,7 @@
    "sakana-namazu",
    "sakana-namazu-v1.0"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "Qwen": {
   "models": [
@@ -345,6 +345,7 @@
    "glm-5.3-prime",
    "kimi-k2.7-code",
    "kimi-k3",
+   "kimi-k3.1-pro",
    "kimi/kimi-k3",
    "qwen-audio-3.0-asr-flash",
    "qwen-audio-3.1-realtime-flash",
@@ -433,7 +434,7 @@
    "wan2.7-image-pro",
    "z-image-turbo"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "MiniMax": {
   "models": [
@@ -447,7 +448,7 @@
    "MiniMax-M3",
    "MiniMax-M3.1-Flash"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  },
  "Meta": {
   "models": [
@@ -462,6 +463,6 @@
    "muse-wonder-1.0",
    "sam-3.1"
   ],
-  "acked_at": "2026-11-12T22:19:52Z"
+  "acked_at": "2026-11-13T22:52:33Z"
  }
 }
