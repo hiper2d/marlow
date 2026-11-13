@@ -23,3 +23,7 @@ New on the APIs:
 New on the APIs:
 - Google: gemini-decision-1 — new model id, not a version bump of an existing Gemini line; name suggests a decision/agentic-routing specialized model.
 
+## 2026-11-12T19:07:08Z
+New on the APIs:
+- Google: gemini-4-hydrogen — new checkpoint in the Gemini 4 line (joins gemini-4-argon, gemini-4-carbon)
+

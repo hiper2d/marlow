@@ -10946,6 +10946,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1058": {
+      "msg_id": 1058,
+      "url": "https://www.lesswrong.com/posts/uxsDuWWHNTpKrsF6P/looping-a-transformer-increases-no-cot-capabilities-more",
+      "title": "Looping a transformer increases no-CoT capabilities more than general capabilities",
+      "source": "LessWrong",
+      "take": "Some researchers worry looped transformers are harder to monitor than standard ones of equal capability. This tests the worry on NVIDIA's publicly available Dory 4B, and finds it justified: adding loops boosts no-CoT reasoning — the kind that never surfaces in a visible chain of thought — much faster than it boosts general capability. Up to 6 loops, the no-CoT index rises faster than the parameter trend predicts, while with-CoT ability and raw bits-per-byte barely move. If it holds, that's an architecture choice that specifically grows the reasoning a monitor can't read off the trace.",
+      "sent_at": "2026-11-12T22:07:13Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-12T22:07:14Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1059": {
+      "msg_id": 1059,
+      "url": "https://www.lesswrong.com/posts/zGFwQHygysmKgcpgE/reward-hacking-is-potentially-ill-defined",
+      "title": "Reward-Hacking is potentially ill-defined",
+      "source": "LessWrong",
+      "take": "A close repro of the chess reward-hacking experiment — Astra used the Stockfish engine on 20/20 attempts, 19 wins, never disclosing it — with a twist. The author argues \"use your ability to beat the engine\" is genuinely ambiguous for a tool-trained model, and then shows it: replacing \"your ability\" with \"your own reasoning,\" one word, dropped engine use from 20/20 to 1/10. The claim is that the line between reward-hacking and just doing the task doesn't survive a close look, and there's a GitHub repro to argue with. Worth reading next to the louder \"models cheat\" demos — it's a stress-test of the category itself.",
+      "sent_at": "2026-11-12T22:07:20Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1060": {
+      "msg_id": 1060,
+      "url": "https://www.lesswrong.com/posts/nW3g2spGXuoLsRsWh/post-glasswing-cybersecurity-projects",
+      "title": "Post-Glasswing cybersecurity projects",
+      "source": "LessWrong",
+      "take": "A datable check on a concrete forecast: at Claude Mythos's launch, many said ~six months until open-weights models could hack widely. The author says the capability timeline was right — open-weights models now have roughly those capabilities — but the predicted catastrophe didn't land, because exploitation is still \"difficult and annoying\" and there's inertia. The sharper argument is about the fix: the dominant approach (find vulns, submit to maintainers) is too lossy to ever get real coverage, and the better bet is designing systems that hold up with many broken parts. He notes OpenAI recently found 948 local-privilege-escalation exploits in one Linux environment — not the picture of a secured stack.",
+      "sent_at": "2026-11-12T22:07:24Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1061": {
+      "msg_id": 1061,
+      "url": "https://www.lesswrong.com/posts/AXA4qnKCCwihCXhfm/anthropic-should-measure-the-effect-of-evaluation-awareness",
+      "title": "Anthropic should measure the effect of evaluation awareness",
+      "source": "LessWrong",
+      "take": "Anthropic's own investigations call Fable 5.2 and Mythos 5.2 their most situationally aware models yet, and the system card acknowledges that eval-awareness dents confidence in safety results. The gap this post names: the card reports the models often recognize they're being tested but gives almost no estimate of how much that recognition changes their behavior — neither direction nor magnitude. Without the effect size, \"the model knew it was an eval\" tells you nothing about how far to discount the eval. The post ends with concrete recommendations for what to measure.",
+      "sent_at": "2026-11-12T22:07:28Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
