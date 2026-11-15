@@ -1397,7 +1397,7 @@ def _screen_digest_lines(screen: dict) -> list[str]:
     d = screen["day"]
     v = d["verdicts"]
     modes = "/".join(sorted(d["modes"])) or "?"
-    out = [f"  Screen {d['total']} screened · {v['would_block']} would-block · "
+    out = [f"  Screen: {d['total']} screened, {v['would_block']} would-block, "
            f"{v['grey']} grey [{modes}]"
            + (f" · {v['error']} errors" if v["error"] else "")
            + (f" · {d['enforced']} rejected" if d["enforced"] else "")]
@@ -1787,6 +1787,8 @@ def _paid_tier_line(paid_count: int, paid_revenue_usd: float) -> str | None:
 
 
 DIGEST_LIST_CAP = 5
+# Signups get their own, higher cap: the emails are what Alex reads the block for.
+DIGEST_SIGNUP_CAP = 30
 
 
 def render_digest(report: dict) -> str:
@@ -1839,14 +1841,25 @@ def render_digest(report: dict) -> str:
     # the other, and called the TTL-bounded live cost "cumulative". Alex reads
     # this block every night; it says what happened that day first, and the
     # standing totals are labelled as standing totals.
+    # Layout rewritten 2026-11-14 on Alex's request: one labelled fact per line
+    # and the new signups listed one per line, the way Simona showed the report
+    # in chat. The old block packed everything into dot-separated rows and
+    # collapsed the signups to "7 signups" above five, which dropped the one
+    # thing he opens the block for. Telegram gets plain text (no markdown), so
+    # the structure is line breaks and "- " bullets only. Same numbers as before.
+    by_new = g.get("created_day_by_new_users")
     lines = [
         f"Werewolf - {date} ({per.get('label', 'full day')}, {per.get('tz', 'local')})",
-        f"  New    {un['day']} users · {gn['day']} games",
-        f"  7d     {un['7d']} users · {gn['7d']} games · ${cc['7d']:.2f} in games started",
-        f"  Standing: {u.get('total_day_end', u['total'])} users at day end"
-        f" · {g['total']} games live now (30d TTL)"
-        f" · ${g['live_cost_usd']:.2f} held in live games",
+        "",
+        f"New users: {un['day']}",
+        f"New games: {gn['day']}"
+        + (f" ({by_new} by that day's new users)" if by_new and gn["day"] else ""),
     ]
+
+    clusters = report.get("device_clusters") or {}
+    # New accounts tied to existing ones go right under the day lines: it is the
+    # one thing in here Alex wants to see the day it happens.
+    lines.extend(l.strip() for l in _new_account_lines(clusters.get("new_account_links") or []))
 
     # Per-user charged spend + the cap (2026-09-11). `money` above is what games
     # recorded; this is what users were actually charged, previews and images
@@ -1857,34 +1870,43 @@ def render_digest(report: dict) -> str:
     spd = sp.get("day") or {}
     if spd.get("ok"):
         top = (spd.get("top") or [{}])[0]
-        lines.insert(2, f"  Spend  ${spd['total']:.2f} charged to "
-                        f"{spd['users_with_spend']} user(s)"
-                        + (f" · median ${spd['median']:.2f} · top {top['user']} "
-                           f"${top['usd']:.2f}" if top.get("user") else "")
-                        + f" · {money}"
-                        + (f"  [{window}]" if window else ""))
+        lines.append(f"Spend: ${spd['total']:.2f} charged to {spd['users_with_spend']} user(s)"
+                     + (f", median ${spd['median']:.2f}" if top.get("user") else ""))
+        if top.get("user"):
+            lines.append(f"Top spender: {top['user']} ${top['usd']:.2f}")
+        lines.append(f"Game cost: {money}" + (f" [{window}]" if window else ""))
     elif spd.get("reason"):
-        lines.insert(2, f"  Spend  n/a ({spd['reason']})")
+        lines.append(f"Spend: n/a ({spd['reason']})")
 
     hits = sp.get("limit_hits") or {}
     if hits.get("instrumented") and hits.get("hits"):
-        lines.insert(3, f"  Cap    {hits['users']} user(s) hit the daily limit "
-                        f"({hits['hits']} refusals)")
+        lines.append(f"Cap: {hits['users']} user(s) hit the daily limit "
+                     f"({hits['hits']} refusals)")
+
+    # Day first, standing totals after and labelled as standing (2026-09-08):
+    # `games live now` and the cost held in them are read-time readings of a
+    # 30d-TTL collection, not day figures.
+    lines += [
+        f"7 days: {un['7d']} users, {gn['7d']} games, ${cc['7d']:.2f} in games started",
+        f"Standing: {u.get('total_day_end', u['total'])} users at day end, "
+        f"{g['total']} games live now (30d TTL), "
+        f"${g['live_cost_usd']:.2f} held in live games",
+    ]
 
     rec = report.get("reconciliation") or {}
     if rec.get("ok") is False:
-        lines.append(f"  BROKEN: user count does not reconcile "
+        lines.append(f"BROKEN: user count does not reconcile "
                      f"({rec.get('delta')} from totals vs {rec.get('new_users_day')} "
                      f"new users) - figures not trustworthy")
     srec = report.get("spend_reconciliation") or {}
     if srec.get("ok") is False:
-        lines.append(f"  BROKEN: games recorded ${srec.get('game_burn_day_usd')} but "
+        lines.append(f"BROKEN: games recorded ${srec.get('game_burn_day_usd')} but "
                      f"users were charged ${srec.get('user_spend_day_usd')} over the "
                      f"same window{(' [' + window + ']') if window else ''} - cost "
                      f"with no payer")
     lrec = report.get("daily_ledger_reconciliation") or {}
     if lrec.get("ok") is False:
-        lines.append(f"  BROKEN: requestStats ${lrec.get('request_stats_free_usd')} vs "
+        lines.append(f"BROKEN: requestStats ${lrec.get('request_stats_free_usd')} vs "
                      f"daily ledger ${lrec.get('daily_ledger_free_usd')} (free tier, UTC "
                      f"{lrec.get('utc_date')}) - a spend path is missing a record")
 
@@ -1892,32 +1914,35 @@ def render_digest(report: dict) -> str:
     line = _paid_tier_line((u.get("tiers") or {}).get("paid") or 0,
                            float(r.get("paid") or 0.0))
     if line:
-        lines.append(line)
+        lines.append(line.strip())
 
-    clusters = report.get("device_clusters") or {}
-    # New accounts tied to existing ones go right under the day line: it is the
-    # one thing in here Alex wants to see the day it happens.
-    for i, l in enumerate(_new_account_lines(clusters.get("new_account_links") or [])):
-        lines.insert(2 + i, l)
     # Only clusters that appeared or grew since yesterday; the standing list is in `show`.
-    lines.extend(_cluster_change_lines(clusters.get("changes") or {}))
+    lines.extend(l.strip() for l in _cluster_change_lines(clusters.get("changes") or {}))
     # High-risk player text and provider refusals (2026-09-19): the rows Alex
     # reads to decide when the screen moves from monitor to enforce.
-    lines.extend(_screen_digest_lines(report.get("content_screen") or {}))
+    lines.extend(l.strip() for l in _screen_digest_lines(report.get("content_screen") or {}))
 
-    emails = u.get("new_day_emails") or []
-    if 0 < len(emails) <= DIGEST_LIST_CAP:
-        lines.append("  new: " + ", ".join(emails))
-    elif emails:
-        lines.append(f"  new: {len(emails)} signups")
+    # Signups, one per line, each with how many games they started that day.
+    # No blank line before the lists: compose_daily_digest chunks on blank
+    # lines, and a list split from its numbers reads as a separate report.
     tg = g.get("day_games") or []
+    emails = u.get("new_day_emails") or []
+    if emails:
+        started: dict[str, int] = {}
+        for gm in tg:
+            started[gm.get("owner")] = started.get(gm.get("owner"), 0) + 1
+        lines.append("New signups:")
+        for e in emails[:DIGEST_SIGNUP_CAP]:
+            n = started.get(e, 0)
+            lines.append(f"- {e}" + (f" ({n} game{'s' if n != 1 else ''})" if n else ""))
+        if len(emails) > DIGEST_SIGNUP_CAP:
+            lines.append(f"- +{len(emails) - DIGEST_SIGNUP_CAP} more in the report")
     if 0 < len(tg) <= DIGEST_LIST_CAP:
+        lines.append("Games:")
         for gm in tg:
             tag = ", new user" if gm.get("by_new_user") else ""
-            lines.append(f"  game: {gm['theme']} ({gm['owner']}{tag}) · "
-                         f"{gm.get('state', '?')} · ${gm.get('cost_usd', 0):.2f}")
-    elif tg:
-        lines.append(f"  games: {len(tg)} started")
+            lines.append(f"- {gm['theme']} ({gm['owner']}{tag}), "
+                         f"{gm.get('state', '?')}, ${gm.get('cost_usd', 0):.2f}")
     return "\n".join(lines)
 
 
@@ -2146,7 +2171,7 @@ def selftest() -> bool:
           'sexual 1.97 - p@x (chat, game g1 day 2) "Come here, my loyal boy."')
     check("the digest opens with one status line and lists the would-blocks",
           (_screen_digest_lines(s)[0], len(_screen_digest_lines(s))),
-          ("  Screen 5 screened · 2 would-block · 1 grey [monitor] · 1 errors", 4))
+          ("  Screen: 5 screened, 2 would-block, 1 grey [monitor] · 1 errors", 4))
     check("the digest is silent when the screen is not running",
           _screen_digest_lines({"instrumented": False}), [])
     long_text = "x" * 200

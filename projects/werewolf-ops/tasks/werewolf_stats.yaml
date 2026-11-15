@@ -74,8 +74,10 @@
 #   4. The digest block is now appended AUTOMATICALLY by `report` itself (it
 #      calls notify_alex(..., urgency="digest") deterministically). Do NOT run
 #      `digest | notify --digest` yourself — that would double-post. The block is
-#      a header line (new users, games, $ since yesterday) plus today's new-user
-#      emails and game themes, collapsing to bare counts above DIGEST_LIST_CAP.
+#      one labelled fact per line (new users, new games, spend, 7 days,
+#      standing), then the day's new-user emails one per line with their game
+#      count (up to DIGEST_SIGNUP_CAP), then the games if there are no more
+#      than DIGEST_LIST_CAP (layout changed 2026-11-14, Alex's request).
 #      No immediate ping — digest-only; compose_daily_digest (23:00 UTC) sends the
 #      accumulated digest, so this rides out with the budget lines in one message.
 #      (Why moved into the handler: the manual session step was silently skipped

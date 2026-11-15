@@ -386,3 +386,22 @@ No pushback filed — the feedback was fair; the point was only that "no evidenc
 - Still Simona-side, not a Marlow tick: Marlow does not write DEVLOG.md, and that rule stands.
 
 ---
+
+---
+
+## 2026-11-14 - Stats digest block laid out as a list
+
+*What landed*
+- `werewolf_stats.render_digest` rewritten: one labelled fact per line (New users, New games, Spend, Top spender, Game cost, 7 days, Standing, Screen), then the day's signups one per line with how many games each started. Signups have their own cap (`DIGEST_SIGNUP_CAP = 30`); games still list only at 5 or fewer. Same numbers, plain text (Telegram renders no markdown). Selftest green.
+- The already-queued old-format block in `digests/daily/2026-11-15.md` was swapped for the new render by hand so the next send uses it.
+
+*Why*
+- Alex got a digest on 11-14 with no user block, asked Simona, liked the chat rendering (bullets, emails listed) and asked for Marlow to send it that way. The old block collapsed signups to "7 signups" above five, which dropped the thing he reads it for.
+
+*Things that surprised us*
+- The missing block was not a failure. The Mac slept most of 11-14: 9 ops ticks all day. One subtask per tick, FIFO within a priority, so `collect_stats` (queued 14:44Z) was still behind other monitors when the writer loop sent the digest at 23:00Z. The digest is silent when the block is absent, so a late job looks like an empty day. Simona kicked three ticks via launchd at 00:00Z and it ran clean.
+- `scrape_consoles` also ran clean on that push (115s) after timing out at 300s on 11-13 and never getting a turn on 11-14. Marlow's digest note read the two-day gap as "session dying mid-scrape"; only 11-13 was a death, 11-14 was the same queue starvation.
+
+*Open questions / things to watch*
+- Not done, offered to Alex: `werewolf_stats` at high priority so it runs on the first tick after wake, and a "user stats: not run yet" line in the digest when the block is missing.
+
