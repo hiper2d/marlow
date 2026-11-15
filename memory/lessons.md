@@ -118,6 +118,21 @@ a signal, and `monitor_self` already checks for that.
 
 ## Entries
 
+### 2026-11-14 - scrape_stats "scheduled but no output" is a distinct failure from a balance parse-fail; two consecutive = real
+
+scrape_stats was scheduled on both -11-13 and -11-14 (both stamped in
+`driver/state/last_scheduled.ops.json`) but produced no recent tick, no
+`reports/scrape/<date>.md`, and no digest line either day — the subtask was
+consumed and died in its tail (likely session death mid-scrape, ~2.5min headless
+Chrome). This is NOT the -11-06 failure mode (a login-wall / `parse_failed` that
+self-heals across scans): there the handler *runs and reports* a bad read; here it
+leaves *nothing at all*. What to do: a single scheduled-but-no-output day is a
+one-off (session flake); two consecutive is a real handler/session failure — flag
+it to Alex and stop deferring. While it's dead all provider balances go unread, so
+low-balance and reauth watches can't be confirmed or cleared. Not a self-heal case
+(no nameable file/line — it's a session death, not a code bug) unless a
+reproducible exception actually surfaces in a scrape tick.
+
 ### 2026-11-06 - scrape_stats balance-read failures self-heal; don't fix the selector on a transient
 
 Two standing `scrape_stats` blinds both cleared on their own on -11-06 with no logged
