@@ -11102,6 +11102,101 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1066": {
+      "msg_id": 1066,
+      "url": "https://www.anthropic.com/news/an-update-on-independent-evaluators",
+      "title": "An update on independent evaluators",
+      "source": "Anthropic News",
+      "take": "Anthropic has onboarded six METR employees with company hardware, office space, and internal-tool access \"roughly on par\" with its own staff — the cash-out of last month's pledge to embed independent evaluators. The analogy it reaches for is bank supervision: regulators plant resident examiners inside the largest banks because the bank always knows more about its own risk than any outsider. It's a genuine concession on access, and it quietly redraws the independence question rather than settling it — METR can now see how models were trained and how safeguards work, but from inside the building, and the same post lists Accenture and SecureBio as paid evaluators alongside the nonprofit. The field's recurring answer to \"who verifies the lab\" is to bring the verifier in-house.",
+      "sent_at": "2026-11-15T22:06:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1067": {
+      "msg_id": 1067,
+      "url": "https://www.anthropic.com/news/improving-fable-5-s-biology-safeguards",
+      "title": "Improving Fable 5's biology safeguards",
+      "source": "Anthropic News",
+      "take": "Anthropic cut Fable 5's biology \"fallbacks\" — where a bio query silently downgrades you to a weaker model — by about 85%, a rare concrete number on the usability cost of a safety classifier. The tradeoff it quantifies is normally invisible: the bio filter was firing on everyday health and education questions (reading lab results, understanding symptoms), and that false-positive bucket is what shrinks. Genuinely dual-use requests — virology, toxicology, molecular design — still fall back to Opus 5, so the frontier-bio gate stays shut; this is the classifier getting more precise, not the wall coming down. A clean datapoint on what a safety layer actually costs the product.",
+      "sent_at": "2026-11-15T22:06:41Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-15T22:06:42Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1068": {
+      "msg_id": 1068,
+      "url": "https://www.lesswrong.com/posts/WKt2mqJrsFuMiszed/trying-to-understand-that-compute-multiplier-graph",
+      "title": "Trying to understand that compute multiplier graph",
+      "source": "LessWrong",
+      "take": "A close read of the one graph from Anthropic's IPO roadshow: a log-scale \"pretraining compute multiplier\" curve with no numbers on the Y axis, four dots the author maps to Claude 3.5, Claude 4, Mythos, and an unreleased model. Reading each gridline as a 10x jump puts the latest point near a 30,000x multiplier — same model quality for 1/30,000th of the 2024 compute — but the author is honest that it could be 1.5x or far higher; the unlabelled axis does all the work. Tom Brown's roadshow pitch names where this is pointed: \"as we approach recursive self-improvement… Claude will be able to discover compute multipliers entirely by itself.\" A superexponential capability claim put in front of investors, on a chart nobody outside the lab can audit.",
+      "sent_at": "2026-11-15T22:06:46Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1069": {
+      "msg_id": 1069,
+      "url": "https://www.lesswrong.com/posts/Cssj22TretAQQajZ4/transcript-yudkowsky-and-irving-debate-scalable-oversight",
+      "title": "Transcript: Yudkowsky & Irving debate scalable oversight",
+      "source": "LessWrong",
+      "take": "A carefully edited transcript of a 90-minute August debate between Eliezer Yudkowsky and Geoffrey Irving (now chief scientist at Resolution, formerly at AISI) on scalable oversight — whether a weaker overseer can keep checking a system stronger than itself. They run it as a live disagreement survey, hand-height for intensity, and the gap is stark: Irving thinks a small number of modifications to current training is \"plausible enough to try,\" Yudkowsky puts superalignment beyond the reach of current human institutions. Worth the read because it's the primary — the pessimist against someone actively building oversight schemes — not a secondhand gloss of either side.",
+      "sent_at": "2026-11-15T22:06:49Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1070": {
+      "msg_id": 1070,
+      "url": "https://www.lesswrong.com/posts/CzZR4ZcJoCNi2zqFn/the-oldest-text-in-the-training-data",
+      "title": "The Oldest Text in the Training Data",
+      "source": "LessWrong",
+      "take": "A fun one: what's the oldest text in Claude's training corpus? The piece walks from the Epic of Gilgamesh (2100 BC, Sumerian clay tablets that outlasted their makers by millennia) toward even older accounting tablets, by way of the detail that some of the largest single Unicode characters are Sumerian — 𒐫 is one character for the number 32,400. Mostly it's a concrete way to feel the scale and weirdness of what \"trained on everything humans wrote\" actually means: microfilm, transcribed Betamax, prenups, fanfiction, cuneiform.",
+      "sent_at": "2026-11-15T22:06:53Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

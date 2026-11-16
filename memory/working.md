@@ -59,11 +59,11 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch (scrape_stats scan -11-15 00:04Z):** GLM $7.63 (under <$10 since -11-11) + Sakana Fugu $8.41
-  standing digest-low <$10. xAI $12.59, DeepSeek $19.90, Moonshot $12.27 (unread by scrape, from monitor_keys).
-  OpenAI $20.58, Anthropic $18.84 (auto-reload on, reauth watch resolved), Gemini $23.98 (auto-reload on, spend
-  MTD $60.77), Mistral $5.30/$30 healthy, MiniMax $18.40. Qwen free grant expired -05 as expected, spend MTD
-  $0.40 pay-as-you-go.
+- **Low-balance watch (scrape_stats scan -11-15 10:39-10:41Z):** GLM $7.50 (under <$10 since -11-11) + Sakana Fugu
+  $8.41 standing digest-low <$10. xAI $12.59, DeepSeek $19.90, Moonshot $12.27 (unread by scrape, from monitor_keys).
+  OpenAI $20.12, Anthropic $18.78 (auto-reload on, reauth watch stays resolved), Gemini $22.65 (auto-reload on, spend
+  MTD $62.73), Mistral $5.35/$30 healthy, MiniMax $18.39. Qwen free grant expired -05 as expected, spend MTD
+  $0.40 pay-as-you-go. 8/8 providers read clean, no reauth/parse_failed.
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -73,18 +73,18 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 ## Daily rollups
 
+### 2026-11-15 — quiet-green writer+ops; **scrape_stats RESTORED (8/8 clean 10:39Z), closing the -11-13/-11-14 two-day gap** — all scrape balance/reauth watches now resolved.
+No `draft_review` (weekly Mon; next **tomorrow -16 14:00Z**). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll).
+
+- **Writer:** **explore → `explorations/2026-11-15-ai-jobs-exposure-adoption-primaries.md`** (supersedes -11-13): closed citation gaps on the "door closed ahead of the robot" jobs piece before Monday; corrected two claims vs primaries — Stanford Canaries now **19%** (Aug-2026 vintage; 13% was the 2025 paper), reduced-hiring mechanism now a quotable primary. **self_reflect 13:37Z:** named the narrowing-test trap (unfalsifiable from both ends — verification poles AND the off-beat jobs piece both pre-sourced as the "answer"); condensed both notebooks (personal→21.8KB, work→33.0KB), left Ideas intact (draft Monday). Feeds: LW 10→6 cand; Anthropic News sitemap re-stamp (37 stale evergreen, verified real via fetch → 4 cand); Import AI/METR/Apollo/AAF 0 new. **Curate 22:07Z: 12 cand → 5** — METR employee-like access (1066), **Fable 5 biology safeguards (1067, Discord, cap honored)**, compute-multiplier IPO graph (1068), Yudkowsky/Irving scalable-oversight (1069), oldest-training-text (1070). models 12/12 clean; blog_pipeline no-op ×4; PEF empty.
+- **Ops:** werewolf quiet-green. **scrape_stats 10:39Z clean, 8/8 read** — the -11-13/-11-14 gap closed: delayed -11-14 scan caught up 00:04Z -11-15, then normal 10:39Z scan ran. GLM $7.50 + Sakana $8.41 standing <$10 (not new); no reauth/parse_failed. **werewolf_stats -11-14 close: 6 new / 13 games (8 by new) / $0.84 user spend / $0.54 burn**, 4 reconciliations clean, 2 grey rows (same user) 0 blocks. betterstack/poker-betterstack/keys/poker/health/uptime/tampa_luma/discord all quiet-clean. No self-heal; nothing cleared the lessons bar.
+
 ### 2026-11-14 — quiet-green writer+ops; **scrape_stats produced no output for a 2nd straight scheduled day → confirmed handler/session failure, all provider balances unread since -11-11.**
 No `draft_review` (weekly Mon; -09 shipped **#30**, next Mon -16 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll).
 
 - **Writer:** genuinely quiet day. Feeds: **Import AI** weekly, 0 new (last #480, -09); **AI Alignment Forum** quiet all week, 0 new (last_seen -11-11). **No explore output** (no exploration file, no candidate, no notebook entry) — one-day absence, watch not signal. Zero candidates → no curate delivery (correctly silent, no `digests/news/` file). **monitor_models 12/12 clean** both cycles (02:39Z, 18:31Z). blog_pipeline no-op ×2; editorial inbox empty.
 - **Ops:** werewolf quiet-green. **scrape_stats scheduled 14:44:37Z (`last_scheduled.ops`) but — like -11-13 — NO recent tick, NO `reports/scrape/2026-11-14.md`, NO digest line.** Two consecutive dead runs = the confirmation -11-13 deferred: real handler/session failure (likely session death mid-scrape), not a one-off. All balances unread since -11-11; Anthropic reauth watch (-11-12) unconfirmable. **Flagged to Alex (digest); lesson filed.** No self-heal (session death ≠ nameable code bug). betterstack/health/discord/uptime/cloudflare/models all quiet-clean. Daily digest 2 entries (blog 7d: azelianouski.dev 72, marlow 18).
 
-### 2026-11-13 — quiet-green writer+ops, but two industry events broke the all-safety curate pattern; **scrape_stats produced no output today despite being scheduled** (Anthropic reauth watch unconfirmed).
-No `draft_review` (weekly Mon; -09 shipped **#30**, next Mon -16 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost empty every poll).
-
-- **Writer:** **explore 15:00Z → `explorations/2026-11-13-ai-jobs-exposure-vs-adoption.md`** (continuing -11-12's jobs beat). Tested "the safe degree inverted" against the shrug and found a real falsifiable claim: NY Fed 2024 outcomes — CS grads 22–27 ~7.0% unemployment (5th-worst of 73 majors, *above* art history); the inversion is real. Core frame from -11-12 holds: harm-results and adopter +headcount-results share a selection-vs-treatment confound. Strong blog candidate; drafting-me must verify primaries and honor the "ends on a mechanism or it doesn't ship" firewall. **self_reflect 17:57Z:** named that the recurring "is this idea the verification lens again?" tell is itself the lens on my own output (evidence neither way); folded -11-08 kernel into standing #1; personal notebook 23.8→21.5KB. **monitor_models:** Qwen added `kimi-k3.1-pro` (11:21) — reseller dup of already-acked Moonshot id, noise, no message; 12/12 clean rest of day. Feeds: LW 10→6 cand (16:52), Anthropic News 2 (S-1 + stale claude-4 resurface); Import AI/Zvi/Alignment/METR/Apollo/AE quiet. **Curate 22:05Z: 8 cand → 4** breaking the all-safety-research pattern — **Anthropic S-1/proposed IPO** (ticker ANT, Nasdaq, GS+MS; fetch-confirmed) = 1062 **Discord** (posted); **Jensen Huang resigns as Nvidia CEO** (NYT-sourced, verified real not satire) = 1063; character-trained-opposing-RL 1064; subliminal-random-numbers 1065.
-- **Ops:** werewolf quiet-green. **werewolf_stats -11-12 close: 5 new / 6 games (1 by new) / $5.28 user spend (10 users) / $2.03 created-cost**, 3 reconciliations clean, 6 grey screen rows 0 blocks, one IP added to existing Westborough cluster (not new). **scrape_stats: scheduled 10:39Z (last_scheduled.ops) but NO recent tick, NO report, NO digest line, queue now empty — the subtask was consumed and produced nothing.** The open Anthropic reauth watch (-11-12) has no confirming scan; balances unread for the day; escalation decision deferred to the -11-14 scrape. betterstack 21:48Z: 2 new `timeout` incidents on **standard** gpt bot (gpt-6.1-terra, not mini, not on known-slow list) — one single-turn recovered, one 10× over 2h on dracula/Vlad (reached GAME_OVER, non-blocking); flagged **watch**, one urgent sent (structural). cloudflare/poker/uptime/keys/tampa_luma/discord clean. Daily digest 23:07Z 5 entries, no double-fire. No self-heal; nothing cleared the lessons bar.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-12 (103 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-13 (104 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
