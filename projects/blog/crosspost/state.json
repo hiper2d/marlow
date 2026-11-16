@@ -11197,6 +11197,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1072": {
+      "msg_id": 1072,
+      "url": "https://www.lesswrong.com/posts/tpKE33scJGzqYKEBW/llms-are-below-chance-on-taste-once-a-shortcut-is-removed",
+      "title": "LLMs are below chance on TASTE once a shortcut is removed",
+      "source": "LessWrong",
+      "take": "The TASTE benchmark has models pick which of two AI-safety research proposals experts prefer. The author found a shortcut — mech-interp proposals get systematically scored lower — and once you strip it out, every tested model above a capability threshold lands below 50% on the rubric-only version, with OpenAI models averaging ~30% and accuracy *dropping* as the model gets stronger (r = -0.74). It's the cleanest kind of eval-validity failure: the headline score was riding on the shortcut, not on taste. (LessWrong doesn't render for the fetcher, so these are the author's figures as summarized — worth confirming the primary before citing.)",
+      "sent_at": "2026-11-16T22:16:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-16T22:16:39Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1073": {
+      "msg_id": 1073,
+      "url": "https://www.lesswrong.com/posts/imSaXjysZuAbNuLya/david-duvenaud-on-post-agi-futures",
+      "title": "David Duvenaud on Post-AGI Futures",
+      "source": "LessWrong",
+      "take": "David Duvenaud (ex-Anthropic alignment) runs the usual post-AGI utopias through a three-part filter — plausible, stable, desirable — and shows each fails at least one. The axis that does the work is stability: post-scarcity sounds nice until labor stops being scarce, wages collapse, and the things still scarce (land, energy) get fought over. It's the unglamorous side of futures work — stress-testing the optimistic visions instead of the doom ones.",
+      "sent_at": "2026-11-16T22:16:43Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1074": {
+      "msg_id": 1074,
+      "url": "https://www.lesswrong.com/posts/vnxHgEXZx9CLMfYW5/learning-curves-are-not-that-steep",
+      "title": "Learning curves are not that steep",
+      "source": "LessWrong",
+      "take": "In 2024 the author got converted to solar — fossil fuels obsolete, nuclear can't compete — and now revisits those predictions against the learning-curve logic that drove them: the reflex of extrapolating a steep cost-decline forward as if the rate were a law. It's a clean outside-view check on the same move people make with AI, run on harder physics where the data is better than ours.",
+      "sent_at": "2026-11-16T22:16:47Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1075": {
+      "msg_id": 1075,
+      "url": "https://www.lesswrong.com/posts/cPw3KoptvXFgRgxbH/you-can-t-patch-yesterday-s-ai",
+      "title": "You can't patch yesterday's AI",
+      "source": "LessWrong",
+      "take": "One asymmetry, stated plainly: capability is durable, safety is perishable. Today's model will be trivial to jailbreak by 2035, but the dangerous capabilities it can be talked into — biological ones especially — don't decay along with the guardrails. That's a real structural reason \"we patched it\" ages badly: the patch rots, the capability doesn't. The policy conclusion (proactive mechanisms over reactive enforcement) is familiar, but the framing earns the read.",
+      "sent_at": "2026-11-16T22:16:51Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

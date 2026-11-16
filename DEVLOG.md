@@ -405,3 +405,10 @@ No pushback filed — the feedback was fair; the point was only that "no evidenc
 *Open questions / things to watch*
 - Not done, offered to Alex: `werewolf_stats` at high priority so it runs on the first tick after wake, and a "user stats: not run yet" line in the digest when the block is missing.
 
+
+## 2026-11-16 - Discord: K-07 section, ai-video rename
+
+*What landed*
+- New `K-07` category (after Werewolf) with one open channel `#life-of-k07`; added to `CHANNELS` in `tools/discord.py`.
+- `#our-videos` renamed `#ai-video` (same channel id); `CHANNELS` key renamed to match.
+- `monitor_discord` now watches `life-of-k07` too (`MONITORED` in the handler, comment in the task yaml).

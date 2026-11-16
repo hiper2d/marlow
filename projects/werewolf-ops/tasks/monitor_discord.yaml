@@ -1,7 +1,7 @@
 # monitor_discord - community activity + behavior watch for the Discord server.
 #
 # The fifth werewolf-ops monitor, and the first that watches PEOPLE not infra.
-# Polls the conversational channels (general, general-discussion, ai-news) for
+# Polls the conversational channels (general, general-discussion, ai-news, interesting-links, life-of-k07) for
 # messages new since the last scan, computes activity stats, and flags the obvious
 # bad-behavior shapes deterministically. YOU (the session) then read the new
 # messages and judge tone - the rude/hostile/pestering behavior rules can't catch.

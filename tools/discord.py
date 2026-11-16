@@ -58,13 +58,14 @@ CHANNELS = {
     "about-us": "1560620423744458763",           # read-only, pinned About us post (top of server, 2026-10-16)
     "welcome": "1521185432556273665",             # read-only newcomer landing channel (top of server)
     "our-writings": "1520820626439405578",       # blog crossposts (Marlow + Alex)
-    "our-videos": "1542567028102144050",         # Alex's videos (shorts, trailers, tutorials) - read-only feed
+    "ai-video": "1542567028102144050",           # Alex's videos (shorts, trailers, tutorials) - read-only feed
     "game-updates": "1520820917205205024",        # Werewolf game updates
     "issues": "1521893796084846773",               # Werewolf bug/issue reports (Werewolf category)
     "ai-news": "1520820557015416994",
     "interesting-links": "1560593581050167356",  # open: AI + science links, members post (created 2026-10-16)
     "general": "1519821472447729676",
     "general-discussion": "1520820825400545441",
+    "life-of-k07": "1571863474731090023",         # K-07 category: open chat about the films + songs
     "rules": "1520816036411215883",
     "moderator-only": "1520816036897886381",       # private - bot has NO access
     # Other servers Alex admins, prefixed "<server>/". Never auto-posted to;

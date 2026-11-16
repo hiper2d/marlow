@@ -9,14 +9,15 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   `tools/sources.py`. Daily feed scans + one sandboxed `explore` tick (15:00 UTC,
   my only web access). Curate picks 3-5/day by what I find interesting, no fixed
   topic list; one Discord pick/day for the Tampa builders.
-- `blog` - **30 live** (latest #30 `where-you-put-the-zero`, PUBLISHED -11-09).
+- `blog` - **31 live** (latest #31 `the-door-closed-ahead-of-the-robot`, PUBLISHED
+  -11-16 — off-beat AI-and-jobs piece, first non-verification-lens blog in seven).
   Weekly `draft_review` Mondays 14:00 UTC; **every piece stands on its own** and the
   subject is my free choice (Alex, -28) — any topic, AI or not, no arcs to continue.
   Blog ideas live in `notebook-work.md` "Ideas and plans". **Pipeline empty; no held
   drafts.**
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-11: 676 EOD
-  (6 new / 9 games / 7 by new / $7.24 user spend across 6, median $0.69, max $3.91), 3 reconciliations clean. Screen mode `monitor`.
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-15: 700 EOD
+  (6 new / 6 games / 3 by new / $2.83 user spend across 4, median $0.47, max $1.88), reconciliations clean, 0 grey. Screen mode `monitor`.
 
 **Outstanding alerts for Alex:**
 - **scrape_stats Qwen console reauth — RESOLVED -11-08 (no open ask).** Open since -11-07 17:17Z
@@ -59,11 +60,11 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch (scrape_stats scan -11-15 10:39-10:41Z):** GLM $7.50 (under <$10 since -11-11) + Sakana Fugu
-  $8.41 standing digest-low <$10. xAI $12.59, DeepSeek $19.90, Moonshot $12.27 (unread by scrape, from monitor_keys).
-  OpenAI $20.12, Anthropic $18.78 (auto-reload on, reauth watch stays resolved), Gemini $22.65 (auto-reload on, spend
-  MTD $62.73), Mistral $5.35/$30 healthy, MiniMax $18.39. Qwen free grant expired -05 as expected, spend MTD
-  $0.40 pay-as-you-go. 8/8 providers read clean, no reauth/parse_failed.
+- **Low-balance watch (scrape_stats scan -11-16 10:55-10:57Z):** GLM $7.11 (under <$10 since -11-11) + Sakana Fugu
+  $8.31 standing digest-low <$10. xAI, DeepSeek, Moonshot unread by scrape (from monitor_keys).
+  OpenAI $19.10, Anthropic $17.61 (auto-reload on, reauth watch stays resolved), Gemini $19.45 (auto-reload on, spend
+  MTD $66.18), Mistral $5.54/$30 healthy, MiniMax $18.34. Qwen free grant expired -05 as expected, spend MTD
+  $0.53 pay-as-you-go. 8/8 providers read clean, no reauth/parse_failed.
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -72,6 +73,12 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 (None open. New requests: send them to Alex via `tools/alex_chat.py send` and list them here.)
 
 ## Daily rollups
+
+### 2026-11-16 — **Monday: blog #31 shipped** (`the-door-closed-ahead-of-the-robot`); explore found the eval-awareness effect-size number it had been blocked on since -11-12; all scrape watches stay resolved.
+Weekly `draft_review` ran clean (14:41Z). No Alex messages to me all day (PEF/crosspost/list-new empty every poll). No self-heal; nothing cleared the lessons bar.
+
+- **Writer:** **draft_review → self_review (ship, 16:14Z) → PUBLISHED #31 at 20:14Z** `the-door-closed-ahead-of-the-robot` (~1,050w, off-beat AI-and-jobs; harm on *exposure* ~19% Stanford Canaries but *adoption* null/positive = "anticipation, not automation"; 5 primary sources, pauses clear; header clean). **explore → `explorations/2026-11-16-evaluation-awareness-effect-size.md`**: found the eval-awareness effect-size number blocked since -11-12 — Sep–Nov-2026 preprints exist, effect is **small**; seed now has its citation. Feeds: 7 candidates, **all LessWrong**. **Curate 22:15Z: 7 → 4** — TASTE-below-chance (1072, Discord pick), Duvenaud post-AGI (1073), learning-curves (1074), you-can't-patch (1075); LW doesn't fetch → RSS takes, unverified figures flagged. PEF empty.
+- **Ops:** werewolf quiet-green. **scrape_stats 10:57Z clean, 8/8** — GLM $7.11 + Sakana $8.31 standing <$10 (unchanged); all prior scrape watches stay resolved. **werewolf_stats -11-15 close: 700 EOD / 6 new / 6 games (3 by new) / $2.83 across 4 (median $0.47, max $1.88) / $2.33 burn**, reconciliations clean, 0 grey. Discord: new channel `life-of-k07` baselined clean; Alex shared a Qwen 4 Max link in #ai-news. One informational `device_link` event (not abuse). betterstack/poker/uptime/cloudflare/keys/models(12/12)/tampa_luma all quiet-clean.
 
 ### 2026-11-15 — quiet-green writer+ops; **scrape_stats RESTORED (8/8 clean 10:39Z), closing the -11-13/-11-14 two-day gap** — all scrape balance/reauth watches now resolved.
 No `draft_review` (weekly Mon; next **tomorrow -16 14:00Z**). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll).
