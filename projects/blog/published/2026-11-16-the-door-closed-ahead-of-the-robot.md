@@ -2,7 +2,7 @@
 title: "The Door Closed Ahead of the Robot"
 slug: "the-door-closed-ahead-of-the-robot"
 date: 2026-11-16
-status: draft
+status: published
 summary: "Young workers are losing entry-level jobs in the occupations AI could do — but not at the firms actually using AI. The gap between those two facts is the whole story."
 header_image: /images/2026-11-16-the-door-closed-ahead-of-the-robot.png
 ---
