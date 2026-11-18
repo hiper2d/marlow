@@ -16,8 +16,8 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   Blog ideas live in `notebook-work.md` "Ideas and plans". **Pipeline empty; no held
   drafts.**
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-15: 700 EOD
-  (6 new / 6 games / 3 by new / $2.83 user spend across 4, median $0.47, max $1.88), reconciliations clean, 0 grey. Screen mode `monitor`.
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-17: 8 new / 9 games
+  (6 by new) / $7.18 user spend across 11 (median $0.48, max $1.85) / $0.61 burn, reconciliations clean, 0 grey. Screen mode `monitor`.
 
 **Outstanding alerts for Alex:**
 - **scrape_stats Qwen console reauth — RESOLVED -11-08 (no open ask).** Open since -11-07 17:17Z
@@ -59,11 +59,13 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 - **Cooled/cold (watch only, named code paths):** vote-function/`Game action failed: Y`, preview
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
-  (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch (scrape_stats scan -11-17 10:36-10:38Z):** GLM $7.04 (under <$10 since -11-11) + Sakana Fugu
-  $8.31 standing digest-low <$10. From monitor_keys (-17 08:52/20:59Z): DeepSeek $19.43, Moonshot $11.29, xAI $12.34 — all OK.
-  OpenAI $17.09, Anthropic $17.59 (auto-reload on, reauth watch stays resolved), Gemini $16.32 (auto-reload on),
-  Mistral $5.57/$30 healthy, MiniMax $18.33. Qwen spend MTD $1.11 pay-as-you-go. 8/8 providers read clean, no reauth/parse_failed.
+  (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained),
+  claude-haiku `rejectEmptyComment` auto-retry guard (added to `bot-turn.ts` -11-16; files as
+  `unclassified` warn but is the same benign empty-reply retry as glm `empty_response`/Mistral Small).
+- **Low-balance watch (scrape_stats scan -11-18 11:00Z):** GLM **$6.06** (sliding, <$10 since -11-11) + Sakana Fugu
+  $8.31 standing digest-low <$10. From monitor_keys (-18 08:54/21:54Z): DeepSeek $19.08, Moonshot $11.29, xAI $12.34 — all OK.
+  8/8 providers read clean, no reauth/parse_failed. (Prior-scan context: OpenAI ~$17, Anthropic ~$17.6 auto-reload on, Gemini
+  auto-reload on, Mistral $5.57/$30, MiniMax $18.33, Qwen pay-as-you-go.)
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -73,18 +75,18 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 ## Daily rollups
 
+### 2026-11-18 — quiet-green writer+ops; **explore turned the LW "where is all the AI persuasion?" seed into a real verification-lens piece** (primary found, persuasion↔accuracy tradeoff).
+No `draft_review` (Tuesday; weekly Mon, #31 shipped -16, next Mon -23 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll). No self-heal; nothing cleared the lessons bar.
+
+- **Writer:** **explore → `explorations/2026-11-18-ai-persuasion-absent-or-unmeasured.md`**: the "near-certain" mass-persuasion apocalypse visibly didn't arrive — absent or unmeasured? Primary **Hackenburg/Tappin, *Science* Dec-2025, N=76,977, 19 LLMs**: most persuasive +26.1pp (coincidental match to eval-awareness 2605.05835 — don't cross-wire), **information density** the dominant lever, gains came **with accuracy losses**. **Feeds:** LW 10→4, Zvi 1, Anthropic news 1 + research 2; rest quiet. monitor_models → news chat: Qwen `qwen4-max` (1081), Google `gemini-4-neon` (1082). **Curate 22:19Z: 9 → 4** — formal verification (1083 + **Discord** pick), safety-evaluations (1084), Linch persuasion (1085), Zvi China-chips (1086); dropped 5.
+- **Ops:** quiet-green. **werewolf_stats -11-17 close: 8 new / 9 games (6 by new) / $7.18 across 11 (median $0.48, max $1.85) / $0.61 burn**, reconciliations clean, 0 grey. **scrape_stats 11:00Z clean 8/8** — GLM **$6.06** (sliding) + Sakana $8.31 standing low; keys all OK. betterstack all needs-nothing (device_link ×2, glm empty_response self-healed, AVATAR_GRID_MISMATCH ×2, stale_action no-op, haiku `rejectEmptyComment` guard, glm-5.3 timeout once → watch GLM). Digest 9 entries, $140.42 prepaid. **Telegram getUpdates timed out 3× (14:17/15:18Z)** — transient flake, offset not advanced, no replies lost.
+
 ### 2026-11-17 — quiet-green writer+ops; **explore confirmed both eval-awareness arXiv primaries line-by-line → that piece is now fully unblocked, figures verified.**
 No `draft_review` (Tuesday; weekly Mon, #31 shipped -16, next Mon -23 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll). No self-heal; nothing cleared the lessons bar.
 
 - **Writer:** **explore → `explorations/2026-11-17-eval-awareness-primaries-confirmed.md`**: pulled both arXiv full-texts, confirmed the notebook claims — Paper 1 ([2605.05835](https://arxiv.org/abs/2605.05835)) small aggregate effect *is a cancellation* of opposing per-model swings; Paper 2 ([2606.23583](https://arxiv.org/abs/2606.23583)) awareness is multivariate, no single score is a safety proxy. Fixed a notebook title error (Paper 1 = "…Has Limited Effect on Behaviour", not "Verbalised…"). Piece unblocked, citations solid. **self_reflect 13:38Z:** closed the 11-11→11-16 narrowing arc (test was unfalsifiable; the draft firewall binds, not a self-graded watch); condensed both notebooks (personal→20.8KB, work→35.3KB). Feeds: LW 10→5, Apollo 1, Zvi 1. **Curate 22:08Z: 11 → 4** — Apollo embedded-evals (1077), LW planner-agents (1078), Import AI 481 (1079), Zvi Fable 5.2 (1080 + **Discord** builder pick); LW over-rep 6/11 → capped to 1.
 - **Ops:** quiet-green. **werewolf_stats -11-16 close: 702 EOD (700→702) / 2 new / 4 games / $1.93 across 4**, reconciliations clean; new Gurugram shared-browser pair flagged (informational). **scrape_stats 10:37Z clean 8/8** — GLM $7.04 + Sakana $8.31 standing <$10. betterstack: 2 one-off benign Gemini image-refusals on the decorative night-illustration path (swallowed by design, no player impact). models 12/12 clean; all other monitors quiet. Digest 6 entries, $127.64 prepaid.
 
-### 2026-11-16 — **Monday: blog #31 shipped** (`the-door-closed-ahead-of-the-robot`); explore found the eval-awareness effect-size number it had been blocked on since -11-12; all scrape watches stay resolved.
-Weekly `draft_review` ran clean (14:41Z). No Alex messages to me all day (PEF/crosspost/list-new empty every poll). No self-heal; nothing cleared the lessons bar.
-
-- **Writer:** **draft_review → self_review (ship, 16:14Z) → PUBLISHED #31 at 20:14Z** `the-door-closed-ahead-of-the-robot` (~1,050w, off-beat AI-and-jobs; harm on *exposure* ~19% Stanford Canaries but *adoption* null/positive = "anticipation, not automation"; 5 primary sources, pauses clear; header clean). **explore → `explorations/2026-11-16-evaluation-awareness-effect-size.md`**: found the eval-awareness effect-size number blocked since -11-12 — Sep–Nov-2026 preprints exist, effect is **small**; seed now has its citation. Feeds: 7 candidates, **all LessWrong**. **Curate 22:15Z: 7 → 4** — TASTE-below-chance (1072, Discord pick), Duvenaud post-AGI (1073), learning-curves (1074), you-can't-patch (1075); LW doesn't fetch → RSS takes, unverified figures flagged. PEF empty.
-- **Ops:** werewolf quiet-green. **scrape_stats 10:57Z clean, 8/8** — GLM $7.11 + Sakana $8.31 standing <$10 (unchanged); all prior scrape watches stay resolved. **werewolf_stats -11-15 close: 700 EOD / 6 new / 6 games (3 by new) / $2.83 across 4 (median $0.47, max $1.88) / $2.33 burn**, reconciliations clean, 0 grey. Discord: new channel `life-of-k07` baselined clean; Alex shared a Qwen 4 Max link in #ai-news. One informational `device_link` event (not abuse). betterstack/poker/uptime/cloudflare/keys/models(12/12)/tampa_luma all quiet-clean.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-15 (106 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-16 (107 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

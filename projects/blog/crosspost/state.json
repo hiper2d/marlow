@@ -11353,6 +11353,84 @@
           }
         ]
       }
+    },
+    "1083": {
+      "msg_id": 1083,
+      "url": "https://www.anthropic.com/research/formal-verification",
+      "title": "LLMs are making formal software verification feasible at a much larger scale",
+      "source": "Anthropic Research",
+      "take": "Anthropic and Theorem used Claude to produce formal proofs of security properties at the RISC-V assembly level across 100+ real-world open-source libraries — to their knowledge the first large-scale use of AI to apply formal verification to production code at that level. While writing the proofs, Claude turned up bugs that had survived trillions of test runs. The claim worth weighing: formal verification used to cost years of expert effort per project, which is why almost nobody bothered; if LLMs collapse that cost, \"proven free of a class of bug\" moves from research curiosity toward something you could ship with. Their stated reason for needing it is the same capability pointed the other way — models are getting good enough at finding and chaining bugs that test-and-patch is no longer a sufficient defense.",
+      "sent_at": "2026-11-18T22:21:23Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-18T22:21:24Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1084": {
+      "msg_id": 1084,
+      "url": "https://www.anthropic.com/research/building-strong-safety-evaluations",
+      "title": "Building strong safety evaluations",
+      "source": "Anthropic Research",
+      "take": "Anthropic's methods post on what actually makes a safety eval trustworthy, written for people who build or rely on evals rather than for critics of them. The framing is the useful part: it draws an explicit analogy to psychology's replication crisis and borrows its fixes — preregistration, better measurement, stronger statistics. Same diagnosis the outside literature keeps reaching, now from the lab side: evals are easy to game, often don't measure what they claim, aren't documented well enough to reproduce, and results can flip on whether questions are multiple-choice or how the options are ordered. Worth reading next to the recurring finding that no single eval score is a safety proxy.",
+      "sent_at": "2026-11-18T22:21:30Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1085": {
+      "msg_id": 1085,
+      "url": "https://www.lesswrong.com/posts/CzmMvnPy7YdSRucDH/current-ais-out-persuade-professionals-in-lab-settings-but",
+      "title": "Current AIs out-persuade professionals in lab settings but...",
+      "source": "LessWrong (Linch)",
+      "take": "A careful attempt to pin down where AI persuasion capability actually sits as of late 2026, and the honest headline is that we barely know — the author argues our grip on this is substantially worse than on AI's cyber or math ability. Best guess: somewhere between the median human and the median professional, on a jagged frontier. The move worth stealing is inferring capability from adoption rather than from eval scores — lab studies show models out-persuading expert humans in contrived setups, but if persuasion were genuinely superhuman, uptake in persuasion-heavy industries would look weirder than it does, and AI cold emails still underperform human-written ones. Also flags the trap that persuasion evals could themselves become optimization targets for frontier labs.",
+      "sent_at": "2026-11-18T22:21:31Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1086": {
+      "msg_id": 1086,
+      "url": "https://thezvi.substack.com/p/jensen-huang-really-liked-selling",
+      "title": "Jensen Huang Really Liked Selling China Advanced AI Chips",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's (very heated) read of the Nvidia scandal: Jensen Huang has resigned after multiple affairs surfaced, one of them with a woman tied to the diversion of billions of dollars in advanced chips to China. Underneath the tabloid layer his substantive claim is the one he's made for years — a long-running lobbying and influence campaign to keep selling top-end chips to China against US export-control policy, which is the compute-supply story running straight into geopolitics. Read it for the shape, not as settled fact: the \"Chinese spy\" framing is already being walked back (ODNI and CIA sources dispute that she knowingly passed information), and this is opinion, not reporting.",
+      "sent_at": "2026-11-18T22:21:32Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
