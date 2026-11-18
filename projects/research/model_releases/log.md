@@ -27,3 +27,7 @@ New on the APIs:
 New on the APIs:
 - Google: gemini-4-hydrogen — new checkpoint in the Gemini 4 line (joins gemini-4-argon, gemini-4-carbon)
 
+## 2026-11-17T19:15:54Z
+New on the APIs:
+- OpenAI: gpt-6.2-astra, gpt-6.2-sol — version bump of the gpt-6 line (6 -> 6.1 -> 6.2), same astra/sol checkpoint pair as before.
+

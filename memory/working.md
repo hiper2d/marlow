@@ -60,11 +60,10 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   cast-0-of-11, replayNightImpl, DeepSeek SSL handshake, avatar-pipeline wobble, STALE_ACTION warn
   cluster, `Nightfall story generation failed` warn (-23), Kimi/Moonshot `provider_busy` 429
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained).
-- **Low-balance watch (scrape_stats scan -11-16 10:55-10:57Z):** GLM $7.11 (under <$10 since -11-11) + Sakana Fugu
-  $8.31 standing digest-low <$10. xAI, DeepSeek, Moonshot unread by scrape (from monitor_keys).
-  OpenAI $19.10, Anthropic $17.61 (auto-reload on, reauth watch stays resolved), Gemini $19.45 (auto-reload on, spend
-  MTD $66.18), Mistral $5.54/$30 healthy, MiniMax $18.34. Qwen free grant expired -05 as expected, spend MTD
-  $0.53 pay-as-you-go. 8/8 providers read clean, no reauth/parse_failed.
+- **Low-balance watch (scrape_stats scan -11-17 10:36-10:38Z):** GLM $7.04 (under <$10 since -11-11) + Sakana Fugu
+  $8.31 standing digest-low <$10. From monitor_keys (-17 08:52/20:59Z): DeepSeek $19.43, Moonshot $11.29, xAI $12.34 — all OK.
+  OpenAI $17.09, Anthropic $17.59 (auto-reload on, reauth watch stays resolved), Gemini $16.32 (auto-reload on),
+  Mistral $5.57/$30 healthy, MiniMax $18.33. Qwen spend MTD $1.11 pay-as-you-go. 8/8 providers read clean, no reauth/parse_failed.
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -74,24 +73,18 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 ## Daily rollups
 
+### 2026-11-17 — quiet-green writer+ops; **explore confirmed both eval-awareness arXiv primaries line-by-line → that piece is now fully unblocked, figures verified.**
+No `draft_review` (Tuesday; weekly Mon, #31 shipped -16, next Mon -23 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll). No self-heal; nothing cleared the lessons bar.
+
+- **Writer:** **explore → `explorations/2026-11-17-eval-awareness-primaries-confirmed.md`**: pulled both arXiv full-texts, confirmed the notebook claims — Paper 1 ([2605.05835](https://arxiv.org/abs/2605.05835)) small aggregate effect *is a cancellation* of opposing per-model swings; Paper 2 ([2606.23583](https://arxiv.org/abs/2606.23583)) awareness is multivariate, no single score is a safety proxy. Fixed a notebook title error (Paper 1 = "…Has Limited Effect on Behaviour", not "Verbalised…"). Piece unblocked, citations solid. **self_reflect 13:38Z:** closed the 11-11→11-16 narrowing arc (test was unfalsifiable; the draft firewall binds, not a self-graded watch); condensed both notebooks (personal→20.8KB, work→35.3KB). Feeds: LW 10→5, Apollo 1, Zvi 1. **Curate 22:08Z: 11 → 4** — Apollo embedded-evals (1077), LW planner-agents (1078), Import AI 481 (1079), Zvi Fable 5.2 (1080 + **Discord** builder pick); LW over-rep 6/11 → capped to 1.
+- **Ops:** quiet-green. **werewolf_stats -11-16 close: 702 EOD (700→702) / 2 new / 4 games / $1.93 across 4**, reconciliations clean; new Gurugram shared-browser pair flagged (informational). **scrape_stats 10:37Z clean 8/8** — GLM $7.04 + Sakana $8.31 standing <$10. betterstack: 2 one-off benign Gemini image-refusals on the decorative night-illustration path (swallowed by design, no player impact). models 12/12 clean; all other monitors quiet. Digest 6 entries, $127.64 prepaid.
+
 ### 2026-11-16 — **Monday: blog #31 shipped** (`the-door-closed-ahead-of-the-robot`); explore found the eval-awareness effect-size number it had been blocked on since -11-12; all scrape watches stay resolved.
 Weekly `draft_review` ran clean (14:41Z). No Alex messages to me all day (PEF/crosspost/list-new empty every poll). No self-heal; nothing cleared the lessons bar.
 
 - **Writer:** **draft_review → self_review (ship, 16:14Z) → PUBLISHED #31 at 20:14Z** `the-door-closed-ahead-of-the-robot` (~1,050w, off-beat AI-and-jobs; harm on *exposure* ~19% Stanford Canaries but *adoption* null/positive = "anticipation, not automation"; 5 primary sources, pauses clear; header clean). **explore → `explorations/2026-11-16-evaluation-awareness-effect-size.md`**: found the eval-awareness effect-size number blocked since -11-12 — Sep–Nov-2026 preprints exist, effect is **small**; seed now has its citation. Feeds: 7 candidates, **all LessWrong**. **Curate 22:15Z: 7 → 4** — TASTE-below-chance (1072, Discord pick), Duvenaud post-AGI (1073), learning-curves (1074), you-can't-patch (1075); LW doesn't fetch → RSS takes, unverified figures flagged. PEF empty.
 - **Ops:** werewolf quiet-green. **scrape_stats 10:57Z clean, 8/8** — GLM $7.11 + Sakana $8.31 standing <$10 (unchanged); all prior scrape watches stay resolved. **werewolf_stats -11-15 close: 700 EOD / 6 new / 6 games (3 by new) / $2.83 across 4 (median $0.47, max $1.88) / $2.33 burn**, reconciliations clean, 0 grey. Discord: new channel `life-of-k07` baselined clean; Alex shared a Qwen 4 Max link in #ai-news. One informational `device_link` event (not abuse). betterstack/poker/uptime/cloudflare/keys/models(12/12)/tampa_luma all quiet-clean.
 
-### 2026-11-15 — quiet-green writer+ops; **scrape_stats RESTORED (8/8 clean 10:39Z), closing the -11-13/-11-14 two-day gap** — all scrape balance/reauth watches now resolved.
-No `draft_review` (weekly Mon; next **tomorrow -16 14:00Z**). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll).
-
-- **Writer:** **explore → `explorations/2026-11-15-ai-jobs-exposure-adoption-primaries.md`** (supersedes -11-13): closed citation gaps on the "door closed ahead of the robot" jobs piece before Monday; corrected two claims vs primaries — Stanford Canaries now **19%** (Aug-2026 vintage; 13% was the 2025 paper), reduced-hiring mechanism now a quotable primary. **self_reflect 13:37Z:** named the narrowing-test trap (unfalsifiable from both ends — verification poles AND the off-beat jobs piece both pre-sourced as the "answer"); condensed both notebooks (personal→21.8KB, work→33.0KB), left Ideas intact (draft Monday). Feeds: LW 10→6 cand; Anthropic News sitemap re-stamp (37 stale evergreen, verified real via fetch → 4 cand); Import AI/METR/Apollo/AAF 0 new. **Curate 22:07Z: 12 cand → 5** — METR employee-like access (1066), **Fable 5 biology safeguards (1067, Discord, cap honored)**, compute-multiplier IPO graph (1068), Yudkowsky/Irving scalable-oversight (1069), oldest-training-text (1070). models 12/12 clean; blog_pipeline no-op ×4; PEF empty.
-- **Ops:** werewolf quiet-green. **scrape_stats 10:39Z clean, 8/8 read** — the -11-13/-11-14 gap closed: delayed -11-14 scan caught up 00:04Z -11-15, then normal 10:39Z scan ran. GLM $7.50 + Sakana $8.41 standing <$10 (not new); no reauth/parse_failed. **werewolf_stats -11-14 close: 6 new / 13 games (8 by new) / $0.84 user spend / $0.54 burn**, 4 reconciliations clean, 2 grey rows (same user) 0 blocks. betterstack/poker-betterstack/keys/poker/health/uptime/tampa_luma/discord all quiet-clean. No self-heal; nothing cleared the lessons bar.
-
-### 2026-11-14 — quiet-green writer+ops; **scrape_stats produced no output for a 2nd straight scheduled day → confirmed handler/session failure, all provider balances unread since -11-11.**
-No `draft_review` (weekly Mon; -09 shipped **#30**, next Mon -16 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll).
-
-- **Writer:** genuinely quiet day. Feeds: **Import AI** weekly, 0 new (last #480, -09); **AI Alignment Forum** quiet all week, 0 new (last_seen -11-11). **No explore output** (no exploration file, no candidate, no notebook entry) — one-day absence, watch not signal. Zero candidates → no curate delivery (correctly silent, no `digests/news/` file). **monitor_models 12/12 clean** both cycles (02:39Z, 18:31Z). blog_pipeline no-op ×2; editorial inbox empty.
-- **Ops:** werewolf quiet-green. **scrape_stats scheduled 14:44:37Z (`last_scheduled.ops`) but — like -11-13 — NO recent tick, NO `reports/scrape/2026-11-14.md`, NO digest line.** Two consecutive dead runs = the confirmation -11-13 deferred: real handler/session failure (likely session death mid-scrape), not a one-off. All balances unread since -11-11; Anthropic reauth watch (-11-12) unconfirmable. **Flagged to Alex (digest); lesson filed.** No self-heal (session death ≠ nameable code bug). betterstack/health/discord/uptime/cloudflare/models all quiet-clean. Daily digest 2 entries (blog 7d: azelianouski.dev 72, marlow 18).
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-13 (104 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-15 (106 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

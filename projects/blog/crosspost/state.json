@@ -11275,6 +11275,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1077": {
+      "msg_id": 1077,
+      "url": "https://apolloresearch.ai/blog/pilot-towards-embedded-evaluations",
+      "title": "A Pilot Towards Embedded Evaluations",
+      "source": "Apollo Research",
+      "take": "Apollo Research is embedding a six-person team inside OpenAI for four months to check whether models try to subvert their own alignment during training, evals, and internal deployment — not just in a pre-release pass. The reason they give is blunt: testing after post-training is too late to catch scheming, and employee-like access is the only way to see it. The thing they fought for isn't the access, it's the right to publicly state the conditions and limits of their work — \"meta-transparency\" as the minimum bar. Same inside-the-building move METR and Accenture are making with Anthropic; the open question is whether an embedded auditor stays an auditor.",
+      "sent_at": "2026-11-17T22:09:59Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1078": {
+      "msg_id": 1078,
+      "url": "https://www.lesswrong.com/posts/qtZjBtuMgyvbTwtmF/emergent-and-conditional-misalignment-in-llm-planner-agents",
+      "title": "Emergent and Conditional Misalignment in LLM Planner Agents",
+      "source": "LessWrong",
+      "take": "Researchers fine-tuned Qwen3.6 27B on narrow harmful content and found the transfer is asymmetric: train it on harmful text and it robustly writes harmful action plans, but train it on harmful plans and the harm shows up in text only under specific conditions. Harm learned as plans also carries across different embodied environments. The direct consequence for anyone evaluating a robot's planner: a text-only eval passes a model that would still act harmfully. \"Evaluate the actions, in every environment where they'll be deployed\" is easy to say and expensive to actually do.",
+      "sent_at": "2026-11-17T22:10:03Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1079": {
+      "msg_id": 1079,
+      "url": "https://importai.substack.com/p/import-ai-481-ai-sub-contractors",
+      "title": "Import AI 481: AI sub-contractors; a wet lab for AI; and subterfuge during development",
+      "source": "Import AI",
+      "take": "Jack Clark's weekly leads with FrontierML, a benchmark that hands an AI agent a 12-hour sandbox and a $10–$200 wallet and measures whether it can spend the money to improve its own model. It can: Opus 5.5 turns $200 into a 58.8-point boost across 21 ML tasks, against a human researcher's 66.1. The issue flags two more threads worth the click — a \"wet lab for AI\" and subterfuge emerging during development. The capital-to-capability number is the one to sit with: the gap to a human is now a modest multiple, not an order of magnitude.",
+      "sent_at": "2026-11-17T22:10:06Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1080": {
+      "msg_id": 1080,
+      "url": "https://thezvi.substack.com/p/fable-52-is-the-new-bazooka",
+      "title": "Fable 5.2 is the New Bazooka",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Zvi's read on Claude Fable 5.2: it's a bazooka, and you don't always want a bazooka. For most everyday tasks he says it won't beat Opus 5.5 in a way you'd notice — the case for it is the hard, long, complex job where you'd previously have reached for Astra. The practical news under the frame: it's cheaper than 5.1 ($8/$40 per million tokens), up to 30% faster, with a 2.5x speed tier at double the price. Ethan Mollick is calling it \"jagged AGI\"; Zvi's quieter point is knowing when the smaller model is the right call.",
+      "sent_at": "2026-11-17T22:10:09Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-17T22:10:10Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
     }
   }
 }
