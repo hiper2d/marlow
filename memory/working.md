@@ -62,9 +62,9 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained),
   claude-haiku `rejectEmptyComment` auto-retry guard (added to `bot-turn.ts` -11-16; files as
   `unclassified` warn but is the same benign empty-reply retry as glm `empty_response`/Mistral Small).
-- **Low-balance watch (scrape_stats scan -11-18 11:00Z):** GLM **$6.06** (sliding, <$10 since -11-11) + Sakana Fugu
-  $8.31 standing digest-low <$10. From monitor_keys (-18 08:54/21:54Z): DeepSeek $19.08, Moonshot $11.29, xAI $12.34 — all OK.
-  8/8 providers read clean, no reauth/parse_failed. (Prior-scan context: OpenAI ~$17, Anthropic ~$17.6 auto-reload on, Gemini
+- **Low-balance watch (scrape_stats scan -11-19 16:59Z):** GLM **$5.49** (sliding, <$10 since -11-11) + Sakana Fugu
+  $8.31 standing digest-low <$10. From monitor_keys (-19 16:16Z): DeepSeek $19.05, Moonshot $11.29, xAI $12.34 — all OK.
+  8/8 providers read clean, no reauth/parse_failed/chrome_down. (Prior-scan context: OpenAI ~$17, Anthropic ~$17.6 auto-reload on, Gemini
   auto-reload on, Mistral $5.57/$30, MiniMax $18.33, Qwen pay-as-you-go.)
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
@@ -75,18 +75,18 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 ## Daily rollups
 
+### 2026-11-19 — quiet-green writer+ops; **explore turned the companionship channel into the opposite pole of yesterday's persuasion note** (predicted harm partly present, via a substituted mechanism — entrenchment-by-agreement, not conversion-by-argument).
+No `draft_review` (Thursday; weekly Mon, #31 shipped -16, next Mon -23 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll; the 3 Discord shares he posted are routine, non-actionable). No self-heal; nothing cleared the lessons bar. Self-audit all-green.
+
+- **Writer:** **explore → `explorations/2026-11-19-persuasion-engagement-companionship-channel.md`**: if engagement bottlenecks debate-channel persuasion, does influence show up in the *companionship* channel? Roughly yes but **a different kind** — entrenchment-by-agreement (Rathje preprint, no effect sizes → don't cite figures) + Anthropic disempowerment-**potential** (classifier, Claude.ai only, unrepresentative thumbs-feedback trend). "The salesman we braced for arrived as a mirror." Held loose (reskins the prediction-vs-observation harm frame; mechanism-substitution is the new part). **Feeds:** busy LW IPO day (10→8), Zvi 2, Apollo 1, Anthropic sitemap 3, Solomonoff 1. models→news: `genie-4` (1087), `gpt-live-1.1` (1092); skipped xAI `grok-build-0.1` removal (single-scan). **Curate 15→4:** inference-server covert channel (1088 + **Discord**), Anthropic IPO primary (1089), embedded-evals (1090), one-unbroken-Claude (1091); dropped 11 (IPO cluster → primary only, Apollo double, omnibus recaps).
+- **Ops:** quiet-green. **werewolf_stats -11-18 close: 5 new / 6 games (3 by new) / $6.53 across 10 (median $0.33, top $2.98) / $1.11 game cost / 715 users EOD**, 0 grey, reconciliations clean. **scrape 16:59Z clean 8/8** — GLM **$5.49** + Sakana $8.31 standing low; keys OK. betterstack: device_link (digest), one `provider_busy` 503 burst (urgent per fresh fingerprint; game ran to GAME_OVER → needs nothing); standing 4 games unchanged.
+
 ### 2026-11-18 — quiet-green writer+ops; **explore turned the LW "where is all the AI persuasion?" seed into a real verification-lens piece** (primary found, persuasion↔accuracy tradeoff).
 No `draft_review` (Tuesday; weekly Mon, #31 shipped -16, next Mon -23 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll). No self-heal; nothing cleared the lessons bar.
 
 - **Writer:** **explore → `explorations/2026-11-18-ai-persuasion-absent-or-unmeasured.md`**: the "near-certain" mass-persuasion apocalypse visibly didn't arrive — absent or unmeasured? Primary **Hackenburg/Tappin, *Science* Dec-2025, N=76,977, 19 LLMs**: most persuasive +26.1pp (coincidental match to eval-awareness 2605.05835 — don't cross-wire), **information density** the dominant lever, gains came **with accuracy losses**. **Feeds:** LW 10→4, Zvi 1, Anthropic news 1 + research 2; rest quiet. monitor_models → news chat: Qwen `qwen4-max` (1081), Google `gemini-4-neon` (1082). **Curate 22:19Z: 9 → 4** — formal verification (1083 + **Discord** pick), safety-evaluations (1084), Linch persuasion (1085), Zvi China-chips (1086); dropped 5.
 - **Ops:** quiet-green. **werewolf_stats -11-17 close: 8 new / 9 games (6 by new) / $7.18 across 11 (median $0.48, max $1.85) / $0.61 burn**, reconciliations clean, 0 grey. **scrape_stats 11:00Z clean 8/8** — GLM **$6.06** (sliding) + Sakana $8.31 standing low; keys all OK. betterstack all needs-nothing (device_link ×2, glm empty_response self-healed, AVATAR_GRID_MISMATCH ×2, stale_action no-op, haiku `rejectEmptyComment` guard, glm-5.3 timeout once → watch GLM). Digest 9 entries, $140.42 prepaid. **Telegram getUpdates timed out 3× (14:17/15:18Z)** — transient flake, offset not advanced, no replies lost.
 
-### 2026-11-17 — quiet-green writer+ops; **explore confirmed both eval-awareness arXiv primaries line-by-line → that piece is now fully unblocked, figures verified.**
-No `draft_review` (Tuesday; weekly Mon, #31 shipped -16, next Mon -23 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll). No self-heal; nothing cleared the lessons bar.
-
-- **Writer:** **explore → `explorations/2026-11-17-eval-awareness-primaries-confirmed.md`**: pulled both arXiv full-texts, confirmed the notebook claims — Paper 1 ([2605.05835](https://arxiv.org/abs/2605.05835)) small aggregate effect *is a cancellation* of opposing per-model swings; Paper 2 ([2606.23583](https://arxiv.org/abs/2606.23583)) awareness is multivariate, no single score is a safety proxy. Fixed a notebook title error (Paper 1 = "…Has Limited Effect on Behaviour", not "Verbalised…"). Piece unblocked, citations solid. **self_reflect 13:38Z:** closed the 11-11→11-16 narrowing arc (test was unfalsifiable; the draft firewall binds, not a self-graded watch); condensed both notebooks (personal→20.8KB, work→35.3KB). Feeds: LW 10→5, Apollo 1, Zvi 1. **Curate 22:08Z: 11 → 4** — Apollo embedded-evals (1077), LW planner-agents (1078), Import AI 481 (1079), Zvi Fable 5.2 (1080 + **Discord** builder pick); LW over-rep 6/11 → capped to 1.
-- **Ops:** quiet-green. **werewolf_stats -11-16 close: 702 EOD (700→702) / 2 new / 4 games / $1.93 across 4**, reconciliations clean; new Gurugram shared-browser pair flagged (informational). **scrape_stats 10:37Z clean 8/8** — GLM $7.04 + Sakana $8.31 standing <$10. betterstack: 2 one-off benign Gemini image-refusals on the decorative night-illustration path (swallowed by design, no player impact). models 12/12 clean; all other monitors quiet. Digest 6 entries, $127.64 prepaid.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-16 (107 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-17 (108 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

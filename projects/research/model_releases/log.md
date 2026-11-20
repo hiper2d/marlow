@@ -39,3 +39,11 @@ New on the APIs:
 New on the APIs:
 - Google: gemini-4-neon — new checkpoint in the Gemini 4 line (joins argon/carbon/hydrogen).
 
+## 2026-11-19T18:02:09Z
+New on the APIs:
+- Google: genie-4 — new model family on the API, not a Gemini version bump; name matches DeepMind's Genie interactive world-model line (prior Genie 1-3 were research-only), so this looks like the first API-available Genie model.
+
+## 2026-11-19T22:19:32Z
+New on the APIs:
+- OpenAI: gpt-live-1.1 — version bump of the gpt-live realtime line (gpt-live-1 → 1.1).
+
