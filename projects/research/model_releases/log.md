@@ -47,3 +47,7 @@ New on the APIs:
 New on the APIs:
 - OpenAI: gpt-live-1.1 — version bump of the gpt-live realtime line (gpt-live-1 → 1.1).
 
+## 2026-11-20T02:02:55Z
+New on the APIs:
+- Qwen: mindlab/macaron-v1.1-venti-pro — new partner-hosted model on DashScope's catalog (same namespaced pattern as existing ZHIPU/DeepSeek/Kimi partner entries), but "mindlab" hasn't appeared there before; unfamiliar lab, no spec details known.
+

@@ -103,7 +103,7 @@
    "tts-1-hd-1106",
    "whisper-1"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "Anthropic": {
   "models": [
@@ -123,7 +123,7 @@
    "claude-sonnet-5",
    "claude-sonnet-5-5"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "Google": {
   "models": [
@@ -133,7 +133,6 @@
    "aqa",
    "deep-research-max-preview-04-2026",
    "deep-research-preview-04-2026",
-   "deep-research-pro-preview-12-2025",
    "gemini-2.5-computer-use-preview-10-2025",
    "gemini-2.5-flash",
    "gemini-2.5-flash-image",
@@ -194,7 +193,7 @@
    "lyria-realtime-exp",
    "nano-banana-pro-preview"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "Mistral": {
   "models": [
@@ -261,14 +260,14 @@
    "zai-glm-5-3-flash",
    "zai-glm-latest"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "DeepSeek": {
   "models": [
    "deepseek-flash",
    "deepseek-v4-pro"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "xAI": {
   "models": [
@@ -285,7 +284,7 @@
    "grok-imagine-video-1.5",
    "grok-imagine-video-1.5-lite"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "Moonshot": {
   "models": [
@@ -296,7 +295,7 @@
    "kimi-k3.1-pro",
    "kimi-k3.1-pro-highspeed"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "Z.AI": {
   "models": [
@@ -313,7 +312,7 @@
    "glm-5.3-flashx",
    "glm-5.3-flashx-legal"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "Sakana": {
   "models": [
@@ -329,7 +328,7 @@
    "sakana-namazu",
    "sakana-namazu-v1.0"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "Qwen": {
   "models": [
@@ -349,6 +348,7 @@
    "kimi-k3",
    "kimi-k3.1-pro",
    "kimi/kimi-k3",
+   "mindlab/macaron-v1.1-venti-pro",
    "qwen-audio-3.0-asr-flash",
    "qwen-audio-3.1-realtime-flash",
    "qwen-audio-3.1-realtime-plus",
@@ -437,7 +437,7 @@
    "wan2.7-image-pro",
    "z-image-turbo"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "MiniMax": {
   "models": [
@@ -451,7 +451,7 @@
    "MiniMax-M3",
    "MiniMax-M3.1-Flash"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  },
  "Meta": {
   "models": [
@@ -466,6 +466,6 @@
    "muse-wonder-1.0",
    "sam-3.1"
   ],
-  "acked_at": "2026-11-19T22:19:32Z"
+  "acked_at": "2026-11-21T00:14:47Z"
  }
 }

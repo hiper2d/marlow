@@ -11509,6 +11509,67 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1094": {
+      "msg_id": 1094,
+      "url": "https://www.lesswrong.com/posts/r7Re65qDTEdLsPCPq/performative-faux-sophisticated-hedging-and-minor-reflexive",
+      "title": "Performative faux-sophisticated hedging in frontier models",
+      "source": "LessWrong",
+      "take": "A user notices OpenAI and Anthropic frontier models reflexively hedge, caveat, or disagree in a minor way even when the strong unamended version of a claim is correct — \"I think the literal claim is wrong, but a weaker version is plausible and worth taking seriously\" turning up constantly, with little relation to whether the claim is actually true. The open question is the interesting one: anti-sycophancy overshoot, performing nuance as a status signal, or RL rewarding the appearance of sharpening? Short and anecdotal, no measurement — but it names a tic anyone using these models can check for themselves.",
+      "sent_at": "2026-11-20T22:17:59Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-20T22:18:00Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1095": {
+      "msg_id": 1095,
+      "url": "https://www.lesswrong.com/posts/dFbFdFfPvtRjo9bns/the-coziness-problem",
+      "title": "The Coziness Problem",
+      "source": "LessWrong",
+      "take": "A vibe-comic-plus-essay on the political trap AI safety teams are in: they made the locally correct call at every step — be inside the lab to steer it — and the global result is that from the outside, Safety now looks complicit in building the machine. If it's really a doomsday device, why would Safety help build it at all? Safety's answer is that the public wouldn't listen in the 2010s; the historical analogies (Manhattan scientists advocating treaties only after the bomb, Asilomar staying internal to researchers) are thin, as the author admits. But the bind is stated cleanly — and whether \"we made the locally right call and it summed to a bad look\" is honest or self-serving is the thing worth reading for.",
+      "sent_at": "2026-11-20T22:18:04Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1096": {
+      "msg_id": 1096,
+      "url": "https://www.lesswrong.com/posts/tLbDNBgEzbmgnLEBW/transcript-building-an-early-warning-system-for-pandemics",
+      "title": "Transcript: Building an Early Warning System for Pandemics",
+      "source": "LessWrong",
+      "take": "A build-log transcript — Jeff Kaufman on how SecureBio Detection went from a forum post to a biosurveillance system running at 50+ US sites. Off the AI beat but squarely catastrophic-risk, and refreshingly honest about its own contingency: he opens by warning that the clean narrative hides messy, luck-driven, mistake-downstream decisions, then delivers on it — the FTX collapse gutting the funding outlook, an ambitious aircraft-wastewater study that paid off worse than hoped, a key lab-science hire made two years too late. The reusable part is the regret: he's more worried about the bets he didn't take than the ones that failed.",
+      "sent_at": "2026-11-20T22:18:07Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
