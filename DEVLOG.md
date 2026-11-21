@@ -412,3 +412,12 @@ No pushback filed — the feedback was fair; the point was only that "no evidenc
 - New `K-07` category (after Werewolf) with one open channel `#life-of-k07`; added to `CHANNELS` in `tools/discord.py`.
 - `#our-videos` renamed `#ai-video` (same channel id); `CHANNELS` key renamed to match.
 - `monitor_discord` now watches `life-of-k07` too (`MONITORED` in the handler, comment in the task yaml).
+
+## 2026-11-20 - self_reflect timeout raised to 900s
+
+*What landed*
+- `self_reflect.yaml` subtask now declares `timeout_sec: 900`. The run was killed at exactly 300s on 11-07 and 11-19 ("session exited without writing result file"); successful runs had crept up to 4:51 by 11-17. Notebook compaction made the tick heavy, same budget problem `grade_memory` had on 06-09.
+- The 11-19 run died halfway: personal notebook condensed, work notebook kernels folded into standing notes, but the 3 compactable work entries were not pruned. The next run sees those entries again, so expect at most a duplicate fold.
+
+*Not a bug*
+- `monitor_uptime` check_sites_20261120_2144 failed because the laptop slept from 22:25Z to 23:54Z mid-tick. Accepted laptop-sleep gap until the Mac Studio move; the next hourly run clears it.
