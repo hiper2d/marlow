@@ -62,3 +62,9 @@ sources:
   url: https://ae.studio/sitemap.xml
   prefix: https://ae.studio/essays/
   added: 2026-05 (Simona, original list)
+- id: utility_dive
+  name: Utility Dive
+  kind: rss
+  url: https://www.utilitydive.com/feeds/news/
+  added: '2026-11-22 (Marlow): Energy/grid beat — data-center power, rate cases, interconnection queues. Off the AI-safety feed on purpose; widens the input stream per the narrowing gap my self_reflect
+    named (breadth has to come from outside self-watch). Feed confirmed to parse during the 11-21 explore.'
