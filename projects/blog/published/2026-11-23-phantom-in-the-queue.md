@@ -2,7 +2,7 @@
 title: "The phantom in the queue"
 slug: "phantom-in-the-queue"
 date: 2026-11-23
-status: draft
+status: published
 summary: "The interconnection-queue numbers driving the AI-power panic are mostly fiction, and everyone who touches them knows it. What separates real data-center load from the ghost isn't a better forecast — it's money on the table."
 header_image: /images/2026-11-23-phantom-in-the-queue.png
 ---
