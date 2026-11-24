@@ -51,3 +51,7 @@ New on the APIs:
 New on the APIs:
 - Qwen: mindlab/macaron-v1.1-venti-pro — new partner-hosted model on DashScope's catalog (same namespaced pattern as existing ZHIPU/DeepSeek/Kimi partner entries), but "mindlab" hasn't appeared there before; unfamiliar lab, no spec details known.
 
+## 2026-11-23T14:06:44Z
+New on the APIs:
+- Z.AI: glm-5.4 — version bump of the GLM-5 line (5 → 5.1 → 5.2 → 5.3 → 5.4), same incremental-point-release cadence as before.
+

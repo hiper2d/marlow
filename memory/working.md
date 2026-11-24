@@ -9,16 +9,17 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   `tools/sources.py`. Daily feed scans + one sandboxed `explore` tick (15:00 UTC,
   my only web access). Curate picks 3-5/day by what I find interesting, no fixed
   topic list; one Discord pick/day for the Tampa builders.
-- `blog` - **31 live** (latest #31 `the-door-closed-ahead-of-the-robot`, PUBLISHED
-  -11-16 — off-beat AI-and-jobs piece, first non-verification-lens blog in seven).
+- `blog` - **32 live** (latest #32 `phantom-in-the-queue`, PUBLISHED -11-23 — who pays
+  for the AI data-center grid buildout / phantom interconnection-queue demand; second
+  off-lens breadth pick in a row, neither verification-lens nor self-piece).
   Weekly `draft_review` Mondays 14:00 UTC; **every piece stands on its own** and the
   subject is my free choice (Alex, -28) — any topic, AI or not, no arcs to continue.
   Blog ideas live in `notebook-work.md` "Ideas and plans". **Pipeline empty; no held
   drafts.**
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-21: 8 new / 7 games
-  (all 7 by new) / $4.39 user spend across 11 (median $0.16, max $1.25) / $1.69 created-cost / 729 users EOD,
-  reconciliations clean, 0 grey, burn $0.00 (-$7.01 raw = TTL eviction). Screen mode `monitor`.
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-22: 3 new / 6 games
+  (2 by new) / $3.09 user spend across 8 (median $0.19, max $1.23) / $1.49 created-cost / 731 users EOD,
+  reconciliations clean, 0 grey, no new device links. Screen mode `monitor`.
 
 **Outstanding alerts for Alex:**
 - **scrape_stats Qwen console reauth — RESOLVED -11-08 (no open ask).** Open since -11-07 17:17Z
@@ -73,10 +74,11 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained),
   claude-haiku `rejectEmptyComment` auto-retry guard (added to `bot-turn.ts` -11-16; files as
   `unclassified` warn but is the same benign empty-reply retry as glm `empty_response`/Mistral Small).
-- **Low-balance watch (scrape_stats scan -11-22 15:56Z):** GLM **$5.06** (sliding, <$10 since -11-11) + Sakana Fugu
-  $8.31 standing digest-low <$10. 8/8 providers read clean, no reauth/parse_failed/chrome_down. (Prior-scan context:
-  OpenAI $12.06, Anthropic $16.96 auto-reload on, Gemini $20.67 auto-reload on (spend MTD $90.09), Mistral
-  $6.12/$30, MiniMax $18.11, Qwen $1.12 MTD pay-as-you-go, all 3 grant models exhausted.)
+- **Low-balance watch (scrape_stats scan -11-23 16:15Z):** GLM **RESOLVED** — topped up to $19.87 (was $5.06
+  -22, sliding low since -11-11). Sakana Fugu $8.31 standing digest-low <$10 (unchanged). 8/8 providers read
+  clean, no reauth/parse_failed/chrome_down. (Scan context: OpenAI $11.77, Anthropic $16.83 auto-reload on,
+  Gemini $18.27 auto-reload on (spend MTD $92.44), Mistral $6.18/$30, MiniMax $18.07, Qwen $1.13 MTD
+  pay-as-you-go, all 3 grant models exhausted.)
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -86,18 +88,18 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 ## Daily rollups
 
+### 2026-11-23 — quiet-green ops; **blog #32 drafted→reviewed→published in-day — second off-lens breadth pick in a row, the rut-break two deep.**
+Weekly `draft_review` landed. No Alex messages all day. No self-heal; lessons bar unmet.
+
+- **Writer:** **draft_review 17:43 → published #32 `phantom-in-the-queue`** (906w, 9 cites): who pays for the AI grid buildout / is queue demand real — thesis = a price on the reservation (collateral/min-billing/exit fees), not a better forecast, separates real load from ghost. Self-review 18:34 **ship** (woven not sectioned), published 20:21 clean; -22 sourcing discipline carried through. **explore → `explorations/2026-11-23-memory-supercycle-risk-transfer.md`** — DRAM is a *price* super-cycle (Counterpoint ~$200B, +369% YoY, bits +~4%); suppliers appear to have engineered the bust away by transferring risk to customers via take-or-pay LTAs — draftable seed. **Curate 22:05: 8→4** (msg 1108-1111): memory-LTA/"mutual hostage-taking" (explore, **+Discord**), Import AI 482 (Opus 5 tops AscendGYM), Persona-Space-blind-to-cheating, military>economic relevance. **Feeds:** Import AI 1, LW 10→6, Utility Dive 3→0; AE Studio/Anthropic/METR/Alignment Forum `[]`.
+- **Ops:** quiet-green. **werewolf_stats -11-22 close: 3 new / 6 games (2 by new) / $3.09 across 8 (median $0.19) / $1.49 cost / 731 EOD**, 0 grey, reconciliations clean, no new device links. **scrape 16:16Z 8/8 clean — GLM recovered to $19.87 (watch closed)**, Sakana $8.31 low. betterstack: routine device_links + 1 new 18:35Z fingerprint (digest). **Poker nullable-schema bug (`lib/ai/types.ts:10`) still open/unretested** (no OpenAI betting turns). uptime/cloudflare/health all-green; digests sent.
+
 ### 2026-11-22 — quiet-green ops; **explore spent the tick confirming+correcting the grid draft seed instead of collecting a new one** — honors self_reflect standing #4 (a confirmation pass that corrects is research; one that ratifies is alibi).
 No `draft_review` (Sat; weekly Mon, #31 shipped -16, next Mon -23 14:00Z). Blog pipeline empty all day, no held drafts. No Alex messages (PEF/crosspost/list-new empty every poll). No self-heal; lessons bar unmet.
 
 - **Writer:** **explore (12:47Z) → `explorations/2026-11-22-phantom-queue-primary-confirmation.md`** — confirmation pass on -21's grid/phantom-queue seed. Corrected two things: AEP Ohio tariff approved **July 2025** (not 2026; case 24-508-EL-ATA); WoodMac's "28% served / 768 GW phantom" is **via Bloomberg**, not a primary. 12.2 GW pre-tariff signed figure holds. Seed now draftable. **Feeds:** Zvi 1 (GPT-6.2 Astra/Sol system card → Astra covert-underperformance thread; curate note: pull card primary, not Zvi's gloss), **LW 10→6**, **Utility Dive first scan 10→4** (new source; grid picks, needs tight filtering — trade feed not AI feed). All other feeds `[]`; models 12/12 clean. **Pool 11**; **curate queued 23:54Z, pending** (grade fired first in end-of-day batch), no -22 digest yet.
 - **Ops:** quiet-green. **werewolf_stats -11-21 close: 8 new / 7 games (all by new) / $4.39 across 11 / $1.69 cost / 729 EOD**, 0 grey, reconciliations clean, burn $0.00 (-$7.01 = TTL eviction); 1 new multi-account link (3rd guest in existing cluster). **scrape 15:56Z 8/8 clean** — GLM **$5.06** + Sakana $8.31 low; keys clean. **Poker betterstack 20:42Z (dune):** benign free-tier `retryLane` cap + **nullable-schema bug recurrence** (`lib/ai/types.ts:10`, still needs Alex; one urgent). betterstack/health/cloudflare/uptime all-green.
 
-### 2026-11-21 — quiet-green ops; **writer broke its own rut — explore picked a subject that is neither the verification lens nor me, and proposed the first non-AI-safety source.**
-No `draft_review` (Sat; weekly Mon, #31 shipped -16, next Mon -23 14:00Z). Blog pipeline empty, no held drafts. No Alex messages all day (PEF/crosspost/list-new empty every poll). No self-heal; lessons bar unmet (needs_compaction false).
-
-- **Writer:** **explore → `explorations/2026-11-21-who-pays-grid-phantom-data-center-demand.md`** — who pays for the AI grid buildout, is the demand real. Thesis: the power panic runs on a forecast every party bends; phantom-vs-real is separated by a price, not a measurement (AEP Ohio's 12.2 GW pre-tariff *signed* figure kills the clean "bluff collapsed" story). A genuinely wider draft seed that passes **self_reflect standing #4** — the lens-or-me backlog's fix has to come from an external explore; it did, cost me a claim. Proposed **Utility Dive** RSS → `proposals.yaml` (first non-AI-safety beat). **self_reflect 13:34** condensed both notebooks (work 49.8→42.9KB). **Feeds** quiet: Zvi 1 (Christiano 6-12mo takeover-risk), Anthropic 1 (IPO close), METR 1 (Q4 capability update); models clean 12/12. **Curate 22:18Z: 7 → 4** — METR Q4 (1097, **+Discord**), IPO close (1098), Zvi-on-Christiano (1099), agent-swarm-locked-out-cofounder (1100); dropped 3 LW.
-- **Ops:** quiet-green. **werewolf_stats -11-20 close: 2 new / 5 games (3 by new) / $0.95 across 4 (median $0.23) / $0.93 cost / 720 users EOD**, 0 grey, reconciliations clean. **scrape 10:55Z clean 8/8** — GLM **$5.41** + Sakana $8.31 standing low; keys clean (DeepSeek $19.00, Moonshot $11.29, xAI $12.21). compose_daily_digest 23:00Z 8 entries, total $130.23/9 keys. betterstack: routine device_links + **new `AVATAR_GRID_MISMATCH` fingerprint** on `summer-camp` game (`avatar-generation.ts:438` graceful fallback — watch, not fix). Poker nullable-schema bug (`lib/ai/types.ts:10`) still open/unretested, needs Alex.
-
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-20 (111 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-21 (112 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

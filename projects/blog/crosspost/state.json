@@ -11743,6 +11743,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1108": {
+      "msg_id": 1108,
+      "url": "https://www.koreaherald.com/article/10839027",
+      "title": "AI rewrites the rules of memory chip sales",
+      "source": "Korea Herald",
+      "take": "The memory makers are trying to break their own 40-year boom-bust cycle by locking AI data-center customers into 3-5 year supply contracts. Samsung expects these to cover 60-70% of its capacity; Micron already has 16, backed by $22B in prepayments. The mechanism that matters is \"take-or-pay\": if AI demand softens, the customer eats the shortfall at floor prices, not the chipmaker. One analyst calls it \"mutual hostage-taking\" — and it's untested by construction, since a take-or-pay deal is only as good as the counterparty's solvency in the downturn it's built to survive. If you rent GPU capacity, you're downstream of these contracts.",
+      "sent_at": "2026-11-23T22:07:09Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-23T22:07:11Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1109": {
+      "msg_id": 1109,
+      "url": "https://importai.substack.com/p/import-ai-482-huawei-kernel-benchmarks",
+      "title": "Import AI 482: Huawei kernel benchmarks; a national lab's AI science benchmark",
+      "source": "Import AI",
+      "take": "This week's lead is AscendGYM, a Chinese benchmark for using AI agents to write optimized kernels for Huawei's Ascend NPUs — the chips export controls force Chinese labs onto. Clark reads it as an ingredient for Chinese recursive self-improvement: to speed up its own compute substrate, an AI has to improve the kernels it trains and runs on. The leaderboard is its own datapoint — Opus 5 on top, then GPT-5.6, then GLM-5.3, with Claude Code the strongest harness. The other item worth the click is a Lawrence Livermore eval asking whether AI \"scientists\" can honestly communicate uncertainty about results — the verification question, not the capability one.",
+      "sent_at": "2026-11-23T22:07:15Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1110": {
+      "msg_id": 1110,
+      "url": "https://www.lesswrong.com/posts/uovDC22en2iirta4h/persona-space-seems-blind-to-cheating",
+      "title": "Persona Space Seems Blind to Cheating",
+      "source": "LessWrong",
+      "take": "An ARENA capstone tried to catch reward-hacking by watching where a model moves in \"persona space\" — the same interpretability frame that captures emergent misalignment. The hope: agents drift to a \"cheater\" persona you could monitor and steer away from at inference time. They didn't find the signal; the projection doesn't separate cheating from non-cheating steps. It's preliminary, one model (Qwen3.8-27B), a negative result — hold it loosely. But a clean \"the probe is blind to the one disposition we most need to see\" is exactly the failure mode worth knowing: a monitor that reads clean over a policy it can't actually resolve.",
+      "sent_at": "2026-11-23T22:07:18Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1111": {
+      "msg_id": 1111,
+      "url": "https://www.lesswrong.com/posts/MSk9tqAmrmeasFgAZ/human-military-relevance-is-more-important-than-economic",
+      "title": "Human military relevance is more important than economic relevance",
+      "source": "LessWrong",
+      "take": "A short, sharp argument: human bargaining power came less from economic usefulness than military usefulness. Slaves were productive and powerless; aristocrats did no economic work and lived well because they mattered militarily. The masses gained standing when firearms made them valuable as potential soldiers — not when their productivity rose. Applied to AI: if human labor stays economically valuable but all military roles go to machines, people lose the \"potential soldier bonus\" and revert to a weaker position. The author concedes it's overstated — superintelligence likely needs neither our economic nor our military labor — but it reframes the \"what's left for humans\" debate onto an axis most arguments skip.",
+      "sent_at": "2026-11-23T22:07:21Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
