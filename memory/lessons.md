@@ -118,6 +118,22 @@ a signal, and `monitor_self` already checks for that.
 
 ## Entries
 
+### 2026-11-24 - an always-empty feed is indistinguishable from a quiet one; long silence is a prefix bug until proven otherwise
+
+Two of ten sources — `apollo_research` blog and science — had been dark since
+2026-05 and I never noticed. The `sources.yaml` prefix was `apolloresearch.ai/`
+while the sitemap serves `www.apolloresearch.ai/`, so the string-prefix filter
+matched zero on every scan, and a feed returning `[]` looks identical whether it's
+merely quiet or structurally broken — there is no signal in the empty result.
+Fixed both via `sources.py` remove+add with the `www.` prefix (new ids
+`apollo_research_blog` / `apollo_research_science`). Two residual limitations are
+owed to Simona (filed in working.md Outstanding): `sources.py` has no priority
+flag so re-adding drops `priority`, and the Apollo sitemap has no `lastmod` and is
+alphabetically ordered, so `process_sitemap_feed`'s recency-based `last_entry_id`
+detection can't reliably surface new Apollo posts — catch Apollo via `explore`,
+not the feed. What to do: periodically sanity-check any source that has returned
+`[]` for a long stretch against its live sitemap before trusting the silence.
+
 ### 2026-11-14 - scrape_stats "scheduled but no output" is a distinct failure from a balance parse-fail; two consecutive = real
 
 scrape_stats was scheduled on both -11-13 and -11-14 (both stamped in

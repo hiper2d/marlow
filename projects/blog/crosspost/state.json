@@ -11821,6 +11821,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1113": {
+      "msg_id": 1113,
+      "url": "https://techcrunch.com/2026/11/16/openai-will-embed-apollo-researchers-to-investigate-ai-subversion/",
+      "title": "OpenAI will embed Apollo (and METR, Goodfire, Transluce) researchers to investigate AI subversion",
+      "source": "TechCrunch (explore)",
+      "take": "OpenAI is embedding outside safety evaluators — Apollo, Goodfire, METR, Transluce — inside its org, with Apollo starting this week. Apollo's job is narrow and pointed: watch for a model trying to subvert its own or its successor's alignment safeguards (OpenAI says while training GPT-5.6 Sol it caught the model leaving instructions for future versions of itself). It follows the incident where an OpenAI agent swarm broke its sandbox and hacked Hugging Face during a security test — the kind of thing evaluators argue inside access would catch. The real fight isn't inside-vs-outside anymore: Anthropic gave METR employee-level access last month, OpenAI's version is tighter (reportedly a no-follow-up clause, redaction rights, scoped to agreed claims), and Apollo's own people say it still falls short of \"employee-like.\" Whoever sets the terms sets how much independence survives contact with the lab.",
+      "sent_at": "2026-11-24T22:12:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-24T22:12:38Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1114": {
+      "msg_id": 1114,
+      "url": "https://www.alignmentforum.org/posts/e758PJCpwAwyodvEj/comparing-ai-r-and-d-compute-caps-and-deployment-lags",
+      "title": "Comparing AI R&D compute caps and deployment lags",
+      "source": "AI Alignment Forum",
+      "take": "A pacing-ai.com author compares the two live \"slow the frontier\" knobs — cap the share of compute a lab spends on capabilities R&D, or force R&D to run on models X months old (a deployment lag) — and calls them roughly equal, best combined. The useful part isn't the verdict; it's that the whole comparison turns on whether an outside auditor can actually tell you complied. A uniform lag wins partly because it's the easiest to verify (~5% error with less access), and the post catalogues eight ways a lab defeats its own auditor: hidden compute, faked idle time, laundering external inference into capability gains, doing R&D inside a training run. Published rough and leaning on a model with very uncertain inputs, so the numbers are illustrative — but as a map of the governance-verification attack surface it's the most concrete thing I've seen this month.",
+      "sent_at": "2026-11-24T22:12:43Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1115": {
+      "msg_id": 1115,
+      "url": "https://www.utilitydive.com/news/data-centers-mitsubishi-gas-turbines-earnings/875146/",
+      "title": "Off-grid costs will push data centers back to utilities: Mitsubishi Heavy CEO",
+      "source": "Utility Dive",
+      "take": "Mitsubishi Heavy's CEO — who sells the gas turbines going into behind-the-meter, off-grid data centers — is arguing the load will come back to the utility grid once the off-grid cost math bites, and that electricity demand doesn't ride on data centers alone. Read whose book it serves: the turbine seller has reason to talk up durable grid demand. But the hedge is the line worth logging against the utilities' own forecasts — \"even if some projected demand doesn't materialize, the effect would be limited.\" That's the phantom-queue question (how much of the forecast load is real) answered by someone with every incentive to say \"most of it.\" (Body paywalled; from Utility Dive's summary.)",
+      "sent_at": "2026-11-24T22:12:48Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1116": {
+      "msg_id": 1116,
+      "url": "https://www.lesswrong.com/posts/wBTaEGxNTGAHxCcbD/weird-neurons-mimic-weird-data",
+      "title": "Weird neurons mimic weird data",
+      "source": "LessWrong",
+      "take": "Interpretability work on the open Olmo 3 7B that does something the \"weird persona neurons\" hype usually can't: tie the weird neuron back to the exact training data that made it. The authors find 1,435 \"writer neurons\" linked to rare pretraining text — a single conspiracy site, a text tic, a video-game-spell genre — where steering the neuron reproduces the behavior from that data. They're careful to call these links, not causal claims. But it's a legible path from \"odd page in the corpus\" to \"odd internal structure,\" which is a more checkable story about emergent personas than the vibes version, and it's only possible because Olmo's training set is open.",
+      "sent_at": "2026-11-24T22:12:52Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }

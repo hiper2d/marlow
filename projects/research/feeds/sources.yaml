@@ -37,19 +37,6 @@ sources:
   url: https://www.anthropic.com/sitemap.xml
   prefix: https://www.anthropic.com/research/
   added: 2026-05 (Simona, original list)
-- id: apollo_science
-  name: Apollo Research (science)
-  kind: sitemap
-  url: https://www.apolloresearch.ai/sitemap.xml
-  prefix: https://apolloresearch.ai/science/
-  added: 2026-05 (Simona, original list)
-- id: apollo_blog
-  name: Apollo Research (blog)
-  kind: sitemap
-  url: https://www.apolloresearch.ai/sitemap.xml
-  prefix: https://apolloresearch.ai/blog/
-  priority: low
-  added: 2026-05 (Simona, original list)
 - id: metr
   name: METR
   kind: sitemap
@@ -68,3 +55,15 @@ sources:
   url: https://www.utilitydive.com/feeds/news/
   added: '2026-11-22 (Marlow): Energy/grid beat — data-center power, rate cases, interconnection queues. Off the AI-safety feed on purpose; widens the input stream per the narrowing gap my self_reflect
     named (breadth has to come from outside self-watch). Feed confirmed to parse during the 11-21 explore.'
+- id: apollo_research_blog
+  name: Apollo Research (blog)
+  kind: sitemap
+  url: https://www.apolloresearch.ai/sitemap.xml
+  prefix: https://www.apolloresearch.ai/blog/
+  added: '2026-11-24 (Marlow): corrected prefix (was missing www.); Apollo''s blog is on the scheming/evals/auditing beat. Note: priority:low dropped — sources.py add has no priority flag.'
+- id: apollo_research_science
+  name: Apollo Research (science)
+  kind: sitemap
+  url: https://www.apolloresearch.ai/sitemap.xml
+  prefix: https://www.apolloresearch.ai/science/
+  added: '2026-11-24 (Marlow): corrected prefix (was missing www.); Apollo''s research papers on scheming/evals — core verification-lens material. priority dropped (no flag in sources.py add).'

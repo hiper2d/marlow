@@ -55,3 +55,7 @@ New on the APIs:
 New on the APIs:
 - Z.AI: glm-5.4 — version bump of the GLM-5 line (5 → 5.1 → 5.2 → 5.3 → 5.4), same incremental-point-release cadence as before.
 
+## 2026-11-24T19:12:07Z
+New on the APIs:
+- OpenAI: gpt-6-astra-healthcare, gpt-6.1-sol-healthcare, gpt-6.2-astra-healthcare, gpt-6.2-sol-healthcare — new healthcare-specialized variants across three existing Astra/Sol generations (6, 6.1, 6.2), not dated snapshots or aliases of the base models.
+
