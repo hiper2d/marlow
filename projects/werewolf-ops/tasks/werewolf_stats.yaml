@@ -113,6 +113,34 @@
 # flagged before this refusal" is the finding; what the bots did is not in
 # the data. Same read-only service account, no new secret, no index needed
 # (single-field range on createdAt).
+#
+# ── Guests and free credits (added 2026-11-25) ───────────────────────────────
+# The game lets a visitor play one ready-made game with no account. It stores
+# that visitor as a `users` doc with `guest: true` (id ends in
+# @guest.aiwerewolf.net), so before this change every guest would have read as
+# a signup. The handler takes guests out of EVERY user count and lists the day's
+# guest games on their own lines: story, language, how far the game got, cost,
+# and the account it moved to if the guest signed in (Alex: "every guest game
+# creation - this is where it costs us money"). Guests and games made by local
+# development (the guest doc's `env`) are left out and counted in `show` only.
+#
+# The game also replaced the daily free refill with one-time free credits, and
+# refuses them to a new account that looks like a person who already has one.
+# Each grant, denial, flag and Discord claim is a row in `creditEvents`; the
+# digest gets one summary line plus every denial and flag with the rule and the
+# linked account, every Discord claim and every manual grant.
+#
+# In the prose: a DENIED row is the game's decision, already made. Copy it
+# through with its reason. Do not judge whether the denial was right, and do
+# not call a flagged account a cheater: "flagged" means one weak sign, credit
+# given. If Alex asks, the way to put a wrong denial right is in the Werewolf
+# repo (`scripts/credits.ts grant`).
+#
+# The user-count invariant still holds with guests excluded. The first run
+# after the change compares against a row that had counted guests; the handler
+# puts those guests back on its own side for that one comparison
+# (`guests_put_back` in `reconciliation`) so it does not read BROKEN.
+# Same read-only service account; no index (single-field queries only).
 # ── Why 05:05 UTC and not "0 9" (changed 2026-08-22) ─────────────────────────
 # It ran at 09:00 UTC and counted "today" as since-UTC-midnight, so it reported a
 # nine-hour slice as a day - and that slice, 00:00-09:00 UTC, is 20:00-05:00

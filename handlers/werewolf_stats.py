@@ -90,6 +90,28 @@ from driver.budget_state import STATE_DIR  # noqa: E402
 USERS = "users"
 GAMES = "games"
 
+# ── Guests and free credits (2026-11-25) ─────────────────────────────────────
+# Since guest play (werewolf CLAUDE.md, "Guest play") a visitor can start one
+# ready-made game from the landing page with no account. The game stores that
+# visitor as a `users` doc (`guest: true`, id `guest-<uuid>@guest.aiwerewolf.net`)
+# so its ownership checks and spend ledgers work unchanged. A guest is NOT a
+# signup: without the split every landing-page click would read as a new user.
+# So guests come out of every user count here, and a game that started as a
+# guest's is reported on its own lines (Alex, 2026-11-25: "every guest game
+# creation - this is where it costs us money"), also after the guest signed in
+# and the game moved to an account (`guestOwnerEmail` stays on the game).
+#
+# Local development writes to this same database. A guest doc carries the `env`
+# that made it; anything not made in production is left out of the counts.
+#
+# Free credits (werewolf CLAUDE.md, "Free credits"): an account gets a one-time
+# amount of free AI instead of a daily refill, a new account is refused it when
+# it looks like a person who already has an account, and a second amount can be
+# claimed once through Discord. Every grant, denial, flag and claim is one row
+# in `creditEvents`; the day's rows are summarised under the user lines.
+GUEST_DOMAIN = "@guest.aiwerewolf.net"
+CREDIT_EVENTS = "creditEvents"
+
 # created_at (users) is a Firestore Timestamp; createdAt (games) is epoch millis.
 #
 # ── The reported day is a COMPLETE day in ALEX'S timezone (fixed 2026-08-22) ──
@@ -172,7 +194,30 @@ def _count(query) -> int:
     return int(query.count().get()[0][0].value)
 
 
-def _user_stats(db, now: datetime, period: dict) -> dict:
+def _is_guest(email) -> bool:
+    return isinstance(email, str) and email.lower().endswith(GUEST_DOMAIN)
+
+
+def _guest_users(db) -> list[dict]:
+    """Every guest account. One single-field query (`guest == true`), bucketed in
+    Python by the caller: `guest` + a `created_at` range would need a composite
+    index, and the set is small."""
+    from google.cloud.firestore_v1 import FieldFilter
+
+    out = []
+    for snap in db.collection(USERS).where(filter=FieldFilter("guest", "==", True)).stream():
+        d = snap.to_dict() or {}
+        out.append({
+            "email": snap.id,
+            "created": d.get("created_at"),
+            "env": d.get("env") or "production",
+            "claimed_by": d.get("claimedBy"),
+            "claimed_at": d.get("claimedAt"),
+        })
+    return out
+
+
+def _user_stats(db, now: datetime, period: dict, guests: list[dict] | None = None) -> dict:
     from google.cloud.firestore_v1 import FieldFilter
 
     col = db.collection(USERS)
@@ -239,10 +284,29 @@ def _user_stats(db, now: datetime, period: dict) -> dict:
             if created >= cut:
                 new[k] = max(new[k] - 1, 0)
 
+    # Guests are rows in `users` but not signups (see the note at GUEST_DOMAIN).
+    # Taken out of every bucket at the same boundaries as the counts above, so
+    # total_day_end(N) - total_day_end(N-1) == new["day"](N) still holds.
+    for gu in guests or []:
+        total -= 1
+        tiers["free"] = max(tiers["free"] - 1, 0)
+        created = gu.get("created")
+        if created is None:
+            continue
+        if created < period["_end_dt"]:
+            total_day_end = max(total_day_end - 1, 0)
+        if period["_start_dt"] <= created < period["_end_dt"]:
+            new["day"] = max(new["day"] - 1, 0)
+        if created >= period["_end_dt"]:
+            new["today_so_far"] = max(new["today_so_far"] - 1, 0)
+        for k, cut in _cutoffs(now).items():
+            if created >= cut:
+                new[k] = max(new[k] - 1, 0)
+
     # The day's new-user emails — small set; used to attribute "their" games.
     day_emails = sorted(e for e in
                         ((d.to_dict().get("email") or d.id) for d in day_q.stream())
-                        if (e or "").lower() not in EXCLUDED_OWNERS)
+                        if (e or "").lower() not in EXCLUDED_OWNERS and not _is_guest(e))
     return {
         "total": total,             # live count at read time — reference only, never differenced
         "total_day_end": total_day_end,   # count at the reported day's midnight — the one that reconciles
@@ -250,13 +314,34 @@ def _user_stats(db, now: datetime, period: dict) -> dict:
         "tiers": tiers,             # {free, api, paid}
         "new_day_emails": day_emails,
         "excluded_users": dropped,
+        "guests_excluded": len(guests or []),
+        # For _reconcile against a row from before guests were excluded.
+        "guests_before_day_start": sum(
+            1 for gu in guests or []
+            if gu.get("created") is not None and gu["created"] < period["_start_dt"]),
     }
 
 
 # ─── Games (+ money) ─────────────────────────────────────────────────────────
 
 
-def _game_stats(db, now: datetime, period: dict, new_day_emails: list[str]) -> dict:
+def _guest_game_row(game_id: str, g: dict, cost: float) -> dict:
+    """One guest game for the digest: which story, in what language, how far it
+    got, what it cost, and the account it moved to if the guest signed in."""
+    owner = g.get("ownerEmail")
+    return {
+        "id": game_id,
+        "story": g.get("starterTemplateId") or g.get("theme") or "(untitled)",
+        "language": g.get("language") or "en",
+        "state": g.get("gameState"),
+        "day": g.get("currentDay"),
+        "cost_usd": round(cost, 4),
+        "signed_in_as": None if _is_guest(owner) else owner,
+    }
+
+
+def _game_stats(db, now: datetime, period: dict, new_day_emails: list[str],
+                guests: list[dict] | None = None) -> dict:
     """Single read of the live game set (≤30d, TTL-bounded), bucketed in Python.
 
     Volume is tiny (free tier ~tens of games live), so one stream beats juggling
@@ -277,6 +362,12 @@ def _game_stats(db, now: datetime, period: dict, new_day_emails: list[str]) -> d
     by_new_users_day = 0   # games created in the day *by* users who signed up in it
     day_games = []         # per-game detail for the ones started in the day
     day_refusals = []      # provider content refusals stamped in the day (any game age)
+    # Games that started as a guest's (see the note at GUEST_DOMAIN). Counted and
+    # listed apart from account games; their cost is in live_cost like any other.
+    guest_env = {gu["email"].lower(): gu.get("env") or "production" for gu in guests or []}
+    guest_created = {"day": 0, "7d": 0, "30d": 0, "today_so_far": 0}
+    guest_day_games = []
+    guest_dev_games = 0    # made by local development against this database
 
     for snap in db.collection(GAMES).stream():
         g = snap.to_dict() or {}
@@ -303,6 +394,25 @@ def _game_stats(db, now: datetime, period: dict, new_day_emails: list[str]) -> d
         if (g.get("ownerEmail") or "").lower() in EXCLUDED_OWNERS:
             own_live_cost += cost
             own_games += 1
+            continue
+        guest_owner = g.get("guestOwnerEmail") or (g.get("ownerEmail") if _is_guest(g.get("ownerEmail")) else None)
+        if guest_owner:
+            # A guest doc that is gone (deleted by hand) reads as production.
+            if guest_env.get(str(guest_owner).lower(), "production") != "production":
+                guest_dev_games += 1
+                continue
+            total += 1
+            created = g.get("createdAt")
+            if not isinstance(created, (int, float)):
+                continue
+            for k in ("7d", "30d"):
+                if created >= cut_ms[k]:
+                    guest_created[k] += 1
+            if created >= day_end_ms:
+                guest_created["today_so_far"] += 1
+            if day_start_ms <= created < day_end_ms:
+                guest_created["day"] += 1
+                guest_day_games.append(_guest_game_row(snap.id, g, cost))
             continue
         total += 1
         created = g.get("createdAt")
@@ -344,7 +454,154 @@ def _game_stats(db, now: datetime, period: dict, new_day_emails: list[str]) -> d
         "created_day_by_new_users": by_new_users_day,
         "day_games": day_games,
         "day_refusals": sorted(day_refusals, key=lambda x: x["id"]),
+        "guest_created": guest_created,
+        "guest_day_games": sorted(guest_day_games, key=lambda x: x["id"]),
+        "guest_dev_games": guest_dev_games,
     }
+
+
+def _guest_summary(guests: list[dict], period: dict, games: dict) -> dict:
+    """The day's guests: how many started (a guest exists only because someone
+    pressed Play), how many signed in, and each game they started. Production
+    only: local development writes guests into the same database."""
+    start, end = period["_start_dt"], period["_end_dt"]
+    prod = [gu for gu in guests if (gu.get("env") or "production") == "production"]
+
+    def in_day(ts) -> bool:
+        return ts is not None and start <= ts < end
+
+    day_games = games.get("guest_day_games") or []
+    return {
+        "new_day": sum(1 for gu in prod if in_day(gu.get("created"))),
+        "signed_in_day": sum(1 for gu in prod if in_day(gu.get("claimed_at"))),
+        "total": len(prod),
+        "signed_in_total": sum(1 for gu in prod if gu.get("claimed_by")),
+        "games_created": games.get("guest_created") or {},
+        "day_games": day_games,
+        "day_cost_usd": round(sum(float(gm.get("cost_usd") or 0) for gm in day_games), 4),
+        "dev_guests": len(guests) - len(prod),
+        "dev_games": games.get("guest_dev_games") or 0,
+    }
+
+
+def _guest_digest_lines(guests: dict) -> list[str]:
+    """Guest lines for the digest: nothing on a day without guest activity."""
+    day_games = guests.get("day_games") or []
+    if not day_games and not guests.get("signed_in_day"):
+        return []
+    n = len(day_games)
+    head = f"Guest games: {n} started"
+    if guests.get("signed_in_day"):
+        head += f", {guests['signed_in_day']} guest(s) signed in"
+    head += f", ${guests.get('day_cost_usd', 0):.2f}"
+    lines = [head]
+    for gm in day_games[:DIGEST_LIST_CAP]:
+        day = f"day {gm['day']} " if gm.get("day") else ""
+        line = (f"- {gm['story']} [{gm['language']}], {day}{gm.get('state', '?')}, "
+                f"${gm.get('cost_usd', 0):.2f}")
+        if gm.get("signed_in_as"):
+            line += f", signed in as {gm['signed_in_as']}"
+        lines.append(line)
+    if n > DIGEST_LIST_CAP:
+        lines.append(f"- +{n - DIGEST_LIST_CAP} more in the report")
+    return lines
+
+
+# What each rule of the game's sign-up check means, in the words the digest uses.
+CREDIT_RULE_WORDS = {
+    "device": "same browser",
+    "machine": "same machine",
+    "machine+ip": "same machine and IP",
+    "machine+handle": "same machine and a numbered sibling name",
+    "ip+handle": "same IP and a numbered sibling name",
+    "ip": "same IP",
+    "handle": "numbered sibling name",
+}
+
+
+def _credit_rows(db, period: dict) -> list[dict]:
+    """The reported day's `creditEvents` rows (single-field range, no index)."""
+    from google.cloud.firestore_v1 import FieldFilter
+
+    q = (db.collection(CREDIT_EVENTS)
+         .where(filter=FieldFilter("createdAt", ">=", period["_start_dt"]))
+         .where(filter=FieldFilter("createdAt", "<", period["_end_dt"])))
+    return [s.to_dict() or {} for s in q.stream()]
+
+
+def _credit_summary(rows: list[dict], excluded: set[str] | None = None) -> dict:
+    """Counts by kind, the dollars given, and the rows worth reading by hand: every
+    denial and flag (a wrong denial costs a real newcomer their first game, so
+    Alex reads each one), every Discord claim and every manual grant."""
+    excluded = excluded if excluded is not None else EXCLUDED_OWNERS
+    counts: dict[str, int] = {}
+    given = 0.0
+    listed = []
+    for r in rows:
+        if (r.get("env") or "production") != "production":
+            continue
+        email = r.get("email") or "?"
+        if email.lower() in excluded:
+            continue
+        kind = r.get("kind") or "?"
+        counts[kind] = counts.get(kind, 0) + 1
+        amount = float(r.get("amountUSD") or 0)
+        if amount > 0:
+            given += amount
+        if kind in ("signup_denied", "signup_flagged", "discord", "admin"):
+            listed.append({
+                "kind": kind,
+                "email": email,
+                "amount_usd": amount,
+                "rules": list(r.get("rules") or []),
+                "linked": list(r.get("linked") or []),
+                "city": r.get("city"),
+                "discord": r.get("discordUsername"),
+                "note": r.get("note"),
+            })
+    order = {"signup_denied": 0, "signup_flagged": 1, "discord": 2, "admin": 3}
+    listed.sort(key=lambda x: (order.get(x["kind"], 9), x["email"]))
+    return {"counts": counts, "given_usd": round(given, 2), "rows": listed}
+
+
+def _credit_row_line(row: dict) -> str:
+    why = ", ".join(CREDIT_RULE_WORDS.get(r, r) for r in row.get("rules") or []) or "no rule recorded"
+    linked = ", ".join(row.get("linked") or []) or "?"
+    if row["kind"] == "signup_denied":
+        return f"- DENIED {row['email']}: {why} as {linked}"
+    if row["kind"] == "signup_flagged":
+        return f"- flagged {row['email']} (credit given): {why} as {linked}"
+    if row["kind"] == "discord":
+        who = f", Discord {row['discord']}" if row.get("discord") else ""
+        return f"- Discord claim: {row['email']} +${row['amount_usd']:.2f}{who}"
+    note = f" ({row['note']})" if row.get("note") else ""
+    return f"- by hand: {row['email']} {row['amount_usd']:+.2f}{note}"
+
+
+def _credit_digest_lines(credits: dict) -> list[str]:
+    """Credit lines for the digest: nothing on a day with no credit events."""
+    counts = credits.get("counts") or {}
+    if not counts:
+        return []
+    parts = []
+    if counts.get("signup"):
+        parts.append(f"{counts['signup']} new account(s) got theirs")
+    if counts.get("signup_flagged"):
+        parts.append(f"{counts['signup_flagged']} given but flagged")
+    if counts.get("signup_denied"):
+        parts.append(f"{counts['signup_denied']} DENIED")
+    if counts.get("existing"):
+        parts.append(f"{counts['existing']} older account(s) got theirs")
+    if counts.get("discord"):
+        parts.append(f"{counts['discord']} Discord claim(s)")
+    if counts.get("admin"):
+        parts.append(f"{counts['admin']} by hand")
+    lines = [f"Free credits: {', '.join(parts)}, ${credits.get('given_usd', 0):.2f} given"]
+    rows = credits.get("rows") or []
+    lines.extend(_credit_row_line(r) for r in rows[:DIGEST_LIST_CAP])
+    if len(rows) > DIGEST_LIST_CAP:
+        lines.append(f"- +{len(rows) - DIGEST_LIST_CAP} more in the report")
+    return lines
 
 
 def _median(values: list[float]) -> float:
@@ -791,7 +1048,13 @@ def _reconcile(period: dict, users: dict) -> dict:
                           f"day-boundary total (added 2026-09-08)"}
     if today is None or new is None:
         return {"ok": False, "reason": "missing users_total_day_end or new_users_day"}
-    delta = today - int(before)
+    # Guests left the user counts on 2026-11-25. A row written before that
+    # counted them, so against such a row the guests it had counted (those made
+    # before the reported day began) go back on this side, or the first run
+    # after the change would read BROKEN for a reason that is not a data error.
+    # A row that already excludes guests (`users_exclude_guests`) needs nothing.
+    put_back = 0 if prev.get("users_exclude_guests") else int(users.get("guests_before_day_start") or 0)
+    delta = today + put_back - int(before)
     return {
         "ok": delta == new,
         "prev_day": prev.get("period_date"),
@@ -799,6 +1062,7 @@ def _reconcile(period: dict, users: dict) -> dict:
         "users_total_day_end": today,
         "delta": delta,
         "new_users_day": new,
+        **({"guests_put_back": put_back} if put_back else {}),
     }
 
 
@@ -876,6 +1140,7 @@ def _compact(report: dict) -> dict:
         "daily_burn_day_usd": (report.get("daily_burn") or {}).get("day_usd"),
         "users_total": u.get("total"),               # read-time count, reference only
         "users_total_day_end": u.get("total_day_end"),  # the one deltas are taken on
+        "users_exclude_guests": True,                # since 2026-11-25, see _reconcile
         "reconciles": (report.get("reconciliation") or {}).get("ok"),
         # Per-user month-to-date, carried so the NEXT run can difference it into
         # a day figure. This is the one bulky field on the tape and it earns its
@@ -894,6 +1159,14 @@ def _compact(report: dict) -> dict:
         "screen_would_block_day": (((report.get("content_screen") or {}).get("day") or {}).get("verdicts") or {}).get("would_block"),
         "screen_grey_day": (((report.get("content_screen") or {}).get("day") or {}).get("verdicts") or {}).get("grey"),
         "provider_refusals_day": len((report.get("content_screen") or {}).get("refusals") or []),
+        # Guests and free credits (2026-11-25). Guest games expire with the 30d
+        # TTL and credit rows after 180 days; the tape keeps the series.
+        "guests_new_day": (report.get("guests") or {}).get("new_day"),
+        "guest_games_day": len((report.get("guests") or {}).get("day_games") or []),
+        "guests_signed_in_day": (report.get("guests") or {}).get("signed_in_day"),
+        "guest_games_cost_day_usd": (report.get("guests") or {}).get("day_cost_usd"),
+        "credit_events_day": (report.get("credits") or {}).get("counts") or {},
+        "credits_given_day_usd": (report.get("credits") or {}).get("given_usd"),
     }
 
 
@@ -1419,8 +1692,22 @@ def report() -> dict:
         return {"ok": False, "checked_at": _checked_at(now), "error": str(e)}
 
     period = _period(now)
-    users = _user_stats(db, now, period)
-    games = _game_stats(db, now, period, users["new_day_emails"])
+    # Guests are read once and taken out of the user and game counts below; a
+    # failed read counts as no guests (the report still runs, as it did before
+    # guests existed).
+    try:
+        guest_users = _guest_users(db)
+    except Exception as e:  # noqa: BLE001
+        print(f"warning: guest read failed, guests not separated: {e}", file=sys.stderr)
+        guest_users = []
+    users = _user_stats(db, now, period, guest_users)
+    games = _game_stats(db, now, period, users["new_day_emails"], guest_users)
+    guests = _guest_summary(guest_users, period, games)
+    try:
+        credits = _credit_summary(_credit_rows(db, period))
+    except Exception as e:  # noqa: BLE001
+        print(f"warning: creditEvents read failed: {e}", file=sys.stderr)
+        credits = {"counts": {}, "given_usd": 0.0, "rows": [], "error": str(e)}
     # Read once, pass to both: the per-user day delta and the user-count
     # invariant anchor to the SAME prior row, so they can never disagree about
     # which day they are differencing against.
@@ -1447,6 +1734,11 @@ def report() -> dict:
         "period": {k: v for k, v in period.items() if not k.startswith("_")},
         "users": users,
         "games": games,
+        # Visitors who played without an account, and the games they started.
+        # Not in `users` or in the game counts above (see the note at GUEST_DOMAIN).
+        "guests": guests,
+        # The day's free-credit grants, denials, flags and Discord claims.
+        "credits": credits,
         "user_spend_mtd_usd": user_spend,
         # ok=True passes, False is BROKEN and must be surfaced as such, None
         # means there is nothing to check against yet.
@@ -1687,6 +1979,29 @@ def render(report: dict) -> str:
             tag = " [new user]" if gm["by_new_user"] else ""
             out.append(f"    · {gm['theme']} — {gm['owner']} · {gm['state']} · "
                        f"${gm['cost_usd']:.2f}{tag}")
+    gs = report.get("guests") or {}
+    if gs:
+        gc = gs.get("games_created") or {}
+        out.append("")
+        out.append(f"  Guests (no account; not in the user or game counts above)")
+        out.append(f"    {date}: {gs.get('new_day', 0)} new guest(s), "
+                   f"{len(gs.get('day_games') or [])} game(s) started, "
+                   f"{gs.get('signed_in_day', 0)} signed in, ${gs.get('day_cost_usd', 0):.2f}")
+        out.append(f"    guest games 7d/30d: {gc.get('7d', 0)} / {gc.get('30d', 0)}"
+                   f"  ·  guests ever: {gs.get('total', 0)}, of them signed in: "
+                   f"{gs.get('signed_in_total', 0)}")
+        for gm in gs.get("day_games") or []:
+            day = f"day {gm['day']} " if gm.get("day") else ""
+            tail = f" · signed in as {gm['signed_in_as']}" if gm.get("signed_in_as") else ""
+            out.append(f"    · {gm['story']} [{gm['language']}] — {day}{gm.get('state', '?')} · "
+                       f"${gm.get('cost_usd', 0):.2f}{tail}")
+        if gs.get("dev_guests") or gs.get("dev_games"):
+            out.append(f"    (left out: {gs.get('dev_guests', 0)} guest(s) and "
+                       f"{gs.get('dev_games', 0)} game(s) made by local development)")
+    credit_lines = _credit_digest_lines(report.get("credits") or {})
+    if credit_lines:
+        out.append("")
+        out.extend("  " + l for l in credit_lines)
     ex = report.get("excluded") or {}
     if ex.get("owners"):
         out.append("")
@@ -1856,10 +2171,16 @@ def render_digest(report: dict) -> str:
         + (f" ({by_new} by that day's new users)" if by_new and gn["day"] else ""),
     ]
 
+    # Guest games sit with the day lines (2026-11-25): each one is a visitor who
+    # pressed Play with no account, and each one costs money.
+    lines.extend(_guest_digest_lines(report.get("guests") or {}))
+
     clusters = report.get("device_clusters") or {}
     # New accounts tied to existing ones go right under the day lines: it is the
     # one thing in here Alex wants to see the day it happens.
     lines.extend(l.strip() for l in _new_account_lines(clusters.get("new_account_links") or []))
+    # Who got free credits, who was refused them and why, who claimed on Discord.
+    lines.extend(_credit_digest_lines(report.get("credits") or {}))
 
     # Per-user charged spend + the cap (2026-09-11). `money` above is what games
     # recorded; this is what users were actually charged, previews and images
@@ -1880,7 +2201,9 @@ def render_digest(report: dict) -> str:
 
     hits = sp.get("limit_hits") or {}
     if hits.get("instrumented") and hits.get("hits"):
-        lines.append(f"Cap: {hits['users']} user(s) hit the daily limit "
+        # Since free credits (2026-11-25) a refusal is usually "credits used up",
+        # not a daily cap; the counter is the same one.
+        lines.append(f"Cap: {hits['users']} user(s) ran out of free AI "
                      f"({hits['hits']} refusals)")
 
     # Day first, standing totals after and labelled as standing (2026-09-08):
@@ -2191,6 +2514,61 @@ def selftest() -> bool:
           _screen_refusal_line(j[2]), 'Qwen refused "Island" (z@x) on day 1 - no player text of this game was screened')
     check("the join states facts and never a mechanism",
           any(w in _screen_refusal_line(x).lower() for x in j for w in ("drift", "probably", "likely")), False)
+
+    print("guests")
+    gid = "guest-11111111-2222-4333-8444-555555555555@guest.aiwerewolf.net"
+    check("a guest email is a guest, an account is not", (_is_guest(gid), _is_guest("a@x"), _is_guest(None)), (True, False, False))
+    day0 = datetime(2026, 11, 24, 5, 0, tzinfo=timezone.utc)
+    per = {"_start_dt": day0, "_end_dt": day0 + timedelta(days=1)}
+    inside, before = day0 + timedelta(hours=3), day0 - timedelta(days=2)
+    gusers = [
+        {"email": gid, "created": inside, "env": "production", "claimed_by": "new@x", "claimed_at": inside},
+        {"email": "g2" + GUEST_DOMAIN, "created": before, "env": "production", "claimed_by": None, "claimed_at": None},
+        {"email": "g3" + GUEST_DOMAIN, "created": inside, "env": "development", "claimed_by": None, "claimed_at": None},
+    ]
+    row = _guest_game_row("tavern-1", {"starterTemplateId": "tavern", "language": "ru", "gameState": "VOTE",
+                                       "currentDay": 1, "ownerEmail": "new@x", "guestOwnerEmail": gid}, 0.1234)
+    check("a guest game that moved to an account names the account",
+          (row["story"], row["language"], row["signed_in_as"]), ("tavern", "ru", "new@x"))
+    still = _guest_game_row("ship-1", {"starterTemplateId": "starship", "gameState": "DAY_DISCUSSION",
+                                       "currentDay": 1, "ownerEmail": "g2" + GUEST_DOMAIN}, 0.05)
+    check("a game still owned by the guest names nobody", (still["language"], still["signed_in_as"]), ("en", None))
+    gsum = _guest_summary(gusers, per, {"guest_day_games": [row, still], "guest_created": {"day": 2, "7d": 2, "30d": 2},
+                                        "guest_dev_games": 1})
+    check("the day's guests leave out local development",
+          (gsum["new_day"], gsum["signed_in_day"], gsum["total"], gsum["signed_in_total"], gsum["dev_guests"], gsum["day_cost_usd"]),
+          (1, 1, 2, 1, 1, 0.1734))
+    check("guest digest lines", _guest_digest_lines(gsum), [
+        "Guest games: 2 started, 1 guest(s) signed in, $0.17",
+        "- tavern [ru], day 1 VOTE, $0.12, signed in as new@x",
+        "- starship [en], day 1 DAY_DISCUSSION, $0.05",
+    ])
+    check("no guest activity prints nothing", _guest_digest_lines(_guest_summary([], per, {})), [])
+
+    print("credits")
+    crows = [
+        {"kind": "signup", "email": "a@x", "amountUSD": 5, "env": "production"},
+        {"kind": "signup_denied", "email": "b2@x", "amountUSD": 0, "env": "production", "rules": ["device"], "linked": ["b1@x"]},
+        {"kind": "signup_flagged", "email": "c@x", "amountUSD": 5, "env": "production", "rules": ["machine"], "linked": ["d@x"]},
+        {"kind": "discord", "email": "a@x", "amountUSD": 5, "env": "production", "discordUsername": "wolfie"},
+        {"kind": "existing", "email": "old@x", "amountUSD": 5, "env": "production"},
+        {"kind": "signup", "email": "dev@x", "amountUSD": 5, "env": "development"},
+        {"kind": "existing", "email": "me@x", "amountUSD": 5, "env": "production"},
+        {"kind": "admin", "email": "b2@x", "amountUSD": 5, "env": "production", "note": "denied by mistake"},
+    ]
+    cs = _credit_summary(crows, excluded={"me@x"})
+    check("credit counts leave out local development and the owner",
+          (cs["counts"], cs["given_usd"]),
+          ({"signup": 1, "signup_denied": 1, "signup_flagged": 1, "discord": 1, "existing": 1, "admin": 1}, 25.0))
+    check("credit digest lines", _credit_digest_lines(cs), [
+        "Free credits: 1 new account(s) got theirs, 1 given but flagged, 1 DENIED, "
+        "1 older account(s) got theirs, 1 Discord claim(s), 1 by hand, $25.00 given",
+        "- DENIED b2@x: same browser as b1@x",
+        "- flagged c@x (credit given): same machine as d@x",
+        "- Discord claim: a@x +$5.00, Discord wolfie",
+        "- by hand: b2@x +5.00 (denied by mistake)",
+    ])
+    check("no credit events print nothing", _credit_digest_lines(_credit_summary([], set())), [])
 
     print()
     if fails:
