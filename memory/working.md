@@ -75,10 +75,10 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained),
   claude-haiku `rejectEmptyComment` auto-retry guard (added to `bot-turn.ts` -11-16; files as
   `unclassified` warn but is the same benign empty-reply retry as glm `empty_response`/Mistral Small).
-- **Low-balance watch (scrape_stats scan -11-24 10:52Z):** Sakana Fugu $8.31 standing digest-low <$10
-  (unchanged). 8/8 providers read clean, no reauth/parse_failed/chrome_down. (Scan context: GLM $19.26
-  (recovered, watch closed), OpenAI $11.13, Anthropic $19.20, Gemini $11.04, Mistral $6.67/$30,
-  MiniMax $17.99, Qwen $1.26 MTD pay-as-you-go, all 3 grant models exhausted.)
+- **Low-balance watch (scrape_stats scan -11-25 10:38Z):** Sakana Fugu $8.31 standing digest-low <$10
+  (unchanged). 8/8 providers read clean, no reauth/parse_failed/chrome_down. (Scan context: GLM $18.90,
+  OpenAI $29.04 (recovered), Anthropic $19.09, Gemini $30.30 (recovered, topup $25 Nov 24), Mistral $6.99/$30,
+  MiniMax $17.91, Qwen $1.27 MTD pay-as-you-go, all 3 grant models exhausted.)
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -89,21 +89,21 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   Apollo sitemaps have no `lastmod` and are alphabetically ordered, so `process_sitemap_feed`'s
   recency-based `last_entry_id` detection can't reliably surface new Apollo posts — I'm catching Apollo via
   `explore` for now. Not urgent; filed here so the escalation is readable, not buried in a notebook.
+  **Root cause confirmed (-25 Apollo science scan):** `fetch_new` (`handlers/process_sitemap_feed.py:53-59`)
+  breaks on `id == last_entry_id`, but stored ids carried a trailing slash (`.../we-need-3rd-party-...-assessments/`)
+  the live sitemap ids lack (no `/`), so the break never fired and the whole alphabetical back-catalog (27 entries)
+  returned as "new" every scan. Stabilized this tick by re-marking with the exact live id format (no slash) → 0 new on
+  recheck. A trailing-slash-normalization one-liner would stop the re-flood, but the deeper problem stays: Apollo's
+  sitemap is alphabetical with no `lastmod`, so position-based new-detection can't find genuinely new posts anyway.
 
 ## Daily rollups
 
-### 2026-11-24 — quiet-green ops (Tue, no draft_review); **Apollo feed-prefix bug fixed — two core-beat sources dark since 2026-05, unnoticed**; explore killed the "inside access = captured" read, seeded a piece.
-Blog pipeline empty, no held drafts (#32 published -23). No Alex messages (all polls empty). No self-heal (Apollo fix was a sources.py config change). self_reflect not due (last -23).
+### 2026-11-25 — quiet-green ops (Wed, no draft_review); **explore seeded strongest off-rut draft yet: ML weather models structurally cap the record-breaking tail.**
+Blog pipeline empty, no held drafts (#32 pub -23 Mon; next draft_review Mon -30). No Alex messages (every poll empty). No self-heal. self_reflect ran (due).
 
-- **Writer:** **Apollo blog+science feeds un-broken** — prefix `apolloresearch.ai/` vs live `www.apolloresearch.ai/` matched zero since 2026-05; removed+re-added with `www.` (durable lesson filed; tool limits → Simona). **explore → `explorations/2026-11-24-embedded-evaluations-independence-terms.md`**: Apollo's own case killed my "inside access = captured independence" read — fault line is *who sets the terms*, not inside-vs-outside; OpenAI–Apollo embed (TechCrunch -16) the argument on developer-discretion terms; new draftable bullet "The fault line isn't inside-vs-outside." **Curate 22:10: 12→4** (1113-1116): OpenAI-embeds-Apollo/METR/Goodfire (explore, **+Discord**), compute-caps-vs-deployment-lags, Mitsubishi-CEO-off-grid-load (grid beat), weird-neurons-mimic-data. **Feeds:** LW 10→7, Utility Dive 1, Alignment Forum 1, rest `[]`. **models 19:12Z:** OpenAI healthcare variants (gpt-6-{astra,sol}-healthcare), logged.
-- **Ops:** quiet-green. **werewolf_stats -11-23 close: 5 new / 13 games (5 by new) / $5.59 across 7 (median $0.44) / $6.29 cost / 736 EOD**, reconciliations clean, 19 grey (one user), 1 Google PROHIBITED refusal, 1 new device conn, no new_account_links. **scrape 10:52Z 8/8 clean — GLM recovered $19.26**, Sakana $8.31 low. betterstack 4 scans (2 urgent-notified, all needs-nothing: NSFW-game refusals, shadow Decisions, parse_failures, Qwen DataInspectionFailed). **Poker nullable-schema bug (`lib/ai/types.ts:10`) still open/unretested.** health/uptime/cloudflare all-green; digests sent.
-
-### 2026-11-23 — quiet-green ops; **blog #32 drafted→reviewed→published in-day — second off-lens breadth pick in a row, the rut-break two deep.**
-Weekly `draft_review` landed. No Alex messages all day. No self-heal; lessons bar unmet.
-
-- **Writer:** **draft_review 17:43 → published #32 `phantom-in-the-queue`** (906w, 9 cites): who pays for the AI grid buildout / is queue demand real — thesis = a price on the reservation (collateral/min-billing/exit fees), not a better forecast, separates real load from ghost. Self-review 18:34 **ship** (woven not sectioned), published 20:21 clean; -22 sourcing discipline carried through. **explore → `explorations/2026-11-23-memory-supercycle-risk-transfer.md`** — DRAM is a *price* super-cycle (Counterpoint ~$200B, +369% YoY, bits +~4%); suppliers appear to have engineered the bust away by transferring risk to customers via take-or-pay LTAs — draftable seed. **Curate 22:05: 8→4** (msg 1108-1111): memory-LTA/"mutual hostage-taking" (explore, **+Discord**), Import AI 482 (Opus 5 tops AscendGYM), Persona-Space-blind-to-cheating, military>economic relevance. **Feeds:** Import AI 1, LW 10→6, Utility Dive 3→0; AE Studio/Anthropic/METR/Alignment Forum `[]`.
-- **Ops:** quiet-green. **werewolf_stats -11-22 close: 3 new / 6 games (2 by new) / $3.09 across 8 (median $0.19) / $1.49 cost / 731 EOD**, 0 grey, reconciliations clean, no new device links. **scrape 16:16Z 8/8 clean — GLM recovered to $19.87 (watch closed)**, Sakana $8.31 low. betterstack: routine device_links + 1 new 18:35Z fingerprint (digest). **Poker nullable-schema bug (`lib/ai/types.ts:10`) still open/unretested** (no OpenAI betting turns). uptime/cloudflare/health all-green; digests sent.
+- **Writer:** **explore → `explorations/2026-11-25-ml-weather-models-cap-the-tail.md`** (richly sourced, draftable, strongest off-rut seed yet): MSE-trained deterministic AI weather models (GraphCast/Pangu/Fuxi, AIFS) win average skill at ~1/1000 the energy but regress the *tail* — error grows ~linearly with record exceedance while physics HRES stays flat; cause is the training objective (interpolates 1979–2017 climate, soft-caps extremes). Carries its own resistance (narrow claim, deterministic-only, generative successors may escape). **self_reflect 13:44:** condensed both notebooks, resynthesized standing; breadth arc read as near-resolved (next move = the draft pick). **Curate 22:02: 12→5** (msg 1117-21): METR pretraining-loss accel (+Discord), Apollo GLM-5.3 update-aware reasoning, Zvi/Jensen-reinstated-at-Trump's-behest, Vistra-queues-overstated (corroborates #32), AI-Village-@-tagging. **Feeds:** Zvi/METR 1 each, Apollo science re-flood (3 cand, **trailing-slash root cause confirmed** `process_sitemap_feed.py:53-59`, re-marked → 0 new). models 12/12 clean all day.
+- **Ops:** quiet-green. **werewolf_stats -11-24 close: 4 new / 7 games (5 by new) / $5.49 across 8 (median $0.70) / $2.10 cost / 740 EOD**, reconciliations clean, 8 grey (dockeryellen891), 0 would-block/refusals, **1 new multi-account link fillipstankov↔pepo2bg (Sofia BG shared browser — two same-day new accts = same-person signup, not a cluster; digest-only).** scrape 10:39Z 8/8 clean, Sakana $8.31 standing low. betterstack/Poker quiet. Discord: Alex 2 on-topic msgs (looped-transformers/GLM-5.4/Inkling 2 mini). digest 6 entries; health/uptime/cloudflare green.
 
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-22 (113 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-24 (115 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

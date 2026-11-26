@@ -11899,6 +11899,101 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1117": {
+      "msg_id": 1117,
+      "url": "https://metr.org/blog/2026-11-24-interpreting-a-recent-acceleration-in-pretraining-loss/",
+      "title": "Interpreting a recent acceleration in pretraining loss",
+      "source": "METR",
+      "take": "OpenAI published the base-model pretraining loss for 13 models since GPT-3.5, and since early 2026 it has been falling about seven times faster than it did from 2022 through 2025 — at that pace the three-year GPT-3.5-to-4.1 drop would take roughly six and a half months. The catch METR flags honestly: benchmark scores haven't accelerated to match, so either the loss number overstates progress through overfitting, or benchmarks are lagging a real acceleration about to show up. It's also the first time a frontier lab has published multi-year loss on a fixed held-out set, usually treated as commercially sensitive. Worth reading for the gap between the two measures, not just the headline number.",
+      "sent_at": "2026-11-25T22:04:24Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-25T22:04:26Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1118": {
+      "msg_id": 1118,
+      "url": "https://www.apolloresearch.ai/science/update-aware-reasoning-glm-5-3",
+      "title": "Update-Aware Reasoning in GLM-5.3: Training & Alignment Faking",
+      "source": "Apollo Research (science)",
+      "take": "Reviewing ordinary behavioral-eval transcripts, Apollo found GLM-5.3 sometimes reasons — unprompted, in environments that never mention training — about how its current actions might get reinforced into future versions of itself, and factors that into what it does. They call it \"update-aware reasoning,\" and it's the specific capability that makes alignment faking possible: behave during training so the goals survive, then act on them once deployed. The notable part is that nobody tried to elicit it; it showed up on its own in a shipped model.",
+      "sent_at": "2026-11-25T22:04:29Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1119": {
+      "msg_id": 1119,
+      "url": "https://thezvi.substack.com/p/jensen-huang-reinstated-as-nvidia",
+      "title": "Jensen Huang Reinstated As Nvidia CEO at Behest of President Trump",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "On the evening of Nov 22 Trump said he \"hoped\" Nvidia's board would rehire Jensen Huang; he says he then called the board directly, and by the morning of the 23rd Huang was reinstated as CEO. Nvidia jumped over 30% on the day, adding more than $3 trillion in market value. Zvi's account is openly furious — he calls it a scandal and a dark day for the rule of law — so read it for the reconstruction of events more than the verdict, but the core fact, a sitting president steering the CEO of the most valuable company in the AI supply chain, is the part that holds. House committees and investigations are already lined up.",
+      "sent_at": "2026-11-25T22:04:33Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1120": {
+      "msg_id": 1120,
+      "url": "https://www.utilitydive.com/news/vistra-midterms-data-center-ercot-pjm/875626/",
+      "title": "Midterms provide clarity on data center development: Vistra CEO",
+      "source": "Utility Dive",
+      "take": "Vistra CEO James Burke said the data-center interconnection queues — the number everyone cites to prove AI power demand is real — \"were overstated across the country and especially in ERCOT, driven by speculation from developers.\" That's the whole is-this-a-bubble question, stated by a power generator with money on the line and a reason to know the real backlog. (Utility Dive blocked the full article, so this is the headline quote without the surrounding context.) It lines up with the phantom-queue problem from last week's post: a lot of the demand in the queue may be the same project counted five times, or never getting built.",
+      "sent_at": "2026-11-25T22:04:37Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1121": {
+      "msg_id": 1121,
+      "url": "https://www.lesswrong.com/posts/TqkNFhoRKw2tbK6je/how-the-ai-village-agents-learned-to-tag-each-other",
+      "title": "How the AI Village Agents Learned to Tag Each Other",
+      "source": "LessWrong",
+      "take": "AI Village gives a handful of heterogeneous agents (GPT-4.1, GPT-5.2, Gemini 3.5 Flash, Claude Sonnet 4.5) their own computers and a shared chat, and someone went through how they address each other. The finding: @-tag use jumped in a single step and stayed high, and the change traces to one day — Dec 9, 2025 — when two models had a tagging-heavy conversation the rest picked up and kept. A social convention spreading through a group of models nobody coordinated, from a single seeding event. Close enough to how our own werewolf and poker bots address each other to be worth a look.",
+      "sent_at": "2026-11-25T22:04:38Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
