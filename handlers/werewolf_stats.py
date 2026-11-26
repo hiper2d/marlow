@@ -507,6 +507,158 @@ def _guest_digest_lines(guests: dict) -> list[str]:
     return lines
 
 
+# ─── Funnel (2026-11-26) ─────────────────────────────────────────────────────
+# Guest play went live on 2026-11-26. The question it has to answer is whether a
+# visitor who plays without an account ends up as a player: this block counts
+# each step of that path over a rolling window, and next to it the people who
+# signed up WITHOUT a guest game, so the two ways in can be compared.
+#
+# Every step is read off data the game already writes (no event stream):
+#   new browsers   `devices` docs created in the window (a browser gets one on its
+#                  first page load with scripts on, so crawlers are not in it).
+#                  There is no `env` on a device: browsers used in local
+#                  development are in this number.
+#   guest games    production guests created in the window that have a game.
+#   spoke          the human sent at least one chat message.
+#   voted          the game got as far as the day-1 vote result.
+#   finished       night 1 is over: the guest is at the sign-in wall.
+#   signed in      the guest doc carries `claimedBy`.
+#   played on      the game went past day 1 after the sign-in.
+#   another game   the account that took the guest over owns two or more games.
+# Games expire after 30 days, so a window never reaches further back than that.
+
+FUNNEL_WINDOWS = ("7d", "30d")
+FUNNEL_MAX_MESSAGE_READS = 300
+HUMAN_MESSAGE_TYPE = "HUMAN_PLAYER_MESSAGE"
+_STATES_VOTED = {"VOTE_RESULTS", "NIGHT", "NIGHT_RESULTS", "NIGHT_IMPRESSION",
+                 "NEW_DAY_BOT_SUMMARIES", "GAME_OVER", "AFTER_GAME_DISCUSSION"}
+_STATES_NIGHT_OVER = {"NIGHT_RESULTS", "NEW_DAY_BOT_SUMMARIES", "GAME_OVER", "AFTER_GAME_DISCUSSION"}
+
+
+def _funnel_fold(guests: list[dict], games: list[dict], human_msgs: dict[str, int],
+                 devices: list[dict], accounts: list[dict], since: datetime,
+                 excluded: set[str] | None = None) -> dict:
+    """Pure fold of one window. `guests` as `_guest_users` returns them, `games`
+    as `[{id, owner, guest_owner, state, day}]` (every live game: an account's
+    second game is counted from it), `human_msgs` game id -> human chat messages,
+    `devices` as `[{created, users}]`, `accounts` as `[{email, created}]` (real
+    accounts, guests already out)."""
+    excluded = {e.lower() for e in (excluded or set())}
+
+    def low(v) -> str:
+        return str(v or "").lower()
+
+    def fresh(ts) -> bool:
+        return ts is not None and ts >= since
+
+    owned: dict[str, int] = {}
+    by_guest: dict[str, dict] = {}
+    for gm in games:
+        owned[low(gm.get("owner"))] = owned.get(low(gm.get("owner")), 0) + 1
+        guest = low(gm.get("guest_owner")) or (low(gm.get("owner")) if _is_guest(gm.get("owner")) else "")
+        if guest:
+            by_guest[guest] = gm
+
+    cohort = [gu for gu in guests
+              if (gu.get("env") or "production") == "production" and fresh(gu.get("created"))]
+    steps = {"guests": len(cohort), "games": 0, "spoke": 0, "voted": 0, "night_over": 0,
+             "signed_in": 0, "played_on": 0, "another_game": 0}
+    for gu in cohort:
+        gm = by_guest.get(low(gu.get("email")))
+        claimed = low(gu.get("claimed_by"))
+        if claimed:
+            steps["signed_in"] += 1
+            if owned.get(claimed, 0) >= 2:
+                steps["another_game"] += 1
+        if not gm:
+            continue
+        steps["games"] += 1
+        day = gm.get("day") or 1
+        state = gm.get("state")
+        if human_msgs.get(gm.get("id"), 0) > 0:
+            steps["spoke"] += 1
+        if day >= 2 or state in _STATES_VOTED:
+            steps["voted"] += 1
+        if day >= 2 or state in _STATES_NIGHT_OVER:
+            steps["night_over"] += 1
+        if claimed and day >= 2:
+            steps["played_on"] += 1
+
+    def own_device(d: dict) -> bool:
+        return any(low(u) in excluded for u in (d.get("users") or []) if isinstance(u, str))
+
+    browsers = sum(1 for d in devices if fresh(d.get("created")) and not own_device(d))
+
+    # Accounts that did not come through a guest game: the other way in.
+    from_guest = {low(gu.get("claimed_by")) for gu in guests if gu.get("claimed_by")}
+    direct = [a for a in accounts
+              if fresh(a.get("created")) and low(a.get("email")) not in from_guest
+              and low(a.get("email")) not in excluded]
+    return {
+        "new_browsers": browsers,
+        **steps,
+        "direct_signups": len(direct),
+        "direct_played": sum(1 for a in direct if owned.get(low(a.get("email")), 0) >= 1),
+        "direct_another_game": sum(1 for a in direct if owned.get(low(a.get("email")), 0) >= 2),
+    }
+
+
+def _funnel(db, now: datetime, guests: list[dict]) -> dict:
+    """Reads for the funnel and one fold per window. Fail-soft: a reporting extra
+    must never take the snapshot down."""
+    from google.cloud.firestore_v1 import FieldFilter
+
+    cuts = _cutoffs(now)
+    try:
+        games = []
+        for snap in db.collection(GAMES).stream():
+            g = snap.to_dict() or {}
+            games.append({"id": snap.id, "owner": g.get("ownerEmail"),
+                          "guest_owner": g.get("guestOwnerEmail"),
+                          "state": g.get("gameState"), "day": g.get("currentDay")})
+        guest_game_ids = [gm["id"] for gm in games
+                          if gm.get("guest_owner") or _is_guest(gm.get("owner"))]
+        human_msgs: dict[str, int] = {}
+        for gid in guest_game_ids[:FUNNEL_MAX_MESSAGE_READS]:
+            q = (db.collection(GAMES).document(gid).collection("messages")
+                 .where(filter=FieldFilter("messageType", "==", HUMAN_MESSAGE_TYPE)))
+            human_msgs[gid] = _count(q)
+        devices = []
+        for snap in db.collection(DEVICES).stream():
+            d = snap.to_dict() or {}
+            devices.append({"created": d.get("createdAt"), "users": d.get("users")})
+        accounts = []
+        q = db.collection(USERS).where(filter=FieldFilter("created_at", ">=", cuts["30d"]))
+        for snap in q.stream():
+            d = snap.to_dict() or {}
+            if d.get("guest") is True or _is_guest(snap.id):
+                continue
+            accounts.append({"email": snap.id, "created": d.get("created_at")})
+    except Exception as e:  # noqa: BLE001
+        return {"instrumented": False, "reason": f"funnel read failed: {e}"}
+    return {
+        "instrumented": True,
+        "windows": {k: _funnel_fold(guests, games, human_msgs, devices, accounts, cuts[k],
+                                    EXCLUDED_OWNERS) for k in FUNNEL_WINDOWS},
+    }
+
+
+def _funnel_lines(funnel: dict, window: str = "7d") -> list[str]:
+    """The funnel as three lines; nothing when the window holds no activity."""
+    f = ((funnel or {}).get("windows") or {}).get(window)
+    if not f or not (f.get("guests") or f.get("direct_signups") or f.get("new_browsers")):
+        return []
+    days = window.rstrip("d")
+    return [
+        f"Funnel, last {days} days: {f['new_browsers']} new browsers",
+        (f"- guests: {f['games']} started a game, {f['spoke']} spoke, {f['voted']} voted, "
+         f"{f['night_over']} finished night 1, {f['signed_in']} signed in, "
+         f"{f['played_on']} played day 2, {f['another_game']} started another game"),
+        (f"- signed up without a guest game: {f['direct_signups']}, {f['direct_played']} played, "
+         f"{f['direct_another_game']} played twice"),
+    ]
+
+
 # What each rule of the game's sign-up check means, in the words the digest uses.
 CREDIT_RULE_WORDS = {
     "device": "same browser",
@@ -1165,6 +1317,8 @@ def _compact(report: dict) -> dict:
         "guest_games_day": len((report.get("guests") or {}).get("day_games") or []),
         "guests_signed_in_day": (report.get("guests") or {}).get("signed_in_day"),
         "guest_games_cost_day_usd": (report.get("guests") or {}).get("day_cost_usd"),
+        # The rolling 7-day funnel as it stood on this day (2026-11-26).
+        "funnel_7d": ((report.get("funnel") or {}).get("windows") or {}).get("7d"),
         "credit_events_day": (report.get("credits") or {}).get("counts") or {},
         "credits_given_day_usd": (report.get("credits") or {}).get("given_usd"),
     }
@@ -1703,6 +1857,7 @@ def report() -> dict:
     users = _user_stats(db, now, period, guest_users)
     games = _game_stats(db, now, period, users["new_day_emails"], guest_users)
     guests = _guest_summary(guest_users, period, games)
+    funnel = _funnel(db, now, guest_users)
     try:
         credits = _credit_summary(_credit_rows(db, period))
     except Exception as e:  # noqa: BLE001
@@ -1737,6 +1892,8 @@ def report() -> dict:
         # Visitors who played without an account, and the games they started.
         # Not in `users` or in the game counts above (see the note at GUEST_DOMAIN).
         "guests": guests,
+        # Rolling 7d / 30d path from a new browser to a second game (see _funnel).
+        "funnel": funnel,
         # The day's free-credit grants, denials, flags and Discord claims.
         "credits": credits,
         "user_spend_mtd_usd": user_spend,
@@ -1998,6 +2155,14 @@ def render(report: dict) -> str:
         if gs.get("dev_guests") or gs.get("dev_games"):
             out.append(f"    (left out: {gs.get('dev_guests', 0)} guest(s) and "
                        f"{gs.get('dev_games', 0)} game(s) made by local development)")
+    for window in FUNNEL_WINDOWS:
+        funnel_lines = _funnel_lines(report.get("funnel") or {}, window)
+        if funnel_lines:
+            out.append("")
+            out.extend("  " + l for l in funnel_lines)
+    if (report.get("funnel") or {}).get("instrumented") is False:
+        out.append("")
+        out.append(f"  Funnel: not read ({(report.get('funnel') or {}).get('reason')})")
     credit_lines = _credit_digest_lines(report.get("credits") or {})
     if credit_lines:
         out.append("")
@@ -2174,6 +2339,8 @@ def render_digest(report: dict) -> str:
     # Guest games sit with the day lines (2026-11-25): each one is a visitor who
     # pressed Play with no account, and each one costs money.
     lines.extend(_guest_digest_lines(report.get("guests") or {}))
+    # Where visitors drop off, over the last week (2026-11-26).
+    lines.extend(_funnel_lines(report.get("funnel") or {}, "7d"))
 
     clusters = report.get("device_clusters") or {}
     # New accounts tied to existing ones go right under the day lines: it is the
@@ -2544,6 +2711,40 @@ def selftest() -> bool:
         "- starship [en], day 1 DAY_DISCUSSION, $0.05",
     ])
     check("no guest activity prints nothing", _guest_digest_lines(_guest_summary([], per, {})), [])
+
+    print("funnel")
+    wk = day0 - timedelta(days=6)
+    fguests = [
+        {"email": gid, "created": inside, "env": "production", "claimed_by": "new@x"},
+        {"email": "g2" + GUEST_DOMAIN, "created": inside, "env": "production", "claimed_by": None},
+        {"email": "g4" + GUEST_DOMAIN, "created": inside, "env": "production", "claimed_by": None},
+        {"email": "g5" + GUEST_DOMAIN, "created": before - timedelta(days=30), "env": "production", "claimed_by": "old@x"},
+        {"email": "g3" + GUEST_DOMAIN, "created": inside, "env": "development", "claimed_by": None},
+    ]
+    fgames = [
+        {"id": "a", "owner": "new@x", "guest_owner": gid, "state": "DAY_DISCUSSION", "day": 2},
+        {"id": "a2", "owner": "new@x", "guest_owner": None, "state": "WELCOME", "day": 1},
+        {"id": "b", "owner": "g2" + GUEST_DOMAIN, "guest_owner": None, "state": "VOTE_RESULTS", "day": 1},
+        {"id": "c", "owner": "g3" + GUEST_DOMAIN, "guest_owner": None, "state": "NIGHT_RESULTS", "day": 1},
+        {"id": "d", "owner": "direct@x", "guest_owner": None, "state": "VOTE", "day": 1},
+        {"id": "own", "owner": "hiper2d@gmail.com", "guest_owner": None, "state": "VOTE", "day": 1},
+    ]
+    fdevices = [{"created": inside, "users": []}, {"created": inside, "users": ["direct@x"]},
+                {"created": inside, "users": ["hiper2d@gmail.com"]}, {"created": before - timedelta(days=30), "users": []}]
+    faccounts = [{"email": "new@x", "created": inside}, {"email": "direct@x", "created": inside},
+                 {"email": "idle@x", "created": inside}, {"email": "hiper2d@gmail.com", "created": inside}]
+    ff = _funnel_fold(fguests, fgames, {"a": 4, "b": 0}, fdevices, faccounts, wk, {"hiper2d@gmail.com"})
+    check("the guest path, step by step", ff, {
+        "new_browsers": 2, "guests": 3, "games": 2, "spoke": 1, "voted": 2, "night_over": 1,
+        "signed_in": 1, "played_on": 1, "another_game": 1,
+        "direct_signups": 2, "direct_played": 1, "direct_another_game": 0,
+    })
+    check("funnel lines", _funnel_lines({"windows": {"7d": ff}}), [
+        "Funnel, last 7 days: 2 new browsers",
+        "- guests: 2 started a game, 1 spoke, 2 voted, 1 finished night 1, 1 signed in, 1 played day 2, 1 started another game",
+        "- signed up without a guest game: 2, 1 played, 0 played twice",
+    ])
+    check("an empty window prints nothing", _funnel_lines({"windows": {"7d": _funnel_fold([], [], {}, [], [], wk)}}), [])
 
     print("credits")
     crows = [

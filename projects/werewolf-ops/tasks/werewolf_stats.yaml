@@ -141,6 +141,22 @@
 # puts those guests back on its own side for that one comparison
 # (`guests_put_back` in `reconciliation`) so it does not read BROKEN.
 # Same read-only service account; no index (single-field queries only).
+#
+# ── Funnel (added 2026-11-26) ────────────────────────────────────────────────
+# Guest play went live that day. The digest carries a rolling 7-day funnel in
+# three lines: new browsers; the guest path (started a game, spoke, voted,
+# finished night 1, signed in, played day 2, started another game); and the
+# people who signed up without a guest game (how many played, how many played
+# twice). `show` prints the 30-day window too, and the 7-day counts are on the
+# history tape as `funnel_7d`.
+#
+# In the prose: these are counts over a rolling window, not a cohort followed to
+# the end. A guest who started yesterday has not had time to sign in, so the
+# later steps always lag the earlier ones. Report the numbers; do not turn two
+# steps into a "conversion rate" unless the window has at least 20 guests, and
+# do not explain a drop between two days (the window moved, nothing else did).
+# "New browsers" includes browsers used in local development, and it is not a
+# count of people: one person on a phone and a laptop is two.
 # ── Why 05:05 UTC and not "0 9" (changed 2026-08-22) ─────────────────────────
 # It ran at 09:00 UTC and counted "today" as since-UTC-midnight, so it reported a
 # nine-hour slice as a day - and that slice, 00:00-09:00 UTC, is 20:00-05:00
