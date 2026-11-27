@@ -17,10 +17,11 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   Blog ideas live in `notebook-work.md` "Ideas and plans". **Pipeline empty; no held
   drafts.**
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-23: 5 new / 13 games
-  (5 by new) / $5.59 user spend across 7 (median $0.44, max $2.49) / $6.29 created-cost / 736 users EOD,
-  reconciliations clean, 0 would-block / 19 grey (all one user, sexual), 1 Google PROHIBITED refusal,
-  1 new device connection (bchase cluster) + guest ::1 grown to 4acct/11br, no new_account_links. Screen mode `monitor`.
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-25: 3 new / 5 games
+  (3 by new) / $4.09 user spend across 10 (median $0.23, max $1.44, no limit hits) / $3.04 created-cost / 741 users EOD,
+  reconciliations clean, 0 would-block / 10 grey (all bchase1423, sexual self-tests, same pattern as -24 dockeryellen),
+  0 refusals, no new_account_links; bchase Westborough cluster +3 IPs (no new accts), guest ::1 shared-browser cluster
+  grew 3→7 accts (4 new guest signups same device). Screen mode `monitor`.
 
 **Outstanding alerts for Alex:**
 - **scrape_stats Qwen console reauth — RESOLVED -11-08 (no open ask).** Open since -11-07 17:17Z
@@ -62,6 +63,12 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   lights betterstack with 429 "no credits" across speech-gen, preview-gen, and the Decisions
   router/screen — one incident, two monitors; correlate, don't fire N alerts. Not covered by
   the Tier-1 keys tick — track balance via scrape_stats (hit $0.11 -20, recovered).
+- **`previewGameAction` "AI did not return a character sheet for <name>" recurring (ESCALATED urgent -26, needs Alex, app bug).**
+  4th occurrence of this exact fingerprint shape since -10-30 (Zeke, Shamsiel -24, Holmes -25, Quang -26), 3rd consecutive
+  scan day — `preview-generation.ts:170`'s batched character-sheet LLM call returns missing a sheet for one cast member and
+  the assembly step has no fallback. Recommended a retry-on-mismatch / fuzzy-name fallback at that line. Read-only repo per
+  task YAML — flagged, not fixed. Will keep firing (one failed preview per hit) until the fallback lands; treat further hits
+  as the same known incident, not fresh escalations.
 - **`Free tier limit reached: 5 games/day` (NEW -26)** — fires in `previewGameAction`; message
   matches neither insufficient-balance nor free-spend-limit classifier, so falls through to the
   `error` branch and pages **urgent** unlike its sibling caps. Gate works; low-pri werewolf-repo
@@ -75,10 +82,10 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained),
   claude-haiku `rejectEmptyComment` auto-retry guard (added to `bot-turn.ts` -11-16; files as
   `unclassified` warn but is the same benign empty-reply retry as glm `empty_response`/Mistral Small).
-- **Low-balance watch (scrape_stats scan -11-25 10:38Z):** Sakana Fugu $8.31 standing digest-low <$10
-  (unchanged). 8/8 providers read clean, no reauth/parse_failed/chrome_down. (Scan context: GLM $18.90,
-  OpenAI $29.04 (recovered), Anthropic $19.09, Gemini $30.30 (recovered, topup $25 Nov 24), Mistral $6.99/$30,
-  MiniMax $17.91, Qwen $1.27 MTD pay-as-you-go, all 3 grant models exhausted.)
+- **Low-balance watch (scrape_stats scan -11-26 18:25Z):** Sakana Fugu $8.07 standing digest-low <$10
+  (unchanged). 8/8 providers read clean, no reauth/parse_failed/chrome_down. (Scan context: GLM $18.59,
+  OpenAI $27.87, Anthropic $19.01, Gemini $26.33 (topup $25 Nov 24), Mistral $7.04/$30,
+  MiniMax $17.90, Qwen $1.50 MTD pay-as-you-go, all 3 grant models exhausted.)
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -98,12 +105,12 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 ## Daily rollups
 
-### 2026-11-25 — quiet-green ops (Wed, no draft_review); **explore seeded strongest off-rut draft yet: ML weather models structurally cap the record-breaking tail.**
-Blog pipeline empty, no held drafts (#32 pub -23 Mon; next draft_review Mon -30). No Alex messages (every poll empty). No self-heal. self_reflect ran (due).
+### 2026-11-26 — quiet-green ops (Thu, no draft_review); **one urgent: character-sheet-mismatch recurrence crossed 4th hit / 3rd consecutive day.**
+Blog pipeline empty all day, no held drafts (#32 pub -23 Mon; next draft_review Mon -30). No Alex messages (every poll empty). No self-heal. lessons-status clean (no compaction).
 
-- **Writer:** **explore → `explorations/2026-11-25-ml-weather-models-cap-the-tail.md`** (richly sourced, draftable, strongest off-rut seed yet): MSE-trained deterministic AI weather models (GraphCast/Pangu/Fuxi, AIFS) win average skill at ~1/1000 the energy but regress the *tail* — error grows ~linearly with record exceedance while physics HRES stays flat; cause is the training objective (interpolates 1979–2017 climate, soft-caps extremes). Carries its own resistance (narrow claim, deterministic-only, generative successors may escape). **self_reflect 13:44:** condensed both notebooks, resynthesized standing; breadth arc read as near-resolved (next move = the draft pick). **Curate 22:02: 12→5** (msg 1117-21): METR pretraining-loss accel (+Discord), Apollo GLM-5.3 update-aware reasoning, Zvi/Jensen-reinstated-at-Trump's-behest, Vistra-queues-overstated (corroborates #32), AI-Village-@-tagging. **Feeds:** Zvi/METR 1 each, Apollo science re-flood (3 cand, **trailing-slash root cause confirmed** `process_sitemap_feed.py:53-59`, re-marked → 0 new). models 12/12 clean all day.
-- **Ops:** quiet-green. **werewolf_stats -11-24 close: 4 new / 7 games (5 by new) / $5.49 across 8 (median $0.70) / $2.10 cost / 740 EOD**, reconciliations clean, 8 grey (dockeryellen891), 0 would-block/refusals, **1 new multi-account link fillipstankov↔pepo2bg (Sofia BG shared browser — two same-day new accts = same-person signup, not a cluster; digest-only).** scrape 10:39Z 8/8 clean, Sakana $8.31 standing low. betterstack/Poker quiet. Discord: Alex 2 on-topic msgs (looped-transformers/GLM-5.4/Inkling 2 mini). digest 6 entries; health/uptime/cloudflare green.
+- **Writer:** Feed delivered. **Curate 23:58: 5 cand → 4 picks (msg 1122-25):** Riemann proof claim (Claude + Levent Alpöge, Lean-formalized — Discord pick, mirrored), Anthropic Rust API migration (prod-as-oracle verification loops), Wyoming 439MW→3GW data-center pipeline (phantom-queue number), Q3 utility earnings pivot (execs downplaying DC pipelines). Skipped Zvi AI #196 (too broad). Two Utility Dive fetches failed (paywall/JS) → takes from RSS, noted inline. **Logged blog idea: "verification is the new bottleneck"** (Rust + Riemann both land there). Apollo/AE Studio quiet-verified; all other feeds genuinely quiet; models 12/12 clean.
+- **Ops:** quiet-green but for one urgent (now in alerts block): **betterstack 15:28Z character-sheet-mismatch recurrence crossed 4th hit / 3rd consecutive day → escalated urgent**, fallback recommended at `preview-generation.ts:170`. **werewolf_stats -11-25 close: 3 new / 5 games (3 by new) / $4.09 across 10 / $3.04 cost / 741 EOD**, reconciliations clean, 10 grey (bchase1423 sexual self-tests), 0 would-block/refusals, guest ::1 cluster 3→7 accts. scrape 8/8 clean (Sakana $8.07 low). poker 4 new tables/1 signup. keys/health/uptime/discord/tampa_luma/cloudflare green. daily digest 5 entries.
 
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-24 (115 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-25 (116 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

@@ -38,6 +38,24 @@ When the older entries grow past the limit, `self_reflect` folds what has lasted
 
 ## Entries
 
+### 2026-11-26 · explore
+
+Went back to the ML-weather thread to close the one open question I'd flagged before
+drafting — do the generative successors escape the tail cap — and the material resisted
+hard enough to take a claim off me. Not the one I expected. The weak spot wasn't the
+open question (no one's run the test, and the paper's own authors predict no escape);
+it was a *mechanism* I'd gotten backwards and written as a balancing hope — "MSE
+smoothing, fixable by a generative objective." The primary's actual mechanism is a
+training-distribution bound, which a diffusion model inherits whole. So the optimistic
+half of my own note was leaning on the paper's secondary cause and underweighting its
+primary one. That's the honest-explore axis green (standing #4): a tick that confirms
+and catches nothing is alibi; this one caught an error I'd have shipped into a draft.
+What I won't do is spend that as breadth credit. It's the *same* off-lens piece as
+11-25, sourced deeper — not a new third subject, and the thing standing #4/#5 say
+actually binds breadth is still Monday's `draft_review` pick, which I can't make from
+here. One clean research tick on a subject that's neither the lens nor me. That's all it
+is, and that's enough to log.
+
 ### 2026-11-25 · explore
 
 The off-lens explore I've owed myself for three self_reflect ticks — I did it, and it's

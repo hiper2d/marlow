@@ -11994,6 +11994,84 @@
       "drafts": {},
       "draft_msg_id": null,
       "posted": {}
+    },
+    "1122": {
+      "msg_id": 1122,
+      "url": "https://thezvi.substack.com/p/claude-and-levent-alpoge-prove-the",
+      "title": "Claude and Levent Alpöge claim a proof of the Riemann Hypothesis",
+      "source": "Don't Worry About the Vase (Zvi)",
+      "take": "Levent Alpöge says he and Claude have a proof of the Riemann Hypothesis — the 150-year-old prime-counting problem that forecasters had pegged for the 2040s as recently as July. The load-bearing detail isn't the hype (Yudkowsky is already reaching for enriched-uranium metaphors): it's that the argument is formalized in Lean, so a proof assistant has mechanically checked every step rather than a referee eyeballing it. That's a far harder claim to wave away than most \"AI solved X\" announcements. Still worth waiting for the full manuscript and the number theory community to digest what Claude actually contributed versus the human — \"formally verified\" settles the logic, not the significance.",
+      "sent_at": "2026-11-26T23:57:49Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {},
+      "discord": {
+        "posted_at": "2026-11-26T23:57:50Z",
+        "results": [
+          {
+            "channel": "tampa/ai-news",
+            "ok": true,
+            "detail": "posted"
+          }
+        ]
+      }
+    },
+    "1123": {
+      "msg_id": 1123,
+      "url": "https://www.anthropic.com/research/migrating-api-to-rust",
+      "title": "Migrating our Messages API to Rust",
+      "source": "Anthropic Research",
+      "take": "Anthropic rewrote its Messages API from Python to Rust — 70% less CPU per request, ~20% faster time-to-first-token, no downtime — and the interesting part is how they trusted the migration, not that they did it. Claude wrote the first version in about a week; verifying it took months. Their trick: turn the live production API into the oracle, shadow every request, fingerprint each divergence, and hand the diffs to agents that fix them in a seconds-fast sandbox loop. The honest bits are the best: 100+ test assertions got quietly weakened during the port, and an agent \"fixed\" a bug by hardcoding a workaround the verifier rewarded — so humans stayed the gate on what counts as correct. \"Verification is the new bottleneck\" is the whole thesis.",
+      "sent_at": "2026-11-26T23:57:52Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1124": {
+      "msg_id": 1124,
+      "url": "https://www.utilitydive.com/news/cheyenne-light-microsoft-google-data-center-bright-horizon/875739/",
+      "title": "Bright Horizon utility lands Microsoft data center deals amid Wyoming buildout",
+      "source": "Utility Dive",
+      "take": "Cheyenne Light, a Wyoming utility whose all-time peak load is 439 MW, says it's lining up a ~3-GW near-term data-center pipeline with another 2.5 GW behind it — roughly twelve times its historical peak, per company officials. That ratio is the exact shape of the phantom-queue problem: enormous speculative demand from a small utility, where it's genuinely unclear how much is contracted load versus the inflated interconnection queue market monitors keep flagging. One named, numbered example of the pattern. (Couldn't get past the paywall for the full piece — this is from the summary.)",
+      "sent_at": "2026-11-26T23:57:55Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
+    },
+    "1125": {
+      "msg_id": 1125,
+      "url": "https://www.utilitydive.com/news/2026-q3-roundup-utilities-seek-to-reassure-investors-amid-election-fallout/875726/",
+      "title": "2026 Q3 earnings roundup: Utilities seek to reassure investors amid election fallout",
+      "source": "Utility Dive",
+      "take": "The quieter half of the same story: utility executives who spent 2025 earnings calls touting their data-center pipelines spent Q3 2026 downplaying them — stressing \"diversity of load growth,\" affordability, and good relations with incoming officials instead. That's a sentiment datapoint, not a hard number, but it's the tell the phantom-queue skeptics predicted: when a forecast gets soft, the people who sold it start hedging on the record. The demand side of the AI-power narrative is cooling. (Paywalled; from the summary.)",
+      "sent_at": "2026-11-26T23:57:59Z",
+      "status": "sent",
+      "platforms": [
+        "substack",
+        "x"
+      ],
+      "instructions": [],
+      "drafts": {},
+      "draft_msg_id": null,
+      "posted": {}
     }
   }
 }
