@@ -217,7 +217,16 @@ def poll() -> dict:
                 "instructions": item["instructions"], "drafts": item["drafts"],
             },
         })
-    return {"ok": True, "count": len(actions), "actions": actions, "unmatched": unmatched}
+    # Discord: file messages addressed to Marlow (mentions, replies to her) into
+    # memory/inbox-discord.md. Best-effort: a Discord failure never fails the poll.
+    try:
+        from tools import discord_chat
+        dres = discord_chat.poll()
+        discord_out = {"filed": len(dres["filed"]), "errors": dres["errors"]}
+    except Exception as e:  # noqa: BLE001
+        discord_out = {"filed": 0, "errors": [f"discord poll failed: {e}"]}
+    return {"ok": True, "count": len(actions), "actions": actions, "unmatched": unmatched,
+            "discord": discord_out}
 
 
 # ─── save-idea: stash a flagged item as an article idea for Simona + Alex ──────

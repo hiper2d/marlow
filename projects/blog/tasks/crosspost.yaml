@@ -11,6 +11,10 @@
 #
 # Full procedure: CLAUDE.md "### News highlights — handler `crosspost`".
 #
+# Since 2026-11-26 the same poll also files Discord messages addressed to Marlow
+# (@mentions, replies to her) into memory/inbox-discord.md via tools/discord_chat.py.
+# Every writer tick answers them (profiles/writer/IDENTITY.md "Talking on Discord").
+#
 # Hourly: responsive enough to capture replies without spamming getUpdates. While
 # active it is the SOLE Telegram inbound poller (it advances the shared getUpdates
 # offset). substack_approvals is disabled now, so no contention; if it returns,

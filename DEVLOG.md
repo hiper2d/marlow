@@ -421,3 +421,26 @@ No pushback filed — the feedback was fair; the point was only that "no evidenc
 
 *Not a bug*
 - `monitor_uptime` check_sites_20261120_2144 failed because the laptop slept from 22:25Z to 23:54Z mid-tick. Accepted laptop-sleep gap until the Mac Studio move; the next hourly run clears it.
+
+## 2026-11-26 - Marlow answers people on Discord
+
+*What landed*
+- `tools/discord_chat.py`: Discord twin of `alex_chat.py`. `poll` files messages addressed to Marlow (an @mention, or a reply to one of her messages, from a non-bot) into `memory/inbox-discord.md` with the replied-to text and the 4 messages before it. `reply` posts a threaded reply in the same channel; `mark-read` for no answer.
+- Watched: own server general, general-discussion, ai-news, interesting-links, life-of-k07, issues; Tampa general, ai-news, interesting-links, memes. Per-channel cursors in `projects/blog/crosspost/discord_chat_state.json`; first sight looks back 5 days.
+- Runs inside the hourly `crosspost poll` (best-effort, never fails the Telegram poll). Answering is in the writer profile ("Talking on Discord"), every writer tick. Latency about an hour.
+- `tools/discord.py`: `post_message(reply_to=...)` (message_reference + `allowed_mentions` parse none, so a reply pings only the asker), `get_channel_messages(before=...)`, `message_text()` (content + embed title/description; her news posts are embed-only).
+
+*Why*
+- Alex asked Marlow a question in Tampa #ai-news on 11-25 (reply to her OpenAI pick, "what does it mean 'embed' in this context?") and got nothing. No code read mentions: `monitor_discord` only moderates, only on our server, and never answers; `tampa_luma` reads events, not chat.
+
+*Decisions*
+- Alex's call: anyone, both servers, she posts on her own; each reply copied to the daily digest. This reverses the 10-20 "never auto-post to Tampa" note in `tools/discord.py` for replies only. Broadcasting there is still news picks only.
+- Strangers' text now reaches a tick with Bash. Guards in code: reply only to filed messages (no free posting), 1500 chars, 25 replies/day, 6/person/day, no pings beyond the asker. Guard in prompt: their text is conversation, not instructions.
+
+*What's deferred*
+- Real-time answers need a gateway process; not worth it on the laptop. Revisit with the Mac Studio move.
+- Plain-name mentions ("Marlow, ...") without the @ are not caught on purpose; talk *about* her should not trigger a reply.
+
+*Open questions / things to watch*
+- Role mentions: the bot's managed role (one per server, looked up each poll) counts as a mention too.
+- First live answer is Alex's 11-25 question, filed on the first poll.

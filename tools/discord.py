@@ -68,8 +68,9 @@ CHANNELS = {
     "life-of-k07": "1571863474731090023",         # K-07 category: open chat about the films + songs
     "rules": "1520816036411215883",
     "moderator-only": "1520816036897886381",       # private - bot has NO access
-    # Other servers Alex admins, prefixed "<server>/". Never auto-posted to;
-    # only used when Alex sends Marlow there on purpose.
+    # Other servers Alex admins, prefixed "<server>/". Never auto-broadcast to;
+    # the one automatic thing Marlow does here is ANSWER people who @mention her
+    # or reply to her (tools/discord_chat.py, Alex's call 2026-11-26).
     # Tampa AI Build Club (joined 2026-10-20)
     "tampa/welcome": "1562284260348399679",        # read-only, join messages; bot can post
     "tampa/rules": "1562284262454071357",          # read-only; bot can post
@@ -118,11 +119,16 @@ def _log_fallback(payload: dict, reason: str) -> None:
         f.write(f"[{ts}] [{reason}] {json.dumps(payload)}\n")
 
 
-def post_message(channel: str, content: str | None = None, embeds: list | None = None) -> dict:
+def post_message(channel: str, content: str | None = None, embeds: list | None = None,
+                 reply_to: str | None = None) -> dict:
     """Post one message to a channel. Returns {ok, message_id, detail}.
 
     `channel` is a friendly name from CHANNELS or a raw channel id. Provide
     `content`, `embeds`, or both (Discord requires at least one).
+
+    `reply_to` (a message id in the same channel) makes it a threaded reply. A
+    reply never pings anyone but the person replied to: @everyone, @here, roles
+    and user mentions in the text are all rendered inert (allowed_mentions).
     """
     token = _token()
     if not token:
@@ -137,6 +143,9 @@ def post_message(channel: str, content: str | None = None, embeds: list | None =
         body["content"] = content
     if embeds:
         body["embeds"] = embeds
+    if reply_to:
+        body["message_reference"] = {"message_id": str(reply_to), "fail_if_not_exists": False}
+        body["allowed_mentions"] = {"parse": [], "replied_user": True}
     cid = _resolve_channel(channel)
     try:
         resp = requests.post(
@@ -186,7 +195,8 @@ def announce_article(
     return post_message(channel, content=url, embeds=[embed])
 
 
-def get_channel_messages(channel: str, after: str | None = None, limit: int = 100) -> dict:
+def get_channel_messages(channel: str, after: str | None = None, limit: int = 100,
+                         before: str | None = None) -> dict:
     """Fetch one page of messages from a channel, newest-first. Returns
     {ok, messages, detail}.
 
@@ -207,6 +217,8 @@ def get_channel_messages(channel: str, after: str | None = None, limit: int = 10
     params: dict = {"limit": min(max(int(limit), 1), 100)}
     if after:
         params["after"] = after
+    if before:
+        params["before"] = before
     try:
         resp = requests.get(
             f"{API_BASE}/channels/{cid}/messages",
@@ -219,6 +231,15 @@ def get_channel_messages(channel: str, after: str | None = None, limit: int = 10
         return {"ok": True, "messages": resp.json(), "detail": f"fetched {len(resp.json())}"}
     except (requests.RequestException, ValueError) as e:
         return {"ok": False, "messages": [], "detail": f"discord request failed: {e}"}
+
+
+def message_text(m: dict) -> str:
+    """Readable text of a message: its content plus any embed title/description
+    (Marlow's own news posts are embed-only, so content alone is empty)."""
+    parts = [m.get("content") or ""]
+    for e in m.get("embeds") or []:
+        parts += [e.get("title") or "", e.get("description") or ""]
+    return " ".join(" ".join(p.split()) for p in parts if p).strip()
 
 
 def get_guild_counts() -> dict:

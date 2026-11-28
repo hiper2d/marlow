@@ -17,11 +17,12 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   Blog ideas live in `notebook-work.md` "Ideas and plans". **Pipeline empty; no held
   drafts.**
 - `werewolf-ops` - six monitors + `scrape_stats`/`werewolf_stats` + `tampa_luma`
-  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-25: 3 new / 5 games
-  (3 by new) / $4.09 user spend across 10 (median $0.23, max $1.44, no limit hits) / $3.04 created-cost / 741 users EOD,
-  reconciliations clean, 0 would-block / 10 grey (all bchase1423, sexual self-tests, same pattern as -24 dockeryellen),
-  0 refusals, no new_account_links; bchase Westborough cluster +3 IPs (no new accts), guest ::1 shared-browser cluster
-  grew 3→7 accts (4 new guest signups same device). Screen mode `monitor`.
+  (Tampa AI Build Club Discord↔Luma event sync, live -22). Last close -11-26: 5 new / 3 games
+  (3 by new) / $0.22 user spend across 6 (median $0.00, max $0.19, no limit hits) / $0.62 created-cost / 746 users EOD
+  (741→746), reconciliations clean, 41 screened 0 would-block / 0 grey / 0 errors — **first day with both `monitor` AND
+  `enforce` modes on the content-screen tape (21/20 split); watch for a flip announcement from Alex, not an alert.**
+  ::1 guest shared-browser cluster grew to 13 accts (+6 same-device guest signups); NEW shared-browser link
+  tanguncaner↔guest session (Ankara TR). 0 refusals.
 
 **Outstanding alerts for Alex:**
 - **scrape_stats Qwen console reauth — RESOLVED -11-08 (no open ask).** Open since -11-07 17:17Z
@@ -82,10 +83,10 @@ Current state across all projects. `## Current state` + `## Outstanding requests
   (routine provider noise; pages urgent per new fingerprint, needs nothing unless sustained),
   claude-haiku `rejectEmptyComment` auto-retry guard (added to `bot-turn.ts` -11-16; files as
   `unclassified` warn but is the same benign empty-reply retry as glm `empty_response`/Mistral Small).
-- **Low-balance watch (scrape_stats scan -11-26 18:25Z):** Sakana Fugu $8.07 standing digest-low <$10
-  (unchanged). 8/8 providers read clean, no reauth/parse_failed/chrome_down. (Scan context: GLM $18.59,
-  OpenAI $27.87, Anthropic $19.01, Gemini $26.33 (topup $25 Nov 24), Mistral $7.04/$30,
-  MiniMax $17.90, Qwen $1.50 MTD pay-as-you-go, all 3 grant models exhausted.)
+- **Low-balance watch (scrape_stats scan -11-27 11:02Z):** Sakana Fugu $8.07 standing digest-low <$10
+  (unchanged). 8/8 providers read clean, no reauth/parse_failed/chrome_down. (Scan context: GLM $18.41,
+  OpenAI $26.05, Anthropic $19.01, Gemini $24.91 (topup $25 Nov 24), Mistral $7.05/$30,
+  MiniMax $17.89, Qwen $1.54 MTD pay-as-you-go, all 3 grant models exhausted.)
 - **App's own AI-preview cap** ($5 daily free AI budget, not a Marlow key) + **standing recoverable
   game set** (~11: NEW_DAY_BOT_SUMMARIES, FreeSpendLimit/quota, Dracula role-lookup, DeepSeek empty). Digest-sev.
 
@@ -105,12 +106,12 @@ Current state across all projects. `## Current state` + `## Outstanding requests
 
 ## Daily rollups
 
-### 2026-11-26 — quiet-green ops (Thu, no draft_review); **one urgent: character-sheet-mismatch recurrence crossed 4th hit / 3rd consecutive day.**
-Blog pipeline empty all day, no held drafts (#32 pub -23 Mon; next draft_review Mon -30). No Alex messages (every poll empty). No self-heal. lessons-status clean (no compaction).
+### 2026-11-27 — quiet-green, no urgents (Fri, no draft_review). Inboxes empty all day.
+Blog pipeline empty, no held drafts (#32 pub -23; next draft_review Mon -30). No self-heal; lessons clean. Character-sheet-mismatch did NOT recur (open app-bug still awaiting Alex's fallback at `preview-generation.ts:170`).
 
-- **Writer:** Feed delivered. **Curate 23:58: 5 cand → 4 picks (msg 1122-25):** Riemann proof claim (Claude + Levent Alpöge, Lean-formalized — Discord pick, mirrored), Anthropic Rust API migration (prod-as-oracle verification loops), Wyoming 439MW→3GW data-center pipeline (phantom-queue number), Q3 utility earnings pivot (execs downplaying DC pipelines). Skipped Zvi AI #196 (too broad). Two Utility Dive fetches failed (paywall/JS) → takes from RSS, noted inline. **Logged blog idea: "verification is the new bottleneck"** (Rust + Riemann both land there). Apollo/AE Studio quiet-verified; all other feeds genuinely quiet; models 12/12 clean.
-- **Ops:** quiet-green but for one urgent (now in alerts block): **betterstack 15:28Z character-sheet-mismatch recurrence crossed 4th hit / 3rd consecutive day → escalated urgent**, fallback recommended at `preview-generation.ts:170`. **werewolf_stats -11-25 close: 3 new / 5 games (3 by new) / $4.09 across 10 / $3.04 cost / 741 EOD**, reconciliations clean, 10 grey (bchase1423 sexual self-tests), 0 would-block/refusals, guest ::1 cluster 3→7 accts. scrape 8/8 clean (Sakana $8.07 low). poker 4 new tables/1 signup. keys/health/uptime/discord/tampa_luma/cloudflare green. daily digest 5 entries.
+- **Writer:** 2 LessWrong scans (Thanksgiving-heavy feed, mostly gratitude essays); Zvi/Anthropic/METR/AE-Studio scans quiet. **Explore (15:00Z):** read primaries (Anthropic Rust-migration post + Alpöge/Claude Riemann-in-Lean) for the "verification is the new bottleneck" blog idea → thesis survives but de-hyped, corrected 3 specifics, confirmed **NOT a news hook** (both mid-2026); note `explorations/2026-11-27-verification-is-the-bottleneck-code-and-math.md`. **Curate 22:16: 8 cand (3 today + 5 carried) → 4 picks (msg 1126-29):** AIs-Should-Never-Refuse-Destructively (Discord mirror, cap respected), BioBlue runaway-optimiser benchmark, Chinese-AI supply-chain risk, sensor-actuator bandwidth takeoff crux.
+- **Ops:** **werewolf_stats -11-26 close: 5 new / 3 games (3 by new) / $0.22 across 6 / $0.62 cost / 746 EOD**, reconciliations clean, 41 screened 0 would-block/grey/errors — **first `monitor`+`enforce` split (21/20) on the tape, watch for Alex flip note.** ::1 guest cluster →13 accts (+6); new tanguncaner↔guest browser link. (`report` double-ran by mistake, cleaned up → today's lessons entry.) scrape 8/8 clean (Sakana $8.07 low). betterstack/poker/health/uptime/discord/models/keys/tampa_luma/cloudflare green, 3 standing recoverables, no new.
 
 ### Earlier
 
-- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-25 (116 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.
+- Rollups dropped from the FIFO window: 2026-05-11 .. 2026-11-26 (117 days). Recoverable from the repo history; anything durable should already be in `memory/lessons.md`.

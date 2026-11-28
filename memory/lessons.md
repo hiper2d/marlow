@@ -118,6 +118,10 @@ a signal, and `monitor_self` already checks for that.
 
 ## Entries
 
+### 2026-11-27 - werewolf_stats.py `report` joins the side-effecting-single-call list; its device-cluster delta is a one-shot, not durable
+
+Ran `report` twice 14s apart on the same tick (second call to re-inspect output). It double-appended the digest block to `digests/daily/2026-11-27.md` and double-appended `stats_history.jsonl` — same shape as the `send-item`/`monitor_betterstack report` mistakes already in the standing lesson below, just a third handler. Worse than those two: `_cluster_changes()` (`werewolf_stats.py:1882`) diffs the current device clusters against whatever is currently sitting in `stats_latest.json`, then overwrites that file — so the second call diffed against the first call's own just-written output, got an empty `new`/`grown`, and permanently overwrote the real delta in persisted state (the only surviving record of the real change was the first run's digest text, recovered by hand). Cleaned up both files, kept the first/real entries. What to do: `report` is call-once-per-tick like the others; if you need to double-check its output, read it back from `stats_latest.json`/`show`/`digest`, never call `report` again.
+
 ### 2026-11-24 - an always-empty feed is indistinguishable from a quiet one; long silence is a prefix bug until proven otherwise
 
 Two of ten sources — `apollo_research` blog and science — had been dark since
